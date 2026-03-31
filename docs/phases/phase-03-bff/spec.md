@@ -110,6 +110,11 @@
 - `detail`은 사용자 노출 또는 로깅에 사용할 상세 메시지로 사용한다.
 - `status`는 HTTP 상태 코드를 본문에도 명시해 클라이언트가 일관되게 해석할 수 있게 한다.
 - API 원본 응답 타입과 웹 앱 UI용 모델 타입은 분리한다.
+- Open API raw 응답 타입은 `apps/bff` 내부에서만 관리하고 `packages/contracts`에 노출하지 않는다.
+- `packages/contracts`에는 웹 앱이 직접 사용하는 정규화된 응답 계약만 둔다.
+- `BookSearchResponse`, `BookDetailResponse`, `LibrarySearchResponse`는 웹 앱이 소비하는 BFF 계약 타입이다.
+- `docs[].doc`, `detail[].book`, `libs[].lib` 같은 외부 응답 중첩 구조는 BFF 파싱 레이어 내부에만 머문다.
+- 문자열 숫자 파싱, 빈 문자열 후처리, nullable 정리, 좌표 숫자 변환은 BFF 정규화 단계에서 수행한다.
 - UI에서는 실제 필요한 필드만 정제한 `Model` 타입을 사용한다.
 - ISBN, ISBN13, 지역코드, 세부지역코드는 모두 `string`으로 다룬다.
 - ISBN은 숫자처럼 보여도 앞자리 0 보존과 일관성 유지를 위해 `string` 기준으로 처리한다.
