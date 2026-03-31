@@ -2,5 +2,6 @@
   "name": "@nearby-library-search/contracts",
   "private": true,
   "version": "0.0.0",
-  "type": "module"
+  "type": "module",
+  "types": "./src/index.ts"
 }
