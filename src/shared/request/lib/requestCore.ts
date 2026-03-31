@@ -1,7 +1,9 @@
+import { libraryApiConfig } from '@/shared/env'
 import type {
   CreateRequestInitProps,
   RequestHeaders,
   RequestInitWithMethod,
+  RequestProps,
   RequestQueryParams,
 } from './requestType'
 
@@ -57,4 +59,18 @@ function createRequestInit({
   }
 }
 
-export { buildRequestQueryString, createRequestInit }
+function createRequestUrl({
+  baseUrl = libraryApiConfig.baseUrl ?? '',
+  endpoint,
+  queryParams,
+}: Pick<RequestProps, 'baseUrl' | 'endpoint' | 'queryParams'>) {
+  const normalizedBaseUrl = baseUrl.replace(/\/$/, '')
+  const normalizedEndpoint = endpoint.startsWith('/')
+    ? endpoint
+    : `/${endpoint}`
+  const queryString = buildRequestQueryString(queryParams)
+
+  return `${normalizedBaseUrl}${normalizedEndpoint}${queryString}`
+}
+
+export { buildRequestQueryString, createRequestInit, createRequestUrl }

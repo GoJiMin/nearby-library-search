@@ -11,7 +11,7 @@
 
 - [x] query string 직렬화 기준을 request core에서 사용할 수 있게 정리한다.
 - [x] 공통 헤더 병합과 JSON/FormData body 처리를 담당하는 request init 생성 함수를 구현한다.
-- [ ] base URL과 endpoint를 조합하는 request URL 생성 로직을 구현한다.
+- [x] base URL과 endpoint를 조합하는 request URL 생성 로직을 구현한다.
 - [ ] 실패 응답을 `RequestError`, `RequestGetError`로 변환하는 공통 에러 처리 로직을 구현한다.
 - [ ] 인증 없는 현재 프로젝트 기준으로 `request` 코어 함수를 구현한다.
 - [ ] `requestGet`, `requestPost`, `requestPut`, `requestPatch`, `requestDelete` 공개 함수를 구현한다.
