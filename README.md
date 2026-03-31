@@ -18,10 +18,13 @@
 ## 아키텍처
 
 - FSD 기반 구조를 사용합니다.
-- 현재 핵심 레이어는 `app`, `pages`, `shared`, 이후 `entities`, `features` 순서로 확장합니다.
+- 현재 웹 앱은 `app`, `pages`, `shared` 중심으로 구성되어 있고, 다음 단계에서 모노레포 구조로 전환할 예정입니다.
+- 모노레포 전환 후 구조는 `apps/web`와 `apps/bff`를 기본으로 합니다.
+- `apps/bff`는 Hono 기반의 단순 프록시 BFF로 시작합니다.
 - 공통 UI는 `@/shared/ui` 단일 엔트리로 공개합니다.
 - 공통 API 요청은 `@/shared/request` 공개 API를 통해서만 사용합니다.
 - 클라이언트 환경변수는 `@/shared/env`를 통해서만 읽습니다.
+- 외부 Open API 인증키는 웹 앱이 아니라 BFF 서버 환경변수에서만 관리합니다.
 
 ## 시작하기
 
@@ -29,6 +32,8 @@
 pnpm install
 pnpm dev
 ```
+
+현재 저장소는 아직 웹 앱 단일 구조입니다. 모노레포와 Hono BFF는 다음 Phase에서 적용될 예정이며, 적용 후 실행 명령과 디렉터리 구조도 함께 변경됩니다.
 
 ## 검증
 
@@ -51,4 +56,4 @@ pnpm build
 
 - Phase 1 app 레이어 표준화 완료
 - Phase 2 shared 레이어 구성 완료
-- 다음 단계는 Phase 3 entities 레이어 구성입니다.
+- 다음 단계는 Phase 3 모노레포 및 Hono BFF 구성입니다.
