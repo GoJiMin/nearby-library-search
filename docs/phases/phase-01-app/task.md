@@ -11,7 +11,7 @@
 - [x] `src/app`, `src/shared`, `src/entities`, `src/features` 디렉터리를 생성한다.
 - [x] 각 레이어의 기본 하위 구조를 정의한다.
 - [x] 슬라이스 외부 공개를 위한 `index.ts` 기준 구조를 잡는다.
-- [ ] 기본 Vite 샘플 구조와 충돌하는 기존 파일 배치를 정리한다.
+- [x] 기본 Vite 샘플 구조와 충돌하는 기존 파일 배치를 정리한다.
 
 ## 3. 앱 엔트리와 Provider 구성
 - [ ] 앱 시작점을 `src/main.tsx`로 전환한다.
