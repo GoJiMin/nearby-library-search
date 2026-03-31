@@ -1,3 +1,5 @@
+import { AppEmptyState } from '@/app/ui/AppEmptyState'
+
 function HomePage() {
   return (
     <main className="flex min-h-[calc(100vh-96px)] items-center">
@@ -18,7 +20,7 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <article className="bg-surface-muted rounded-3xl p-5">
             <strong className="text-text mb-2 block text-sm font-semibold">
               1. 도서 검색
@@ -47,6 +49,12 @@ function HomePage() {
             </p>
           </article>
         </div>
+
+        <AppEmptyState
+          description="아직 검색한 도서가 없습니다. 제목을 입력하면 ISBN 조회와 지역 선택 플로우가 이어질 예정입니다."
+          label="초기 상태"
+          title="검색을 시작하면 여기에서 결과 흐름이 이어집니다"
+        />
       </section>
     </main>
   )
