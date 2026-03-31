@@ -17,7 +17,7 @@
 - [x] 앱 시작점을 `src/main.tsx`로 전환한다.
 - [x] `StrictMode` 기준 최상위 렌더링 구조를 정리한다.
 - [x] 앱 전역 Provider 조합용 엔트리 컴포넌트를 구성한다.
-- [ ] `QueryClient` 생성 위치와 기본 옵션을 정의한다.
+- [x] `QueryClient` 생성 위치와 기본 옵션을 정의한다.
 - [ ] Query Provider를 앱 전역에 연결한다.
 
 ## 4. Router 구성
