@@ -6,6 +6,7 @@ import type {
   RequestErrorInfo,
   RequestHeaders,
   RequestInitWithMethod,
+  RequestMethodProps,
   RequestProps,
   RequestQueryParams,
   WithErrorHandling,
@@ -145,10 +146,82 @@ async function request<T>({
   return (await response.json()) as T
 }
 
+async function requestGet<T>({
+  headers = {},
+  withResponse = true,
+  errorHandlingType = 'errorBoundary',
+  ...props
+}: WithErrorHandling<RequestMethodProps>) {
+  return request<T>({
+    ...props,
+    errorHandlingType,
+    headers,
+    method: 'GET',
+    withResponse,
+  })
+}
+
+async function requestPost<T = void>({
+  headers = {},
+  withResponse = false,
+  ...props
+}: RequestMethodProps) {
+  return request<T>({
+    ...props,
+    headers,
+    method: 'POST',
+    withResponse,
+  })
+}
+
+async function requestPut<T = void>({
+  headers = {},
+  withResponse = false,
+  ...props
+}: RequestMethodProps) {
+  return request<T>({
+    ...props,
+    headers,
+    method: 'PUT',
+    withResponse,
+  })
+}
+
+async function requestPatch<T = void>({
+  headers = {},
+  withResponse = false,
+  ...props
+}: RequestMethodProps) {
+  return request<T>({
+    ...props,
+    headers,
+    method: 'PATCH',
+    withResponse,
+  })
+}
+
+async function requestDelete<T = void>({
+  headers = {},
+  withResponse = false,
+  ...props
+}: RequestMethodProps) {
+  return request<T>({
+    ...props,
+    headers,
+    method: 'DELETE',
+    withResponse,
+  })
+}
+
 export {
   buildRequestQueryString,
   createRequestInit,
   createRequestUrl,
   handleRequestError,
   request,
+  requestDelete,
+  requestGet,
+  requestPatch,
+  requestPost,
+  requestPut,
 }

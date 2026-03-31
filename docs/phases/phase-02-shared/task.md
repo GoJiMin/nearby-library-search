@@ -14,7 +14,7 @@
 - [x] base URL과 endpoint를 조합하는 request URL 생성 로직을 구현한다.
 - [x] 실패 응답을 `RequestError`, `RequestGetError`로 변환하는 공통 에러 처리 로직을 구현한다.
 - [x] 인증 없는 현재 프로젝트 기준으로 `request` 코어 함수를 구현한다.
-- [ ] `requestGet`, `requestPost`, `requestPut`, `requestPatch`, `requestDelete` 공개 함수를 구현한다.
+- [x] `requestGet`, `requestPost`, `requestPut`, `requestPatch`, `requestDelete` 공개 함수를 구현한다.
 - [ ] `src/shared/request/index.ts`에서 request 관련 공개 API를 정리한다.
 
 ## 3. shadcn/ui 기반 공통 UI 준비
