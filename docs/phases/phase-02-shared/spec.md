@@ -63,12 +63,8 @@
 
 - request core는 예시로 공유된 `request-core`, `request-error`, `request-type`, `index` 구조를 참고해 현재 프로젝트에 맞게 단순화한다.
 - 핵심 공개 함수는 다음 수준을 목표로 한다.
-  - `request`
   - `requestGet`
   - `requestPost`
-  - `requestPut`
-  - `requestPatch`
-  - `requestDelete`
 - request core는 최소한 다음 책임을 가진다.
   - base URL과 endpoint 결합
   - query param 직렬화
@@ -171,7 +167,7 @@
 
 ## 완료 기준
 
-- `shared/request`만으로 GET/POST/PATCH/PUT/DELETE 요청을 일관되게 보낼 수 있다.
+- `shared/request`만으로 현재 MVP 범위의 GET/POST 요청을 일관되게 보낼 수 있다.
 - query string, headers, body 처리 규칙이 공통화된다.
 - 읽기/쓰기 요청 에러가 다른 유형으로 구분된다.
 - `shadcn/ui` 기반 공통 UI가 최소 버튼, 입력, 다이얼로그, 피드백 상태까지 준비된다.
@@ -188,7 +184,7 @@
 
 ## 후속 연결 포인트
 
-- Phase 3에서는 `shared/request` 위에 `entities`별 API 함수와 응답 정규화 로직을 얹는다.
+- Phase 3에서는 `shared/request` 위에 `entities`별 GET/POST API 함수와 응답 정규화 로직을 얹는다.
 - Phase 4에서는 `shared` 공통 UI와 훅을 조합해 검색 입력, 지역 선택, 결과 표시 기능을 구현한다.
 
 ## 참고 구현 메모

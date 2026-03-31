@@ -1,15 +1,4 @@
-export {
-  buildRequestQueryString,
-  createRequestInit,
-  createRequestUrl,
-  handleRequestError,
-  request,
-  requestDelete,
-  requestGet,
-  requestPatch,
-  requestPost,
-  requestPut,
-} from './lib/requestCore'
+export { requestGet, requestPost } from './lib/requestCore'
 export { RequestError, RequestGetError } from './lib/requestError'
 export type {
   CreateRequestErrorProps,
