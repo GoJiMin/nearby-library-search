@@ -18,9 +18,9 @@
 ## 아키텍처
 
 - FSD 기반 구조를 사용합니다.
-- 현재 웹 앱은 `app`, `pages`, `shared` 중심으로 구성되어 있고, 다음 단계에서 모노레포 구조로 전환할 예정입니다.
-- 모노레포 전환 후 구조는 `apps/web`와 `apps/bff`를 기본으로 합니다.
-- `apps/bff`는 Hono 기반의 단순 프록시 BFF로 시작합니다.
+- 현재 웹 앱은 `apps/web` 패키지로 이동한 상태입니다.
+- 모노레포 기본 구조는 `apps/web`, `apps/bff`, `packages/contracts`를 기준으로 합니다.
+- `apps/bff`는 Fastify 기반 BFF로 구성할 예정입니다.
 - 공통 UI는 `@/shared/ui` 단일 엔트리로 공개합니다.
 - 공통 API 요청은 `@/shared/request` 공개 API를 통해서만 사용합니다.
 - 클라이언트 환경변수는 `@/shared/env`를 통해서만 읽습니다.
@@ -33,13 +33,13 @@ pnpm install
 pnpm dev
 ```
 
-현재 저장소는 아직 웹 앱 단일 구조입니다. 모노레포와 Hono BFF는 다음 Phase에서 적용될 예정이며, 적용 후 실행 명령과 디렉터리 구조도 함께 변경됩니다.
+현재 저장소는 web 패키지 중심 모노레포 구조로 전환 중입니다. BFF와 contracts 패키지는 다음 Phase 작업에서 이어서 구성합니다.
 
 ## 검증
 
 ```bash
 pnpm test:run
-pnpm exec tsc -p tsconfig.app.json
+pnpm typecheck:web
 pnpm build
 ```
 
@@ -56,4 +56,4 @@ pnpm build
 
 - Phase 1 app 레이어 표준화 완료
 - Phase 2 shared 레이어 구성 완료
-- 다음 단계는 Phase 3 모노레포 및 Hono BFF 구성입니다.
+- 다음 단계는 Phase 3 루트 정리 후 Fastify BFF 구성입니다.
