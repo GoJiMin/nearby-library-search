@@ -43,18 +43,18 @@
   - `lib/requestCore.ts`, `lib/requestError.ts`, `lib/requestType.ts`
 - `src/shared/feedback`
   - 로딩, 에러, 빈 상태 같은 공통 피드백 UI 슬라이스
-- `src/shared/button`
-  - `shadcn/ui` 기반 버튼 컴포넌트 슬라이스
-- `src/shared/input`
-  - `shadcn/ui` 기반 입력 컴포넌트 슬라이스
-- `src/shared/dialog`
-  - `shadcn/ui` 기반 다이얼로그 슬라이스
+- `src/shared/ui`
+  - 재사용 가능한 UI 컴포넌트를 별도 슬라이스 없이 파일 단위로 둔다
+  - 예시: `button.tsx`, `input.tsx`, `dialog.tsx`
+  - 모든 UI 컴포넌트는 `src/shared/ui/index.ts` 단일 엔트리에서 공개한다
+- `src/shared/lib`
+  - 재사용 가능한 유틸을 별도 슬라이스 없이 파일 단위로 둔다
+  - 예시: `debounce.ts`, `format.ts`, `queryString.ts`
+  - 모든 유틸은 `src/shared/lib/index.ts` 단일 엔트리에서 공개한다
 - `src/shared/icon`
-  - 필요 시 `lucide-react` 래퍼 또는 아이콘 매핑 슬라이스
-- `src/shared/<utility-slice>`
-  - 쿼리스트링, 디바운스, 포맷팅 등 재사용 단위를 슬라이스로 분리
+  - 필요 시 `lucide-react` 래퍼 또는 아이콘 매핑 파일을 둔다
 
-모든 슬라이스는 루트 `index.ts`만 공개 진입점으로 두고, 세그먼트 내부에는 barrel export를 두지 않는다.
+`shared/request`, `shared/feedback`, `shared/env` 같은 슬라이스는 각 슬라이스의 `index.ts`만 공개 진입점으로 사용하고, `shared/ui`, `shared/lib`는 각 디렉터리의 단일 `index.ts`로 공개한다.
 
 ## Shared 레이어 상세 설계
 
@@ -102,14 +102,13 @@
   - `endpoint`
   - `method`
   - `requestBody`
-- 읽기 요청과 쓰기 요청은 에러 유형을 분리한다.
+- 읽기 요청만 별도 에러 유형으로 분리하고, 쓰기 요청은 기본 에러를 사용한다.
 - 권장 방향
   - `RequestError`
-  - `RequestReadError`
-  - `RequestWriteError`
+  - `RequestGetError`
 - 에러를 분리하는 이유는 이후 처리 전략이 다르기 때문이다.
   - 읽기 요청 실패: 대체 UI, 에러 영역, 재시도 UI 연결
-  - 쓰기 요청 실패: 토스트, 액션 실패 메시지 등 연결
+  - 쓰기 요청 실패: `RequestError`를 통해 토스트, 액션 실패 메시지 등 연결
 - 서버 에러 응답이 JSON이면 파싱해 title/detail을 우선 사용하고, 실패하면 기본 fallback 메시지를 사용한다.
 
 ### 4. shadcn/ui 기반 공통 UI
@@ -122,6 +121,8 @@
   - `LoadingState`
   - `EmptyState`
   - `ErrorState`
+- 재사용 가능한 UI 컴포넌트는 모두 `src/shared/ui` 내부 파일로 관리한다.
+- `Button`, `Input`, `Dialog` 같은 공통 UI는 `src/shared/ui/index.ts` 단일 엔트리에서 export한다.
 - 이미 있는 `feedback` 슬라이스는 `shadcn/ui` 톤과 함께 정리해 일관된 스타일로 맞춘다.
 - 컴포넌트는 단순 래핑에 그치지 않고, 현재 서비스의 스타일 토큰과 접근성 요구사항이 반영된 프로젝트 표준 컴포넌트로 둔다.
 - 아이콘은 `lucide-react`만 사용한다.
@@ -129,6 +130,8 @@
 ### 5. 공통 유틸 구조
 
 - MVP 기준으로 먼저 필요한 유틸만 만든다.
+- 재사용 가능한 유틸은 `src/shared/lib` 아래 파일 단위로 바로 둔다.
+- 유틸 공개 진입점은 `src/shared/lib/index.ts` 하나로 고정한다.
 - 우선 후보
   - query string 생성
   - debounce
@@ -149,7 +152,8 @@
 
 - `entities`, `features`, `pages`는 직접 `fetch`하지 않고 `shared/request`의 공개 함수만 사용한다.
 - `entities`, `features`, `pages`는 `import.meta.env`를 직접 읽지 않고 `@/shared/env`만 사용한다.
-- 공통 UI는 슬라이스 루트 `index.ts`로만 import한다.
+- 공통 UI는 `@/shared/ui` 단일 엔트리로만 import한다.
+- 공통 유틸은 `@/shared/lib` 단일 엔트리로만 import한다.
 - `lucide-react`는 공통 UI 내부나 실제 화면 구현에서 직접 사용할 수 있지만, 같은 아이콘 조합이 반복되면 `shared/icon` 슬라이스로 승격한다.
 - Shared 레이어는 도메인 지식을 가지지 않고, 여러 도메인에서 재사용 가능한 규칙만 포함한다.
 
@@ -176,8 +180,8 @@
 ## 테스트 기준
 
 - request core가 query string, headers, JSON body, `FormData`를 올바르게 처리한다.
-- 실패 응답이 읽기/쓰기 요청 유형에 맞는 에러 객체로 변환된다.
-- `shadcn/ui` 기반 공통 UI는 접근성 쿼리로 주요 상호작용을 검증할 수 있다.
+- 실패 응답이 `RequestError`, `RequestGetError` 규칙에 맞게 변환된다.
+- `shadcn/ui`처럼 이미 검증된 UI 기반 컴포넌트는 별도의 테스트를 기본으로 추가하지 않는다.
 - 공통 유틸의 복잡한 분기와 에러 케이스는 선택적으로 단위 테스트를 가진다.
 - `pnpm test:run`, `pnpm exec tsc -p tsconfig.app.json`, `pnpm build`가 통과한다.
 
