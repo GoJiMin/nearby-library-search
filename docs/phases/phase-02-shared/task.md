@@ -46,13 +46,13 @@
 
 ## 7. 검증
 
-- [ ] `pnpm test:run`이 성공한다.
-- [ ] `pnpm exec tsc -p tsconfig.app.json`가 성공한다.
-- [ ] `pnpm build`가 성공한다.
-- [ ] request 공개 함수와 공통 UI import가 의도한 단일 엔트리 경로로만 동작하는지 확인한다.
+- [x] `pnpm test:run`이 성공한다.
+- [x] `pnpm exec tsc -p tsconfig.app.json`가 성공한다.
+- [x] `pnpm build`가 성공한다.
+- [x] request 공개 함수와 공통 UI import가 의도한 단일 엔트리 경로로만 동작하는지 확인한다.
 
 ## 8. 문서 반영
 
-- [ ] 구현 결과가 `spec.md`의 범위와 완료 기준을 충족하는지 점검한다.
-- [ ] 필요 시 Phase 2 결정 사항을 `spec.md`에 보완 반영한다.
-- [ ] 다음 단계인 `entities` 레이어 작업으로 이어질 준비 상태를 확인한다.
+- [x] 구현 결과가 `spec.md`의 범위와 완료 기준을 충족하는지 점검한다.
+- [x] 필요 시 Phase 2 결정 사항을 `spec.md`에 보완 반영한다.
+- [x] 다음 단계인 `entities` 레이어 작업으로 이어질 준비 상태를 확인한다.

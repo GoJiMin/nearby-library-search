@@ -162,6 +162,16 @@
 - Phase 3에서는 `shared/request` 위에 `entities`별 GET/POST API 함수와 응답 정규화 로직을 얹는다.
 - Phase 4에서는 `shared` 공통 UI를 조합해 검색 입력, 지역 선택, 결과 표시 기능을 구현한다.
 
+## 구현 반영 메모
+
+- `shared/request`의 공개 API는 현재 MVP 범위에 맞춰 `requestGet`, `requestPost`로 제한한다.
+- `shared/ui`는 `Button`, `Input`, `Dialog`, `Card`, `Badge`, `Heading`, `Text`, `LucideIcon` 단일 엔트리 구조로 정리한다.
+- `shared/feedback`은 상태별 화면을 직접 스타일링하지 않고 공통 UI 프리미티브를 조합하는 구조로 유지한다.
+
+## 다음 단계 준비 상태
+
+- Phase 3에서 바로 사용할 수 있도록 request 코어, 공통 에러 타입, 공통 UI 프리미티브, 피드백 UI가 준비된 상태다.
+
 ## 참고 구현 메모
 
 - 공통 API 구조는 사용자가 공유한 `modu-client` 예시의 `request-core`, `request-error`, `request-type`, `index` 분리 방식을 참고한다.
