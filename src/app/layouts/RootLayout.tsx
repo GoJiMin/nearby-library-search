@@ -1,5 +1,5 @@
 import { Outlet, useNavigation } from 'react-router-dom'
-import { AppLoadingFallback } from '@/app/router/AppLoadingFallback'
+import { LoadingState } from '@/shared/feedback'
 import { AppLayout } from './AppLayout'
 
 function RootLayout() {
@@ -7,7 +7,7 @@ function RootLayout() {
 
   return (
     <AppLayout>
-      {navigation.state === 'idle' ? <Outlet /> : <AppLoadingFallback />}
+      {navigation.state === 'idle' ? <Outlet /> : <LoadingState />}
     </AppLayout>
   )
 }

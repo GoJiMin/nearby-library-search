@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom'
 
-type AppErrorFallbackProps = {
+type ErrorStateProps = {
   description?: string
   title?: string
 }
 
-function AppErrorFallback({
+function ErrorState({
   title = '화면을 불러오지 못했습니다',
   description = '예상하지 못한 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
-}: AppErrorFallbackProps) {
+}: ErrorStateProps) {
   return (
     <div className="flex min-h-[calc(100vh-112px)] items-center">
       <section className="rounded-panel border-line bg-surface-strong shadow-card w-full border px-6 py-8 sm:px-10 sm:py-12">
@@ -28,4 +28,4 @@ function AppErrorFallback({
   )
 }
 
-export { AppErrorFallback }
+export { ErrorState }

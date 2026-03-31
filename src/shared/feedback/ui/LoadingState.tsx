@@ -1,4 +1,4 @@
-function AppLoadingFallback() {
+function LoadingState() {
   return (
     <div className="flex min-h-[calc(100vh-112px)] items-center">
       <section className="rounded-panel border-line bg-surface-strong shadow-card w-full border px-6 py-8 sm:px-10 sm:py-12">
@@ -17,4 +17,4 @@ function AppLoadingFallback() {
   )
 }
 
-export { AppLoadingFallback }
+export { LoadingState }
