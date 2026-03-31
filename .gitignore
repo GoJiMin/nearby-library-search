@@ -31,3 +31,12 @@ skills-lock.json
 
 # Local package manager store
 .pnpm-store/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Test and TypeScript build artifacts
+coverage/
+*.tsbuildinfo
