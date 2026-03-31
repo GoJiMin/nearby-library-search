@@ -1,14 +1,13 @@
-export type ErrorCode =
+export type CommonErrorTitle =
   | 'BAD_REQUEST'
   | 'NOT_FOUND'
   | 'UPSTREAM_ERROR'
   | 'INTERNAL_SERVER_ERROR'
 
+export type ErrorTitle = CommonErrorTitle | (string & {})
+
 export type ErrorResponse = {
-  success: false
-  error: {
-    code: ErrorCode
-    message: string
-    retryable: boolean
-  }
+  title: ErrorTitle
+  detail: string
+  status: number
 }
