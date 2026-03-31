@@ -1,8 +1,7 @@
 const publicEnvKeys = [
   'VITE_APP_ENV',
   'VITE_KAKAO_MAP_APP_KEY',
-  'VITE_LIBRARY_API_BASE_URL',
-  'VITE_LIBRARY_API_KEY',
+  'VITE_API_BASE_URL',
 ] as const
 
 type PublicEnvKey = (typeof publicEnvKeys)[number]
@@ -35,19 +34,16 @@ const kakaoMapConfig = Object.freeze({
   isEnabled: hasPublicEnv('VITE_KAKAO_MAP_APP_KEY'),
 })
 
-const libraryApiConfig = Object.freeze({
-  apiKey: readPublicEnv('VITE_LIBRARY_API_KEY'),
-  baseUrl: readPublicEnv('VITE_LIBRARY_API_BASE_URL'),
-  isEnabled:
-    hasPublicEnv('VITE_LIBRARY_API_BASE_URL') &&
-    hasPublicEnv('VITE_LIBRARY_API_KEY'),
+const apiConfig = Object.freeze({
+  baseUrl: readPublicEnv('VITE_API_BASE_URL'),
+  isEnabled: hasPublicEnv('VITE_API_BASE_URL'),
 })
 
 export {
+  apiConfig,
   appConfig,
   hasPublicEnv,
   kakaoMapConfig,
-  libraryApiConfig,
   publicEnvKeys,
   readPublicEnv,
 }

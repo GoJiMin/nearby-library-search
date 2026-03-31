@@ -3,8 +3,7 @@
 interface ImportMetaEnv {
   readonly VITE_APP_ENV?: 'development' | 'production' | 'test'
   readonly VITE_KAKAO_MAP_APP_KEY?: string
-  readonly VITE_LIBRARY_API_BASE_URL?: string
-  readonly VITE_LIBRARY_API_KEY?: string
+  readonly VITE_API_BASE_URL?: string
 }
 
 interface ImportMeta {

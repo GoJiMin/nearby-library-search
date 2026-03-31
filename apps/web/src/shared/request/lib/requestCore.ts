@@ -1,4 +1,4 @@
-import { libraryApiConfig } from '@/shared/env'
+import { apiConfig } from '@/shared/env'
 import { RequestError, RequestGetError } from './requestError'
 import type {
   CreateRequestErrorProps,
@@ -65,7 +65,7 @@ function createRequestInit({
 }
 
 function createRequestUrl({
-  baseUrl = libraryApiConfig.baseUrl ?? '',
+  baseUrl = apiConfig.baseUrl ?? '',
   endpoint,
   queryParams,
 }: Pick<RequestProps, 'baseUrl' | 'endpoint' | 'queryParams'>) {

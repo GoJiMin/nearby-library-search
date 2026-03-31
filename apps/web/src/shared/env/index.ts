@@ -1,8 +1,8 @@
 export {
+  apiConfig,
   appConfig,
   hasPublicEnv,
   kakaoMapConfig,
-  libraryApiConfig,
   publicEnvKeys,
   readPublicEnv,
 } from './env'

@@ -34,6 +34,7 @@ pnpm dev
 ```
 
 현재 저장소는 web 패키지 중심 모노레포 구조로 전환 중입니다. BFF와 contracts 패키지는 다음 Phase 작업에서 이어서 구성합니다.
+웹 공개 환경변수 예시는 [apps/web/.env.example](/Users/gojimin/Desktop/ai/apps/web/.env.example)에 두고, 외부 Open API 인증키는 클라이언트 예시 파일에 두지 않습니다.
 
 ## 검증
 
