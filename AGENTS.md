@@ -6,6 +6,9 @@
 - Every slice must expose its public API through an `index.ts` file.
 - Do not import from individual files inside a slice from outside that slice.
 - Do not export slice members by targeting individual files directly. Use the slice `index.ts` barrel export only.
+- Use the `pages` layer for route-level UI instead of placing page components inside the router slice.
+- Split files only when a file has too many responsibilities or when reuse is likely enough to justify the extra file.
+- If those conditions are not met, keep related logic together in a single file.
 
 ## Git
 - Commit titles must be explicit enough that anyone can understand the purpose of the change from the title alone.
