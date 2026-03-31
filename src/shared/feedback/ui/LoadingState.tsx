@@ -39,7 +39,7 @@ function LoadingState({
           </div>
 
           <div className="grid gap-3">
-            <div className="border-line bg-surface rounded-[28px] border p-5">
+            <div className="border-line bg-surface rounded-3xl border p-5">
               <div className="mb-4 space-y-3">
                 <div className="bg-surface-muted h-4 w-20 animate-pulse rounded-full" />
                 <div className="bg-surface-muted h-7 w-3/4 animate-pulse rounded-full" />
@@ -53,7 +53,7 @@ function LoadingState({
               </div>
             </div>
 
-            <div className="bg-surface-muted grid grid-cols-3 gap-3 rounded-[28px] p-4">
+            <div className="bg-surface-muted grid grid-cols-3 gap-3 rounded-3xl p-4">
               <div className="h-2 animate-pulse rounded-full bg-white/90" />
               <div className="h-2 animate-pulse rounded-full bg-white/70" />
               <div className="h-2 animate-pulse rounded-full bg-white/60" />

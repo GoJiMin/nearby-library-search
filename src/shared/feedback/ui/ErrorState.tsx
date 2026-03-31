@@ -29,8 +29,8 @@ function ErrorState({
               <LucideIcon icon={TriangleAlert} size={16} strokeWidth={2.2} />
               {label}
             </div>
-            <div className="bg-surface inline-flex rounded-[24px] p-3 shadow-[inset_0_0_0_1px_rgba(2,32,71,0.05)]">
-              <div className="bg-accent-soft text-accent-strong inline-flex h-14 w-14 items-center justify-center rounded-[18px]">
+            <div className="bg-surface inline-flex rounded-3xl p-3 shadow-[inset_0_0_0_1px_rgba(2,32,71,0.05)]">
+              <div className="bg-accent-soft text-accent-strong inline-flex h-14 w-14 items-center justify-center rounded-2xl">
                 <LucideIcon icon={TriangleAlert} size={26} strokeWidth={2.2} />
               </div>
             </div>

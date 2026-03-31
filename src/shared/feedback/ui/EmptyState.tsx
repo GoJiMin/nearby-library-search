@@ -18,7 +18,7 @@ function EmptyState({
 
       <div className="relative z-10 flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
-          <div className="bg-accent-soft text-accent-strong mb-5 inline-flex h-14 w-14 items-center justify-center rounded-[20px]">
+          <div className="bg-accent-soft text-accent-strong mb-5 inline-flex h-14 w-14 items-center justify-center rounded-3xl">
             <LucideIcon icon={SearchX} size={24} strokeWidth={2.1} />
           </div>
           <div className="bg-surface-muted text-text-muted rounded-pill mb-4 inline-flex px-3 py-2 text-sm font-medium">
@@ -32,8 +32,8 @@ function EmptyState({
           </p>
         </div>
 
-        <div className="grid min-w-[220px] gap-3 sm:max-w-[280px]">
-          <div className="bg-surface-strong rounded-[24px] p-4 shadow-[inset_0_0_0_1px_rgba(2,32,71,0.05)]">
+        <div className="grid min-w-55 gap-3 sm:max-w-70">
+          <div className="bg-surface-strong rounded-3xl p-4 shadow-[inset_0_0_0_1px_rgba(2,32,71,0.05)]">
             <strong className="text-text mb-1 block text-sm font-semibold">
               도서 검색
             </strong>
@@ -41,7 +41,7 @@ function EmptyState({
               제목을 입력하면 검색 흐름이 여기서 이어집니다.
             </p>
           </div>
-          <div className="bg-surface-muted rounded-[24px] p-4">
+          <div className="bg-surface-muted rounded-3xl p-4">
             <div className="bg-line mb-3 h-px w-full" />
             <p className="text-sm leading-6">
               검색 전에는 결과 대신 다음 단계 안내만 보여줍니다.

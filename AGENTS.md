@@ -35,3 +35,10 @@
 - Client-exposed environment variables must use the `VITE_` prefix only.
 - Do not access `import.meta.env` directly in components, pages, features, entities, or shared UI code.
 - Read client env values through the `@/shared/env` slice only.
+
+## Styling
+
+- Prefer Tailwind's canonical utility classes over arbitrary values whenever an equivalent scale utility exists.
+- For example, use `rounded-3xl` instead of `rounded-[24px]`, and `min-w-55` instead of `min-w-[220px]`.
+- Use arbitrary values only when there is no meaningful built-in utility or project token for the value.
+- `calc(...)`, custom shadows, or one-off visual adjustments without an equivalent scale utility are acceptable exceptions.
