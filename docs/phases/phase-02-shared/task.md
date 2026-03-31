@@ -9,7 +9,7 @@
 
 ## 2. request core 구현
 
-- [ ] query string 직렬화 기준을 request core에서 사용할 수 있게 정리한다.
+- [x] query string 직렬화 기준을 request core에서 사용할 수 있게 정리한다.
 - [ ] 공통 헤더 병합과 JSON/FormData body 처리를 담당하는 request init 생성 함수를 구현한다.
 - [ ] base URL과 endpoint를 조합하는 request URL 생성 로직을 구현한다.
 - [ ] 실패 응답을 `RequestError`, `RequestGetError`로 변환하는 공통 에러 처리 로직을 구현한다.
