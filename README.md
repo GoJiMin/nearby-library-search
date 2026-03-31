@@ -1,16 +1,38 @@
-# React + Vite
+# 동네 도서관 찾기
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+책 제목과 지역 정보를 기준으로 내 주변 도서관의 소장 여부와 위치를 빠르게 확인하기 위한 MVP 프로젝트입니다.
 
-Currently, two official plugins are available:
+## 기술 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19
+- Vite
+- TypeScript
+- React Router
+- TanStack Query
+- Tailwind CSS
+- Vitest
+- React Testing Library
 
-## React Compiler
+## 실행
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+pnpm dev
+```
 
-## Expanding the ESLint configuration
+## 검증
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+pnpm exec tsc -p tsconfig.app.json
+pnpm build
+```
+
+## 문서
+
+- 전체 개발 계획: `plan.md`
+- Phase 1 명세: `docs/phases/phase-01-app/spec.md`
+- Phase 1 작업 목록: `docs/phases/phase-01-app/task.md`
+
+## 현재 상태
+
+- Phase 1 app 레이어 표준화 진행 완료
+- 다음 단계는 shared 레이어 구성
