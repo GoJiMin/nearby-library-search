@@ -1,5 +1,5 @@
 import { SearchX } from 'lucide-react'
-import { LucideIcon } from '@/shared/ui'
+import { Badge, Card, Heading, LucideIcon, Text } from '@/shared/ui'
 
 type EmptyStateProps = {
   description: string
@@ -13,7 +13,7 @@ function EmptyState({
   label = '빈 상태',
 }: EmptyStateProps) {
   return (
-    <section className="border-line bg-surface shadow-soft rounded-panel relative w-full overflow-hidden border px-6 py-8 text-left sm:px-8 sm:py-10">
+    <Card className="relative overflow-hidden px-6 py-8 text-left sm:px-8 sm:py-10">
       <div className="bg-accent-soft absolute top-0 -right-12 h-40 w-40 rounded-full blur-3xl" />
 
       <div className="relative z-10 flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
@@ -21,35 +21,35 @@ function EmptyState({
           <div className="bg-accent-soft text-accent-strong mb-5 inline-flex h-14 w-14 items-center justify-center rounded-3xl">
             <LucideIcon icon={SearchX} size={24} strokeWidth={2.1} />
           </div>
-          <div className="bg-surface-muted text-text-muted rounded-pill mb-4 inline-flex px-3 py-2 text-sm font-medium">
+          <Badge className="mb-4" variant="muted">
             {label}
-          </div>
-          <strong className="text-text mb-3 block text-[clamp(1.7rem,3vw,2.6rem)] leading-[1.12] font-semibold tracking-[-0.05em]">
+          </Badge>
+          <Heading as="strong" className="mb-3 block" size="xl">
             {title}
-          </strong>
-          <p className="max-w-xl text-sm leading-7 sm:text-base">
+          </Heading>
+          <Text className="max-w-xl" size="sm">
             {description}
-          </p>
+          </Text>
         </div>
 
         <div className="grid min-w-55 gap-3 sm:max-w-70">
-          <div className="bg-surface-strong rounded-3xl p-4 shadow-[inset_0_0_0_1px_rgba(2,32,71,0.05)]">
-            <strong className="text-text mb-1 block text-sm font-semibold">
+          <Card className="bg-surface-strong rounded-3xl p-4 shadow-[inset_0_0_0_1px_rgba(2,32,71,0.05)]">
+            <Heading as="strong" className="mb-1 block" size="md">
               도서 검색
-            </strong>
-            <p className="text-sm leading-6">
+            </Heading>
+            <Text size="sm">
               제목을 입력하면 검색 흐름이 여기서 이어집니다.
-            </p>
-          </div>
-          <div className="bg-surface-muted rounded-3xl p-4">
+            </Text>
+          </Card>
+          <Card className="bg-surface-muted rounded-3xl p-4 shadow-none">
             <div className="bg-line mb-3 h-px w-full" />
-            <p className="text-sm leading-6">
+            <Text size="sm">
               검색 전에는 결과 대신 다음 단계 안내만 보여줍니다.
-            </p>
-          </div>
+            </Text>
+          </Card>
         </div>
       </div>
-    </section>
+    </Card>
   )
 }
 

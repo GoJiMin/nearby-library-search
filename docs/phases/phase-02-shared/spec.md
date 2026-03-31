@@ -115,6 +115,10 @@
   - `Button`
   - `Input`
   - `Dialog`
+  - `Card`
+  - `Badge`
+  - `Heading`
+  - `Text`
   - `LucideIcon`
   - `LoadingState`
   - `EmptyState`
