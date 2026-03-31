@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 function NotFoundPage() {
   return (
-    <main className="flex min-h-[calc(100vh-96px)] items-center">
+    <div className="flex min-h-[calc(100vh-96px)] items-center">
       <section className="rounded-panel border-line bg-surface-strong shadow-card w-full border px-6 py-8 sm:px-10 sm:py-12">
         <div className="rounded-pill bg-accent-soft text-accent-strong mb-4 inline-flex px-3 py-2 text-sm font-medium">
           404
@@ -19,7 +19,7 @@ function NotFoundPage() {
           홈으로 돌아가기
         </Link>
       </section>
-    </main>
+    </div>
   )
 }
 

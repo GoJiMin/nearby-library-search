@@ -2,7 +2,7 @@ import { AppEmptyState } from '@/app/ui/AppEmptyState'
 
 function HomePage() {
   return (
-    <main className="flex min-h-[calc(100vh-96px)] items-center">
+    <div className="flex min-h-[calc(100vh-96px)] items-center">
       <section className="rounded-panel border-line bg-surface-strong shadow-card w-full overflow-hidden border px-6 py-8 sm:px-10 sm:py-12">
         <div className="rounded-pill bg-accent-soft text-accent-strong mb-8 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium">
           <span className="bg-accent h-2 w-2 rounded-full" />내 주변 도서관 검색
@@ -56,7 +56,7 @@ function HomePage() {
           title="검색을 시작하면 여기에서 결과 흐름이 이어집니다"
         />
       </section>
-    </main>
+    </div>
   )
 }
 
