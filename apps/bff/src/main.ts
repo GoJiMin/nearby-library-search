@@ -1,4 +1,4 @@
-import Fastify from 'fastify'
+import { createApp } from './app/createApp.js'
 
 const DEFAULT_HOST = '0.0.0.0'
 const DEFAULT_PORT = 3001
@@ -6,9 +6,7 @@ const DEFAULT_PORT = 3001
 const host = process.env.HOST ?? DEFAULT_HOST
 const port = Number(process.env.PORT ?? DEFAULT_PORT)
 
-const server = Fastify({
-  logger: true,
-})
+const server = createApp()
 
 async function startServer() {
   try {
