@@ -41,7 +41,7 @@
 - [x] `apps/bff`에 Fastify와 TypeScript 기본 의존성을 추가한다.
 - [x] `apps/bff`가 공통 `base`와 `server` 설정을 확장하는 `tsconfig`를 추가한다.
 - [x] `apps/bff` 서버 엔트리 파일을 생성한다.
-- [ ] `apps/bff` 개발 서버와 빌드 스크립트를 설정한다.
+- [x] `apps/bff` 개발 서버와 빌드 스크립트를 설정한다.
 
 ## 7. BFF 기본 서버 구조
 
