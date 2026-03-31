@@ -7,6 +7,7 @@ const publicEnvKeys = [
 
 type PublicEnvKey = (typeof publicEnvKeys)[number]
 
+// Keep client env access centralized in this slice.
 function readPublicEnv(key: PublicEnvKey) {
   const value = import.meta.env[key]
 
