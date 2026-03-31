@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 기반 전환
 - [x] `react-router`, `@tanstack/react-query`, `tailwindcss` 관련 의존성을 추가한다.
-- [ ] TypeScript 전환에 필요한 의존성과 설정 파일을 추가한다.
+- [x] TypeScript 전환에 필요한 의존성과 설정 파일을 추가한다.
 - [ ] Vite 설정을 TypeScript 기반으로 정리한다.
 - [ ] 경로 별칭과 기본 import 규칙을 정리한다.
 
