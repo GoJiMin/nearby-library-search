@@ -1,11 +1,11 @@
 import { AppProvider } from '@/app/providers'
 import { RouterProvider } from 'react-router-dom'
-import { router } from '@/app/router'
+import { AppLoadingFallback, router } from '@/app/router'
 
 function App() {
   return (
     <AppProvider>
-      <RouterProvider router={router} />
+      <RouterProvider fallbackElement={<AppLoadingFallback />} router={router} />
     </AppProvider>
   )
 }
