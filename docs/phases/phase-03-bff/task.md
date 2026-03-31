@@ -2,7 +2,7 @@
 
 ## 1. Workspace 루트 전환
 
-- [ ] `pnpm-workspace.yaml`을 추가해 workspace 패키지 범위를 정의한다.
+- [x] `pnpm-workspace.yaml`을 추가해 workspace 패키지 범위를 정의한다.
 - [ ] 루트 `package.json`을 workspace 기준 스크립트 구조로 정리한다.
 - [ ] 루트 `tsconfig` 구조를 web, bff, contracts가 재사용할 수 있게 정리한다.
 - [ ] 루트 `.gitignore`에 모노레포 전환 후 필요한 제외 규칙이 누락되지 않았는지 점검한다.
