@@ -5,6 +5,10 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    outDir: './dist',
+    emptyOutDir: true,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
