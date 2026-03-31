@@ -3,7 +3,11 @@
 ## Architecture
 - This project follows FSD architecture.
 - Each layer may contain multiple slices.
+- Each slice may include segments such as `ui`, `lib`, and `model` when needed.
 - Every slice must expose its public API through an `index.ts` file.
+- Place page components under the slice `ui` segment.
+- Do not add barrel exports at the layer root.
+- Do not add barrel exports inside each segment directory.
 - Do not import from individual files inside a slice from outside that slice.
 - Do not export slice members by targeting individual files directly. Use the slice `index.ts` barrel export only.
 - Use the `pages` layer for route-level UI instead of placing page components inside the router slice.
