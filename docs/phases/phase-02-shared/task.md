@@ -33,7 +33,7 @@
 
 ## 5. Shared 사용 규칙 반영
 
-- [ ] `entities`, `features`, `pages`가 `shared/request`를 사용하도록 문서 기준을 정리한다.
+- [x] `entities`, `features`, `pages`가 `shared/request`를 사용하도록 문서 기준을 정리한다.
 - [ ] `entities`, `features`, `pages`가 `@/shared/env`만 사용하도록 문서 기준을 정리한다.
 - [ ] 공통 UI가 `@/shared/ui` 단일 엔트리로만 import되도록 문서에 반영한다.
 - [ ] Shared 레이어가 도메인 지식을 가지지 않는다는 기준을 문서에 반영한다.

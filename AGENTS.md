@@ -36,6 +36,11 @@
 - Do not access `import.meta.env` directly in components, pages, features, entities, or shared UI code.
 - Read client env values through the `@/shared/env` slice only.
 
+## Shared Layer
+
+- `entities`, `features`, and `pages` must not call `fetch` directly for application API requests.
+- Route application API requests through the public API exposed by the `@/shared/request` slice only.
+
 ## Styling
 
 - Prefer Tailwind's canonical utility classes over arbitrary values whenever an equivalent scale utility exists.
