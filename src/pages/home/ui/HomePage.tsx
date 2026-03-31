@@ -1,10 +1,10 @@
 function HomePage() {
   return (
     <main className="flex min-h-[calc(100vh-96px)] items-center">
-      <section className="w-full overflow-hidden rounded-[var(--radius-panel)] border border-[var(--color-line)] bg-[var(--color-surface-strong)] px-6 py-8 shadow-[var(--shadow-card)] sm:px-10 sm:py-12">
-        <div className="mb-8 inline-flex items-center gap-2 rounded-[var(--radius-pill)] bg-[var(--color-accent-soft)] px-3 py-2 text-sm font-medium text-[var(--color-accent-strong)]">
-          <span className="h-2 w-2 rounded-full bg-[var(--color-accent)]" />내
-          주변 도서관 검색 MVP
+      <section className="rounded-panel border-line bg-surface-strong shadow-card w-full overflow-hidden border px-6 py-8 sm:px-10 sm:py-12">
+        <div className="rounded-pill bg-accent-soft text-accent-strong mb-8 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium">
+          <span className="bg-accent h-2 w-2 rounded-full" />내 주변 도서관 검색
+          MVP
         </div>
 
         <div className="max-w-3xl">
@@ -19,8 +19,8 @@ function HomePage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <article className="rounded-3xl bg-[var(--color-surface-muted)] p-5">
-            <strong className="mb-2 block text-sm font-semibold text-[var(--color-text)]">
+          <article className="bg-surface-muted rounded-3xl p-5">
+            <strong className="text-text mb-2 block text-sm font-semibold">
               1. 도서 검색
             </strong>
             <p className="text-sm">
@@ -28,8 +28,8 @@ function HomePage() {
             </p>
           </article>
 
-          <article className="rounded-3xl bg-[var(--color-surface-muted)] p-5">
-            <strong className="mb-2 block text-sm font-semibold text-[var(--color-text)]">
+          <article className="bg-surface-muted rounded-3xl p-5">
+            <strong className="text-text mb-2 block text-sm font-semibold">
               2. 지역 선택
             </strong>
             <p className="text-sm">
@@ -37,8 +37,8 @@ function HomePage() {
             </p>
           </article>
 
-          <article className="rounded-3xl bg-[var(--color-surface-muted)] p-5">
-            <strong className="mb-2 block text-sm font-semibold text-[var(--color-text)]">
+          <article className="bg-surface-muted rounded-3xl p-5">
+            <strong className="text-text mb-2 block text-sm font-semibold">
               3. 지도 확인
             </strong>
             <p className="text-sm">
