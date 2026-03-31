@@ -12,3 +12,7 @@ export type {
   RegionCode,
   RegionIdentifier,
 } from './region'
+export type {
+  LibrarySearchItem,
+  LibrarySearchResponse,
+} from './librarySearch'
