@@ -105,6 +105,7 @@
 - 루트 `.env.example`에는 MVP에서 사용하는 공개 키 예시를 유지한다.
 - Phase 1 기준 공개 env 키는 `VITE_APP_ENV`, `VITE_KAKAO_MAP_APP_KEY`, `VITE_LIBRARY_API_BASE_URL`, `VITE_LIBRARY_API_KEY`로 시작한다.
 - Kakao Map 키와 Open API 관련 설정값은 `@/shared/env` 단일 진입 모듈을 통해 접근한다.
+- `@/shared/env`는 최소한 `appConfig`, `kakaoMapConfig`, `libraryApiConfig`처럼 확장 가능한 설정 객체를 제공한다.
 - 컴포넌트 내부에서 `import.meta.env`를 직접 반복 사용하지 않는다.
 - 실제 SDK 스크립트 로딩과 API 호출 구현은 이후 Phase에서 수행한다.
 

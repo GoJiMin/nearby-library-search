@@ -23,5 +23,31 @@ function hasPublicEnv(key: PublicEnvKey) {
   return readPublicEnv(key) !== undefined
 }
 
-export { hasPublicEnv, publicEnvKeys, readPublicEnv }
+const appConfig = Object.freeze({
+  envName: readPublicEnv('VITE_APP_ENV') ?? import.meta.env.MODE,
+  isDevelopment: import.meta.env.DEV,
+  isProduction: import.meta.env.PROD,
+})
+
+const kakaoMapConfig = Object.freeze({
+  appKey: readPublicEnv('VITE_KAKAO_MAP_APP_KEY'),
+  isEnabled: hasPublicEnv('VITE_KAKAO_MAP_APP_KEY'),
+})
+
+const libraryApiConfig = Object.freeze({
+  apiKey: readPublicEnv('VITE_LIBRARY_API_KEY'),
+  baseUrl: readPublicEnv('VITE_LIBRARY_API_BASE_URL'),
+  isEnabled:
+    hasPublicEnv('VITE_LIBRARY_API_BASE_URL') &&
+    hasPublicEnv('VITE_LIBRARY_API_KEY'),
+})
+
+export {
+  appConfig,
+  hasPublicEnv,
+  kakaoMapConfig,
+  libraryApiConfig,
+  publicEnvKeys,
+  readPublicEnv,
+}
 export type { PublicEnvKey }
