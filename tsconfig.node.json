@@ -3,8 +3,9 @@
   "compilerOptions": {
     "composite": true,
     "allowSyntheticDefaultImports": true,
+    "noEmit": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./apps/web/src/*"]
     },
     "types": ["node"]
   },

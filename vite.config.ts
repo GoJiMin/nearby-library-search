@@ -3,16 +3,24 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
+const webRoot = path.resolve(__dirname, './apps/web')
+const webSrcRoot = path.resolve(webRoot, './src')
+
 export default defineConfig({
+  root: webRoot,
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': webSrcRoot,
     },
+  },
+  build: {
+    outDir: path.resolve(__dirname, './dist'),
+    emptyOutDir: true,
   },
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/shared/config/test/index.ts'],
+    setupFiles: [path.resolve(webSrcRoot, './shared/config/test/index.ts')],
   },
 })
