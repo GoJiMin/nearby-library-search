@@ -10,7 +10,7 @@
 ## 2. 패키지 디렉터리 준비
 
 - [x] `apps/web` 디렉터리를 생성한다.
-- [ ] `apps/bff` 디렉터리를 생성한다.
+- [x] `apps/bff` 디렉터리를 생성한다.
 - [ ] `packages/contracts` 디렉터리를 생성한다.
 - [ ] 각 패키지에 기본 `package.json`을 추가한다.
 
