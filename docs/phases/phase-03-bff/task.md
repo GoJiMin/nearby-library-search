@@ -12,7 +12,7 @@
 - [x] `apps/web` 디렉터리를 생성한다.
 - [x] `apps/bff` 디렉터리를 생성한다.
 - [x] `packages/contracts` 디렉터리를 생성한다.
-- [ ] 각 패키지에 기본 `package.json`을 추가한다.
+- [x] 각 패키지에 기본 `package.json`을 추가한다.
 
 ## 3. 웹 앱 이동 준비
 
