@@ -28,7 +28,7 @@
 ## 4. 공통 피드백 UI 정리
 
 - [x] 기존 `shared/feedback` 슬라이스를 `shadcn/ui` 톤과 현재 스타일 토큰 기준으로 정리한다.
-- [ ] `LoadingState`, `EmptyState`, `ErrorState` 표현을 공통 UI 기준과 일관되게 맞춘다.
+- [x] `LoadingState`, `EmptyState`, `ErrorState` 표현을 공통 UI 기준과 일관되게 맞춘다.
 - [ ] 필요 시 `lucide-react` 아이콘을 피드백 UI에 반영한다.
 
 ## 5. 재사용 유틸 구성

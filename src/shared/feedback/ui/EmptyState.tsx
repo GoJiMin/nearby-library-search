@@ -14,10 +14,10 @@ function EmptyState({
       <div className="bg-surface-muted text-text-muted rounded-pill mb-4 inline-flex px-3 py-2 text-sm font-medium">
         {label}
       </div>
-      <strong className="text-text mb-3 block text-xl font-semibold tracking-[-0.03em]">
+      <strong className="text-text mb-3 block text-2xl font-semibold tracking-[-0.03em]">
         {title}
       </strong>
-      <p className="mx-auto max-w-xl text-sm leading-6 sm:text-base">
+      <p className="mx-auto max-w-xl text-sm leading-7 sm:text-base">
         {description}
       </p>
     </section>
@@ -25,3 +25,4 @@ function EmptyState({
 }
 
 export { EmptyState }
+export type { EmptyStateProps }
