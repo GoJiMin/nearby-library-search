@@ -29,7 +29,7 @@
 - [x] 잘못된 경로 대응을 위한 최소 fallback 처리 기준을 마련한다.
 
 ## 5. 스타일 시스템 구성
-- [ ] Tailwind CSS를 Vite 프로젝트에 연결한다.
+- [x] Tailwind CSS를 Vite 프로젝트에 연결한다.
 - [ ] 전역 스타일 진입점을 `src/app/styles/globals.css`로 구성한다.
 - [ ] 베이스 스타일과 리셋 규칙을 적용한다.
 - [ ] 최소 디자인 토큰을 CSS 변수로 정의한다.
