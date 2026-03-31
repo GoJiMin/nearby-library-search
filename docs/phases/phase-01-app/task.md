@@ -5,7 +5,7 @@
 - [x] TypeScript 전환에 필요한 의존성과 설정 파일을 추가한다.
 - [x] Vite 설정을 TypeScript 기반으로 정리한다.
 - [x] 경로 별칭과 기본 import 규칙을 정리한다.
-- [ ] `vitest`와 `react testing library` 기반 테스트 환경을 추가한다.
+- [x] `vitest`와 `react testing library` 기반 테스트 환경을 추가한다.
 
 ## 2. FSD 디렉터리 구조 정리
 - [ ] `src/app`, `src/shared`, `src/entities`, `src/features` 디렉터리를 생성한다.
