@@ -42,6 +42,8 @@
 - Route application API requests through the public API exposed by the `@/shared/request` slice only.
 - `entities`, `features`, and `pages` must not access `import.meta.env` directly.
 - Read client runtime configuration through `@/shared/env` only.
+- Import reusable UI primitives through `@/shared/ui` only.
+- Do not import files directly from inside `src/shared/ui`.
 
 ## Styling
 
