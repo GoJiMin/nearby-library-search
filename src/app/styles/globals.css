@@ -1,5 +1,23 @@
 @import 'tailwindcss';
 
+:root {
+  --color-background: #f5f3ee;
+  --color-surface: rgba(255, 252, 245, 0.88);
+  --color-surface-strong: #fffdf8;
+  --color-text: #1b1f18;
+  --color-text-muted: #5f6658;
+  --color-line: rgba(46, 55, 35, 0.12);
+  --color-accent: #1f6a4a;
+  --color-accent-soft: rgba(31, 106, 74, 0.12);
+  --shadow-card: 0 24px 60px rgba(47, 56, 39, 0.12);
+  --radius-panel: 28px;
+  --radius-pill: 999px;
+  --space-layout-x: clamp(20px, 4vw, 40px);
+  --space-layout-y: clamp(32px, 6vw, 64px);
+  --font-sans: 'SUIT Variable', 'Pretendard Variable', 'Pretendard', system-ui,
+    sans-serif;
+}
+
 *,
 *::before,
 *::after {
@@ -14,6 +32,11 @@ body,
 
 body {
   margin: 0;
+  color: var(--color-text);
+  background:
+    radial-gradient(circle at top left, rgba(31, 106, 74, 0.12), transparent 42%),
+    linear-gradient(180deg, #fbfaf7 0%, var(--color-background) 100%);
+  font-family: var(--font-sans);
 }
 
 button,
