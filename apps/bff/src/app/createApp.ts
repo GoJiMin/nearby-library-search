@@ -1,6 +1,6 @@
 import Fastify from 'fastify'
 import type { FastifyInstance } from 'fastify'
-import { healthRoute } from '../routes/health.js'
+import { registerRoutes } from '../routes/index.js'
 
 export function createApp(): FastifyInstance {
   const app = Fastify({
@@ -17,7 +17,7 @@ export function createApp(): FastifyInstance {
     trustProxy: false,
   })
 
-  void app.register(healthRoute)
+  void registerRoutes(app)
 
   return app
 }
