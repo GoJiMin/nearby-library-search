@@ -1,2 +1,3 @@
-export { AppProvider } from './app-provider'
-export { queryClient } from './query-client'
+export { AppProvider } from './AppProvider'
+export { ReactQueryProvider } from './ReactQueryProvider'
+export { queryClient } from './queryClient'
