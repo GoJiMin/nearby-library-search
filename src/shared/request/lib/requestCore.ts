@@ -1,6 +1,9 @@
 import { libraryApiConfig } from '@/shared/env'
+import { RequestError, RequestGetError } from './requestError'
 import type {
+  CreateRequestErrorProps,
   CreateRequestInitProps,
+  RequestErrorInfo,
   RequestHeaders,
   RequestInitWithMethod,
   RequestProps,
@@ -73,4 +76,53 @@ function createRequestUrl({
   return `${normalizedBaseUrl}${normalizedEndpoint}${queryString}`
 }
 
-export { buildRequestQueryString, createRequestInit, createRequestUrl }
+async function handleRequestError({
+  response,
+  body,
+  requestInit,
+  errorHandlingType,
+}: CreateRequestErrorProps) {
+  const fallbackErrorInfo: RequestErrorInfo = {
+    detail: '요청을 처리하는 중 문제가 발생했습니다.',
+    status: response.status,
+    title: 'REQUEST_ERROR',
+  }
+
+  let parsedErrorInfo: Partial<RequestErrorInfo> = {}
+
+  try {
+    parsedErrorInfo = (await response.json()) as Partial<RequestErrorInfo>
+  } catch {
+    parsedErrorInfo = {}
+  }
+
+  const errorInfo = { ...fallbackErrorInfo, ...parsedErrorInfo }
+
+  if (requestInit.method === 'GET') {
+    return new RequestGetError({
+      endpoint: response.url,
+      errorHandlingType,
+      message: errorInfo.detail,
+      method: requestInit.method,
+      name: errorInfo.title,
+      requestBody: body ?? null,
+      status: errorInfo.status,
+    })
+  }
+
+  return new RequestError({
+    endpoint: response.url,
+    message: errorInfo.detail,
+    method: requestInit.method,
+    name: errorInfo.title,
+    requestBody: body ?? null,
+    status: errorInfo.status,
+  })
+}
+
+export {
+  buildRequestQueryString,
+  createRequestInit,
+  createRequestUrl,
+  handleRequestError,
+}

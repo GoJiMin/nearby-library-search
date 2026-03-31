@@ -42,14 +42,28 @@ type RequestMethodProps = Omit<RequestProps, 'method'>
 
 type RequestErrorHandling = 'errorBoundary' | 'toast'
 
+type RequestErrorInfo = {
+  detail: string
+  status: number
+  title: string
+}
+
 type WithErrorHandling<P = object> = P & {
   errorHandlingType?: RequestErrorHandling
 }
 
+type CreateRequestErrorProps = WithErrorHandling<{
+  body: RequestBody
+  requestInit: RequestInitWithMethod
+  response: Response
+}>
+
 export type {
+  CreateRequestErrorProps,
   CreateRequestInitProps,
   RequestBody,
   RequestErrorHandling,
+  RequestErrorInfo,
   RequestHeaders,
   RequestInitWithMethod,
   RequestJsonBody,
