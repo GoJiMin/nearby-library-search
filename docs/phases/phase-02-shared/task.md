@@ -23,7 +23,7 @@
 - [x] `lucide-react`를 설치하고 공통 UI에서 사용하는 기준을 정리한다.
 - [x] `src/shared/ui` 디렉터리와 단일 엔트리 `index.ts`를 만든다.
 - [x] `button.tsx`, `input.tsx`, `dialog.tsx`를 공통 UI 기준으로 추가한다.
-- [ ] 공통 UI import가 `@/shared/ui` 단일 엔트리로만 가능하도록 정리한다.
+- [x] 공통 UI import가 `@/shared/ui` 단일 엔트리로만 가능하도록 정리한다.
 
 ## 4. 공통 피드백 UI 정리
 
