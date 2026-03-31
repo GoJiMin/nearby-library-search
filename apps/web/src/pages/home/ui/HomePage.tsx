@@ -1,0 +1,63 @@
+import { EmptyState } from '@/shared/feedback'
+
+function HomePage() {
+  return (
+    <div className="flex min-h-[calc(100vh-96px)] items-center">
+      <section className="rounded-panel border-line bg-surface-strong shadow-card w-full overflow-hidden border px-6 py-8 sm:px-10 sm:py-12">
+        <div className="rounded-pill bg-accent-soft text-accent-strong mb-8 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium">
+          <span className="bg-accent h-2 w-2 rounded-full" />내 주변 도서관 검색
+          MVP
+        </div>
+
+        <div className="max-w-3xl">
+          <h1 className="mb-5">
+            책 제목만 입력하면 가까운 도서관을 바로 보여드릴게요
+          </h1>
+          <p className="mb-8 max-w-2xl">
+            복잡한 설명 없이 바로 이해되는 검색 경험을 목표로 하고 있습니다.
+            제목을 검색하고 지역을 고르면, 주변 도서관과 위치를 빠르게 확인할 수
+            있게 만들 예정입니다.
+          </p>
+        </div>
+
+        <div className="mb-6 grid gap-4 sm:grid-cols-3">
+          <article className="bg-surface-muted rounded-3xl p-5">
+            <strong className="text-text mb-2 block text-sm font-semibold">
+              1. 도서 검색
+            </strong>
+            <p className="text-sm">
+              제목 입력 후 ISBN 조회로 검색의 출발점을 단순하게 만듭니다.
+            </p>
+          </article>
+
+          <article className="bg-surface-muted rounded-3xl p-5">
+            <strong className="text-text mb-2 block text-sm font-semibold">
+              2. 지역 선택
+            </strong>
+            <p className="text-sm">
+              시, 구, 동 깊이 선택으로 실제 생활 반경에 맞는 탐색을 제공합니다.
+            </p>
+          </article>
+
+          <article className="bg-surface-muted rounded-3xl p-5">
+            <strong className="text-text mb-2 block text-sm font-semibold">
+              3. 지도 확인
+            </strong>
+            <p className="text-sm">
+              소장 도서관을 카드와 지도로 함께 보여줘 이동 판단을 빠르게
+              돕습니다.
+            </p>
+          </article>
+        </div>
+
+        <EmptyState
+          description="아직 검색한 도서가 없습니다. 제목을 입력하면 ISBN 조회와 지역 선택 플로우가 이어질 예정입니다."
+          label="초기 상태"
+          title="검색을 시작하면 여기에서 결과 흐름이 이어집니다"
+        />
+      </section>
+    </div>
+  )
+}
+
+export { HomePage }
