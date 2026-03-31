@@ -10,6 +10,7 @@
 - 서버 상태 관리: `@tanstack/react-query`
 - 스타일링: `tailwindcss`
 - 언어: `TypeScript`
+- 테스트 환경: `vitest`, `react testing library`
 - 전역 클라이언트 상태 라이브러리: 도입하지 않음
 - 초기 라우트 범위: 공통 레이아웃 + `/` 단일 진입
 
@@ -18,6 +19,7 @@
 - FSD 기준의 최소 디렉터리 구조를 생성한다.
 - 앱 엔트리에서 Query Provider, Router Provider, 글로벌 스타일을 연결한다.
 - Tailwind CSS를 앱 전역 스타일 시스템으로 설정한다.
+- `vitest`와 `react testing library` 기반 테스트 환경을 구성한다.
 - 공통 레이아웃과 홈 진입 화면을 위한 앱 레벨 셸을 정의한다.
 - 환경변수 접근 규칙과 외부 SDK 주입 진입점을 표준화한다.
 - 앱 전역 로딩, 에러, 빈 상태 처리 기준을 정의한다.
@@ -99,6 +101,7 @@
 - Router Provider 구성
 - Query Provider 구성
 - Tailwind 설정 및 글로벌 스타일 진입점
+- `vitest`, `react testing library` 테스트 실행 기반
 - 공통 App Layout 및 홈 진입 화면
 - env 접근 유틸 또는 설정 모듈
 - Phase 1 기준 문서화된 규칙
@@ -108,6 +111,7 @@
 - `/` 경로에서 공통 레이아웃과 기본 홈 화면이 렌더링된다.
 - Tailwind 스타일이 실제로 적용된다.
 - Query Provider와 Router Provider가 앱 전역에 정상 연결된다.
+- `vitest` 테스트 실행 환경이 정상 동작한다.
 - 기본 Vite 샘플 화면과 불필요한 데모 자산은 제거된다.
 - 이후 `shared`, `entities`, `features` 작업을 바로 시작할 수 있는 구조가 준비된다.
 
@@ -118,6 +122,7 @@
 - `/` 경로 렌더링 시 레이아웃과 홈 화면이 보인다.
 - Tailwind 유틸리티 클래스가 정상 반영된다.
 - Query Client가 주입된 상태에서 하위 컴포넌트가 정상 렌더링된다.
+- `vitest`와 `react testing library` 기반 기본 테스트가 실행된다.
 - env 접근 유틸이 없거나 잘못된 값일 때 최소한의 방어 처리를 할 수 있는 구조가 준비된다.
 
 ## 후속 연결 포인트

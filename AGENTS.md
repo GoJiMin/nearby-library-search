@@ -7,7 +7,12 @@
 - Do not import from individual files inside a slice from outside that slice.
 - Do not export slice members by targeting individual files directly. Use the slice `index.ts` barrel export only.
 
+## Git
+- Commit titles must be explicit enough that anyone can understand the purpose of the change from the title alone.
+- Avoid vague titles such as phase-only summaries or generic dependency updates without user-facing meaning.
+
 ## Testing
+- The standard test stack is `vitest` and `react testing library`.
 - Do not write isolated unit tests for every file by default.
 - Avoid unnecessary tests that do not improve confidence in user-facing behavior.
 - Prefer integration tests organized around user-visible features and flows.
