@@ -115,11 +115,13 @@
   - `Button`
   - `Input`
   - `Dialog`
+  - `LucideIcon`
   - `LoadingState`
   - `EmptyState`
   - `ErrorState`
 - 재사용 가능한 UI 컴포넌트는 모두 `src/shared/ui` 내부 파일로 관리한다.
 - `Button`, `Input`, `Dialog` 같은 공통 UI는 `src/shared/ui/index.ts` 단일 엔트리에서 export한다.
+- `LucideIcon`은 아이콘 이름 문자열 대신 정적 import한 `lucide-react` 아이콘 컴포넌트를 prop으로 받아 사용한다.
 - 이미 있는 `feedback` 슬라이스는 `shadcn/ui` 톤과 함께 정리해 일관된 스타일로 맞춘다.
 - 컴포넌트는 단순 래핑에 그치지 않고, 현재 서비스의 스타일 토큰과 접근성 요구사항이 반영된 프로젝트 표준 컴포넌트로 둔다.
 - 아이콘은 `lucide-react`만 사용한다.

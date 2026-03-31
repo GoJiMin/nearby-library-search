@@ -12,3 +12,5 @@ export {
 } from './dialog'
 export { Input } from './input'
 export type { InputProps } from './input'
+export { LucideIcon } from './LucideIcon'
+export type { LucideIconProps } from './LucideIcon'
