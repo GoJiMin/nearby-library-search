@@ -1,5 +1,6 @@
+import { TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Button } from '@/shared/ui'
+import { Button, LucideIcon } from '@/shared/ui'
 
 type ErrorStateProps = {
   actionLabel?: string
@@ -19,7 +20,8 @@ function ErrorState({
   return (
     <div className="flex min-h-[calc(100vh-112px)] items-center">
       <section className="border-line bg-surface-strong shadow-card rounded-panel w-full border px-6 py-8 sm:px-10 sm:py-12">
-        <div className="bg-accent-soft text-accent-strong rounded-pill mb-4 inline-flex px-3 py-2 text-sm font-medium">
+        <div className="bg-accent-soft text-accent-strong rounded-pill mb-4 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium">
+          <LucideIcon icon={TriangleAlert} size={16} strokeWidth={2.2} />
           {label}
         </div>
         <h1 className="mb-4 max-w-2xl">{title}</h1>
