@@ -42,7 +42,7 @@
 
 - [x] request core의 query string, headers, JSON body, `FormData` 처리 테스트를 작성한다.
 - [x] 실패 응답이 `RequestError`, `RequestGetError`로 구분되는지 테스트한다.
-- [ ] `shadcn/ui`처럼 이미 검증된 UI 기반 컴포넌트에는 불필요한 테스트를 추가하지 않는다.
+- [x] `shadcn/ui`처럼 이미 검증된 UI 기반 컴포넌트에는 불필요한 테스트를 추가하지 않는다.
 
 ## 7. 검증
 
