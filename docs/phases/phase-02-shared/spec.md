@@ -9,6 +9,7 @@
 ## 기술 결정
 
 - 공통 API 요청: `fetch` 기반 request core 직접 구현
+- 추가 HTTP 클라이언트 의존성: 도입하지 않음
 - 서버 상태 연계: `@tanstack/react-query`
 - 공통 UI: `shadcn/ui`
 - 아이콘: `lucide-react`

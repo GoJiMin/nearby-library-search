@@ -2,7 +2,7 @@
 
 ## 1. 공통 API 요청 기반 준비
 
-- [ ] 공통 API 요청 구조에 필요한 의존성과 기본 디렉터리를 정리한다.
+- [x] 공통 API 요청 구조에 필요한 의존성과 기본 디렉터리를 정리한다.
 - [ ] `src/shared/request` 슬라이스와 내부 `lib` 구조를 만든다.
 - [ ] `requestType.ts`에 메서드, 헤더, body, query param, 응답 옵션 타입을 정의한다.
 - [ ] `RequestError`, `RequestGetError` 기준의 에러 타입 구조를 정리한다.
