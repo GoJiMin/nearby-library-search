@@ -8,6 +8,7 @@ import type {
   RequestInitWithMethod,
   RequestProps,
   RequestQueryParams,
+  WithErrorHandling,
 } from './requestType'
 
 function buildRequestQueryString(queryParams?: RequestQueryParams) {
@@ -120,9 +121,34 @@ async function handleRequestError({
   })
 }
 
+async function request<T>({
+  withResponse = true,
+  ...props
+}: WithErrorHandling<RequestProps>) {
+  const requestUrl = createRequestUrl(props)
+  const requestInit = createRequestInit(props)
+  const response = await fetch(requestUrl, requestInit)
+
+  if (!response.ok) {
+    throw await handleRequestError({
+      body: props.body ?? null,
+      errorHandlingType: props.errorHandlingType,
+      requestInit,
+      response,
+    })
+  }
+
+  if (!withResponse || response.status === 204) {
+    return undefined as T
+  }
+
+  return (await response.json()) as T
+}
+
 export {
   buildRequestQueryString,
   createRequestInit,
   createRequestUrl,
   handleRequestError,
+  request,
 }
