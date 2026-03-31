@@ -20,7 +20,7 @@
 - FSD 기반 구조를 사용합니다.
 - 현재 웹 앱은 `apps/web` 패키지로 이동한 상태입니다.
 - 모노레포 기본 구조는 `apps/web`, `apps/bff`, `packages/contracts`를 기준으로 합니다.
-- `apps/bff`는 Fastify 기반 BFF로 구성할 예정입니다.
+- `apps/bff`는 Fastify 기반 BFF로 구성합니다.
 - 공통 UI는 `@/shared/ui` 단일 엔트리로 공개합니다.
 - 공통 API 요청은 `@/shared/request` 공개 API를 통해서만 사용합니다.
 - 클라이언트 환경변수는 `@/shared/env`를 통해서만 읽습니다.
@@ -33,14 +33,15 @@ pnpm install
 pnpm dev
 ```
 
-현재 저장소는 web 패키지 중심 모노레포 구조로 전환 중입니다. BFF와 contracts 패키지는 다음 Phase 작업에서 이어서 구성합니다.
-웹 공개 환경변수 예시는 [apps/web/.env.example](/Users/gojimin/Desktop/ai/apps/web/.env.example)에 두고, 외부 Open API 인증키는 클라이언트 예시 파일에 두지 않습니다.
+웹 앱 공개 환경변수 예시는 [apps/web/.env.example](/Users/gojimin/Desktop/ai/apps/web/.env.example)에 두고, BFF 서버 전용 환경변수 예시는 [apps/bff/.env.example](/Users/gojimin/Desktop/ai/apps/bff/.env.example)에 둡니다.
+웹 앱에서는 `VITE_` 접두사를 가진 공개 설정만 사용하고, 외부 Open API 인증키는 `apps/bff/.env`에서만 관리합니다.
 
 ## 검증
 
 ```bash
 pnpm test:run
 pnpm typecheck:web
+pnpm typecheck:bff
 pnpm build
 ```
 
@@ -57,4 +58,4 @@ pnpm build
 
 - Phase 1 app 레이어 표준화 완료
 - Phase 2 shared 레이어 구성 완료
-- 다음 단계는 Phase 3 루트 정리 후 Fastify BFF 구성입니다.
+- Phase 3 모노레포 전환과 Fastify BFF 기본 구조 진행 중

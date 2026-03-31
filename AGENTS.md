@@ -3,8 +3,8 @@
 ## Architecture
 
 - This repository is moving toward a `pnpm` workspace monorepo.
-- The target app boundaries are `apps/web` for the React client and `apps/bff` for the Hono BFF.
-- Until the migration is completed, the current web app remains in the root `src` directory.
+- The target app boundaries are `apps/web` for the React client and `apps/bff` for the Fastify BFF.
+- The current web app source lives in `apps/web/src`.
 - This project follows FSD architecture.
 - Each layer may contain multiple slices.
 - Each slice may include segments such as `ui`, `lib`, and `model` when needed.
@@ -38,6 +38,7 @@
 - Web client-exposed environment variables must use the `VITE_` prefix only.
 - Do not access `import.meta.env` directly in components, pages, features, entities, or shared UI code.
 - Read client env values through the `@/shared/env` slice only.
+- Keep public web env in `apps/web/.env` and server-only env in `apps/bff/.env`.
 - Server-only secrets for the BFF must not use the `VITE_` prefix.
 - External Open API auth keys must be stored and read only in the BFF runtime environment.
 
@@ -46,7 +47,7 @@
 - `entities`, `features`, and `pages` must not call `fetch` directly for application API requests.
 - Route application API requests through the public API exposed by the `@/shared/request` slice only.
 - The web app must not call external provider Open APIs directly once the BFF is introduced.
-- Route provider API traffic through the Hono BFF only.
+- Route provider API traffic through the Fastify BFF only.
 - `entities`, `features`, and `pages` must not access `import.meta.env` directly.
 - Read client runtime configuration through `@/shared/env` only.
 - Import reusable UI primitives through `@/shared/ui` only.
