@@ -20,7 +20,7 @@
 ## 3. shadcn/ui 기반 공통 UI 준비
 
 - [x] `shadcn/ui` 기반 공통 UI에 필요한 의존성과 설정을 추가한다.
-- [ ] `lucide-react`를 설치하고 공통 UI에서 사용하는 기준을 정리한다.
+- [x] `lucide-react`를 설치하고 공통 UI에서 사용하는 기준을 정리한다.
 - [ ] `src/shared/ui` 디렉터리와 단일 엔트리 `index.ts`를 만든다.
 - [ ] `button.tsx`, `input.tsx`, `dialog.tsx`를 공통 UI 기준으로 추가한다.
 - [ ] 공통 UI import가 `@/shared/ui` 단일 엔트리로만 가능하도록 정리한다.
