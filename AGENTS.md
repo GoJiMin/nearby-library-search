@@ -44,6 +44,8 @@
 - Read client runtime configuration through `@/shared/env` only.
 - Import reusable UI primitives through `@/shared/ui` only.
 - Do not import files directly from inside `src/shared/ui`.
+- The `shared` layer must not contain domain-specific business knowledge.
+- Keep `shared` limited to reusable primitives, platform rules, and cross-domain utilities.
 
 ## Styling
 
