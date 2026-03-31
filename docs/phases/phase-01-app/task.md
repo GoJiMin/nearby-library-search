@@ -8,7 +8,7 @@
 - [x] `vitest`와 `react testing library` 기반 테스트 환경을 추가한다.
 
 ## 2. FSD 디렉터리 구조 정리
-- [ ] `src/app`, `src/shared`, `src/entities`, `src/features` 디렉터리를 생성한다.
+- [x] `src/app`, `src/shared`, `src/entities`, `src/features` 디렉터리를 생성한다.
 - [ ] 각 레이어의 기본 하위 구조를 정의한다.
 - [ ] 슬라이스 외부 공개를 위한 `index.ts` 기준 구조를 잡는다.
 - [ ] 기본 Vite 샘플 구조와 충돌하는 기존 파일 배치를 정리한다.
