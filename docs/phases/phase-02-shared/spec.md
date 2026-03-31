@@ -2,7 +2,7 @@
 
 ## 목표
 
-- `shared` 레이어에 공통 API 요청 구조, 재사용 가능한 UI, 유틸, 훅의 기준을 정리한다.
+- `shared` 레이어에 공통 API 요청 구조와 재사용 가능한 UI의 기준을 정리한다.
 - 이후 `entities`와 `features`가 직접 `fetch`나 임시 UI를 만들지 않고, `shared`의 공개 인터페이스를 조합해 개발할 수 있게 한다.
 - MVP 범위에 맞게 빠르게 검증 가능한 수준으로 공통 기반을 구축하되, 이후 확장이 가능한 구조를 유지한다.
 
@@ -25,7 +25,6 @@
 - 읽기 요청과 쓰기 요청을 구분하는 공통 에러 타입을 정의한다.
 - `shadcn/ui` 기반 입력, 버튼, 다이얼로그, 피드백 UI를 도입한다.
 - `lucide-react` 아이콘 사용 기준을 통일한다.
-- 공통 유틸과 커스텀 훅의 최소 구조를 만든다.
 - Shared 레이어 공개 규칙과 사용 방식을 문서화한다.
 - Phase 2 구현을 위한 `task.md` 작성 기준을 마련한다.
 
@@ -48,14 +47,10 @@
   - 재사용 가능한 UI 컴포넌트를 별도 슬라이스 없이 파일 단위로 둔다
   - 예시: `button.tsx`, `input.tsx`, `dialog.tsx`
   - 모든 UI 컴포넌트는 `src/shared/ui/index.ts` 단일 엔트리에서 공개한다
-- `src/shared/lib`
-  - 재사용 가능한 유틸을 별도 슬라이스 없이 파일 단위로 둔다
-  - 예시: `debounce.ts`, `format.ts`, `queryString.ts`
-  - 모든 유틸은 `src/shared/lib/index.ts` 단일 엔트리에서 공개한다
 - `src/shared/icon`
   - 필요 시 `lucide-react` 래퍼 또는 아이콘 매핑 파일을 둔다
 
-`shared/request`, `shared/feedback`, `shared/env` 같은 슬라이스는 각 슬라이스의 `index.ts`만 공개 진입점으로 사용하고, `shared/ui`, `shared/lib`는 각 디렉터리의 단일 `index.ts`로 공개한다.
+`shared/request`, `shared/feedback`, `shared/env` 같은 슬라이스는 각 슬라이스의 `index.ts`만 공개 진입점으로 사용하고, `shared/ui`는 디렉터리의 단일 `index.ts`로 공개한다.
 
 ## Shared 레이어 상세 설계
 
@@ -130,33 +125,11 @@
 - 컴포넌트는 단순 래핑에 그치지 않고, 현재 서비스의 스타일 토큰과 접근성 요구사항이 반영된 프로젝트 표준 컴포넌트로 둔다.
 - 아이콘은 `lucide-react`만 사용한다.
 
-### 5. 공통 유틸 구조
-
-- MVP 기준으로 먼저 필요한 유틸만 만든다.
-- 재사용 가능한 유틸은 `src/shared/lib` 아래 파일 단위로 바로 둔다.
-- 유틸 공개 진입점은 `src/shared/lib/index.ts` 하나로 고정한다.
-- 우선 후보
-  - query string 생성
-  - debounce
-  - 문자열/숫자 포맷팅
-  - 좌표/지도 관련 단순 보조 함수
-- 유틸은 순수 함수로 유지하고, 복잡한 분기나 예외 케이스는 선택적으로 단위 테스트를 추가한다.
-
-### 6. 공통 훅 구조
-
-- 재사용 훅도 실제 필요가 확인된 범위만 만든다.
-- 우선 후보
-  - `useDebounceValue`
-  - 다이얼로그 open 상태 보조 훅
-  - 외부 스크립트 로딩 준비 훅의 진입점
-- 훅은 UI 편의 로직이나 브라우저 API 래핑에 집중하고, 도메인 상태는 다루지 않는다.
-
-### 7. Shared 사용 규칙
+### 5. Shared 사용 규칙
 
 - `entities`, `features`, `pages`는 직접 `fetch`하지 않고 `shared/request`의 공개 함수만 사용한다.
 - `entities`, `features`, `pages`는 `import.meta.env`를 직접 읽지 않고 `@/shared/env`만 사용한다.
 - 공통 UI는 `@/shared/ui` 단일 엔트리로만 import한다.
-- 공통 유틸은 `@/shared/lib` 단일 엔트리로만 import한다.
 - `lucide-react`는 공통 UI 내부나 실제 화면 구현에서 직접 사용할 수 있지만, 같은 아이콘 조합이 반복되면 `shared/icon` 슬라이스로 승격한다.
 - Shared 레이어는 도메인 지식을 가지지 않고, 여러 도메인에서 재사용 가능한 규칙만 포함한다.
 
@@ -166,8 +139,6 @@
 - 공통 request error/type 정의
 - `shadcn/ui` 기반 공통 입력/버튼/다이얼로그 슬라이스
 - `lucide-react` 도입 및 사용 기준
-- 공통 유틸 슬라이스
-- 공통 훅 슬라이스
 - Shared 사용 규칙 문서
 - Phase 2 `task.md`
 
@@ -177,7 +148,6 @@
 - query string, headers, body 처리 규칙이 공통화된다.
 - 읽기/쓰기 요청 에러가 다른 유형으로 구분된다.
 - `shadcn/ui` 기반 공통 UI가 최소 버튼, 입력, 다이얼로그, 피드백 상태까지 준비된다.
-- 공통 유틸과 훅이 이후 `entities`, `features`에서 바로 사용할 수 있는 수준으로 정리된다.
 - Shared 공개 규칙이 문서와 코드 구조에 함께 반영된다.
 
 ## 테스트 기준
@@ -185,13 +155,12 @@
 - request core가 query string, headers, JSON body, `FormData`를 올바르게 처리한다.
 - 실패 응답이 `RequestError`, `RequestGetError` 규칙에 맞게 변환된다.
 - `shadcn/ui`처럼 이미 검증된 UI 기반 컴포넌트는 별도의 테스트를 기본으로 추가하지 않는다.
-- 공통 유틸의 복잡한 분기와 에러 케이스는 선택적으로 단위 테스트를 가진다.
 - `pnpm test:run`, `pnpm exec tsc -p tsconfig.app.json`, `pnpm build`가 통과한다.
 
 ## 후속 연결 포인트
 
 - Phase 3에서는 `shared/request` 위에 `entities`별 GET/POST API 함수와 응답 정규화 로직을 얹는다.
-- Phase 4에서는 `shared` 공통 UI와 훅을 조합해 검색 입력, 지역 선택, 결과 표시 기능을 구현한다.
+- Phase 4에서는 `shared` 공통 UI를 조합해 검색 입력, 지역 선택, 결과 표시 기능을 구현한다.
 
 ## 참고 구현 메모
 

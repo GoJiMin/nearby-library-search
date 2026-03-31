@@ -31,43 +31,27 @@
 - [x] `LoadingState`, `EmptyState`, `ErrorState` 표현을 공통 UI 기준과 일관되게 맞춘다.
 - [x] 필요 시 `lucide-react` 아이콘을 피드백 UI에 반영한다.
 
-## 5. 재사용 유틸 구성
-
-- [ ] `src/shared/lib` 내부 파일 구조와 `index.ts` 단일 엔트리를 정리한다.
-- [ ] `queryString.ts`를 추가해 공통 query string 생성 로직을 분리한다.
-- [ ] `debounce.ts`를 추가해 공통 디바운스 유틸을 구현한다.
-- [ ] 포맷팅 관련 공통 유틸 파일을 추가한다.
-- [ ] 필요한 유틸이 `@/shared/lib` 단일 엔트리로만 공개되도록 정리한다.
-
-## 6. 재사용 훅 구성
-
-- [ ] 공통 훅이 들어갈 최소 구조를 정리한다.
-- [ ] `useDebounceValue` 훅을 구현한다.
-- [ ] 다이얼로그 open 상태 보조 훅 또는 유사한 UI 편의 훅을 구현한다.
-- [ ] 외부 스크립트 로딩 준비용 훅의 진입점이 필요하면 최소 구조를 마련한다.
-
-## 7. Shared 사용 규칙 반영
+## 5. Shared 사용 규칙 반영
 
 - [ ] `entities`, `features`, `pages`가 `shared/request`를 사용하도록 문서 기준을 정리한다.
 - [ ] `entities`, `features`, `pages`가 `@/shared/env`만 사용하도록 문서 기준을 정리한다.
-- [ ] 공통 UI와 공통 유틸의 단일 엔트리 import 규칙을 문서에 반영한다.
+- [ ] 공통 UI가 `@/shared/ui` 단일 엔트리로만 import되도록 문서에 반영한다.
 - [ ] Shared 레이어가 도메인 지식을 가지지 않는다는 기준을 문서에 반영한다.
 
-## 8. 테스트 작성
+## 6. 테스트 작성
 
 - [ ] request core의 query string, headers, JSON body, `FormData` 처리 테스트를 작성한다.
 - [ ] 실패 응답이 `RequestError`, `RequestGetError`로 구분되는지 테스트한다.
-- [ ] 복잡한 유틸의 분기와 예외 케이스에 대한 단위 테스트를 작성한다.
 - [ ] `shadcn/ui`처럼 이미 검증된 UI 기반 컴포넌트에는 불필요한 테스트를 추가하지 않는다.
 
-## 9. 검증
+## 7. 검증
 
 - [ ] `pnpm test:run`이 성공한다.
 - [ ] `pnpm exec tsc -p tsconfig.app.json`가 성공한다.
 - [ ] `pnpm build`가 성공한다.
-- [ ] request 공개 함수와 공통 UI/유틸 import가 의도한 단일 엔트리 경로로만 동작하는지 확인한다.
+- [ ] request 공개 함수와 공통 UI import가 의도한 단일 엔트리 경로로만 동작하는지 확인한다.
 
-## 10. 문서 반영
+## 8. 문서 반영
 
 - [ ] 구현 결과가 `spec.md`의 범위와 완료 기준을 충족하는지 점검한다.
 - [ ] 필요 시 Phase 2 결정 사항을 `spec.md`에 보완 반영한다.
