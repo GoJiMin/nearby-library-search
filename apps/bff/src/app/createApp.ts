@@ -1,8 +1,9 @@
 import Fastify from 'fastify'
 import type { FastifyInstance } from 'fastify'
+import { healthRoute } from '../routes/health.js'
 
 export function createApp(): FastifyInstance {
-  return Fastify({
+  const app = Fastify({
     logger: {
       redact: {
         paths: [
@@ -15,4 +16,8 @@ export function createApp(): FastifyInstance {
     },
     trustProxy: false,
   })
+
+  void app.register(healthRoute)
+
+  return app
 }
