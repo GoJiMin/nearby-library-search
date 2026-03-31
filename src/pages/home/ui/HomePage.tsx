@@ -19,7 +19,7 @@ function HomePage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <article className="rounded-[24px] bg-[var(--color-surface-muted)] p-5">
+          <article className="rounded-3xl bg-[var(--color-surface-muted)] p-5">
             <strong className="mb-2 block text-sm font-semibold text-[var(--color-text)]">
               1. 도서 검색
             </strong>
@@ -28,7 +28,7 @@ function HomePage() {
             </p>
           </article>
 
-          <article className="rounded-[24px] bg-[var(--color-surface-muted)] p-5">
+          <article className="rounded-3xl bg-[var(--color-surface-muted)] p-5">
             <strong className="mb-2 block text-sm font-semibold text-[var(--color-text)]">
               2. 지역 선택
             </strong>
@@ -37,7 +37,7 @@ function HomePage() {
             </p>
           </article>
 
-          <article className="rounded-[24px] bg-[var(--color-surface-muted)] p-5">
+          <article className="rounded-3xl bg-[var(--color-surface-muted)] p-5">
             <strong className="mb-2 block text-sm font-semibold text-[var(--color-text)]">
               3. 지도 확인
             </strong>
