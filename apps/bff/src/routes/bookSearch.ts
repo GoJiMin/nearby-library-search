@@ -4,7 +4,6 @@ import type {
   ErrorResponse,
 } from '@nearby-library-search/contracts'
 import {
-  LibraryApiRequestConfigError,
   requestLibraryApi,
 } from '../libraryApi/requestLibraryApi.js'
 import type { FastifyPluginAsync } from 'fastify'
@@ -17,7 +16,12 @@ import {
   getDocRecords,
   getLibraryApiResponseRoot,
 } from '../utils/libraryApiResponse.js'
-import { createErrorResponse } from '../utils/error.js'
+import {
+  createErrorResponse,
+  createRetryableUpstreamRequestError,
+  createRetryableUpstreamResponseError,
+  toLibraryApiErrorResponse,
+} from '../utils/error.js'
 import {
   normalizeHttpUrl,
   normalizeNullableNumber,
@@ -103,6 +107,11 @@ function parseBookSearchQuery(query: unknown): Result<BookSearchQuery> {
 async function fetchBookSearchPayload(
   query: BookSearchQuery,
 ): Promise<Result<unknown>> {
+  const upstreamError = createRetryableUpstreamRequestError(
+    'BOOK_SEARCH_UPSTREAM_ERROR',
+    '도서 검색',
+  )
+
   try {
     const response = await requestLibraryApi({
       endpoint: '/srchBooks',
@@ -118,11 +127,7 @@ async function fetchBookSearchPayload(
     if (!response.ok) {
       return {
         ok: false,
-        error: createErrorResponse(
-          'BOOK_SEARCH_UPSTREAM_ERROR',
-          '도서 검색 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-          502,
-        ),
+        error: upstreamError,
       }
     }
 
@@ -131,24 +136,9 @@ async function fetchBookSearchPayload(
       value: await response.json(),
     }
   } catch (error) {
-    if (error instanceof LibraryApiRequestConfigError) {
-      return {
-        ok: false,
-        error: {
-          detail: error.detail,
-          status: error.status,
-          title: error.title,
-        },
-      }
-    }
-
     return {
       ok: false,
-      error: createErrorResponse(
-        'BOOK_SEARCH_UPSTREAM_ERROR',
-        '도서 검색 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: toLibraryApiErrorResponse(error, upstreamError),
     }
   }
 }
@@ -185,17 +175,17 @@ function normalizeBookSearchItem(
 function normalizeBookSearchResponse(
   payload: unknown,
 ): Result<BookSearchResponse> {
+  const invalidResponseError = createRetryableUpstreamResponseError(
+    'BOOK_SEARCH_RESPONSE_INVALID',
+    '도서 검색',
+  )
   const responseRoot = getLibraryApiResponseRoot(payload)
   const totalCount = normalizeNullableNumber(responseRoot.numFound)
 
   if (totalCount === null) {
     return {
       ok: false,
-      error: createErrorResponse(
-        'BOOK_SEARCH_RESPONSE_INVALID',
-        '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: invalidResponseError,
     }
   }
 
@@ -216,11 +206,7 @@ function normalizeBookSearchResponse(
   if (items.length === 0) {
     return {
       ok: false,
-      error: createErrorResponse(
-        'BOOK_SEARCH_RESPONSE_INVALID',
-        '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: invalidResponseError,
     }
   }
 

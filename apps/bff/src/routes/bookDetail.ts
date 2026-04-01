@@ -6,13 +6,17 @@ import type {
   ErrorResponse,
 } from '@nearby-library-search/contracts'
 import {
-  LibraryApiRequestConfigError,
   requestLibraryApi,
 } from '../libraryApi/requestLibraryApi.js'
 import type { FastifyPluginAsync } from 'fastify'
 import type { ZodError } from 'zod'
 import { bookDetailParamsSchema } from '../schemas/book.js'
-import { createErrorResponse } from '../utils/error.js'
+import {
+  createErrorResponse,
+  createRetryableUpstreamRequestError,
+  createRetryableUpstreamResponseError,
+  toLibraryApiErrorResponse,
+} from '../utils/error.js'
 import {
   getBookRecords,
   getLibraryApiResponseRoot,
@@ -71,6 +75,11 @@ function parseBookDetailParams(params: unknown): Result<{ isbn13: string }> {
 async function fetchBookDetailPayload(
   isbn13: string,
 ): Promise<Result<unknown>> {
+  const upstreamError = createRetryableUpstreamRequestError(
+    'BOOK_DETAIL_UPSTREAM_ERROR',
+    '도서 상세',
+  )
+
   try {
     const response = await requestLibraryApi({
       endpoint: '/srchDtlList',
@@ -84,11 +93,7 @@ async function fetchBookDetailPayload(
     if (!response.ok) {
       return {
         ok: false,
-        error: createErrorResponse(
-          'BOOK_DETAIL_UPSTREAM_ERROR',
-          '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-          502,
-        ),
+        error: upstreamError,
       }
     }
 
@@ -97,24 +102,9 @@ async function fetchBookDetailPayload(
       value: await response.json(),
     }
   } catch (error) {
-    if (error instanceof LibraryApiRequestConfigError) {
-      return {
-        ok: false,
-        error: {
-          detail: error.detail,
-          status: error.status,
-          title: error.title,
-        },
-      }
-    }
-
     return {
       ok: false,
-      error: createErrorResponse(
-        'BOOK_DETAIL_UPSTREAM_ERROR',
-        '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: toLibraryApiErrorResponse(error, upstreamError),
     }
   }
 }
@@ -215,16 +205,16 @@ function normalizeBookDetailLoanInfo(
 function normalizeBookDetailResponse(
   payload: unknown,
 ): Result<BookDetailResponse> {
+  const invalidResponseError = createRetryableUpstreamResponseError(
+    'BOOK_DETAIL_RESPONSE_INVALID',
+    '도서 상세',
+  )
   const responseRoot = getLibraryApiResponseRoot(payload)
 
   if (!isLibraryApiRecord(responseRoot) || Object.keys(responseRoot).length === 0) {
     return {
       ok: false,
-      error: createErrorResponse(
-        'BOOK_DETAIL_RESPONSE_INVALID',
-        '도서 상세 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: invalidResponseError,
     }
   }
 

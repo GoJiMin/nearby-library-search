@@ -6,14 +6,18 @@ import type {
 import type { FastifyPluginAsync } from 'fastify'
 import type { ZodError } from 'zod'
 import {
-  LibraryApiRequestConfigError,
   requestLibraryApi,
 } from '../libraryApi/requestLibraryApi.js'
 import {
   librarySearchQuerySchema,
 } from '../schemas/library.js'
 import type { LibrarySearchQuery } from '../schemas/library.js'
-import { createErrorResponse } from '../utils/error.js'
+import {
+  createErrorResponse,
+  createRetryableUpstreamRequestError,
+  createRetryableUpstreamResponseError,
+  toLibraryApiErrorResponse,
+} from '../utils/error.js'
 import {
   getLibraryApiResponseRoot,
   getLibraryRecords,
@@ -98,6 +102,11 @@ function parseLibrarySearchQuery(query: unknown): Result<LibrarySearchQuery> {
 async function fetchLibrarySearchPayload(
   query: LibrarySearchQuery,
 ): Promise<Result<unknown>> {
+  const upstreamError = createRetryableUpstreamRequestError(
+    'LIBRARY_SEARCH_UPSTREAM_ERROR',
+    '도서관 조회',
+  )
+
   try {
     const response = await requestLibraryApi({
       endpoint: '/libSrchByBook',
@@ -114,11 +123,7 @@ async function fetchLibrarySearchPayload(
     if (!response.ok) {
       return {
         ok: false,
-        error: createErrorResponse(
-          'LIBRARY_SEARCH_UPSTREAM_ERROR',
-          '도서관 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-          502,
-        ),
+        error: upstreamError,
       }
     }
 
@@ -127,24 +132,9 @@ async function fetchLibrarySearchPayload(
       value: await response.json(),
     }
   } catch (error) {
-    if (error instanceof LibraryApiRequestConfigError) {
-      return {
-        ok: false,
-        error: {
-          detail: error.detail,
-          status: error.status,
-          title: error.title,
-        },
-      }
-    }
-
     return {
       ok: false,
-      error: createErrorResponse(
-        'LIBRARY_SEARCH_UPSTREAM_ERROR',
-        '도서관 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: toLibraryApiErrorResponse(error, upstreamError),
     }
   }
 }
@@ -195,16 +185,16 @@ function normalizeLibrarySearchResponse(
   payload: unknown,
   query: LibrarySearchQuery,
 ): Result<LibrarySearchResponse> {
+  const invalidResponseError = createRetryableUpstreamResponseError(
+    'LIBRARY_SEARCH_RESPONSE_INVALID',
+    '도서관 조회',
+  )
   const responseRoot = getLibraryApiResponseRoot(payload)
 
   if (!isLibraryApiRecord(responseRoot) || Object.keys(responseRoot).length === 0) {
     return {
       ok: false,
-      error: createErrorResponse(
-        'LIBRARY_SEARCH_RESPONSE_INVALID',
-        '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: invalidResponseError,
     }
   }
 
@@ -213,11 +203,7 @@ function normalizeLibrarySearchResponse(
   if (totalCount === null) {
     return {
       ok: false,
-      error: createErrorResponse(
-        'LIBRARY_SEARCH_RESPONSE_INVALID',
-        '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: invalidResponseError,
     }
   }
 
@@ -244,11 +230,7 @@ function normalizeLibrarySearchResponse(
   if (items.length === 0) {
     return {
       ok: false,
-      error: createErrorResponse(
-        'LIBRARY_SEARCH_RESPONSE_INVALID',
-        '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        502,
-      ),
+      error: invalidResponseError,
     }
   }
 
