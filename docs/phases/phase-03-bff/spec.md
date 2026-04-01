@@ -64,6 +64,8 @@
 
 - 웹 앱은 외부 Open API를 직접 호출하지 않는다.
 - 웹 앱은 `shared/request`를 통해 BFF 엔드포인트만 호출한다.
+- 웹 앱의 `VITE_API_BASE_URL`은 외부 provider가 아니라 Fastify BFF base URL만 가리킨다.
+- `shared/request`는 `/api` 네임스페이스의 BFF 애플리케이션 엔드포인트만 호출한다.
 - 웹 앱은 외부 인증키를 포함한 서버 전용 설정을 알지 못한다.
 - 이후 `entities` 레이어는 외부 Open API가 아니라 BFF 응답 계약만 기준으로 구현한다.
 
@@ -124,6 +126,7 @@
 ### 7. 환경변수 규칙
 
 - 웹 앱 공개 환경변수는 `VITE_` 접두사를 유지한다.
+- `VITE_API_BASE_URL`은 웹 앱이 호출할 Fastify BFF 주소로만 사용한다.
 - BFF 서버 전용 시크릿은 `VITE_` 접두사를 사용하지 않는다.
 - 외부 Open API 인증키는 BFF 런타임 환경변수에서만 읽는다.
 - 웹 앱 코드, 공통 계약 패키지, 프론트 번들에는 외부 Open API 인증키가 포함되지 않아야 한다.

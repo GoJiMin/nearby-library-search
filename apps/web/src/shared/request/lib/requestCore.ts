@@ -32,6 +32,33 @@ function buildRequestQueryString(queryParams?: RequestQueryParams) {
   return queryString.length > 0 ? `?${queryString}` : ''
 }
 
+function getApplicationApiBaseUrl(baseUrl?: string) {
+  const resolvedBaseUrl = (baseUrl ?? apiConfig.baseUrl ?? '').trim()
+
+  if (!resolvedBaseUrl) {
+    throw new Error('VITE_API_BASE_URL must point to the Fastify BFF.')
+  }
+
+  return resolvedBaseUrl.replace(/\/$/, '')
+}
+
+function normalizeApplicationApiEndpoint(endpoint: string) {
+  const normalizedEndpoint = endpoint.startsWith('/')
+    ? endpoint
+    : `/${endpoint}`
+
+  if (
+    normalizedEndpoint !== '/api' &&
+    !normalizedEndpoint.startsWith('/api/')
+  ) {
+    throw new Error(
+      'shared/request endpoints must target the Fastify BFF /api namespace.',
+    )
+  }
+
+  return normalizedEndpoint
+}
+
 function createRequestInit({
   method,
   body,
@@ -65,14 +92,12 @@ function createRequestInit({
 }
 
 function createRequestUrl({
-  baseUrl = apiConfig.baseUrl ?? '',
+  baseUrl,
   endpoint,
   queryParams,
 }: Pick<RequestProps, 'baseUrl' | 'endpoint' | 'queryParams'>) {
-  const normalizedBaseUrl = baseUrl.replace(/\/$/, '')
-  const normalizedEndpoint = endpoint.startsWith('/')
-    ? endpoint
-    : `/${endpoint}`
+  const normalizedBaseUrl = getApplicationApiBaseUrl(baseUrl)
+  const normalizedEndpoint = normalizeApplicationApiEndpoint(endpoint)
   const queryString = buildRequestQueryString(queryParams)
 
   return `${normalizedBaseUrl}${normalizedEndpoint}${queryString}`

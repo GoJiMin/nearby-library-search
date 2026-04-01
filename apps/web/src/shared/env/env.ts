@@ -35,6 +35,7 @@ const kakaoMapConfig = Object.freeze({
 })
 
 const apiConfig = Object.freeze({
+  // The web app must call the Fastify BFF only through this base URL.
   baseUrl: readPublicEnv('VITE_API_BASE_URL'),
   isEnabled: hasPublicEnv('VITE_API_BASE_URL'),
 })

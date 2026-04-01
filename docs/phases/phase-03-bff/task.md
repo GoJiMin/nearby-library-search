@@ -128,10 +128,10 @@
 
 ## 18. 웹 앱 요청 경계 전환
 
-- [ ] 웹 앱에서 사용할 BFF base URL 접근 방식을 정리한다.
-- [ ] 웹 앱이 외부 Open API가 아닌 BFF 엔드포인트를 호출하도록 기준을 반영한다.
-- [ ] 웹 앱 코드에 외부 Open API base URL 또는 auth key 접근이 없는지 점검한다.
-- [ ] 이후 entities가 사용할 API 경계 문구를 문서에 반영한다.
+- [x] 웹 앱에서 사용할 BFF base URL 접근 방식을 정리한다.
+- [x] 웹 앱이 외부 Open API가 아닌 BFF 엔드포인트를 호출하도록 기준을 반영한다.
+- [x] 웹 앱 코드에 외부 Open API base URL 또는 auth key 접근이 없는지 점검한다.
+- [x] 이후 entities가 사용할 API 경계 문구를 문서에 반영한다.
 
 ## 19. 개발 스크립트와 실행 흐름
 

@@ -38,7 +38,7 @@ describe('shared/request', () => {
       .mockResolvedValue(
         createJsonResponse(
           { items: [] },
-          'https://example.com/libraries?hasBook=true&page=2&query=react'
+          'https://example.com/api/libraries?hasBook=true&page=2&query=react'
         )
       )
 
@@ -46,7 +46,7 @@ describe('shared/request', () => {
 
     await requestGet({
       baseUrl: 'https://example.com/',
-      endpoint: '/libraries',
+      endpoint: '/api/libraries',
       queryParams: {
         hasBook: true,
         page: 2,
@@ -57,7 +57,7 @@ describe('shared/request', () => {
     })
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://example.com/libraries?hasBook=true&page=2&query=react',
+      'https://example.com/api/libraries?hasBook=true&page=2&query=react',
       {
         headers: {},
         method: 'GET',
@@ -80,13 +80,13 @@ describe('shared/request', () => {
         isbn: '1234567890',
         title: 'React Testing',
       },
-      endpoint: '/books',
+      endpoint: '/api/books',
       headers: {
         'X-Trace-Id': 'trace-id',
       },
     })
 
-    expect(fetchMock).toHaveBeenCalledWith('https://example.com/books', {
+    expect(fetchMock).toHaveBeenCalledWith('https://example.com/api/books', {
       body: JSON.stringify({
         isbn: '1234567890',
         title: 'React Testing',
@@ -114,13 +114,13 @@ describe('shared/request', () => {
     await requestPost({
       baseUrl: 'https://example.com',
       body: formData,
-      endpoint: '/upload',
+      endpoint: '/api/upload',
       headers: {
         'X-Upload-Source': 'manual',
       },
     })
 
-    expect(fetchMock).toHaveBeenCalledWith('https://example.com/upload', {
+    expect(fetchMock).toHaveBeenCalledWith('https://example.com/api/upload', {
       body: formData,
       headers: {
         'X-Upload-Source': 'manual',
@@ -139,7 +139,7 @@ describe('shared/request', () => {
             status: 503,
             title: 'LIBRARY_FETCH_FAILED',
           },
-          'https://example.com/libraries',
+          'https://example.com/api/libraries',
           503
         )
       )
@@ -149,11 +149,11 @@ describe('shared/request', () => {
     await expect(
       requestGet({
         baseUrl: 'https://example.com',
-        endpoint: '/libraries',
+        endpoint: '/api/libraries',
         errorHandlingType: 'toast',
       })
     ).rejects.toMatchObject({
-      endpoint: 'https://example.com/libraries',
+      endpoint: 'https://example.com/api/libraries',
       errorHandlingType: 'toast',
       message: '도서 목록을 불러오지 못했습니다.',
       method: 'GET',
@@ -166,7 +166,11 @@ describe('shared/request', () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue(
-        createTextResponse('server exploded', 'https://example.com/books', 500)
+        createTextResponse(
+          'server exploded',
+          'https://example.com/api/books',
+          500
+        )
       )
 
     vi.stubGlobal('fetch', fetchMock)
@@ -178,19 +182,38 @@ describe('shared/request', () => {
     const promise = requestPost({
       baseUrl: 'https://example.com',
       body: requestBody,
-      endpoint: '/books',
+      endpoint: '/api/books',
       withResponse: true,
     })
 
     await expect(promise).rejects.toBeInstanceOf(RequestError)
     await expect(promise).rejects.not.toBeInstanceOf(RequestGetError)
     await expect(promise).rejects.toMatchObject({
-      endpoint: 'https://example.com/books',
+      endpoint: 'https://example.com/api/books',
       message: '요청을 처리하는 중 문제가 발생했습니다.',
       method: 'POST',
       name: 'REQUEST_ERROR',
       requestBody,
       status: 500,
     })
+  })
+
+  it('shared/request는 BFF /api 네임스페이스가 아닌 endpoint를 거부한다', async () => {
+    await expect(
+      requestGet({
+        baseUrl: 'https://example.com',
+        endpoint: '/libraries',
+      })
+    ).rejects.toThrow(
+      'shared/request endpoints must target the Fastify BFF /api namespace.'
+    )
+  })
+
+  it('shared/request는 BFF base URL 없이 요청하지 않는다', async () => {
+    await expect(
+      requestGet({
+        endpoint: '/api/libraries',
+      })
+    ).rejects.toThrow('VITE_API_BASE_URL must point to the Fastify BFF.')
   })
 })

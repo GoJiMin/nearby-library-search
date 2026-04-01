@@ -24,6 +24,7 @@
 - 공통 UI는 `@/shared/ui` 단일 엔트리로 공개합니다.
 - 공통 API 요청은 `@/shared/request` 공개 API를 통해서만 사용합니다.
 - 클라이언트 환경변수는 `@/shared/env`를 통해서만 읽습니다.
+- `VITE_API_BASE_URL`은 web이 호출할 Fastify BFF base URL입니다.
 - 외부 Open API 인증키는 웹 앱이 아니라 BFF 서버 환경변수에서만 관리합니다.
 
 ## 시작하기
@@ -35,6 +36,7 @@ pnpm dev
 
 웹 앱 공개 환경변수 예시는 [apps/web/.env.example](/Users/gojimin/Desktop/ai/apps/web/.env.example)에 두고, BFF 서버 전용 환경변수 예시는 [apps/bff/.env.example](/Users/gojimin/Desktop/ai/apps/bff/.env.example)에 둡니다.
 웹 앱에서는 `VITE_` 접두사를 가진 공개 설정만 사용하고, 외부 Open API 인증키는 `apps/bff/.env`에서만 관리합니다.
+`apps/web/.env`의 `VITE_API_BASE_URL`에는 외부 provider 주소가 아니라 Fastify BFF 주소만 넣습니다.
 
 ## 검증
 
