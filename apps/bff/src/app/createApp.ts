@@ -17,7 +17,7 @@ export function createApp(): FastifyInstance {
     trustProxy: false,
   })
 
-  void registerRoutes(app)
+  registerRoutes(app)
 
   return app
 }
