@@ -101,7 +101,7 @@
 - [x] `parseLibraryApiResponse.ts`의 응답 루트 파싱과 중첩 레코드 추출 책임을 공통 파서 모듈로 정리한다.
 - [x] `parseLibraryApiResponse.ts`의 문자열과 숫자 nullable 정규화 책임을 별도 공통 유틸로 분리한다.
 - [x] 재사용 가능한 HTTP URL 정규화 유틸을 공통 위치로 이동한다.
-- [ ] BFF 라우트가 `packages/contracts`의 응답 타입을 직접 사용하도록 중복 타입을 제거한다.
+- [x] BFF 라우트가 `packages/contracts`의 응답 타입을 직접 사용하도록 중복 타입을 제거한다.
 - [ ] 도서 상세와 도서관 조회가 같은 공통 유틸을 사용할 수 있게 BFF 공통 위치와 import 경계를 정리한다.
 
 ## 15. 도서 상세 BFF 엔드포인트

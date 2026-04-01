@@ -1,4 +1,4 @@
-import type { Isbn13 } from './identifiers'
+import type { Isbn13 } from './identifiers.js'
 
 export type BookSearchItem = {
   title: string

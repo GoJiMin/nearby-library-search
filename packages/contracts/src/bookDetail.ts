@@ -1,4 +1,4 @@
-import type { Isbn, Isbn13 } from './identifiers'
+import type { Isbn, Isbn13 } from './identifiers.js'
 
 export type BookDetailLoanStat = {
   rank: number | null

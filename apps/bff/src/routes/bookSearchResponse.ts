@@ -1,3 +1,4 @@
+import type { BookSearchResponse } from '@nearby-library-search/contracts'
 import {
   getDocRecords,
   getLibraryApiResponseRoot,
@@ -14,21 +15,7 @@ type ErrorResponse = {
   title: string
 }
 
-type BookSearchItem = {
-  author: string
-  detailUrl: string | null
-  imageUrl: string | null
-  isbn13: string
-  loanCount: number | null
-  publicationYear: string | null
-  publisher: string | null
-  title: string
-}
-
-type BookSearchResponse = {
-  items: BookSearchItem[]
-  totalCount: number
-}
+type BookSearchItem = BookSearchResponse['items'][number]
 
 type BookSearchResponseResult =
   | {
@@ -48,7 +35,9 @@ function createBookSearchResponseInvalidError() {
   }
 }
 
-function normalizeBookSearchItem(record: Record<string, unknown>) {
+function normalizeBookSearchItem(
+  record: Record<string, unknown>,
+): BookSearchItem | null {
   const title = normalizeNullableString(record.bookname)
   const author = normalizeNullableString(record.authors)
   const isbn13 = normalizeNullableString(record.isbn13)

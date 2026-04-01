@@ -17,6 +17,9 @@ importers:
 
   apps/bff:
     dependencies:
+      '@nearby-library-search/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       fastify:
         specifier: ^5.8.4
         version: 5.8.4

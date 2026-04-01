@@ -1,5 +1,5 @@
-import type { DetailRegionCode, RegionCode } from './region'
-import type { Isbn, LibraryCode } from './identifiers'
+import type { DetailRegionCode, RegionCode } from './region.js'
+import type { Isbn, LibraryCode } from './identifiers.js'
 
 export type LibrarySearchItem = {
   code: LibraryCode
