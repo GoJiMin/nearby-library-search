@@ -44,10 +44,38 @@ function getLibraryRecords(responseRoot: LibraryApiRecord) {
   return getNestedRecords(responseRoot, 'libs', 'lib')
 }
 
+function normalizeNullableString(value: unknown) {
+  if (typeof value !== 'string') {
+    return null
+  }
+
+  const normalizedValue = value.trim()
+
+  return normalizedValue.length > 0 ? normalizedValue : null
+}
+
+function normalizeNullableNumber(value: unknown) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null
+  }
+
+  const normalizedValue = normalizeNullableString(value)
+
+  if (normalizedValue === null) {
+    return null
+  }
+
+  const parsedNumber = Number(normalizedValue)
+
+  return Number.isFinite(parsedNumber) ? parsedNumber : null
+}
+
 export {
   getDocRecords,
   getLibraryApiResponseRoot,
   getLibraryRecords,
   isLibraryApiRecord,
+  normalizeNullableNumber,
+  normalizeNullableString,
 }
 export type { LibraryApiRecord }
