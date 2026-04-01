@@ -24,4 +24,24 @@ function normalizeNullableNumber(value: unknown) {
   return Number.isFinite(parsedNumber) ? parsedNumber : null
 }
 
-export { normalizeNullableNumber, normalizeNullableString }
+function normalizeHttpUrl(value: unknown) {
+  const normalizedValue = normalizeNullableString(value)
+
+  if (!normalizedValue) {
+    return null
+  }
+
+  try {
+    const url = new URL(normalizedValue)
+
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return null
+    }
+
+    return url.toString()
+  } catch {
+    return null
+  }
+}
+
+export { normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString }

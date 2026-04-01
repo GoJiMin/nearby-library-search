@@ -3,6 +3,7 @@ import {
   getLibraryApiResponseRoot,
 } from '../utils/libraryApiResponse.js'
 import {
+  normalizeHttpUrl,
   normalizeNullableNumber,
   normalizeNullableString,
 } from '../utils/normalize.js'
@@ -44,26 +45,6 @@ function createBookSearchResponseInvalidError() {
     detail: '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
     status: 502,
     title: 'BOOK_SEARCH_RESPONSE_INVALID',
-  }
-}
-
-function normalizeHttpUrl(value: unknown) {
-  const normalizedValue = normalizeNullableString(value)
-
-  if (!normalizedValue) {
-    return null
-  }
-
-  try {
-    const url = new URL(normalizedValue)
-
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return null
-    }
-
-    return url.toString()
-  } catch {
-    return null
   }
 }
 
