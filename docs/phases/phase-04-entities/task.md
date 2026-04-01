@@ -83,22 +83,22 @@
 
 ## 9. 순수 로직 중심 테스트 작성
 
-- [ ] `book`에서 schema parse helper나 순수 로직이 분리되면 해당 로직만 최소 유닛 테스트로 검증한다.
-- [ ] `library`에서 좌표 판별이나 빈 결과 판별 helper가 분리되면 해당 로직만 최소 유닛 테스트로 검증한다.
-- [ ] `region`의 helper와 region-detailRegion 종속 관계를 유닛 테스트로 검증한다.
-- [ ] 엔티티 테스트 범위에 API 요청 함수 검증이 포함되지 않았는지 점검한다.
-- [ ] 엔티티 테스트 범위에 React Query 훅이나 외부 라이브러리 동작 검증이 포함되지 않았는지 점검한다.
+- [x] `book`은 현재 Phase 4에서 별도 순수 로직 유닛 테스트를 추가하지 않는다.
+- [x] `library`의 좌표 판별과 빈 결과 판별 helper를 최소 유닛 테스트로 검증한다.
+- [x] `region`의 helper와 region-detailRegion 종속 관계를 유닛 테스트로 검증한다.
+- [x] 엔티티 테스트 범위에 API 요청 함수 검증이 포함되지 않도록 유지한다.
+- [x] 엔티티 테스트 범위에 React Query 훅이나 외부 라이브러리 동작 검증이 포함되지 않도록 유지한다.
 
 ## 10. 검증
 
-- [ ] `pnpm lint:web`를 실행해 web 패키지 lint를 확인한다.
-- [ ] `pnpm test:run`을 실행해 web 테스트를 확인한다.
-- [ ] `pnpm typecheck:web`를 실행해 타입 체크를 확인한다.
-- [ ] `pnpm build:web`를 실행해 프로덕션 빌드를 확인한다.
-- [ ] 엔티티 외부 공개 경계가 `index.ts`만으로 유지되는지 최종 점검한다.
+- [x] `pnpm lint:web`를 실행해 web 패키지 lint를 확인한다.
+- [x] `pnpm test:run`을 실행해 web 테스트를 확인한다.
+- [x] `pnpm typecheck:web`를 실행해 타입 체크를 확인한다.
+- [x] `pnpm build:web`를 실행해 프로덕션 빌드를 확인한다.
+- [x] 엔티티 외부 공개 경계가 `index.ts`만으로 유지되는지 최종 점검한다.
 
 ## 11. 문서 정리
 
-- [ ] 구현 결과가 Phase 4 `spec.md`의 범위와 완료 기준을 충족하는지 점검한다.
-- [ ] Phase 4 `spec.md`의 테스트 기준이 순수 로직 중심 유닛 테스트 정책과 일치하는지 확인한다.
-- [ ] Phase 5 feature 구현이 바로 이어질 수 있도록 엔티티 공개 API를 최종 점검한다.
+- [x] 구현 결과가 Phase 4 `spec.md`의 범위와 완료 기준을 충족하는지 점검한다.
+- [x] Phase 4 `spec.md`의 테스트 기준이 순수 로직 중심 유닛 테스트 정책과 일치하는지 확인한다.
+- [x] Phase 5 feature 구현이 바로 이어질 수 있도록 엔티티 공개 API를 최종 점검한다.

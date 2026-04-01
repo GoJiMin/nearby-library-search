@@ -382,10 +382,10 @@ export function useGetSearchBooks(params: BookSearchParams) {
 ## 테스트 기준
 
 - 엔티티 레이어에서는 API 요청 함수 자체나 React Query 같은 외부 라이브러리 동작을 직접 검증하지 않는다.
-- `book`, `library`의 검색 파라미터 정규화 로직이 분리되면 기본값과 optional 값 제거 규칙을 유닛 테스트로 검증할 수 있다.
-- `booksQueryKeys`, `librariesQueryKeys`처럼 순수 함수로 분리된 키 생성 로직이 있으면 안정적인 입력/출력을 유닛 테스트로 검증할 수 있다.
+- `book`의 schema parse helper와 query key 조합은 현재 Phase 4에서 별도 유닛 테스트 대상으로 확장하지 않는다.
 - `region` 정적 데이터는 `detailRegion`의 상위 `region` 관계를 만족한다.
-- 좌표 존재 여부, 빈 결과 판별 같은 파생 helper가 있다면 해당 순수 로직을 단위 테스트로 검증한다.
+- `library`의 좌표 존재 여부, 빈 결과 판별 helper 같은 명확한 순수 로직은 단위 테스트로 검증한다.
+- `region`의 `isDetailRegionOfRegion` 같은 명확한 순수 helper는 단위 테스트로 검증한다.
 - 통합 사용자 플로우 테스트는 Phase 5에서 수행하고, 엔티티의 실제 연결성은 그 통합 테스트에서 자연스럽게 검증한다.
 
 ## 후속 연결 포인트
