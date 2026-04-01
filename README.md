@@ -34,6 +34,17 @@ pnpm install
 pnpm dev
 ```
 
+루트 스크립트 기준은 아래와 같습니다.
+
+```bash
+pnpm dev       # web만 실행
+pnpm dev:web   # web만 실행
+pnpm dev:bff   # bff만 실행
+pnpm dev:all   # web + bff 동시 실행
+pnpm build     # web 기본 빌드
+pnpm build:all # web + bff 전체 빌드
+```
+
 웹 앱 공개 환경변수 예시는 [apps/web/.env.example](/Users/gojimin/Desktop/ai/apps/web/.env.example)에 두고, BFF 서버 전용 환경변수 예시는 [apps/bff/.env.example](/Users/gojimin/Desktop/ai/apps/bff/.env.example)에 둡니다.
 웹 앱에서는 `VITE_` 접두사를 가진 공개 설정만 사용하고, 외부 Open API 인증키는 `apps/bff/.env`에서만 관리합니다.
 `apps/web/.env`의 `VITE_API_BASE_URL`에는 외부 provider 주소가 아니라 Fastify BFF 주소만 넣습니다.
@@ -45,6 +56,7 @@ pnpm test:run
 pnpm typecheck:web
 pnpm typecheck:bff
 pnpm build
+pnpm build:all
 ```
 
 ## 문서
