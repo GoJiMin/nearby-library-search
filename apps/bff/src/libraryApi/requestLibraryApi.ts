@@ -13,6 +13,18 @@ type RequestLibraryApiProps = {
 
 const LIBRARY_API_REQUEST_TIMEOUT_MS = 5000
 
+function isEmptyQueryValue(value: LibraryApiQueryValue) {
+  if (value === null || value === undefined) {
+    return true
+  }
+
+  if (typeof value === 'string') {
+    return value.trim().length === 0
+  }
+
+  return false
+}
+
 function createLibraryApiUrl({
   endpoint,
   queryParams = {},
@@ -26,11 +38,14 @@ function createLibraryApiUrl({
   requestUrl.searchParams.set('format', 'json')
 
   Object.entries(queryParams).forEach(([key, value]) => {
-    if (value === null || value === undefined) {
+    if (isEmptyQueryValue(value)) {
       return
     }
 
-    requestUrl.searchParams.set(key, String(value))
+    requestUrl.searchParams.set(
+      key,
+      typeof value === 'string' ? value.trim() : String(value),
+    )
   })
 
   return requestUrl
