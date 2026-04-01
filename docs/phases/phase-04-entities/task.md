@@ -61,13 +61,13 @@
 
 ## 6. `region` 정적 데이터 모델 구현
 
-- [ ] `apps/web/src/entities/region/model/regionData.ts`를 추가한다.
-- [ ] `RegionOption` 타입을 정의한다.
-- [ ] `DetailRegionOption` 타입을 정의한다.
-- [ ] `open_api_spec.md`의 `지역 코드 전체 (region)` 데이터를 `REGION_OPTIONS` 상수로 옮긴다.
-- [ ] `open_api_spec.md`의 `세부 지역 코드 전체 (dtl_region)` 데이터를 `DETAIL_REGION_OPTIONS_BY_REGION` 상수로 옮긴다.
-- [ ] `DetailRegionOption.region` 필드를 포함해 상위 region 종속 관계를 명시한다.
-- [ ] 문서 원본과 코드 상수의 값 체계가 일치하는지 대조한다.
+- [x] `apps/web/src/entities/region/model/regionData.ts`를 추가한다.
+- [x] `RegionOption` 타입을 정의한다.
+- [x] `DetailRegionOption` 타입을 정의한다.
+- [x] `open_api_spec.md`의 `지역 코드 전체 (region)` 데이터를 `REGION_OPTIONS` 상수로 옮긴다.
+- [x] `open_api_spec.md`의 `세부 지역 코드 전체 (dtl_region)` 데이터를 `DETAIL_REGION_OPTIONS_BY_REGION` 상수로 옮긴다.
+- [x] `DetailRegionOption.region` 필드를 포함해 상위 region 종속 관계를 명시한다.
+- [x] 문서 원본과 코드 상수의 값 체계가 일치하는지 대조한다.
 
 ## 7. `region` selector/helper 구현
 
