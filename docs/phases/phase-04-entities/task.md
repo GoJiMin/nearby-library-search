@@ -10,11 +10,11 @@
 
 ## 2. `book` API 구현
 
-- [ ] `apps/web/src/entities/book/api/bookApi.ts`를 추가한다.
-- [ ] `getBooks`를 `requestGet<BookSearchResponse>` 기반으로 구현한다.
-- [ ] `getBookDetail`을 `requestGet<BookDetailResponse>` 기반으로 구현한다.
-- [ ] 도서 검색 query param 매핑을 `title`, `author`, `isbn13`, `page`, `pageSize`로 고정한다.
-- [ ] 도서 상세 endpoint가 `/api/books/:isbn13` 규칙을 따르도록 정리한다.
+- [x] `apps/web/src/entities/book/api/bookApi.ts`를 추가한다.
+- [x] `getBooks`를 `requestGet<BookSearchResponse>` 기반으로 구현한다.
+- [x] `getBookDetail`을 `requestGet<BookDetailResponse>` 기반으로 구현한다.
+- [x] 도서 검색 query param 매핑을 `title`, `author`, `isbn13`, `page`, `pageSize`로 고정한다.
+- [x] 도서 상세 endpoint가 `/api/books/:isbn13` 규칙을 따르도록 정리한다.
 
 ## 3. `book` 검색 모델 구현
 
