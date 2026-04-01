@@ -55,14 +55,24 @@
 
 ## Phase 4. Entities 레이어 구성
 
-- [ ] 도서 검색과 관련된 데이터 모델을 정의한다.
-- [ ] ISBN 조회에 필요한 BFF 요청 함수와 응답 스펙을 정리한다.
-- [ ] 지역 선택에 필요한 지역 데이터 스펙을 정의한다.
-- [ ] 도서관 정보 조회에 필요한 데이터 모델을 정의한다.
-- [ ] 도서관 소장 정보 조회용 BFF 요청 함수와 응답 스펙을 정리한다.
-- [ ] BFF 응답 데이터를 앱 내부 모델로 정규화하는 규칙을 정리한다.
-- [ ] 엔티티별 예외 케이스와 에러 스펙을 정리한다.
-- [ ] Phase 4 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [x] `book`, `library`, `region` 엔티티 슬라이스 구조를 정리한다.
+- [x] `book` 검색/상세와 `library` 검색용 BFF 요청 함수, query key, query options, suspense 훅을 정리한다.
+- [x] `region` 정적 데이터 모델과 지역 검증 helper를 정리한다.
+- [x] 엔티티 입력 검증을 `zod` 기반 스키마와 parse helper 기준으로 정리한다.
+- [x] 엔티티 공개 API를 slice `index.ts` 기준으로 고정한다.
+- [x] 엔티티 레이어의 순수 helper 테스트와 검증 기준을 정리한다.
+- [x] Phase 4 내용을 기준으로 `spec.md`와 `task.md`를 작성하고 완료한다.
+
+## Phase 4-1. TypeScript Workspace 정리
+
+- [ ] 루트 `tsconfig.json`을 solution-style workspace 진입점으로 재구성한다.
+- [ ] `packages/contracts`를 project references가 가능한 TypeScript 설정으로 정리한다.
+- [ ] `apps/web`, `apps/bff`의 `tsconfig`를 workspace references 흐름에 맞게 조정한다.
+- [ ] 루트 `typecheck` 및 관련 스크립트를 workspace graph 기준으로 재구성한다.
+- [ ] `pnpm exec tsc -b` 또는 동등한 전체 타입체크 진입점을 정상화한다.
+- [ ] TypeScript 설정 변경이 기존 `build`, `lint`, `test` 흐름과 충돌하지 않는지 검증한다.
+- [ ] 루트 README와 후속 문서에 TypeScript workspace 기준이 필요하면 반영한다.
+- [ ] Phase 4-1 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
 ## Phase 5. Features 레이어 MVP 구현
 
