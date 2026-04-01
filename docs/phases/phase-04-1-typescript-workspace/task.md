@@ -24,10 +24,10 @@
 
 ## 4. `apps/web` project references 연결
 
-- [ ] `apps/web/tsconfig.json`에 `composite`를 추가한다.
-- [ ] `apps/web/tsconfig.json`에 `packages/contracts` reference를 추가한다.
-- [ ] `apps/web/tsconfig.json`의 `@/*` alias가 유지되는지 확인한다.
-- [ ] `apps/web/tsconfig.json`의 `noEmit` 타입체크 전용 성격이 유지되는지 확인한다.
+- [x] `apps/web/tsconfig.json`에 `composite`를 추가한다.
+- [x] `apps/web/tsconfig.json`에 `packages/contracts` reference를 추가한다.
+- [x] `apps/web/tsconfig.json`의 `@/*` alias가 유지되는지 확인한다.
+- [x] `apps/web/tsconfig.json`의 `noEmit` 타입체크 전용 성격이 유지되는지 확인한다.
 
 ## 5. `apps/bff` project references 연결
 
