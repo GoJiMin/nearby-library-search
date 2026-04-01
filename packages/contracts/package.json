@@ -3,5 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "types": "./src/index.ts"
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "types": "./src/index.ts",
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
 }
