@@ -10,11 +10,11 @@
 
 ## 2. `packages/contracts` TypeScript 설정 정리
 
-- [ ] `packages/contracts/tsconfig.json`에 `composite`를 추가한다.
-- [ ] `packages/contracts/tsconfig.json`에서 `noEmit`를 제거한다.
-- [ ] `packages/contracts/tsconfig.json`에 `declaration`을 추가한다.
-- [ ] `packages/contracts/tsconfig.json`에 `emitDeclarationOnly`를 추가한다.
-- [ ] `packages/contracts/tsconfig.json`에 declaration output `outDir`를 지정한다.
+- [x] `packages/contracts/tsconfig.json`에 `composite`를 추가한다.
+- [x] `packages/contracts/tsconfig.json`에서 `noEmit`를 제거한다.
+- [x] `packages/contracts/tsconfig.json`에 `declaration`을 추가한다.
+- [x] `packages/contracts/tsconfig.json`에 `emitDeclarationOnly`를 추가한다.
+- [x] `packages/contracts/tsconfig.json`에 declaration output `outDir`를 지정한다.
 
 ## 3. `packages/contracts` 패키지 메타데이터 정리
 

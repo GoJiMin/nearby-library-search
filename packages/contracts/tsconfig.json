@@ -1,9 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "noEmit": true
+    "outDir": "./dist"
   },
   "include": ["src"]
 }
