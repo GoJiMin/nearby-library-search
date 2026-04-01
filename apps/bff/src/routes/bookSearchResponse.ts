@@ -1,11 +1,11 @@
 import {
-  normalizeNullableNumber,
-  normalizeNullableString,
-} from '../libraryApi/parseLibraryApiResponse.js'
-import {
   getDocRecords,
   getLibraryApiResponseRoot,
 } from '../utils/libraryApiResponse.js'
+import {
+  normalizeNullableNumber,
+  normalizeNullableString,
+} from '../utils/normalize.js'
 
 type ErrorResponse = {
   detail: string
