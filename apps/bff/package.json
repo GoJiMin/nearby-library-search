@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@nearby-library-search/contracts": "workspace:*",
-    "fastify": "^5.8.4"
+    "fastify": "^5.8.4",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

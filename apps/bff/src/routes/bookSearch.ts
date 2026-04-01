@@ -8,33 +8,21 @@ import {
   requestLibraryApi,
 } from '../libraryApi/requestLibraryApi.js'
 import type { FastifyPluginAsync } from 'fastify'
+import type { ZodError } from 'zod'
+import {
+  bookSearchQuerySchema,
+} from '../schemas/book.js'
+import type { BookSearchQuery } from '../schemas/book.js'
 import {
   getDocRecords,
   getLibraryApiResponseRoot,
 } from '../utils/libraryApiResponse.js'
-import {
-  isQueryRecord,
-  readOptionalScalarStringQuery,
-  readPositiveIntegerQuery,
-} from '../utils/query.js'
+import { createErrorResponse } from '../utils/error.js'
 import {
   normalizeHttpUrl,
   normalizeNullableNumber,
   normalizeNullableString,
 } from '../utils/normalize.js'
-
-const DEFAULT_PAGE = 1
-const DEFAULT_PAGE_SIZE = 10
-const MAX_PAGE_SIZE = 20
-const MAX_SEARCH_TERM_LENGTH = 100
-
-type BookSearchQuery = {
-  author?: string
-  isbn13?: string
-  page: number
-  pageSize: number
-  title?: string
-}
 
 type Result<T> =
   | {
@@ -46,133 +34,69 @@ type Result<T> =
       error: ErrorResponse
     }
 
-function createErrorResponse(
-  title: ErrorResponse['title'],
-  detail: string,
-  status: number,
-): ErrorResponse {
-  return {
-    detail,
-    status,
-    title,
+function getBookSearchQueryError(error: ZodError): ErrorResponse {
+  const [firstIssue] = error.issues
+  const [issuePath] = firstIssue?.path ?? []
+
+  switch (issuePath) {
+    case 'title':
+      return createErrorResponse(
+        'BOOK_SEARCH_TITLE_INVALID',
+        '도서명은 100자 이하의 문자열이어야 합니다.',
+        400,
+      )
+    case 'author':
+      return createErrorResponse(
+        'BOOK_SEARCH_AUTHOR_INVALID',
+        '저자명은 100자 이하의 문자열이어야 합니다.',
+        400,
+      )
+    case 'isbn13':
+      return createErrorResponse(
+        'BOOK_SEARCH_ISBN13_INVALID',
+        'ISBN13은 13자리 숫자 문자열이어야 합니다.',
+        400,
+      )
+    case 'page':
+      return createErrorResponse(
+        'BOOK_SEARCH_PAGE_INVALID',
+        'page는 1 이상의 정수여야 합니다.',
+        400,
+      )
+    case 'pageSize':
+      return createErrorResponse(
+        'BOOK_SEARCH_PAGE_SIZE_INVALID',
+        'pageSize는 1 이상 20 이하의 정수여야 합니다.',
+        400,
+      )
+    case 'query':
+      return createErrorResponse(
+        'BOOK_SEARCH_QUERY_MISSING',
+        '도서명, 저자명, ISBN13 중 하나는 반드시 입력해야 합니다.',
+        400,
+      )
+    default:
+      return createErrorResponse(
+        'BOOK_SEARCH_QUERY_INVALID',
+        '도서 검색 요청이 올바르지 않습니다. 다시 확인해주세요.',
+        400,
+      )
   }
 }
 
 function parseBookSearchQuery(query: unknown): Result<BookSearchQuery> {
-  const queryRecord = isQueryRecord(query) ? query : {}
+  const result = bookSearchQuerySchema.safeParse(query)
 
-  const titleResult = readOptionalScalarStringQuery(
-    queryRecord,
-    'title',
-    'BOOK_SEARCH_TITLE_INVALID',
-  )
-
-  if (!titleResult.ok) {
-    return titleResult
-  }
-
-  const authorResult = readOptionalScalarStringQuery(
-    queryRecord,
-    'author',
-    'BOOK_SEARCH_AUTHOR_INVALID',
-  )
-
-  if (!authorResult.ok) {
-    return authorResult
-  }
-
-  const isbn13Result = readOptionalScalarStringQuery(
-    queryRecord,
-    'isbn13',
-    'BOOK_SEARCH_ISBN13_INVALID',
-  )
-
-  if (!isbn13Result.ok) {
-    return isbn13Result
-  }
-
-  const { value: title } = titleResult
-  const { value: author } = authorResult
-  const { value: isbn13 } = isbn13Result
-
-  if (!title && !author && !isbn13) {
+  if (result.success) {
     return {
-      ok: false,
-      error: createErrorResponse(
-        'BOOK_SEARCH_QUERY_MISSING',
-        '도서명, 저자명, ISBN13 중 하나는 반드시 입력해야 합니다.',
-        400,
-      ),
+      ok: true,
+      value: result.data,
     }
-  }
-
-  if (title && title.length > MAX_SEARCH_TERM_LENGTH) {
-    return {
-      ok: false,
-      error: createErrorResponse(
-        'BOOK_SEARCH_TITLE_INVALID',
-        '도서명은 100자 이하로 입력해야 합니다.',
-        400,
-      ),
-    }
-  }
-
-  if (author && author.length > MAX_SEARCH_TERM_LENGTH) {
-    return {
-      ok: false,
-      error: createErrorResponse(
-        'BOOK_SEARCH_AUTHOR_INVALID',
-        '저자명은 100자 이하로 입력해야 합니다.',
-        400,
-      ),
-    }
-  }
-
-  if (isbn13 && !/^\d{13}$/.test(isbn13)) {
-    return {
-      ok: false,
-      error: createErrorResponse(
-        'BOOK_SEARCH_ISBN13_INVALID',
-        'ISBN13은 13자리 숫자 문자열이어야 합니다.',
-        400,
-      ),
-    }
-  }
-
-  const pageResult = readPositiveIntegerQuery({
-    fallbackValue: DEFAULT_PAGE,
-    invalidDetail: 'page는 1 이상의 정수여야 합니다.',
-    invalidTitle: 'BOOK_SEARCH_PAGE_INVALID',
-    key: 'page',
-    queryRecord,
-  })
-
-  if (!pageResult.ok) {
-    return pageResult
-  }
-
-  const pageSizeResult = readPositiveIntegerQuery({
-    fallbackValue: DEFAULT_PAGE_SIZE,
-    invalidDetail: `pageSize는 1 이상 ${MAX_PAGE_SIZE} 이하의 정수여야 합니다.`,
-    invalidTitle: 'BOOK_SEARCH_PAGE_SIZE_INVALID',
-    key: 'pageSize',
-    maxValue: MAX_PAGE_SIZE,
-    queryRecord,
-  })
-
-  if (!pageSizeResult.ok) {
-    return pageSizeResult
   }
 
   return {
-    ok: true,
-    value: {
-      author,
-      isbn13,
-      page: pageResult.value,
-      pageSize: pageSizeResult.value,
-      title,
-    },
+    ok: false,
+    error: getBookSearchQueryError(result.error),
   }
 }
 
