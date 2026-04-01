@@ -37,16 +37,16 @@
 - [x] Phase 2 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
 ## Phase 3. 모노레포 및 BFF 구성
-- [ ] `pnpm` workspace 기반 모노레포 구조를 정의한다.
-- [ ] 현재 웹 앱을 `apps/web` 기준 구조로 옮긴다.
-- [ ] `apps/bff`에 Fastify 기반 BFF 프로젝트 구조를 정의한다.
-- [ ] `packages/contracts`에 웹과 BFF가 함께 사용하는 공통 타입과 스키마 구조를 정의한다.
-- [ ] Open API 인증키를 BFF 서버 환경변수로만 관리하도록 규칙을 정리한다.
-- [ ] 웹 앱이 외부 Open API를 직접 호출하지 않고 Fastify BFF만 호출하도록 경계를 정리한다.
-- [ ] BFF가 외부 Open API 응답을 내부 계약으로 정규화해 반환하는 기준을 정리한다.
-- [ ] 로컬 개발 시 웹 앱과 BFF를 함께 실행하는 기본 흐름을 정리한다.
-- [ ] 빌드와 배포 시 웹 앱과 BFF를 분리해 다루는 기준을 정리한다.
-- [ ] Phase 3 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [x] `pnpm` workspace 기반 모노레포 구조를 정의한다.
+- [x] 현재 웹 앱을 `apps/web` 기준 구조로 옮긴다.
+- [x] `apps/bff`에 Fastify 기반 BFF 프로젝트 구조를 정의한다.
+- [x] `packages/contracts`에 웹과 BFF가 함께 사용하는 공통 타입과 스키마 구조를 정의한다.
+- [x] Open API 인증키를 BFF 서버 환경변수로만 관리하도록 규칙을 정리한다.
+- [x] 웹 앱이 외부 Open API를 직접 호출하지 않고 Fastify BFF만 호출하도록 경계를 정리한다.
+- [x] BFF가 외부 Open API 응답을 내부 계약으로 정규화해 반환하는 기준을 정리한다.
+- [x] 로컬 개발 시 웹 앱과 BFF를 함께 실행하는 기본 흐름을 정리한다.
+- [x] 빌드와 배포 시 웹 앱과 BFF를 분리해 다루는 기준을 정리한다.
+- [x] Phase 3 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
 ## Phase 4. Entities 레이어 구성
 - [ ] 도서 검색과 관련된 데이터 모델을 정의한다.

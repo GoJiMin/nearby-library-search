@@ -145,6 +145,15 @@
 - 현재 Phase에서는 특정 배포 플랫폼을 확정하지 않지만, 전통적인 Node 서버 배포가 가능한 구조를 우선한다.
 - 이후 배포 방식이 바뀌더라도 웹 앱과 BFF 경계가 유지되도록 구조를 설계한다.
 
+### 10. 현재 구현 결과
+
+- 저장소는 `apps/web`, `apps/bff`, `packages/contracts` 기준의 workspace 구조로 전환됐다.
+- 웹 앱은 `shared/request`와 `VITE_API_BASE_URL`을 통해 Fastify BFF의 `/api` 엔드포인트만 호출하도록 고정됐다.
+- BFF는 `/health`, `/api/books/search`, `/api/books/:isbn13`, `/api/libraries/search`를 제공한다.
+- `packages/contracts`는 도서 검색, 도서 상세, 도서관 조회, 공통 에러, 식별자, 지역 타입을 웹과 BFF가 공유하는 타입 패키지로 동작한다.
+- 루트 스크립트는 `dev:web`, `dev:bff`, `dev:all`, `build:web`, `build:bff`, `build:all` 기준으로 정리됐다.
+- 검증은 web `shared/request` 테스트와 BFF `createApp` 통합 테스트, `schemas`/`utils` 유닛 테스트까지 포함한다.
+
 ## 산출물
 
 - `pnpm` workspace 기반 루트 구조
@@ -182,7 +191,7 @@
 
 ## 기본 가정
 
-- 현재 저장소는 아직 웹 앱 단일 구조이며, Phase 3에서 모노레포로 전환한다.
+- 저장소는 Phase 3 구현 기준으로 `apps/web`, `apps/bff`, `packages/contracts` 구조로 전환됐다.
 - BFF는 초기에는 외부 Open API 프록시와 응답 정규화 역할을 우선한다.
 - 이후 인증, 북마크, 추천, DB 기능이 추가될 가능성을 고려해 Fastify를 채택한다.
 - 실제 Open API 세부 스펙은 `open_api_spec.md`를 기준으로 하고, 이후 구현 단계에서 엔드포인트별 상세 타입을 추가 보완한다.

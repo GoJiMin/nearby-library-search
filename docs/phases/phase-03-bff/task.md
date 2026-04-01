@@ -150,7 +150,7 @@
 
 ## 21. 문서 정리
 
-- [ ] Phase 3 `spec.md`와 실제 구현 결과 차이를 반영한다.
-- [ ] 루트 `README.md`를 모노레포 실행 방식에 맞게 갱신한다.
-- [ ] 루트 `AGENTS.md`에 web, bff, contracts 작업 규칙이 더 필요하면 보완한다.
-- [ ] 루트 `plan.md`에 Phase 3 완료 상태를 반영한다.
+- [x] Phase 3 `spec.md`와 실제 구현 결과 차이를 반영한다.
+- [x] 루트 `README.md`를 모노레포 실행 방식에 맞게 갱신한다.
+- [x] 루트 `AGENTS.md`에 web, bff, contracts 작업 규칙이 더 필요하면 보완한다.
+- [x] 루트 `plan.md`에 Phase 3 완료 상태를 반영한다.

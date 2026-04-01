@@ -53,6 +53,8 @@ pnpm build:all # web + bff 전체 빌드
 
 ```bash
 pnpm test:run
+pnpm --filter @nearby-library-search/bff test:run
+pnpm --filter @nearby-library-search/contracts build
 pnpm typecheck:web
 pnpm typecheck:bff
 pnpm build
@@ -67,9 +69,12 @@ pnpm build:all
 - Phase 1 작업 목록: `docs/phases/phase-01-app/task.md`
 - Phase 2 명세: `docs/phases/phase-02-shared/spec.md`
 - Phase 2 작업 목록: `docs/phases/phase-02-shared/task.md`
+- Phase 3 명세: `docs/phases/phase-03-bff/spec.md`
+- Phase 3 Open API 스펙: `docs/phases/phase-03-bff/open_api_spec.md`
+- Phase 3 작업 목록: `docs/phases/phase-03-bff/task.md`
 
 ## 현재 상태
 
 - Phase 1 app 레이어 표준화 완료
 - Phase 2 shared 레이어 구성 완료
-- Phase 3 모노레포 전환과 Fastify BFF 기본 구조 진행 중
+- Phase 3 모노레포 전환과 Fastify BFF 구성 완료

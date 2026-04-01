@@ -2,9 +2,10 @@
 
 ## Architecture
 
-- This repository is moving toward a `pnpm` workspace monorepo.
+- This repository uses a `pnpm` workspace monorepo.
 - The target app boundaries are `apps/web` for the React client and `apps/bff` for the Fastify BFF.
 - The current web app source lives in `apps/web/src`.
+- Shared cross-app contracts live in `packages/contracts`.
 - This project follows FSD architecture.
 - Each layer may contain multiple slices.
 - Each slice may include segments such as `ui`, `lib`, and `model` when needed.
@@ -32,6 +33,8 @@
 - In integration tests, use accessibility-first queries such as `getByRole`, `getByLabelText`, and similar Testing Library queries.
 - Add focused unit tests only when complex UI branching or pure logic needs detailed verification.
 - Use unit tests to cover edge cases, failure cases, and error-handling paths when integration tests alone are not sufficient.
+- For Fastify BFF routes, prefer `createApp().inject()` based integration tests over port-bound server tests.
+- Mock external Open API calls at the `requestLibraryApi` boundary in BFF tests.
 
 ## Configuration
 
@@ -39,6 +42,7 @@
 - Do not access `import.meta.env` directly in components, pages, features, entities, or shared UI code.
 - Read client env values through the `@/shared/env` slice only.
 - Keep public web env in `apps/web/.env` and server-only env in `apps/bff/.env`.
+- `VITE_API_BASE_URL` must point to the Fastify BFF only.
 - Server-only secrets for the BFF must not use the `VITE_` prefix.
 - External Open API auth keys must be stored and read only in the BFF runtime environment.
 
@@ -46,6 +50,7 @@
 
 - `entities`, `features`, and `pages` must not call `fetch` directly for application API requests.
 - Route application API requests through the public API exposed by the `@/shared/request` slice only.
+- `@/shared/request` must target the Fastify BFF `/api` namespace only.
 - The web app must not call external provider Open APIs directly once the BFF is introduced.
 - Route provider API traffic through the Fastify BFF only.
 - `entities`, `features`, and `pages` must not access `import.meta.env` directly.
