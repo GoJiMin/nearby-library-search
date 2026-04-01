@@ -329,5 +329,22 @@ const DETAIL_REGION_OPTIONS_BY_REGION: Record<
   ],
 }
 
-export { DETAIL_REGION_OPTIONS_BY_REGION, REGION_OPTIONS }
+function isDetailRegionOfRegion(
+  region: RegionCode,
+  detailRegion?: DetailRegionCode,
+) {
+  if (detailRegion === undefined) {
+    return false
+  }
+
+  return (DETAIL_REGION_OPTIONS_BY_REGION[region] ?? []).some(
+    (option) => option.code === detailRegion,
+  )
+}
+
+export {
+  DETAIL_REGION_OPTIONS_BY_REGION,
+  REGION_OPTIONS,
+  isDetailRegionOfRegion,
+}
 export type { DetailRegionOption, RegionOption }

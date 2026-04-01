@@ -225,7 +225,6 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - `searchBooksParamsSchema`
 - `parseBookDetailParams`
 - `parseSearchBooksParams`
-- `BOOK_SEARCH_PAGE_SIZE`
 - `BookDetailParams`
 - `BookSearchParams`
 - contracts에서 재사용할 도서 타입
@@ -290,7 +289,6 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - `librariesQueryOptions`
 - `searchLibrariesParamsSchema`
 - `parseSearchLibrariesParams`
-- `LIBRARY_SEARCH_PAGE_SIZE`
 - `hasLibraryCoordinates`
 - `isEmptyLibrarySearchResult`
 - `LibrarySearchParams`

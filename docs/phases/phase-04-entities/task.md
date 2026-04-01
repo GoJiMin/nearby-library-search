@@ -71,15 +71,15 @@
 
 ## 7. `region` helper 구현
 
-- [ ] `apps/web/src/entities/region/model`에 `isDetailRegionOfRegion` helper를 구현한다.
-- [ ] `DETAIL_REGION_OPTIONS_BY_REGION[region] ?? []` 패턴으로 세부 지역이 없는 경우도 빈 배열로 안전하게 접근할 수 있도록 사용 기준을 정리한다.
+- [x] `apps/web/src/entities/region/model`에 `isDetailRegionOfRegion` helper를 구현한다.
+- [x] `DETAIL_REGION_OPTIONS_BY_REGION[region] ?? []` 패턴으로 세부 지역이 없는 경우도 빈 배열로 안전하게 접근할 수 있도록 사용 기준을 정리한다.
 
 ## 8. 슬라이스 공개 API 정리
 
-- [ ] `apps/web/src/entities/book/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, 공개 타입만 export하도록 정리한다.
-- [ ] `apps/web/src/entities/library/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, helper, 공개 타입만 export하도록 정리한다.
-- [ ] `apps/web/src/entities/region/index.ts`가 상수, helper, 공개 타입만 export하도록 정리한다.
-- [ ] 슬라이스 외부에서 내부 파일 직접 import가 필요하지 않도록 공개 경계를 고정한다.
+- [x] `apps/web/src/entities/book/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, 공개 타입만 export하도록 정리한다.
+- [x] `apps/web/src/entities/library/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, helper, 공개 타입만 export하도록 정리한다.
+- [x] `apps/web/src/entities/region/index.ts`가 상수, helper, 공개 타입만 export하도록 정리한다.
+- [x] 슬라이스 외부에서 내부 파일 직접 import가 필요하지 않도록 공개 경계를 고정한다.
 
 ## 9. 순수 로직 중심 테스트 작성
 

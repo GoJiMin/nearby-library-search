@@ -3,7 +3,6 @@ export {
   librariesQueryOptions,
 } from './model/libraryQueries'
 export {
-  LIBRARY_SEARCH_PAGE_SIZE,
   parseSearchLibrariesParams,
   searchLibrariesParamsSchema,
 } from './model/librarySchema'
