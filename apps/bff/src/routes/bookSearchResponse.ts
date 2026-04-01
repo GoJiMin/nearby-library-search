@@ -1,9 +1,11 @@
 import {
-  getDocRecords,
-  getLibraryApiResponseRoot,
   normalizeNullableNumber,
   normalizeNullableString,
 } from '../libraryApi/parseLibraryApiResponse.js'
+import {
+  getDocRecords,
+  getLibraryApiResponseRoot,
+} from '../utils/libraryApiResponse.js'
 
 type ErrorResponse = {
   detail: string
