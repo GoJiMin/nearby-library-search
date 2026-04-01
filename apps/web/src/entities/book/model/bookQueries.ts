@@ -1,11 +1,7 @@
 import { getBooks } from '../api/bookApi'
-import {
-  normalizeBookSearchParams,
-  type BookSearchParams,
-  type NormalizedBookSearchParams,
-} from './bookSearch'
+import type { BookSearchParams } from './bookSchema'
 
-function createBookSearchQueryKey(params: NormalizedBookSearchParams) {
+function createBookSearchQueryKey(params: BookSearchParams) {
   return [...booksQueryKeys.search.all(), params] as const
 }
 
@@ -13,20 +9,15 @@ const booksQueryKeys = {
   all: () => ['books'] as const,
   search: {
     all: () => [...booksQueryKeys.all(), 'search'] as const,
-    list: (params: BookSearchParams) =>
-      createBookSearchQueryKey(normalizeBookSearchParams(params)),
+    list: (params: BookSearchParams) => createBookSearchQueryKey(params),
   },
 }
 
 const booksQueryOptions = {
-  search: (params: BookSearchParams) => {
-    const normalizedParams = normalizeBookSearchParams(params)
-
-    return {
-      queryFn: () => getBooks(normalizedParams),
-      queryKey: createBookSearchQueryKey(normalizedParams),
-    }
-  },
+  search: (params: BookSearchParams) => ({
+    queryFn: () => getBooks(params),
+    queryKey: createBookSearchQueryKey(params),
+  }),
 }
 
 export { booksQueryKeys, booksQueryOptions }

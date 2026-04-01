@@ -13,23 +13,30 @@
 - [x] `apps/web/src/entities/book/api/bookApi.ts`를 추가한다.
 - [x] `getBooks`를 `requestGet<BookSearchResponse>` 기반으로 구현한다.
 - [x] `getBookDetail`을 `requestGet<BookDetailResponse>` 기반으로 구현한다.
-- [x] 도서 검색 query param 매핑을 `title`, `author`, `isbn13`, `page`, `pageSize`로 고정한다.
+- [x] 도서 검색 query param 매핑을 `title`, `author`, `isbn13`, `page`와 내부 고정 `pageSize=10`으로 정리한다.
 - [x] 도서 상세 endpoint가 `/api/books/:isbn13` 규칙을 따르도록 정리한다.
 
 ## 3. `book` 검색 모델 구현
 
 - [x] `apps/web/src/shared/validation` 슬라이스를 추가하고 재사용 가능한 문자열/정수 정규화 유틸을 정의한다.
-- [x] `apps/web/src/entities/book/model/bookSearch.ts`를 추가한다.
-- [x] `BookSearchParams` 타입을 정의한다.
-- [x] `bookSearchParamsSchema`를 `zod` 기반으로 정의한다.
-- [x] `normalizeBookSearchParams`가 shared validation 유틸과 `zod` 스키마를 조합해 공백 제거와 기본값 `page=1`, `pageSize=10` 규칙을 반영하도록 구현한다.
+- [x] `apps/web/src/entities/book/model/bookSchema.ts`를 추가한다.
+- [x] `BookSearchParams` 타입을 canonical params 기준으로 정의하고 `pageSize`를 공개 입력 파라미터에서 제거한다.
+- [x] `searchBooksParamsSchema`를 `zod` 기반으로 정의한다.
+- [x] `parseSearchBooksParams`를 구현해 form, URL query parsing 같은 입력 경계에서 canonical params를 만들 수 있게 한다.
 - [x] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryKeys.search`를 구현한다.
 - [x] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryOptions.search`를 구현한다.
 - [x] `apps/web/src/entities/book/model/useGetSearchBooks.ts`를 추가한다.
 - [x] `useGetSearchBooks`를 `useSuspenseQuery` 기반으로 구현한다.
 
+## 3-1. `book` 검색 모델 리팩터링
+
+- [x] `bookQueries.ts`와 `useGetSearchBooks.ts`가 입력 정규화를 다시 수행하지 않고 canonical `BookSearchParams`만 받도록 정리한다.
+- [x] `book` 검색 요청의 `pageSize`를 엔티티 내부 상수 `10`으로 고정한다.
+- [x] 입력 경계에서 사용할 스키마 파일 이름을 `bookSchema.ts`로 명확히 정리한다.
+
 ## 4. `book` 상세 모델 구현
 
+- [ ] `apps/web/src/entities/book/model/bookSchema.ts`에 상세 조회용 입력 스키마를 추가한다.
 - [ ] `apps/web/src/entities/book/model/bookDetail.ts`를 추가한다.
 - [ ] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryKeys.detail`를 구현한다.
 - [ ] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryOptions.detail`를 구현한다.
@@ -41,14 +48,15 @@
 
 - [ ] `apps/web/src/entities/library/api/libraryApi.ts`를 추가한다.
 - [ ] `getLibraries`를 `requestGet<LibrarySearchResponse>` 기반으로 구현한다.
-- [ ] `apps/web/src/entities/library/model/librarySearch.ts`를 추가한다.
-- [ ] `LibrarySearchParams` 타입을 정의한다.
+- [ ] `apps/web/src/entities/library/model/librarySchema.ts`를 추가한다.
+- [ ] `LibrarySearchParams` 타입을 canonical params 기준으로 정의하고 `pageSize`를 공개 입력 파라미터에서 제거한다.
 - [ ] `librarySearchParamsSchema`를 `zod` 기반으로 정의한다.
-- [ ] `normalizeLibrarySearchParams`가 shared validation 유틸을 조합해 기본값 `page=1`, `pageSize=10` 규칙을 반영하도록 구현한다.
+- [ ] `parseSearchLibrariesParams`를 구현해 입력 경계에서 canonical params를 만들 수 있게 한다.
 - [ ] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryKeys.search`를 구현한다.
 - [ ] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryOptions.search`를 구현한다.
 - [ ] `apps/web/src/entities/library/model/useGetSearchLibraries.ts`를 추가한다.
 - [ ] `useGetSearchLibraries`를 `useSuspenseQuery` 기반으로 구현한다.
+- [ ] `library` 검색 요청의 `pageSize`를 엔티티 내부 상수 `10`으로 고정한다.
 - [ ] 좌표 존재 여부 판별 helper를 구현한다.
 - [ ] 빈 결과 판별 helper를 구현한다.
 
@@ -72,14 +80,14 @@
 
 ## 8. 슬라이스 공개 API 정리
 
-- [ ] `apps/web/src/entities/book/index.ts`가 훅, query key, query options, 공개 타입만 export하도록 정리한다.
-- [ ] `apps/web/src/entities/library/index.ts`가 훅, query key, query options, 공개 타입만 export하도록 정리한다.
+- [ ] `apps/web/src/entities/book/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, 공개 타입만 export하도록 정리한다.
+- [ ] `apps/web/src/entities/library/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, 공개 타입만 export하도록 정리한다.
 - [ ] `apps/web/src/entities/region/index.ts`가 상수, selector, helper, 공개 타입만 export하도록 정리한다.
 - [ ] 슬라이스 외부에서 내부 파일 직접 import가 필요하지 않도록 공개 경계를 고정한다.
 
 ## 9. 순수 로직 중심 테스트 작성
 
-- [ ] `book`에서 순수 정규화 로직이 분리되면 해당 로직만 최소 유닛 테스트로 검증한다.
+- [ ] `book`에서 schema parse helper나 순수 로직이 분리되면 해당 로직만 최소 유닛 테스트로 검증한다.
 - [ ] `library`에서 좌표 판별이나 빈 결과 판별 helper가 분리되면 해당 로직만 최소 유닛 테스트로 검증한다.
 - [ ] `region`의 selector/helper와 region-detailRegion 종속 관계를 유닛 테스트로 검증한다.
 - [ ] 엔티티 테스트 범위에 API 요청 함수 검증이 포함되지 않았는지 점검한다.

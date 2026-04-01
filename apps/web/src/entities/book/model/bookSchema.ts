@@ -6,39 +6,25 @@ import {
   normalizeOptionalString,
 } from '@/shared/validation'
 
-const DEFAULT_BOOK_SEARCH_PAGE = 1
-const DEFAULT_BOOK_SEARCH_PAGE_SIZE = 10
-const MAX_BOOK_SEARCH_PAGE_SIZE = 20
+const DEFAULT_SEARCH_BOOKS_PAGE = 1
+const BOOK_SEARCH_PAGE_SIZE = 10
 const MAX_BOOK_SEARCH_TERM_LENGTH = 100
 
 type BookSearchParams = {
   title?: string
   author?: string
   isbn13?: Isbn13
-  page?: number
-  pageSize?: number
-}
-
-type NormalizedBookSearchParams = {
-  title?: string
-  author?: string
-  isbn13?: Isbn13
   page: number
-  pageSize: number
 }
 
-const bookSearchParamsSchema = z
+const searchBooksParamsSchema = z
   .object({
     author: createOptionalTrimmedStringSchema(MAX_BOOK_SEARCH_TERM_LENGTH),
     isbn13: z.preprocess(
       normalizeOptionalString,
       z.string().regex(/^\d{13}$/).optional(),
     ),
-    page: createPositiveIntegerSchema(DEFAULT_BOOK_SEARCH_PAGE),
-    pageSize: createPositiveIntegerSchema(
-      DEFAULT_BOOK_SEARCH_PAGE_SIZE,
-      MAX_BOOK_SEARCH_PAGE_SIZE,
-    ),
+    page: createPositiveIntegerSchema(DEFAULT_SEARCH_BOOKS_PAGE),
     title: createOptionalTrimmedStringSchema(MAX_BOOK_SEARCH_TERM_LENGTH),
   })
   .refine(({ title, author, isbn13 }) => Boolean(title || author || isbn13), {
@@ -46,11 +32,9 @@ const bookSearchParamsSchema = z
     path: ['query'],
   })
 
-function normalizeBookSearchParams(
-  params: BookSearchParams,
-): NormalizedBookSearchParams {
-  return bookSearchParamsSchema.parse(params)
+function parseSearchBooksParams(params: unknown): BookSearchParams {
+  return searchBooksParamsSchema.parse(params)
 }
 
-export { normalizeBookSearchParams }
-export type { BookSearchParams, NormalizedBookSearchParams }
+export { BOOK_SEARCH_PAGE_SIZE, parseSearchBooksParams, searchBooksParamsSchema }
+export type { BookSearchParams }

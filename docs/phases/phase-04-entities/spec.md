@@ -89,7 +89,7 @@
 - `bookQueries.ts`, `libraryQueries.ts`는 쿼리 키/옵션 팩터리 전용 파일로 유지한다.
 - React Query 훅 이름은 역할이 드러나게 `useGet...` 형식으로 명시한다.
 - 정적 참조 데이터는 React Query로 감싸지 않고 `model` 상수와 selector/helper로 공개한다.
-- 슬라이스 `index.ts`는 훅, 쿼리 키, 쿼리 옵션, 상수, selector, 슬라이스 공개 타입만 export한다.
+- 슬라이스 `index.ts`는 훅, 쿼리 키, 쿼리 옵션, 입력 스키마, parse helper, 상수, selector, 슬라이스 공개 타입만 export한다.
 - `book`, `library`의 `index.ts`는 내부 `api` 요청 함수를 export하지 않는다.
 - 재사용 가능한 도메인 계약 타입은 `packages/contracts`를 우선 사용한다.
 - 엔티티 내부 전용 파생 타입은 contracts 타입으로 표현할 수 없을 때만 추가한다.
@@ -98,10 +98,12 @@
 ### 2. React Query 규칙
 
 - `book`, `library`의 모든 쿼리 키는 직렬화 가능한 값만 포함한다.
-- 객체 기반 query key를 사용할 때는 기본값을 반영한 정규화 객체를 사용해 캐시 키가 흔들리지 않게 한다.
-- `page`, `pageSize` 기본값은 BFF 스키마와 동일하게 정규화한다.
-  - 도서 검색: `page=1`, `pageSize=10`
-  - 도서관 조회: `page=1`, `pageSize=10`
+- 객체 기반 query key는 입력 경계에서 이미 정규화된 canonical params만 사용한다.
+- 입력 경계는 엔티티가 공개하는 `zod` 스키마로 기본값과 trim 처리를 한 번만 수행한다.
+- `page` 기본값은 BFF 스키마와 동일하게 입력 경계에서 정규화한다.
+  - 도서 검색: `page=1`
+  - 도서관 조회: `page=1`
+- `pageSize`는 Phase 4에서 엔티티 내부 상수 `10`으로 고정하고 공개 입력 파라미터로 노출하지 않는다.
 - `book search`, `library search`처럼 페이지네이션이 있는 쿼리도 Phase 4에서는 `useSuspenseQuery`를 기준으로 통일한다.
 - 현재 설치된 React Query v5의 `useSuspenseQuery`는 `enabled`, `throwOnError`, `placeholderData`를 받지 않으므로 `book`, `library` 엔티티 훅은 항상 실행 가능한 입력만 받도록 설계한다.
 - 조건부 조회가 필요한 경우 상위 레이어가 유효한 입력이 준비된 뒤에만 해당 훅을 호출한다.
@@ -117,7 +119,7 @@ export const booksQueryKeys = {
   search: {
     all: () => [...booksQueryKeys.all(), 'search'] as const,
     list: (params: BookSearchParams) =>
-      [...booksQueryKeys.search.all(), normalizeBookSearchParams(params)] as const,
+      [...booksQueryKeys.search.all(), params] as const,
   },
 
   detail: {
@@ -161,14 +163,14 @@ export function useGetSearchBooks(params: BookSearchParams) {
 
 - 도서 검색과 도서 상세 조회를 하나의 도메인 슬라이스에서 제공한다.
 - BFF의 도서 관련 엔드포인트를 호출하는 내부 API 함수를 제공한다.
-- 검색 파라미터 정규화, 쿼리 키 생성, 서스펜스 훅 제공을 담당한다.
-- `bookSearch.ts`, `bookQueries.ts`, `useGetSearchBooks.ts`, `useGetBookDetail.ts`로 모델 책임을 분리한다.
+- 입력 경계에서 사용할 스키마, 쿼리 키 생성, 서스펜스 훅 제공을 담당한다.
+- `bookSchema.ts`, `bookQueries.ts`, `useGetSearchBooks.ts`, `useGetBookDetail.ts`로 모델 책임을 분리한다.
 
 #### API 세그먼트
 
 - `getBooks(params)`는 `/api/books/search`를 `requestGet<BookSearchResponse>`로 호출한다.
 - `getBookDetail(isbn13)`는 `/api/books/:isbn13`를 `requestGet<BookDetailResponse>`로 호출한다.
-- `getBooks`는 query string에 `title`, `author`, `isbn13`, `page`, `pageSize`를 전달한다.
+- `getBooks`는 query string에 `title`, `author`, `isbn13`, `page`를 전달하고, `pageSize`는 엔티티 내부 상수 `10`으로 고정한다.
 - `getBookDetail`는 `isbn13`을 path param으로 전달한다.
 - API 함수는 `requestGet` 기본 에러 처리 전략인 `errorBoundary`를 유지한다.
 
@@ -186,15 +188,15 @@ export function useGetSearchBooks(params: BookSearchParams) {
     - `title?: string`
     - `author?: string`
     - `isbn13?: Isbn13`
-    - `page?: number`
-    - `pageSize?: number`
-- `bookSearchParamsSchema`는 `zod` 기반으로 입력을 검증하고 정규화한다.
+    - `page: number`
+- `bookSchema.ts`는 도서 엔티티에서 사용하는 입력 스키마를 한 곳에 모은다.
+- `searchBooksParamsSchema`는 `zod` 기반으로 입력을 검증하고 canonical `BookSearchParams`를 만든다.
   - `title`, `author`: trim 후 optional, 최대 100자
   - `isbn13`: trim 후 optional, 13자리 숫자 문자열
   - `page`: 기본값 1, 1 이상 정수
-  - `pageSize`: 기본값 10, 1 이상 20 이하 정수
   - `title`, `author`, `isbn13` 중 하나는 반드시 존재해야 한다.
-- `normalizeBookSearchParams`는 `bookSearchParamsSchema.parse()`를 통해 공백 문자열을 제외하고 BFF 기본값 `page=1`, `pageSize=10`을 반영한 객체를 만든다.
+- `parseSearchBooksParams`는 form, URL query parsing, 직접 링크 진입 같은 입력 경계에서 호출한다.
+- `booksQueryKeys.search`와 `booksQueryOptions.search`는 이미 정규화된 `BookSearchParams`만 받으며 내부에서 다시 정규화하지 않는다.
 - `booksQueryKeys`는 search/detail 하위 네임스페이스를 분리한다.
 - `booksQueryOptions.search`와 `booksQueryOptions.detail`는 내부 API 함수만 호출한다.
 - `useGetSearchBooks(params)`와 `useGetBookDetail(isbn13)`를 공개한다.
@@ -213,6 +215,9 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - `useGetBookDetail`
 - `booksQueryKeys`
 - `booksQueryOptions`
+- `searchBooksParamsSchema`
+- `parseSearchBooksParams`
+- `BOOK_SEARCH_PAGE_SIZE`
 - `BookSearchParams`
 - contracts에서 재사용할 도서 타입
 
@@ -223,12 +228,13 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - 선택한 ISBN과 지역 기준으로 도서관 목록을 조회한다.
 - 도서관 목록 응답을 지도/목록 화면이 소비하기 쉬운 형태로 노출한다.
 - 지역 코드, 세부 지역 코드, 페이지 정보가 캐시 키에 안정적으로 반영되도록 관리한다.
-- `librarySearch.ts`, `libraryQueries.ts`, `useGetSearchLibraries.ts`로 모델 책임을 분리한다.
+- `librarySchema.ts`, `libraryQueries.ts`, `useGetSearchLibraries.ts`로 모델 책임을 분리한다.
 
 #### API 세그먼트
 
 - `getLibraries(params)`는 `/api/libraries/search`를 `requestGet<LibrarySearchResponse>`로 호출한다.
-- 전달 query는 `isbn`, `region`, `detailRegion`, `page`, `pageSize`다.
+- 전달 query는 `isbn`, `region`, `detailRegion`, `page`다.
+- `pageSize`는 엔티티 내부 상수 `10`으로 고정한다.
 - `detailRegion`은 값이 있을 때만 query string에 포함한다.
 - API 함수는 내부에서 `fetch`를 직접 사용하지 않는다.
 
@@ -245,10 +251,9 @@ export function useGetSearchBooks(params: BookSearchParams) {
     - `isbn: Isbn`
     - `region: RegionCode`
     - `detailRegion?: DetailRegionCode`
-    - `page?: number`
-    - `pageSize?: number`
-- `librarySearchParamsSchema`는 `zod` 기반으로 입력을 검증하고 `page=1`, `pageSize=10` 기본값을 반영한다.
-- `normalizeLibrarySearchParams`는 `shared/validation` 범용 유틸을 조합해 정규화한다.
+    - `page: number`
+- `librarySchema.ts`는 도서관 엔티티 입력 스키마를 한 곳에 모은다.
+- `librarySearchParamsSchema`는 `zod` 기반으로 입력을 검증하고 canonical `LibrarySearchParams`를 만든다.
 - `librariesQueryKeys`는 `search.all`, `search.list(params)` 구조를 사용한다.
 - `librariesQueryOptions.search(params)`는 `getLibraries(params)`를 queryFn으로 사용한다.
 - `useGetSearchLibraries(params)`를 공개한다.
@@ -334,6 +339,7 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - 슬라이스 외부에서 `model` 내부 개별 파일 경로를 직접 import하지 않는다.
 - `shared` 레이어는 도메인 지식이 없으므로 `book`, `library`, `region`별 상수와 타입은 `entities`에서 소유한다.
 - `shared/validation`은 trim, 정수 coercion 같은 범용 입력 처리만 제공하고 도메인 스키마는 소유하지 않는다.
+- form, URL, navigation state 같은 입력 경계는 슬라이스가 공개하는 스키마/parse helper를 통해 canonical params를 만든 뒤 엔티티 훅에 전달한다.
 
 ## 산출물
 
