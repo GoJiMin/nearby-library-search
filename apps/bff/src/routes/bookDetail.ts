@@ -1,4 +1,8 @@
 import type { ErrorResponse } from '@nearby-library-search/contracts'
+import {
+  LibraryApiRequestConfigError,
+  requestLibraryApi,
+} from '../libraryApi/requestLibraryApi.js'
 import type { FastifyPluginAsync } from 'fastify'
 import type { ZodError } from 'zod'
 import { bookDetailParamsSchema } from '../schemas/book.js'
@@ -48,6 +52,57 @@ function parseBookDetailParams(params: unknown): Result<{ isbn13: string }> {
   }
 }
 
+async function fetchBookDetailPayload(
+  isbn13: string,
+): Promise<Result<unknown>> {
+  try {
+    const response = await requestLibraryApi({
+      endpoint: '/srchDtlList',
+      queryParams: {
+        isbn13,
+        loaninfoYN: 'Y',
+      },
+      requiredQueryParams: ['isbn13'],
+    })
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: createErrorResponse(
+          'BOOK_DETAIL_UPSTREAM_ERROR',
+          '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+          502,
+        ),
+      }
+    }
+
+    return {
+      ok: true,
+      value: await response.json(),
+    }
+  } catch (error) {
+    if (error instanceof LibraryApiRequestConfigError) {
+      return {
+        ok: false,
+        error: {
+          detail: error.detail,
+          status: error.status,
+          title: error.title,
+        },
+      }
+    }
+
+    return {
+      ok: false,
+      error: createErrorResponse(
+        'BOOK_DETAIL_UPSTREAM_ERROR',
+        '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+        502,
+      ),
+    }
+  }
+}
+
 export const bookDetailRoute: FastifyPluginAsync = async (app) => {
   app.get('/api/books/:isbn13', async (request, reply) => {
     const parsedParams = parseBookDetailParams(request.params)
@@ -56,6 +111,19 @@ export const bookDetailRoute: FastifyPluginAsync = async (app) => {
       reply.status(parsedParams.error.status)
 
       return parsedParams.error
+    }
+
+    const bookDetailPayload = await fetchBookDetailPayload(parsedParams.value.isbn13)
+
+    if (!bookDetailPayload.ok) {
+      app.log.warn(
+        { errorTitle: bookDetailPayload.error.title },
+        'Book detail upstream request failed',
+      )
+
+      reply.status(bookDetailPayload.error.status)
+
+      return bookDetailPayload.error
     }
 
     reply.status(501)
