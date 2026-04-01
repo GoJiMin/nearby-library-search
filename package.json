@@ -23,7 +23,7 @@
     "test:run:web": "pnpm --filter @nearby-library-search/web test:run",
     "typecheck:web": "pnpm --filter @nearby-library-search/web exec tsc -p tsconfig.json",
     "typecheck:bff": "pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json",
-    "typecheck:all": "pnpm -r --if-present exec tsc -p tsconfig.json"
+    "typecheck:all": "pnpm exec tsc -b tsconfig.json"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

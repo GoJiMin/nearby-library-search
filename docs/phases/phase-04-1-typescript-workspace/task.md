@@ -38,10 +38,10 @@
 
 ## 6. 루트 타입체크 스크립트 정리
 
-- [ ] 루트 `package.json`의 `typecheck:all`을 `tsc -b` 기반 명령으로 교체한다.
-- [ ] 루트 `typecheck:web`가 기존처럼 `apps/web` 직접 타입체크를 유지하는지 확인한다.
-- [ ] 루트 `typecheck:bff`가 기존처럼 `apps/bff` 직접 타입체크를 유지하는지 확인한다.
-- [ ] 잘못된 `pnpm exec --if-present` 흐름이 남아 있지 않은지 점검한다.
+- [x] 루트 `package.json`의 `typecheck:all`을 `tsc -b` 기반 명령으로 교체한다.
+- [x] 루트 `typecheck:web`가 기존처럼 `apps/web` 직접 타입체크를 유지하는지 확인한다.
+- [x] 루트 `typecheck:bff`가 기존처럼 `apps/bff` 직접 타입체크를 유지하는지 확인한다.
+- [x] 잘못된 `pnpm exec --if-present` 흐름이 남아 있지 않은지 점검한다.
 
 ## 7. 루트 TypeScript 진입점 검증
 
