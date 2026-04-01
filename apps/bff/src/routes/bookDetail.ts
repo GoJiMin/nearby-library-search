@@ -152,12 +152,12 @@ function normalizeBookDetailLoanStats(
   }
 
   return value
-    .flatMap((item) => {
+    .map((item) => {
       if (!isLibraryApiRecord(item)) {
-        return []
+        return null
       }
 
-      return [normalizeBookDetailLoanStat(item[key])]
+      return normalizeBookDetailLoanStat(item[key])
     })
     .filter(isBookDetailLoanStat)
 }
@@ -216,12 +216,8 @@ function normalizeBookDetailResponse(
   payload: unknown,
 ): Result<BookDetailResponse> {
   const responseRoot = getLibraryApiResponseRoot(payload)
-  const book =
-    getBookRecords(responseRoot)
-      .map(normalizeBookDetailRecord)
-      .find((item) => item !== null) ?? null
 
-  if (!book) {
+  if (!isLibraryApiRecord(responseRoot) || Object.keys(responseRoot).length === 0) {
     return {
       ok: false,
       error: createErrorResponse(
@@ -235,7 +231,10 @@ function normalizeBookDetailResponse(
   return {
     ok: true,
     value: {
-      book,
+      book:
+        getBookRecords(responseRoot)
+          .map(normalizeBookDetailRecord)
+          .find((item) => item !== null) ?? null,
       loanInfo: normalizeBookDetailLoanInfo(responseRoot),
     },
   }
