@@ -92,9 +92,6 @@ async function requestLibraryApi({
   const requestUrl = createLibraryApiUrl({ endpoint, queryParams })
 
   return fetch(requestUrl, {
-    headers: {
-      Accept: 'application/json',
-    },
     method: 'GET',
     redirect: 'error',
     signal: AbortSignal.timeout(LIBRARY_API_REQUEST_TIMEOUT_MS),
