@@ -14,5 +14,31 @@ function getLibraryApiResponseRoot(payload: unknown): LibraryApiRecord {
   return isLibraryApiRecord(response) ? response : {}
 }
 
-export { getLibraryApiResponseRoot, isLibraryApiRecord }
+function getNestedRecords(
+  responseRoot: LibraryApiRecord,
+  listKey: string,
+  itemKey: string,
+) {
+  const items = responseRoot[listKey]
+
+  if (!Array.isArray(items)) {
+    return []
+  }
+
+  return items.flatMap((item) => {
+    if (!isLibraryApiRecord(item)) {
+      return []
+    }
+
+    const nestedItem = item[itemKey]
+
+    return isLibraryApiRecord(nestedItem) ? [nestedItem] : []
+  })
+}
+
+function getDocRecords(responseRoot: LibraryApiRecord) {
+  return getNestedRecords(responseRoot, 'docs', 'doc')
+}
+
+export { getDocRecords, getLibraryApiResponseRoot, isLibraryApiRecord }
 export type { LibraryApiRecord }
