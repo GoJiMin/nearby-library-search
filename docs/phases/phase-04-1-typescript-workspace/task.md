@@ -45,9 +45,9 @@
 
 ## 7. 루트 TypeScript 진입점 검증
 
-- [ ] `pnpm exec tsc -p tsconfig.json` 실행 시 `TS18002`가 더 이상 발생하지 않는지 확인한다.
-- [ ] `pnpm exec tsc -b tsconfig.json`가 성공하는지 확인한다.
-- [ ] 루트 `tsconfig.json`이 workspace graph entrypoint로 동작하는지 확인한다.
+- [x] `pnpm exec tsc -p tsconfig.json` 실행 시 `TS18002`가 더 이상 발생하지 않는지 확인한다.
+- [x] `pnpm exec tsc -b tsconfig.json`가 성공하는지 확인한다.
+- [x] 루트 `tsconfig.json`이 workspace graph entrypoint로 동작하는지 확인한다.
 
 ## 8. 패키지별 회귀 검증
 
