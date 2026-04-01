@@ -2,11 +2,11 @@
 
 ## 1. Entities 공통 구조 준비
 
-- [ ] `apps/web/src/entities/book/api`, `apps/web/src/entities/book/model` 디렉터리를 추가한다.
-- [ ] `apps/web/src/entities/library/api`, `apps/web/src/entities/library/model` 디렉터리를 추가한다.
-- [ ] `apps/web/src/entities/region/model` 디렉터리를 추가한다.
-- [ ] 각 슬라이스의 외부 공개 진입점을 `index.ts` 하나로 유지하도록 구조를 정리한다.
-- [ ] `book`, `library` query key/query options 네이밍 규칙을 코드 기준으로 고정한다.
+- [x] `apps/web/src/entities/book/api`, `apps/web/src/entities/book/model` 디렉터리를 추가한다.
+- [x] `apps/web/src/entities/library/api`, `apps/web/src/entities/library/model` 디렉터리를 추가한다.
+- [x] `apps/web/src/entities/region/model` 디렉터리를 추가한다.
+- [x] 각 슬라이스의 외부 공개 진입점을 `index.ts` 하나로 유지하도록 구조를 정리한다.
+- [x] `book`, `library` query key/query options 네이밍 규칙을 코드 기준으로 고정한다.
 
 ## 2. `book` API 구현
 
