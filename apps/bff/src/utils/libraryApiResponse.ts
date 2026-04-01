@@ -40,11 +40,16 @@ function getDocRecords(responseRoot: LibraryApiRecord) {
   return getNestedRecords(responseRoot, 'docs', 'doc')
 }
 
+function getBookRecords(responseRoot: LibraryApiRecord) {
+  return getNestedRecords(responseRoot, 'detail', 'book')
+}
+
 function getLibraryRecords(responseRoot: LibraryApiRecord) {
   return getNestedRecords(responseRoot, 'libs', 'lib')
 }
 
 export {
+  getBookRecords,
   getDocRecords,
   getLibraryApiResponseRoot,
   getLibraryRecords,

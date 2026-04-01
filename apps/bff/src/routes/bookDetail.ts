@@ -1,4 +1,10 @@
-import type { ErrorResponse } from '@nearby-library-search/contracts'
+import type {
+  BookDetail,
+  BookDetailLoanInfo,
+  BookDetailLoanStat,
+  BookDetailResponse,
+  ErrorResponse,
+} from '@nearby-library-search/contracts'
 import {
   LibraryApiRequestConfigError,
   requestLibraryApi,
@@ -7,6 +13,16 @@ import type { FastifyPluginAsync } from 'fastify'
 import type { ZodError } from 'zod'
 import { bookDetailParamsSchema } from '../schemas/book.js'
 import { createErrorResponse } from '../utils/error.js'
+import {
+  getBookRecords,
+  getLibraryApiResponseRoot,
+  isLibraryApiRecord,
+} from '../utils/libraryApiResponse.js'
+import {
+  normalizeHttpUrl,
+  normalizeNullableNumber,
+  normalizeNullableString,
+} from '../utils/normalize.js'
 
 type Result<T> =
   | {
@@ -103,6 +119,128 @@ async function fetchBookDetailPayload(
   }
 }
 
+function isBookDetailLoanStat(
+  value: BookDetailLoanStat | null,
+): value is BookDetailLoanStat {
+  return value !== null
+}
+
+function normalizeBookDetailLoanStat(value: unknown): BookDetailLoanStat | null {
+  if (!isLibraryApiRecord(value)) {
+    return null
+  }
+
+  const name = normalizeNullableString(value.name)
+
+  if (!name) {
+    return null
+  }
+
+  return {
+    loanCount: normalizeNullableNumber(value.loanCnt),
+    name,
+    rank: normalizeNullableNumber(value.ranking),
+  }
+}
+
+function normalizeBookDetailLoanStats(
+  value: unknown,
+  key: 'age' | 'gender' | 'region',
+) {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value
+    .flatMap((item) => {
+      if (!isLibraryApiRecord(item)) {
+        return []
+      }
+
+      return [normalizeBookDetailLoanStat(item[key])]
+    })
+    .filter(isBookDetailLoanStat)
+}
+
+function normalizeBookDetailRecord(value: Record<string, unknown>): BookDetail | null {
+  const title = normalizeNullableString(value.bookname)
+  const author = normalizeNullableString(value.authors)
+  const isbn13 = normalizeNullableString(value.isbn13)
+
+  if (!title || !author || !isbn13 || !/^\d{13}$/.test(isbn13)) {
+    return null
+  }
+
+  return {
+    author,
+    className: normalizeNullableString(value.class_nm),
+    classNumber: normalizeNullableString(value.class_no),
+    description: normalizeNullableString(value.description),
+    imageUrl: normalizeHttpUrl(value.bookImageURL),
+    isbn: normalizeNullableString(value.isbn),
+    isbn13,
+    publicationDate: normalizeNullableString(value.publication_date),
+    publicationYear: normalizeNullableString(value.publication_year),
+    publisher: normalizeNullableString(value.publisher),
+    title,
+  }
+}
+
+function normalizeBookDetailLoanInfo(
+  responseRoot: Record<string, unknown>,
+): BookDetailLoanInfo {
+  const loanInfoRecords = Array.isArray(responseRoot.loanInfo)
+    ? responseRoot.loanInfo.filter(isLibraryApiRecord)
+    : []
+
+  const total =
+    loanInfoRecords
+      .map((record) => normalizeBookDetailLoanStat(record.Total))
+      .find(isBookDetailLoanStat) ?? null
+
+  return {
+    byAge: loanInfoRecords.flatMap((record) =>
+      normalizeBookDetailLoanStats(record.ageResult, 'age'),
+    ),
+    byGender: loanInfoRecords.flatMap((record) =>
+      normalizeBookDetailLoanStats(record.genderResult, 'gender'),
+    ),
+    byRegion: loanInfoRecords.flatMap((record) =>
+      normalizeBookDetailLoanStats(record.regionResult, 'region'),
+    ),
+    total,
+  }
+}
+
+function normalizeBookDetailResponse(
+  payload: unknown,
+): Result<BookDetailResponse> {
+  const responseRoot = getLibraryApiResponseRoot(payload)
+  const book =
+    getBookRecords(responseRoot)
+      .map(normalizeBookDetailRecord)
+      .find((item) => item !== null) ?? null
+
+  if (!book) {
+    return {
+      ok: false,
+      error: createErrorResponse(
+        'BOOK_DETAIL_RESPONSE_INVALID',
+        '도서 상세 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        502,
+      ),
+    }
+  }
+
+  return {
+    ok: true,
+    value: {
+      book,
+      loanInfo: normalizeBookDetailLoanInfo(responseRoot),
+    },
+  }
+}
+
 export const bookDetailRoute: FastifyPluginAsync = async (app) => {
   app.get('/api/books/:isbn13', async (request, reply) => {
     const parsedParams = parseBookDetailParams(request.params)
@@ -126,12 +264,21 @@ export const bookDetailRoute: FastifyPluginAsync = async (app) => {
       return bookDetailPayload.error
     }
 
-    reply.status(501)
-
-    return createErrorResponse(
-      'BOOK_DETAIL_NOT_IMPLEMENTED',
-      '도서 상세 엔드포인트 구현이 아직 완료되지 않았습니다.',
-      501,
+    const normalizedBookDetailResponse = normalizeBookDetailResponse(
+      bookDetailPayload.value,
     )
+
+    if (!normalizedBookDetailResponse.ok) {
+      app.log.warn(
+        { errorTitle: normalizedBookDetailResponse.error.title },
+        'Book detail upstream response could not be normalized',
+      )
+
+      reply.status(normalizedBookDetailResponse.error.status)
+
+      return normalizedBookDetailResponse.error
+    }
+
+    return normalizedBookDetailResponse.value
   })
 }
