@@ -18,9 +18,9 @@
 
 ## 3. `packages/contracts` 패키지 메타데이터 정리
 
-- [ ] `packages/contracts/package.json`의 `types` 경로를 declaration output 기준으로 수정한다.
-- [ ] `packages/contracts`의 `build` 스크립트가 declaration output 구조와 맞는지 확인한다.
-- [ ] `packages/*/dist`와 `*.tsbuildinfo`가 현재 `.gitignore` 규칙으로 충분히 제외되는지 확인한다.
+- [x] `packages/contracts/package.json`의 `types` 경로를 declaration output 기준으로 수정한다.
+- [x] `packages/contracts`의 `build` 스크립트가 declaration output 구조와 맞는지 확인한다.
+- [x] `packages/*/dist`와 `*.tsbuildinfo`가 현재 `.gitignore` 규칙으로 충분히 제외되는지 확인한다.
 
 ## 4. `apps/web` project references 연결
 
