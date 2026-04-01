@@ -4,14 +4,7 @@ import type {
   Isbn13,
 } from '@nearby-library-search/contracts'
 import { requestGet } from '@/shared/request'
-
-type GetBooksParams = {
-  title?: string
-  author?: string
-  isbn13?: Isbn13
-  page?: number
-  pageSize?: number
-}
+import type { BookSearchParams } from '../model/bookSearch'
 
 async function getBooks({
   title,
@@ -19,7 +12,7 @@ async function getBooks({
   isbn13,
   page,
   pageSize,
-}: GetBooksParams) {
+}: BookSearchParams) {
   return requestGet<BookSearchResponse>({
     endpoint: '/api/books/search',
     queryParams: {

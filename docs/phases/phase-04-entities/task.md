@@ -18,19 +18,23 @@
 
 ## 3. `book` 검색 모델 구현
 
-- [ ] `apps/web/src/entities/book/model/bookSearch.ts`를 추가한다.
-- [ ] `BookSearchParams` 타입을 정의한다.
-- [ ] `normalizeBookSearchParams`에 공백 제거와 기본값 `page=1`, `pageSize=10` 규칙을 반영한다.
-- [ ] `booksQueryKeys.search`를 구현한다.
-- [ ] `booksQueryOptions.search`를 구현한다.
-- [ ] `useBookSearchQuery`를 `useSuspenseQuery` 기반으로 구현한다.
+- [x] `apps/web/src/shared/validation` 슬라이스를 추가하고 재사용 가능한 문자열/정수 정규화 유틸을 정의한다.
+- [x] `apps/web/src/entities/book/model/bookSearch.ts`를 추가한다.
+- [x] `BookSearchParams` 타입을 정의한다.
+- [x] `bookSearchParamsSchema`를 `zod` 기반으로 정의한다.
+- [x] `normalizeBookSearchParams`가 shared validation 유틸과 `zod` 스키마를 조합해 공백 제거와 기본값 `page=1`, `pageSize=10` 규칙을 반영하도록 구현한다.
+- [x] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryKeys.search`를 구현한다.
+- [x] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryOptions.search`를 구현한다.
+- [x] `apps/web/src/entities/book/model/useGetSearchBooks.ts`를 추가한다.
+- [x] `useGetSearchBooks`를 `useSuspenseQuery` 기반으로 구현한다.
 
 ## 4. `book` 상세 모델 구현
 
 - [ ] `apps/web/src/entities/book/model/bookDetail.ts`를 추가한다.
-- [ ] `booksQueryKeys.detail`를 구현한다.
-- [ ] `booksQueryOptions.detail`를 구현한다.
-- [ ] `useBookDetailQuery`를 `useSuspenseQuery` 기반으로 구현한다.
+- [ ] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryKeys.detail`를 구현한다.
+- [ ] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryOptions.detail`를 구현한다.
+- [ ] `apps/web/src/entities/book/model/useGetBookDetail.ts`를 추가한다.
+- [ ] `useGetBookDetail`을 `useSuspenseQuery` 기반으로 구현한다.
 - [ ] 도서 상세 응답의 `book === null` 해석에 필요한 최소 helper 또는 타입 기준을 정리한다.
 
 ## 5. `library` API 및 모델 구현
@@ -39,10 +43,12 @@
 - [ ] `getLibraries`를 `requestGet<LibrarySearchResponse>` 기반으로 구현한다.
 - [ ] `apps/web/src/entities/library/model/librarySearch.ts`를 추가한다.
 - [ ] `LibrarySearchParams` 타입을 정의한다.
-- [ ] `normalizeLibrarySearchParams`에 기본값 `page=1`, `pageSize=10` 규칙을 반영한다.
-- [ ] `librariesQueryKeys.search`를 구현한다.
-- [ ] `librariesQueryOptions.search`를 구현한다.
-- [ ] `useLibrarySearchQuery`를 `useSuspenseQuery` 기반으로 구현한다.
+- [ ] `librarySearchParamsSchema`를 `zod` 기반으로 정의한다.
+- [ ] `normalizeLibrarySearchParams`가 shared validation 유틸을 조합해 기본값 `page=1`, `pageSize=10` 규칙을 반영하도록 구현한다.
+- [ ] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryKeys.search`를 구현한다.
+- [ ] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryOptions.search`를 구현한다.
+- [ ] `apps/web/src/entities/library/model/useGetSearchLibraries.ts`를 추가한다.
+- [ ] `useGetSearchLibraries`를 `useSuspenseQuery` 기반으로 구현한다.
 - [ ] 좌표 존재 여부 판별 helper를 구현한다.
 - [ ] 빈 결과 판별 helper를 구현한다.
 

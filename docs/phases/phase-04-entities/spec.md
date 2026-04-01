@@ -16,6 +16,8 @@
 - 서버 상태 접근: 요청이 필요한 엔티티는 `@tanstack/react-query`의 `useSuspenseQuery`
 - 공통 요청 경계: `@/shared/request`의 `requestGet`
 - 공통 계약 타입: `@nearby-library-search/contracts`
+- 입력 검증: `zod`
+- 공통 validation 유틸: `@/shared/validation`
 - 웹 앱이 참조하는 BFF 엔드포인트
   - `/api/books/search`
   - `/api/books/:isbn13`
@@ -78,10 +80,14 @@
 - 네트워크 요청이 필요한 엔티티 API 함수는 모두 `requestGet`만 사용한다.
 - 요청이 필요한 데이터 소비는 모두 React Query를 통하고, 상위 레이어는 API 함수 대신 엔티티 훅을 사용한다.
 - `book`, `library`의 기본 읽기 훅은 모두 `useSuspenseQuery`를 사용한다.
+- 요청 입력 검증은 각 엔티티 `model`에서 `zod` 스키마로 수행한다.
+- 문자열 trim, 양의 정수 기본값 처리처럼 재사용 가능성이 있는 정규화/검증 로직은 `shared/validation`에서 범용 유틸로 제공하고, 도메인 규칙은 엔티티 스키마에서 조합한다.
 - 엔티티 훅은 로딩 UI와 에러 UI를 직접 처리하지 않는다.
 - 읽기 요청 실패는 `RequestGetError`와 Error Boundary 경로로 위임한다.
 - 쿼리 키는 훅 파일 안에서 인라인으로 선언하지 않고, `model` 내부 별도 팩터리 객체에서만 관리한다.
 - 쿼리 옵션도 훅 파일 안에서 인라인으로 만들지 않고, `model` 내부 별도 팩터리 객체에서만 관리한다.
+- `bookQueries.ts`, `libraryQueries.ts`는 쿼리 키/옵션 팩터리 전용 파일로 유지한다.
+- React Query 훅 이름은 역할이 드러나게 `useGet...` 형식으로 명시한다.
 - 정적 참조 데이터는 React Query로 감싸지 않고 `model` 상수와 selector/helper로 공개한다.
 - 슬라이스 `index.ts`는 훅, 쿼리 키, 쿼리 옵션, 상수, selector, 슬라이스 공개 타입만 export한다.
 - `book`, `library`의 `index.ts`는 내부 `api` 요청 함수를 export하지 않는다.
@@ -133,7 +139,7 @@ export const booksQueryOptions = {
   }),
 }
 
-export function useBookSearchQuery(params: BookSearchParams) {
+export function useGetSearchBooks(params: BookSearchParams) {
   const { data } = useSuspenseQuery(booksQueryOptions.search(params))
 
   return data
@@ -143,11 +149,9 @@ export function useBookSearchQuery(params: BookSearchParams) {
 - 키 팩터리 이름은 슬라이스 단위 복수형을 사용한다.
   - `booksQueryKeys`
   - `librariesQueryKeys`
-  - `regionsQueryKeys`
 - 옵션 팩터리도 같은 규칙을 따른다.
   - `booksQueryOptions`
   - `librariesQueryOptions`
-  - `regionsQueryOptions`
 
 ## 슬라이스별 설계
 
@@ -158,6 +162,7 @@ export function useBookSearchQuery(params: BookSearchParams) {
 - 도서 검색과 도서 상세 조회를 하나의 도메인 슬라이스에서 제공한다.
 - BFF의 도서 관련 엔드포인트를 호출하는 내부 API 함수를 제공한다.
 - 검색 파라미터 정규화, 쿼리 키 생성, 서스펜스 훅 제공을 담당한다.
+- `bookSearch.ts`, `bookQueries.ts`, `useGetSearchBooks.ts`, `useGetBookDetail.ts`로 모델 책임을 분리한다.
 
 #### API 세그먼트
 
@@ -183,11 +188,17 @@ export function useBookSearchQuery(params: BookSearchParams) {
     - `isbn13?: Isbn13`
     - `page?: number`
     - `pageSize?: number`
-- `normalizeBookSearchParams`는 공백 문자열을 제외하고 BFF 기본값 `page=1`, `pageSize=10`을 반영한 객체를 만든다.
+- `bookSearchParamsSchema`는 `zod` 기반으로 입력을 검증하고 정규화한다.
+  - `title`, `author`: trim 후 optional, 최대 100자
+  - `isbn13`: trim 후 optional, 13자리 숫자 문자열
+  - `page`: 기본값 1, 1 이상 정수
+  - `pageSize`: 기본값 10, 1 이상 20 이하 정수
+  - `title`, `author`, `isbn13` 중 하나는 반드시 존재해야 한다.
+- `normalizeBookSearchParams`는 `bookSearchParamsSchema.parse()`를 통해 공백 문자열을 제외하고 BFF 기본값 `page=1`, `pageSize=10`을 반영한 객체를 만든다.
 - `booksQueryKeys`는 search/detail 하위 네임스페이스를 분리한다.
 - `booksQueryOptions.search`와 `booksQueryOptions.detail`는 내부 API 함수만 호출한다.
-- `useBookSearchQuery(params)`와 `useBookDetailQuery(isbn13)`를 공개한다.
-- 검색 파라미터 유효성 검증은 상위 레이어가 우선 담당하고, BFF 400 응답은 엔티티에서 삼키지 않는다.
+- `useGetSearchBooks(params)`와 `useGetBookDetail(isbn13)`를 공개한다.
+- 검색 파라미터 유효성 검증 실패는 `ZodError`로 상위 Error Boundary 경로에 위임하고, BFF 400 응답도 엔티티에서 삼키지 않는다.
 
 #### 앱 내부 모델 규칙
 
@@ -198,8 +209,8 @@ export function useBookSearchQuery(params: BookSearchParams) {
 
 #### 공개 API
 
-- `useBookSearchQuery`
-- `useBookDetailQuery`
+- `useGetSearchBooks`
+- `useGetBookDetail`
 - `booksQueryKeys`
 - `booksQueryOptions`
 - `BookSearchParams`
@@ -212,6 +223,7 @@ export function useBookSearchQuery(params: BookSearchParams) {
 - 선택한 ISBN과 지역 기준으로 도서관 목록을 조회한다.
 - 도서관 목록 응답을 지도/목록 화면이 소비하기 쉬운 형태로 노출한다.
 - 지역 코드, 세부 지역 코드, 페이지 정보가 캐시 키에 안정적으로 반영되도록 관리한다.
+- `librarySearch.ts`, `libraryQueries.ts`, `useGetSearchLibraries.ts`로 모델 책임을 분리한다.
 
 #### API 세그먼트
 
@@ -235,10 +247,11 @@ export function useBookSearchQuery(params: BookSearchParams) {
     - `detailRegion?: DetailRegionCode`
     - `page?: number`
     - `pageSize?: number`
-- `normalizeLibrarySearchParams`는 기본값 `page=1`, `pageSize=10`을 반영한다.
+- `librarySearchParamsSchema`는 `zod` 기반으로 입력을 검증하고 `page=1`, `pageSize=10` 기본값을 반영한다.
+- `normalizeLibrarySearchParams`는 `shared/validation` 범용 유틸을 조합해 정규화한다.
 - `librariesQueryKeys`는 `search.all`, `search.list(params)` 구조를 사용한다.
 - `librariesQueryOptions.search(params)`는 `getLibraries(params)`를 queryFn으로 사용한다.
-- `useLibrarySearchQuery(params)`를 공개한다.
+- `useGetSearchLibraries(params)`를 공개한다.
 - 지도 연계에 필요한 최소 비즈니스 로직은 `model`에 둔다.
   - 예: 좌표가 모두 있는 도서관만 판별하는 helper
   - 예: 결과 목록이 비었는지 판별하는 helper
@@ -252,7 +265,7 @@ export function useBookSearchQuery(params: BookSearchParams) {
 
 #### 공개 API
 
-- `useLibrarySearchQuery`
+- `useGetSearchLibraries`
 - `librariesQueryKeys`
 - `librariesQueryOptions`
 - `LibrarySearchParams`
@@ -320,6 +333,7 @@ export function useBookSearchQuery(params: BookSearchParams) {
 - `features`와 `pages`는 query key가 필요할 때도 슬라이스 `index.ts`를 통해 공개된 팩터리만 사용한다.
 - 슬라이스 외부에서 `model` 내부 개별 파일 경로를 직접 import하지 않는다.
 - `shared` 레이어는 도메인 지식이 없으므로 `book`, `library`, `region`별 상수와 타입은 `entities`에서 소유한다.
+- `shared/validation`은 trim, 정수 coercion 같은 범용 입력 처리만 제공하고 도메인 스키마는 소유하지 않는다.
 
 ## 산출물
 
@@ -338,6 +352,7 @@ export function useBookSearchQuery(params: BookSearchParams) {
 - `book`, `library` 엔티티 요청 함수는 `requestGet`만 사용한다.
 - `features`, `pages`는 요청 데이터는 엔티티 훅으로, 지역 참조 데이터는 엔티티 상수/selector로 사용하도록 구조가 정리된다.
 - `book`, `library` 읽기 훅은 query key factory와 query options factory를 거쳐 `useSuspenseQuery`를 사용한다.
+- `book`, `library` 입력 검증은 `zod` 기반 모델 스키마로 수행되고, 공통 정규화 로직은 `shared/validation`을 통해 재사용된다.
 - 지역 선택 데이터가 정적 모델로 문서화되고, 이후 BFF로 이동 가능한 교체 지점이 남아 있다.
 - 지역/세부 지역 코드의 문서 원본 위치가 `open_api_spec.md`로 명확히 고정된다.
 - 엔티티 레이어가 `packages/contracts` 타입을 기준으로 동작한다.
