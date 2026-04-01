@@ -37,13 +37,22 @@ const bookSearchQuerySchema = z
     },
   )
 
+const bookDetailParamsSchema = z.object({
+  isbn13: z.preprocess(
+    normalizeOptionalQueryString,
+    z.string().regex(/^\d{13}$/),
+  ),
+})
+
 type BookSearchQuery = z.infer<typeof bookSearchQuerySchema>
+type BookDetailParams = z.infer<typeof bookDetailParamsSchema>
 
 export {
+  bookDetailParamsSchema,
   bookSearchQuerySchema,
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
   MAX_PAGE_SIZE,
   MAX_SEARCH_TERM_LENGTH,
 }
-export type { BookSearchQuery }
+export type { BookDetailParams, BookSearchQuery }
