@@ -1,14 +1,10 @@
-type ErrorResponse = {
-  detail: string
-  status: number
-  title: string
-}
+import type { ErrorResponse } from '@nearby-library-search/contracts'
 
-function createErrorResponse({
-  title,
-  detail,
-  status,
-}: ErrorResponse): ErrorResponse {
+function createErrorResponse(
+  title: ErrorResponse['title'],
+  detail: string,
+  status: number,
+): ErrorResponse {
   return {
     detail,
     status,
@@ -37,11 +33,11 @@ function readOptionalScalarStringQuery(
   if (typeof value !== 'string') {
     return {
       ok: false as const,
-      error: createErrorResponse({
-        detail: `${key}은(는) 하나의 문자열 값만 허용합니다.`,
-        status: 400,
-        title: invalidTitle,
-      }),
+      error: createErrorResponse(
+        invalidTitle,
+        `${key}은(는) 하나의 문자열 값만 허용합니다.`,
+        400,
+      ),
     }
   }
 
@@ -90,22 +86,14 @@ function readPositiveIntegerQuery({
   if (!Number.isInteger(parsedValue) || parsedValue < 1) {
     return {
       ok: false as const,
-      error: createErrorResponse({
-        detail: invalidDetail,
-        status: 400,
-        title: invalidTitle,
-      }),
+      error: createErrorResponse(invalidTitle, invalidDetail, 400),
     }
   }
 
   if (typeof maxValue === 'number' && parsedValue > maxValue) {
     return {
       ok: false as const,
-      error: createErrorResponse({
-        detail: invalidDetail,
-        status: 400,
-        title: invalidTitle,
-      }),
+      error: createErrorResponse(invalidTitle, invalidDetail, 400),
     }
   }
 
