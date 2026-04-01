@@ -1,17 +1,13 @@
-import { SearchX } from 'lucide-react'
-import { Badge, Card, Heading, LucideIcon, Text } from '@/shared/ui'
+import {SearchX} from 'lucide-react';
+import {Badge, Card, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type EmptyStateProps = {
-  description: string
-  label?: string
-  title: string
-}
+  description: string;
+  label?: string;
+  title: string;
+};
 
-function EmptyState({
-  title,
-  description,
-  label = '빈 상태',
-}: EmptyStateProps) {
+function EmptyState({title, description, label = '빈 상태'}: EmptyStateProps) {
   return (
     <Card className="relative overflow-hidden px-6 py-8 text-left sm:px-8 sm:py-10">
       <div className="bg-accent-soft absolute top-0 -right-12 h-40 w-40 rounded-full blur-3xl" />
@@ -37,21 +33,17 @@ function EmptyState({
             <Heading as="strong" className="mb-1 block" size="md">
               도서 검색
             </Heading>
-            <Text size="sm">
-              제목을 입력하면 검색 흐름이 여기서 이어집니다.
-            </Text>
+            <Text size="sm">제목을 입력하면 검색 흐름이 여기서 이어집니다.</Text>
           </Card>
           <Card className="bg-surface-muted rounded-3xl p-4 shadow-none">
             <div className="bg-line mb-3 h-px w-full" />
-            <Text size="sm">
-              검색 전에는 결과 대신 다음 단계 안내만 보여줍니다.
-            </Text>
+            <Text size="sm">검색 전에는 결과 대신 다음 단계 안내만 보여줍니다.</Text>
           </Card>
         </div>
       </div>
     </Card>
-  )
+  );
 }
 
-export { EmptyState }
-export type { EmptyStateProps }
+export {EmptyState};
+export type {EmptyStateProps};

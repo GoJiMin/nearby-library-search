@@ -1,19 +1,11 @@
-import { LoaderCircle } from 'lucide-react'
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  LucideIcon,
-  Text,
-} from '@/shared/ui'
+import {LoaderCircle} from 'lucide-react';
+import {Badge, Card, CardContent, CardHeader, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type LoadingStateProps = {
-  description?: string
-  label?: string
-  title?: string
-}
+  description?: string;
+  label?: string;
+  title?: string;
+};
 
 function LoadingState({
   title = '화면을 준비하고 있습니다',
@@ -29,12 +21,7 @@ function LoadingState({
         <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)] lg:items-end">
           <CardHeader className="max-w-2xl">
             <Badge className="mb-3 w-fit">
-              <LucideIcon
-                className="animate-spin"
-                icon={LoaderCircle}
-                size={16}
-                strokeWidth={2.25}
-              />
+              <LucideIcon className="animate-spin" icon={LoaderCircle} size={16} strokeWidth={2.25} />
               {label}
             </Badge>
 
@@ -70,8 +57,8 @@ function LoadingState({
         </div>
       </Card>
     </div>
-  )
+  );
 }
 
-export { LoadingState }
-export type { LoadingStateProps }
+export {LoadingState};
+export type {LoadingStateProps};

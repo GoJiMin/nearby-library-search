@@ -1,5 +1,5 @@
-export { requestGet, requestPost } from './lib/requestCore'
-export { RequestError, RequestGetError } from './lib/requestError'
+export {requestGet, requestPost} from './lib/requestCore';
+export {RequestError, RequestGetError} from './lib/requestError';
 export type {
   CreateRequestErrorProps,
   CreateRequestInitProps,
@@ -16,4 +16,4 @@ export type {
   RequestQueryValue,
   RequestResponseOption,
   WithErrorHandling,
-} from './lib/requestType'
+} from './lib/requestType';

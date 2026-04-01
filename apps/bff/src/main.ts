@@ -1,6 +1,6 @@
-import { createApp } from './app/createApp.js'
-import { startServer } from './server/startServer.js'
+import {createApp} from './app/createApp.js';
+import {startServer} from './server/startServer.js';
 
-const server = createApp()
+const server = createApp();
 
-void startServer(server)
+void startServer(server);

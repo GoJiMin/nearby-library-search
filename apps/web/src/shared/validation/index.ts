@@ -1,5 +1,1 @@
-export {
-  createOptionalTrimmedStringSchema,
-  createPositiveIntegerSchema,
-  normalizeOptionalString,
-} from './lib/schema'
+export {createOptionalTrimmedStringSchema, createPositiveIntegerSchema, normalizeOptionalString} from './lib/schema';

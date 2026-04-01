@@ -1,47 +1,42 @@
-import { z } from 'zod'
+import {z} from 'zod';
 
 function normalizeOptionalQueryString(value: unknown) {
   if (value === undefined) {
-    return undefined
+    return undefined;
   }
 
   if (typeof value !== 'string') {
-    return value
+    return value;
   }
 
-  const normalizedValue = value.trim()
+  const normalizedValue = value.trim();
 
-  return normalizedValue.length > 0 ? normalizedValue : undefined
+  return normalizedValue.length > 0 ? normalizedValue : undefined;
 }
 
-function createPositiveIntegerQuerySchema(
-  fallbackValue: number,
-  maxValue?: number,
-) {
+function createPositiveIntegerQuerySchema(fallbackValue: number, maxValue?: number) {
   return z.preprocess(
-    (value) => {
+    value => {
       if (value === undefined) {
-        return fallbackValue
+        return fallbackValue;
       }
 
       if (typeof value !== 'string') {
-        return value
+        return value;
       }
 
-      const normalizedValue = value.trim()
+      const normalizedValue = value.trim();
 
       if (!normalizedValue) {
-        return fallbackValue
+        return fallbackValue;
       }
 
-      const parsedValue = Number(normalizedValue)
+      const parsedValue = Number(normalizedValue);
 
-      return Number.isInteger(parsedValue) ? parsedValue : Number.NaN
+      return Number.isInteger(parsedValue) ? parsedValue : Number.NaN;
     },
-    maxValue === undefined
-      ? z.number().int().min(1)
-      : z.number().int().min(1).max(maxValue),
-  )
+    maxValue === undefined ? z.number().int().min(1) : z.number().int().min(1).max(maxValue),
+  );
 }
 
-export { createPositiveIntegerQuerySchema, normalizeOptionalQueryString }
+export {createPositiveIntegerQuerySchema, normalizeOptionalQueryString};

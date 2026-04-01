@@ -118,16 +118,14 @@ export const booksQueryKeys = {
 
   search: {
     all: () => [...booksQueryKeys.all(), 'search'] as const,
-    list: (params: BookSearchParams) =>
-      [...booksQueryKeys.search.all(), params] as const,
+    list: (params: BookSearchParams) => [...booksQueryKeys.search.all(), params] as const,
   },
 
   detail: {
     all: () => [...booksQueryKeys.all(), 'detail'] as const,
-    byIsbn13: (isbn13: Isbn13) =>
-      [...booksQueryKeys.detail.all(), isbn13] as const,
+    byIsbn13: (isbn13: Isbn13) => [...booksQueryKeys.detail.all(), isbn13] as const,
   },
-}
+};
 
 export const booksQueryOptions = {
   search: (params: BookSearchParams) => ({
@@ -139,12 +137,12 @@ export const booksQueryOptions = {
     queryKey: booksQueryKeys.detail.byIsbn13(isbn13),
     queryFn: () => getBookDetail(isbn13),
   }),
-}
+};
 
 export function useGetSearchBooks(params: BookSearchParams) {
-  const { data } = useSuspenseQuery(booksQueryOptions.search(params))
+  const {data} = useSuspenseQuery(booksQueryOptions.search(params));
 
-  return data
+  return data;
 }
 ```
 

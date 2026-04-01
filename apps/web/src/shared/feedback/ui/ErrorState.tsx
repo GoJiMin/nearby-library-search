@@ -1,14 +1,14 @@
-import { TriangleAlert } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Badge, Button, Card, Heading, LucideIcon, Text } from '@/shared/ui'
+import {TriangleAlert} from 'lucide-react';
+import {Link} from 'react-router-dom';
+import {Badge, Button, Card, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type ErrorStateProps = {
-  actionLabel?: string
-  description?: string
-  href?: string
-  label?: string
-  title?: string
-}
+  actionLabel?: string;
+  description?: string;
+  href?: string;
+  label?: string;
+  title?: string;
+};
 
 function ErrorState({
   title = '화면을 불러오지 못했습니다',
@@ -44,15 +44,13 @@ function ErrorState({
             <Button asChild className="w-full justify-center">
               <Link to={href}>{actionLabel}</Link>
             </Button>
-            <Text size="sm">
-              일시적인 문제일 수 있습니다. 홈으로 이동한 뒤 다시 시도해 주세요.
-            </Text>
+            <Text size="sm">일시적인 문제일 수 있습니다. 홈으로 이동한 뒤 다시 시도해 주세요.</Text>
           </div>
         </div>
       </Card>
     </div>
-  )
+  );
 }
 
-export { ErrorState }
-export type { ErrorStateProps }
+export {ErrorState};
+export type {ErrorStateProps};

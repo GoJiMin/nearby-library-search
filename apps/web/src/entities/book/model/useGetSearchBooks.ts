@@ -1,11 +1,11 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { booksQueryOptions } from './bookQueries'
-import type { BookSearchParams } from './bookSchema'
+import {useSuspenseQuery} from '@tanstack/react-query';
+import {booksQueryOptions} from './bookQueries';
+import type {BookSearchParams} from './bookSchema';
 
 function useGetSearchBooks(params: BookSearchParams) {
-  const { data } = useSuspenseQuery(booksQueryOptions.search(params))
+  const {data} = useSuspenseQuery(booksQueryOptions.search(params));
 
-  return data
+  return data;
 }
 
-export { useGetSearchBooks }
+export {useGetSearchBooks};

@@ -6,16 +6,12 @@ function AppHeader() {
           L
         </span>
         <div className="flex flex-col">
-          <strong className="text-text text-sm font-semibold">
-            동네 도서관 찾기
-          </strong>
-          <span className="text-text-muted text-xs">
-            가까운 소장 도서관을 빠르게 찾는 MVP
-          </span>
+          <strong className="text-text text-sm font-semibold">동네 도서관 찾기</strong>
+          <span className="text-text-muted text-xs">가까운 소장 도서관을 빠르게 찾는 MVP</span>
         </div>
       </div>
     </header>
-  )
+  );
 }
 
-export { AppHeader }
+export {AppHeader};

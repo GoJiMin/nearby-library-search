@@ -1,5 +1,5 @@
-import { apiConfig } from '@/shared/env'
-import { RequestError, RequestGetError } from './requestError'
+import {apiConfig} from '@/shared/env';
+import {RequestError, RequestGetError} from './requestError';
 import type {
   CreateRequestErrorProps,
   CreateRequestInitProps,
@@ -10,68 +10,57 @@ import type {
   RequestProps,
   RequestQueryParams,
   WithErrorHandling,
-} from './requestType'
+} from './requestType';
 
 function buildRequestQueryString(queryParams?: RequestQueryParams) {
   if (!queryParams) {
-    return ''
+    return '';
   }
 
-  const searchParams = new URLSearchParams()
+  const searchParams = new URLSearchParams();
 
   Object.entries(queryParams).forEach(([key, value]) => {
     if (value === null || value === undefined) {
-      return
+      return;
     }
 
-    searchParams.set(key, String(value))
-  })
+    searchParams.set(key, String(value));
+  });
 
-  const queryString = searchParams.toString()
+  const queryString = searchParams.toString();
 
-  return queryString.length > 0 ? `?${queryString}` : ''
+  return queryString.length > 0 ? `?${queryString}` : '';
 }
 
 function getApplicationApiBaseUrl(baseUrl?: string) {
-  const resolvedBaseUrl = (baseUrl ?? apiConfig.baseUrl ?? '').trim()
+  const resolvedBaseUrl = (baseUrl ?? apiConfig.baseUrl ?? '').trim();
 
   if (!resolvedBaseUrl) {
-    throw new Error('VITE_API_BASE_URL must point to the Fastify BFF.')
+    throw new Error('VITE_API_BASE_URL must point to the Fastify BFF.');
   }
 
-  return resolvedBaseUrl.replace(/\/$/, '')
+  return resolvedBaseUrl.replace(/\/$/, '');
 }
 
 function normalizeApplicationApiEndpoint(endpoint: string) {
-  const normalizedEndpoint = endpoint.startsWith('/')
-    ? endpoint
-    : `/${endpoint}`
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-  if (
-    normalizedEndpoint !== '/api' &&
-    !normalizedEndpoint.startsWith('/api/')
-  ) {
-    throw new Error(
-      'shared/request endpoints must target the Fastify BFF /api namespace.',
-    )
+  if (normalizedEndpoint !== '/api' && !normalizedEndpoint.startsWith('/api/')) {
+    throw new Error('shared/request endpoints must target the Fastify BFF /api namespace.');
   }
 
-  return normalizedEndpoint
+  return normalizedEndpoint;
 }
 
-function createRequestInit({
-  method,
-  body,
-  headers = {},
-}: CreateRequestInitProps): RequestInitWithMethod {
-  const normalizedHeaders: RequestHeaders = { ...headers }
+function createRequestInit({method, body, headers = {}}: CreateRequestInitProps): RequestInitWithMethod {
+  const normalizedHeaders: RequestHeaders = {...headers};
 
   if (body instanceof FormData) {
     return {
       body,
       headers: normalizedHeaders,
       method,
-    }
+    };
   }
 
   if (body && method !== 'GET') {
@@ -82,13 +71,13 @@ function createRequestInit({
         ...normalizedHeaders,
       },
       method,
-    }
+    };
   }
 
   return {
     headers: normalizedHeaders,
     method,
-  }
+  };
 }
 
 function createRequestUrl({
@@ -96,34 +85,29 @@ function createRequestUrl({
   endpoint,
   queryParams,
 }: Pick<RequestProps, 'baseUrl' | 'endpoint' | 'queryParams'>) {
-  const normalizedBaseUrl = getApplicationApiBaseUrl(baseUrl)
-  const normalizedEndpoint = normalizeApplicationApiEndpoint(endpoint)
-  const queryString = buildRequestQueryString(queryParams)
+  const normalizedBaseUrl = getApplicationApiBaseUrl(baseUrl);
+  const normalizedEndpoint = normalizeApplicationApiEndpoint(endpoint);
+  const queryString = buildRequestQueryString(queryParams);
 
-  return `${normalizedBaseUrl}${normalizedEndpoint}${queryString}`
+  return `${normalizedBaseUrl}${normalizedEndpoint}${queryString}`;
 }
 
-async function handleRequestError({
-  response,
-  body,
-  requestInit,
-  errorHandlingType,
-}: CreateRequestErrorProps) {
+async function handleRequestError({response, body, requestInit, errorHandlingType}: CreateRequestErrorProps) {
   const fallbackErrorInfo: RequestErrorInfo = {
     detail: '요청을 처리하는 중 문제가 발생했습니다.',
     status: response.status,
     title: 'REQUEST_ERROR',
-  }
+  };
 
-  let parsedErrorInfo: Partial<RequestErrorInfo> = {}
+  let parsedErrorInfo: Partial<RequestErrorInfo> = {};
 
   try {
-    parsedErrorInfo = (await response.json()) as Partial<RequestErrorInfo>
+    parsedErrorInfo = (await response.json()) as Partial<RequestErrorInfo>;
   } catch {
-    parsedErrorInfo = {}
+    parsedErrorInfo = {};
   }
 
-  const errorInfo = { ...fallbackErrorInfo, ...parsedErrorInfo }
+  const errorInfo = {...fallbackErrorInfo, ...parsedErrorInfo};
 
   if (requestInit.method === 'GET') {
     return new RequestGetError({
@@ -134,7 +118,7 @@ async function handleRequestError({
       name: errorInfo.title,
       requestBody: body ?? null,
       status: errorInfo.status,
-    })
+    });
   }
 
   return new RequestError({
@@ -144,16 +128,13 @@ async function handleRequestError({
     name: errorInfo.title,
     requestBody: body ?? null,
     status: errorInfo.status,
-  })
+  });
 }
 
-async function request<T>({
-  withResponse = true,
-  ...props
-}: WithErrorHandling<RequestProps>) {
-  const requestUrl = createRequestUrl(props)
-  const requestInit = createRequestInit(props)
-  const response = await fetch(requestUrl, requestInit)
+async function request<T>({withResponse = true, ...props}: WithErrorHandling<RequestProps>) {
+  const requestUrl = createRequestUrl(props);
+  const requestInit = createRequestInit(props);
+  const response = await fetch(requestUrl, requestInit);
 
   if (!response.ok) {
     throw await handleRequestError({
@@ -161,14 +142,14 @@ async function request<T>({
       errorHandlingType: props.errorHandlingType,
       requestInit,
       response,
-    })
+    });
   }
 
   if (!withResponse || response.status === 204) {
-    return undefined as T
+    return undefined as T;
   }
 
-  return (await response.json()) as T
+  return (await response.json()) as T;
 }
 
 async function requestGet<T>({
@@ -183,20 +164,16 @@ async function requestGet<T>({
     headers,
     method: 'GET',
     withResponse,
-  })
+  });
 }
 
-async function requestPost<T = void>({
-  headers = {},
-  withResponse = false,
-  ...props
-}: RequestMethodProps) {
+async function requestPost<T = void>({headers = {}, withResponse = false, ...props}: RequestMethodProps) {
   return request<T>({
     ...props,
     headers,
     method: 'POST',
     withResponse,
-  })
+  });
 }
 
-export { requestGet, requestPost }
+export {requestGet, requestPost};

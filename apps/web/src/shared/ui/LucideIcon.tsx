@@ -1,23 +1,17 @@
-import clsx, { type ClassValue } from 'clsx'
-import type { LucideIcon as LucideIconType, LucideProps } from 'lucide-react'
-import { twMerge } from 'tailwind-merge'
+import clsx, {type ClassValue} from 'clsx';
+import type {LucideIcon as LucideIconType, LucideProps} from 'lucide-react';
+import {twMerge} from 'tailwind-merge';
 
 type LucideIconProps = LucideProps & {
-  icon: LucideIconType
-}
+  icon: LucideIconType;
+};
 
 function mergeClassNames(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-function LucideIcon({
-  icon: Icon,
-  className,
-  'aria-label': ariaLabel,
-  strokeWidth = 2,
-  ...props
-}: LucideIconProps) {
-  const isDecorative = ariaLabel == null
+function LucideIcon({icon: Icon, className, 'aria-label': ariaLabel, strokeWidth = 2, ...props}: LucideIconProps) {
+  const isDecorative = ariaLabel == null;
 
   return (
     <Icon
@@ -28,8 +22,8 @@ function LucideIcon({
       strokeWidth={strokeWidth}
       {...props}
     />
-  )
+  );
 }
 
-export { LucideIcon }
-export type { LucideIconProps }
+export {LucideIcon};
+export type {LucideIconProps};

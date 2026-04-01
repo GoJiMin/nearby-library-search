@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import {Link} from 'react-router-dom';
 
 function NotFoundPage() {
   return (
@@ -9,8 +9,7 @@ function NotFoundPage() {
         </div>
         <h1 className="mb-4">페이지를 찾을 수 없습니다</h1>
         <p className="mb-8 max-w-xl">
-          요청한 경로가 존재하지 않거나 아직 준비되지 않았습니다. 홈으로
-          돌아가서 다시 탐색해 주세요.
+          요청한 경로가 존재하지 않거나 아직 준비되지 않았습니다. 홈으로 돌아가서 다시 탐색해 주세요.
         </p>
         <Link
           className="rounded-pill bg-accent inline-flex items-center px-5 py-3 text-sm font-semibold text-white"
@@ -20,7 +19,7 @@ function NotFoundPage() {
         </Link>
       </section>
     </div>
-  )
+  );
 }
 
-export { NotFoundPage }
+export {NotFoundPage};

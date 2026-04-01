@@ -1,9 +1,9 @@
-import type { RouteObject } from 'react-router-dom'
-import { createBrowserRouter } from 'react-router-dom'
-import { RootLayout } from '@/app/layouts'
-import { HomePage } from '@/pages/home'
-import { NotFoundPage } from '@/pages/not-found'
-import { RouteErrorPage } from '@/pages/route-error'
+import type {RouteObject} from 'react-router-dom';
+import {createBrowserRouter} from 'react-router-dom';
+import {RootLayout} from '@/app/layouts';
+import {HomePage} from '@/pages/home';
+import {NotFoundPage} from '@/pages/not-found';
+import {RouteErrorPage} from '@/pages/route-error';
 
 const routes = [
   {
@@ -21,8 +21,8 @@ const routes = [
       },
     ],
   },
-] satisfies RouteObject[]
+] satisfies RouteObject[];
 
-const router = createBrowserRouter(routes)
+const router = createBrowserRouter(routes);
 
-export { router, routes }
+export {router, routes};

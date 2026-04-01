@@ -1,47 +1,47 @@
 function normalizeNullableString(value: unknown) {
   if (typeof value !== 'string') {
-    return null
+    return null;
   }
 
-  const normalizedValue = value.trim()
+  const normalizedValue = value.trim();
 
-  return normalizedValue.length > 0 ? normalizedValue : null
+  return normalizedValue.length > 0 ? normalizedValue : null;
 }
 
 function normalizeNullableNumber(value: unknown) {
   if (typeof value === 'number') {
-    return Number.isFinite(value) ? value : null
+    return Number.isFinite(value) ? value : null;
   }
 
-  const normalizedValue = normalizeNullableString(value)
+  const normalizedValue = normalizeNullableString(value);
 
   if (normalizedValue === null) {
-    return null
+    return null;
   }
 
-  const parsedNumber = Number(normalizedValue)
+  const parsedNumber = Number(normalizedValue);
 
-  return Number.isFinite(parsedNumber) ? parsedNumber : null
+  return Number.isFinite(parsedNumber) ? parsedNumber : null;
 }
 
 function normalizeHttpUrl(value: unknown) {
-  const normalizedValue = normalizeNullableString(value)
+  const normalizedValue = normalizeNullableString(value);
 
   if (!normalizedValue) {
-    return null
+    return null;
   }
 
   try {
-    const url = new URL(normalizedValue)
+    const url = new URL(normalizedValue);
 
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return null
+      return null;
     }
 
-    return url.toString()
+    return url.toString();
   } catch {
-    return null
+    return null;
   }
 }
 
-export { normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString }
+export {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString};

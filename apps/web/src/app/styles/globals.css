@@ -17,8 +17,7 @@
   --radius-pill: 999px;
   --space-layout-x: clamp(20px, 4vw, 36px);
   --space-layout-y: clamp(28px, 5vw, 56px);
-  --font-sans:
-    'SUIT Variable', 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
+  --font-sans: 'SUIT Variable', 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
 }
 
 *,

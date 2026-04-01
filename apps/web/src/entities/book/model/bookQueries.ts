@@ -1,13 +1,13 @@
-import type { Isbn13 } from '@nearby-library-search/contracts'
-import { getBookDetail, getBooks } from '../api/bookApi'
-import type { BookSearchParams } from './bookSchema'
+import type {Isbn13} from '@nearby-library-search/contracts';
+import {getBookDetail, getBooks} from '../api/bookApi';
+import type {BookSearchParams} from './bookSchema';
 
 function createBookSearchQueryKey(params: BookSearchParams) {
-  return [...booksQueryKeys.search.all(), params] as const
+  return [...booksQueryKeys.search.all(), params] as const;
 }
 
 function createBookDetailQueryKey(isbn13: Isbn13) {
-  return [...booksQueryKeys.detail.all(), isbn13] as const
+  return [...booksQueryKeys.detail.all(), isbn13] as const;
 }
 
 const booksQueryKeys = {
@@ -20,7 +20,7 @@ const booksQueryKeys = {
     all: () => [...booksQueryKeys.all(), 'search'] as const,
     list: (params: BookSearchParams) => createBookSearchQueryKey(params),
   },
-}
+};
 
 const booksQueryOptions = {
   detail: (isbn13: Isbn13) => ({
@@ -31,6 +31,6 @@ const booksQueryOptions = {
     queryFn: () => getBooks(params),
     queryKey: createBookSearchQueryKey(params),
   }),
-}
+};
 
-export { booksQueryKeys, booksQueryOptions }
+export {booksQueryKeys, booksQueryOptions};

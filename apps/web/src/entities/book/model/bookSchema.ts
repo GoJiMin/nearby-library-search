@@ -1,51 +1,54 @@
-import type { Isbn13 } from '@nearby-library-search/contracts'
-import { z } from 'zod'
+import type {Isbn13} from '@nearby-library-search/contracts';
+import {z} from 'zod';
 import {
   createOptionalTrimmedStringSchema,
   createPositiveIntegerSchema,
   normalizeOptionalString,
-} from '@/shared/validation'
+} from '@/shared/validation';
 
-const DEFAULT_SEARCH_BOOKS_PAGE = 1
-const BOOK_SEARCH_PAGE_SIZE = 10
-const MAX_BOOK_SEARCH_TERM_LENGTH = 100
+const DEFAULT_SEARCH_BOOKS_PAGE = 1;
+const BOOK_SEARCH_PAGE_SIZE = 10;
+const MAX_BOOK_SEARCH_TERM_LENGTH = 100;
 
 type BookSearchParams = {
-  title?: string
-  author?: string
-  isbn13?: Isbn13
-  page: number
-}
+  title?: string;
+  author?: string;
+  isbn13?: Isbn13;
+  page: number;
+};
 
 type BookDetailParams = {
-  isbn13: Isbn13
-}
+  isbn13: Isbn13;
+};
 
 const searchBooksParamsSchema = z
   .object({
     author: createOptionalTrimmedStringSchema(MAX_BOOK_SEARCH_TERM_LENGTH),
     isbn13: z.preprocess(
       normalizeOptionalString,
-      z.string().regex(/^\d{13}$/).optional(),
+      z
+        .string()
+        .regex(/^\d{13}$/)
+        .optional(),
     ),
     page: createPositiveIntegerSchema(DEFAULT_SEARCH_BOOKS_PAGE),
     title: createOptionalTrimmedStringSchema(MAX_BOOK_SEARCH_TERM_LENGTH),
   })
-  .refine(({ title, author, isbn13 }) => Boolean(title || author || isbn13), {
+  .refine(({title, author, isbn13}) => Boolean(title || author || isbn13), {
     message: '도서명, 저자명, ISBN13 중 하나는 반드시 입력해야 합니다.',
     path: ['query'],
-  })
+  });
 
 const bookDetailParamsSchema = z.object({
   isbn13: z.preprocess(normalizeOptionalString, z.string().regex(/^\d{13}$/)),
-})
+});
 
 function parseSearchBooksParams(params: unknown): BookSearchParams {
-  return searchBooksParamsSchema.parse(params)
+  return searchBooksParamsSchema.parse(params);
 }
 
 function parseBookDetailParams(params: unknown): BookDetailParams {
-  return bookDetailParamsSchema.parse(params)
+  return bookDetailParamsSchema.parse(params);
 }
 
 export {
@@ -54,5 +57,5 @@ export {
   parseBookDetailParams,
   parseSearchBooksParams,
   searchBooksParamsSchema,
-}
-export type { BookDetailParams, BookSearchParams }
+};
+export type {BookDetailParams, BookSearchParams};
