@@ -89,7 +89,7 @@
 - `bookQueries.ts`, `libraryQueries.ts`는 쿼리 키/옵션 팩터리 전용 파일로 유지한다.
 - React Query 훅 이름은 역할이 드러나게 `useGet...` 형식으로 명시한다.
 - 정적 참조 데이터는 React Query로 감싸지 않고 `model` 상수와 selector/helper로 공개한다.
-- 슬라이스 `index.ts`는 훅, 쿼리 키, 쿼리 옵션, 입력 스키마, parse helper, 상수, selector, 슬라이스 공개 타입만 export한다.
+- 슬라이스 `index.ts`는 훅, 쿼리 키, 쿼리 옵션, 입력 스키마, parse helper, 상수, helper, selector, 슬라이스 공개 타입만 export한다.
 - `book`, `library`의 `index.ts`는 내부 `api` 요청 함수를 export하지 않는다.
 - 재사용 가능한 도메인 계약 타입은 `packages/contracts`를 우선 사용한다.
 - 엔티티 내부 전용 파생 타입은 contracts 타입으로 표현할 수 없을 때만 추가한다.
@@ -237,7 +237,7 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - 선택한 ISBN과 지역 기준으로 도서관 목록을 조회한다.
 - 도서관 목록 응답을 지도/목록 화면이 소비하기 쉬운 형태로 노출한다.
 - 지역 코드, 세부 지역 코드, 페이지 정보가 캐시 키에 안정적으로 반영되도록 관리한다.
-- `librarySchema.ts`, `libraryQueries.ts`, `useGetSearchLibraries.ts`로 모델 책임을 분리한다.
+- `librarySchema.ts`, `libraryQueries.ts`, `useGetSearchLibraries.ts`, `librarySearch.ts`로 모델 책임을 분리한다.
 
 #### API 세그먼트
 
@@ -262,13 +262,19 @@ export function useGetSearchBooks(params: BookSearchParams) {
     - `detailRegion?: DetailRegionCode`
     - `page: number`
 - `librarySchema.ts`는 도서관 엔티티 입력 스키마를 한 곳에 모은다.
-- `librarySearchParamsSchema`는 `zod` 기반으로 입력을 검증하고 canonical `LibrarySearchParams`를 만든다.
+- `searchLibrariesParamsSchema`는 `zod` 기반으로 입력을 검증하고 canonical `LibrarySearchParams`를 만든다.
+  - `isbn`: trim 후 13자리 숫자 문자열
+  - `region`: trim 후 2자리 숫자 문자열
+  - `detailRegion`: trim 후 optional, 5자리 숫자 문자열
+  - `page`: 기본값 1, 1 이상 정수
+  - `detailRegion`이 있으면 반드시 선택한 `region` 코드로 시작해야 한다.
+- `parseSearchLibrariesParams`는 form, URL query parsing, navigation state 같은 입력 경계에서 호출한다.
 - `librariesQueryKeys`는 `search.all`, `search.list(params)` 구조를 사용한다.
 - `librariesQueryOptions.search(params)`는 `getLibraries(params)`를 queryFn으로 사용한다.
 - `useGetSearchLibraries(params)`를 공개한다.
-- 지도 연계에 필요한 최소 비즈니스 로직은 `model`에 둔다.
-  - 예: 좌표가 모두 있는 도서관만 판별하는 helper
-  - 예: 결과 목록이 비었는지 판별하는 helper
+- `librarySearch.ts`는 contracts 응답 위에서만 동작하는 순수 helper를 제공한다.
+  - `hasLibraryCoordinates`
+  - `isEmptyLibrarySearchResult`
 
 #### 앱 내부 모델 규칙
 
@@ -282,7 +288,13 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - `useGetSearchLibraries`
 - `librariesQueryKeys`
 - `librariesQueryOptions`
+- `searchLibrariesParamsSchema`
+- `parseSearchLibrariesParams`
+- `LIBRARY_SEARCH_PAGE_SIZE`
+- `hasLibraryCoordinates`
+- `isEmptyLibrarySearchResult`
 - `LibrarySearchParams`
+- `LibrarySearchItemWithCoordinates`
 - contracts에서 재사용할 도서관 타입
 
 ### 3. `entities/region`

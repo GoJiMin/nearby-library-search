@@ -45,19 +45,19 @@
 
 ## 5. `library` API 및 모델 구현
 
-- [ ] `apps/web/src/entities/library/api/libraryApi.ts`를 추가한다.
-- [ ] `getLibraries`를 `requestGet<LibrarySearchResponse>` 기반으로 구현한다.
-- [ ] `apps/web/src/entities/library/model/librarySchema.ts`를 추가한다.
-- [ ] `LibrarySearchParams` 타입을 canonical params 기준으로 정의하고 `pageSize`를 공개 입력 파라미터에서 제거한다.
-- [ ] `librarySearchParamsSchema`를 `zod` 기반으로 정의한다.
-- [ ] `parseSearchLibrariesParams`를 구현해 입력 경계에서 canonical params를 만들 수 있게 한다.
-- [ ] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryKeys.search`를 구현한다.
-- [ ] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryOptions.search`를 구현한다.
-- [ ] `apps/web/src/entities/library/model/useGetSearchLibraries.ts`를 추가한다.
-- [ ] `useGetSearchLibraries`를 `useSuspenseQuery` 기반으로 구현한다.
-- [ ] `library` 검색 요청의 `pageSize`를 엔티티 내부 상수 `10`으로 고정한다.
-- [ ] 좌표 존재 여부 판별 helper를 구현한다.
-- [ ] 빈 결과 판별 helper를 구현한다.
+- [x] `apps/web/src/entities/library/api/libraryApi.ts`를 추가한다.
+- [x] `getLibraries`를 `requestGet<LibrarySearchResponse>` 기반으로 구현한다.
+- [x] `apps/web/src/entities/library/model/librarySchema.ts`를 추가한다.
+- [x] `LibrarySearchParams` 타입을 canonical params 기준으로 정의하고 `pageSize`를 공개 입력 파라미터에서 제거한다.
+- [x] `searchLibrariesParamsSchema`를 `zod` 기반으로 정의한다.
+- [x] `parseSearchLibrariesParams`를 구현해 입력 경계에서 canonical params를 만들 수 있게 한다.
+- [x] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryKeys.search`를 구현한다.
+- [x] `apps/web/src/entities/library/model/libraryQueries.ts`에 `librariesQueryOptions.search`를 구현한다.
+- [x] `apps/web/src/entities/library/model/useGetSearchLibraries.ts`를 추가한다.
+- [x] `useGetSearchLibraries`를 `useSuspenseQuery` 기반으로 구현한다.
+- [x] `library` 검색 요청의 `pageSize`를 엔티티 내부 상수 `10`으로 고정한다.
+- [x] `apps/web/src/entities/library/model/librarySearch.ts`에 좌표 존재 여부 판별 helper를 구현한다.
+- [x] `apps/web/src/entities/library/model/librarySearch.ts`에 빈 결과 판별 helper를 구현한다.
 
 ## 6. `region` 정적 데이터 모델 구현
 
@@ -80,7 +80,7 @@
 ## 8. 슬라이스 공개 API 정리
 
 - [ ] `apps/web/src/entities/book/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, 공개 타입만 export하도록 정리한다.
-- [ ] `apps/web/src/entities/library/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, 공개 타입만 export하도록 정리한다.
+- [ ] `apps/web/src/entities/library/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, helper, 공개 타입만 export하도록 정리한다.
 - [ ] `apps/web/src/entities/region/index.ts`가 상수, selector, helper, 공개 타입만 export하도록 정리한다.
 - [ ] 슬라이스 외부에서 내부 파일 직접 import가 필요하지 않도록 공개 경계를 고정한다.
 
