@@ -9,9 +9,27 @@ type LibraryApiQueryParams = Record<string, LibraryApiQueryValue>
 type RequestLibraryApiProps = {
   endpoint: LibraryApiEndpoint
   queryParams?: LibraryApiQueryParams
+  requiredQueryParams?: string[]
 }
 
 const LIBRARY_API_REQUEST_TIMEOUT_MS = 5000
+
+class LibraryApiRequestConfigError extends Error {
+  detail
+  status
+  title
+
+  constructor(missingParams: string[]) {
+    const detail = `필수 요청 파라미터가 누락되었습니다: ${missingParams.join(', ')}`
+
+    super(detail)
+
+    this.name = 'LibraryApiRequestConfigError'
+    this.title = 'LIBRARY_API_REQUIRED_PARAM_MISSING'
+    this.detail = detail
+    this.status = 400
+  }
+}
 
 function isEmptyQueryValue(value: LibraryApiQueryValue) {
   if (value === null || value === undefined) {
@@ -23,6 +41,19 @@ function isEmptyQueryValue(value: LibraryApiQueryValue) {
   }
 
   return false
+}
+
+function assertRequiredQueryParams(
+  queryParams: LibraryApiQueryParams,
+  requiredQueryParams: string[],
+) {
+  const missingParams = requiredQueryParams.filter((key) =>
+    isEmptyQueryValue(queryParams[key]),
+  )
+
+  if (missingParams.length > 0) {
+    throw new LibraryApiRequestConfigError(missingParams)
+  }
 }
 
 function createLibraryApiUrl({
@@ -54,7 +85,10 @@ function createLibraryApiUrl({
 async function requestLibraryApi({
   endpoint,
   queryParams,
+  requiredQueryParams = [],
 }: RequestLibraryApiProps) {
+  assertRequiredQueryParams(queryParams ?? {}, requiredQueryParams)
+
   const requestUrl = createLibraryApiUrl({ endpoint, queryParams })
 
   return fetch(requestUrl, {
@@ -72,4 +106,4 @@ export type {
   LibraryApiQueryParams,
   LibraryApiQueryValue,
 }
-export { requestLibraryApi }
+export { LibraryApiRequestConfigError, requestLibraryApi }
