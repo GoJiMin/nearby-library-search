@@ -51,14 +51,14 @@
 
 ## 8. 패키지별 회귀 검증
 
-- [ ] `pnpm run typecheck:all`이 성공하는지 확인한다.
-- [ ] `pnpm typecheck:web`가 성공하는지 확인한다.
-- [ ] `pnpm typecheck:bff`가 성공하는지 확인한다.
-- [ ] `pnpm --filter @nearby-library-search/contracts build`가 성공하는지 확인한다.
-- [ ] `pnpm lint:web`가 성공하는지 확인한다.
-- [ ] `pnpm test:run`이 성공하는지 확인한다.
-- [ ] `pnpm build:web`가 성공하는지 확인한다.
-- [ ] `pnpm build:bff`가 성공하는지 확인한다.
+- [x] `pnpm run typecheck:all`이 성공하는지 확인한다.
+- [x] `pnpm typecheck:web`가 성공하는지 확인한다.
+- [x] `pnpm typecheck:bff`가 성공하는지 확인한다.
+- [x] `pnpm --filter @nearby-library-search/contracts build`가 성공하는지 확인한다.
+- [x] `pnpm lint:web`가 성공하는지 확인한다.
+- [x] `pnpm test:run`이 성공하는지 확인한다.
+- [x] `pnpm build:web`가 성공하는지 확인한다.
+- [x] `pnpm build:bff`가 성공하는지 확인한다.
 
 ## 9. 문서 동기화
 
