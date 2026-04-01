@@ -78,7 +78,7 @@
 ### 1. 루트 solution `tsconfig`
 
 - 루트 `tsconfig.json`은 직접 소스 파일을 컴파일하지 않는다.
-- 루트 `tsconfig.json`은 `files: []`와 `references`만 가진 workspace graph entrypoint로 동작한다.
+- 루트 `tsconfig.json`은 `include: []`와 `references`만 가진 workspace graph entrypoint로 동작한다.
 - 루트 `references` 대상은 아래 3개로 고정한다.
   - `./packages/contracts`
   - `./apps/web`
@@ -90,7 +90,7 @@
 
 ```json
 {
-  "files": [],
+  "include": [],
   "references": [
     { "path": "./packages/contracts" },
     { "path": "./apps/web" },

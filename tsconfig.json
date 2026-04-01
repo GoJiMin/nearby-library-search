@@ -1,5 +1,5 @@
 {
-  "files": [],
+  "include": [],
   "references": [
     { "path": "./packages/contracts" },
     { "path": "./apps/web" },
