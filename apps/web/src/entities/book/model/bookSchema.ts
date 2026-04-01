@@ -17,6 +17,10 @@ type BookSearchParams = {
   page: number
 }
 
+type BookDetailParams = {
+  isbn13: Isbn13
+}
+
 const searchBooksParamsSchema = z
   .object({
     author: createOptionalTrimmedStringSchema(MAX_BOOK_SEARCH_TERM_LENGTH),
@@ -32,9 +36,23 @@ const searchBooksParamsSchema = z
     path: ['query'],
   })
 
+const bookDetailParamsSchema = z.object({
+  isbn13: z.preprocess(normalizeOptionalString, z.string().regex(/^\d{13}$/)),
+})
+
 function parseSearchBooksParams(params: unknown): BookSearchParams {
   return searchBooksParamsSchema.parse(params)
 }
 
-export { BOOK_SEARCH_PAGE_SIZE, parseSearchBooksParams, searchBooksParamsSchema }
-export type { BookSearchParams }
+function parseBookDetailParams(params: unknown): BookDetailParams {
+  return bookDetailParamsSchema.parse(params)
+}
+
+export {
+  BOOK_SEARCH_PAGE_SIZE,
+  bookDetailParamsSchema,
+  parseBookDetailParams,
+  parseSearchBooksParams,
+  searchBooksParamsSchema,
+}
+export type { BookDetailParams, BookSearchParams }

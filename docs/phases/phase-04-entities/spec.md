@@ -196,8 +196,12 @@ export function useGetSearchBooks(params: BookSearchParams) {
   - `isbn13`: trim 후 optional, 13자리 숫자 문자열
   - `page`: 기본값 1, 1 이상 정수
   - `title`, `author`, `isbn13` 중 하나는 반드시 존재해야 한다.
+- `bookDetailParamsSchema`는 `zod` 기반으로 상세 조회 입력을 검증하고 canonical `BookDetailParams`를 만든다.
+  - `isbn13`: trim 후 13자리 숫자 문자열
 - `parseSearchBooksParams`는 form, URL query parsing, 직접 링크 진입 같은 입력 경계에서 호출한다.
+- `parseBookDetailParams`는 route params 같은 상세 입력 경계에서 호출한다.
 - `booksQueryKeys.search`와 `booksQueryOptions.search`는 이미 정규화된 `BookSearchParams`만 받으며 내부에서 다시 정규화하지 않는다.
+- `booksQueryKeys.detail`와 `booksQueryOptions.detail`는 scalar `isbn13`을 기준으로 상세 캐시 키와 요청 선언을 만든다.
 - `booksQueryKeys`는 search/detail 하위 네임스페이스를 분리한다.
 - `booksQueryOptions.search`와 `booksQueryOptions.detail`는 내부 API 함수만 호출한다.
 - `useGetSearchBooks(params)`와 `useGetBookDetail(isbn13)`를 공개한다.
@@ -217,9 +221,12 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - `useGetBookDetail`
 - `booksQueryKeys`
 - `booksQueryOptions`
+- `bookDetailParamsSchema`
 - `searchBooksParamsSchema`
+- `parseBookDetailParams`
 - `parseSearchBooksParams`
 - `BOOK_SEARCH_PAGE_SIZE`
+- `BookDetailParams`
 - `BookSearchParams`
 - contracts에서 재사용할 도서 타입
 
