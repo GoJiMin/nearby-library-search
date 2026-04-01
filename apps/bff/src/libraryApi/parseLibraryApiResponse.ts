@@ -40,5 +40,14 @@ function getDocRecords(responseRoot: LibraryApiRecord) {
   return getNestedRecords(responseRoot, 'docs', 'doc')
 }
 
-export { getDocRecords, getLibraryApiResponseRoot, isLibraryApiRecord }
+function getLibraryRecords(responseRoot: LibraryApiRecord) {
+  return getNestedRecords(responseRoot, 'libs', 'lib')
+}
+
+export {
+  getDocRecords,
+  getLibraryApiResponseRoot,
+  getLibraryRecords,
+  isLibraryApiRecord,
+}
 export type { LibraryApiRecord }
