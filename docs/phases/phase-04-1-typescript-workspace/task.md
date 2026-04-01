@@ -31,10 +31,10 @@
 
 ## 5. `apps/bff` project references 연결
 
-- [ ] `apps/bff/tsconfig.json`에 `composite`를 추가한다.
-- [ ] `apps/bff/tsconfig.json`에 `packages/contracts` reference를 추가한다.
-- [ ] `apps/bff/tsconfig.json`의 `rootDir`와 `outDir`가 기존 빌드 흐름과 충돌하지 않는지 확인한다.
-- [ ] `apps/bff/tsconfig.json`의 NodeNext 서버 설정이 유지되는지 확인한다.
+- [x] `apps/bff/tsconfig.json`에 `composite`를 추가한다.
+- [x] `apps/bff/tsconfig.json`에 `packages/contracts` reference를 추가한다.
+- [x] `apps/bff/tsconfig.json`의 `rootDir`와 `outDir`가 기존 빌드 흐름과 충돌하지 않는지 확인한다.
+- [x] `apps/bff/tsconfig.json`의 NodeNext 서버 설정이 유지되는지 확인한다.
 
 ## 6. 루트 타입체크 스크립트 정리
 
