@@ -21,6 +21,7 @@
 - 현재 웹 앱은 `apps/web` 패키지로 이동한 상태입니다.
 - 모노레포 기본 구조는 `apps/web`, `apps/bff`, `packages/contracts`를 기준으로 합니다.
 - `apps/bff`는 Fastify 기반 BFF로 구성합니다.
+- 루트 `tsconfig.json`은 `apps/web`, `apps/bff`, `packages/contracts`를 참조하는 solution-style workspace 진입점입니다.
 - `apps/web/src/entities`에는 `book`, `library`, `region` 도메인 슬라이스를 둡니다.
 - `book`, `library` 엔티티는 `api` + `model` 구조로, `region` 엔티티는 정적 데이터 중심의 `model` 구조로 구성합니다.
 - `book`, `library` 읽기 모델은 React Query `useSuspenseQuery`와 query key/query options 팩터리 패턴으로 구성합니다.
@@ -29,6 +30,7 @@
 - 공통 API 요청은 `@/shared/request` 공개 API를 통해서만 사용합니다.
 - 엔티티, 기능, 페이지 레이어는 `fetch`를 직접 호출하지 않고 `@/shared/request`를 통해 Fastify BFF `/api`만 호출합니다.
 - 재사용 가능한 도메인 계약 타입은 `packages/contracts`를 기준으로 공유합니다.
+- `apps/web`와 `apps/bff`는 `packages/contracts`를 project reference로 연결하고, 직접 타입체크 시에는 source path alias를 통해 계약 타입을 해석합니다.
 - 클라이언트 환경변수는 `@/shared/env`를 통해서만 읽습니다.
 - `VITE_API_BASE_URL`은 web이 호출할 Fastify BFF base URL입니다.
 - 외부 Open API 인증키는 웹 앱이 아니라 BFF 서버 환경변수에서만 관리합니다.
@@ -61,6 +63,7 @@ pnpm dev       # web만 실행
 pnpm dev:web   # web만 실행
 pnpm dev:bff   # bff만 실행
 pnpm dev:all   # web + bff 동시 실행
+pnpm typecheck:all # 루트 solution tsconfig 기준 전체 타입체크
 pnpm build     # web 기본 빌드
 pnpm build:all # web + bff 전체 빌드
 ```
@@ -72,6 +75,7 @@ pnpm build:all # web + bff 전체 빌드
 ## 검증
 
 ```bash
+pnpm run typecheck:all
 pnpm lint:web
 pnpm test:run
 pnpm --filter @nearby-library-search/bff test:run
@@ -95,6 +99,8 @@ pnpm build:all
 - Phase 3 작업 목록: `docs/phases/phase-03-bff/task.md`
 - Phase 4 명세: `docs/phases/phase-04-entities/spec.md`
 - Phase 4 작업 목록: `docs/phases/phase-04-entities/task.md`
+- Phase 4-1 명세: `docs/phases/phase-04-1-typescript-workspace/spec.md`
+- Phase 4-1 작업 목록: `docs/phases/phase-04-1-typescript-workspace/task.md`
 
 ## 현재 상태
 
@@ -102,4 +108,5 @@ pnpm build:all
 - Phase 2 shared 레이어 구성 완료
 - Phase 3 모노레포 전환과 Fastify BFF 구성 완료
 - Phase 4 entities 레이어 구성 완료
+- Phase 4-1 TypeScript workspace 정리 완료
 - web 테스트는 현재 `shared/request`, router integration, `library`/`region` 엔티티 순수 helper 검증까지 포함합니다.

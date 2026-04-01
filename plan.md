@@ -65,14 +65,14 @@
 
 ## Phase 4-1. TypeScript Workspace 정리
 
-- [ ] 루트 `tsconfig.json`을 solution-style workspace 진입점으로 재구성한다.
-- [ ] `packages/contracts`를 project references가 가능한 TypeScript 설정으로 정리한다.
-- [ ] `apps/web`, `apps/bff`의 `tsconfig`를 workspace references 흐름에 맞게 조정한다.
-- [ ] 루트 `typecheck` 및 관련 스크립트를 workspace graph 기준으로 재구성한다.
-- [ ] `pnpm exec tsc -b` 또는 동등한 전체 타입체크 진입점을 정상화한다.
-- [ ] TypeScript 설정 변경이 기존 `build`, `lint`, `test` 흐름과 충돌하지 않는지 검증한다.
-- [ ] 루트 README와 후속 문서에 TypeScript workspace 기준이 필요하면 반영한다.
-- [ ] Phase 4-1 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [x] 루트 `tsconfig.json`을 solution-style workspace 진입점으로 재구성한다.
+- [x] `packages/contracts`를 project references가 가능한 TypeScript 설정으로 정리한다.
+- [x] `apps/web`, `apps/bff`의 `tsconfig`를 workspace references 흐름에 맞게 조정한다.
+- [x] 루트 `typecheck` 및 관련 스크립트를 workspace graph 기준으로 재구성한다.
+- [x] `pnpm exec tsc -b` 또는 동등한 전체 타입체크 진입점을 정상화한다.
+- [x] TypeScript 설정 변경이 기존 `build`, `lint`, `test` 흐름과 충돌하지 않는지 검증한다.
+- [x] 루트 README와 후속 문서에 TypeScript workspace 기준이 필요하면 반영한다.
+- [x] Phase 4-1 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
 ## Phase 5. Features 레이어 MVP 구현
 

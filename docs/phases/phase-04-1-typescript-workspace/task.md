@@ -62,9 +62,9 @@
 
 ## 9. 문서 동기화
 
-- [ ] 루트 `README.md`에 TypeScript workspace 기준과 루트 타입체크 명령이 필요하면 반영한다.
-- [ ] Phase 4-1 `spec.md`와 실제 구현 결과 차이가 있으면 반영한다.
-- [ ] 루트 `plan.md`의 Phase 4-1 진행 기준과 실제 작업 범위가 어긋나지 않는지 확인한다.
+- [x] 루트 `README.md`에 TypeScript workspace 기준과 루트 타입체크 명령이 필요하면 반영한다.
+- [x] Phase 4-1 `spec.md`와 실제 구현 결과 차이가 있으면 반영한다.
+- [x] 루트 `plan.md`의 Phase 4-1 진행 기준과 실제 작업 범위가 어긋나지 않는지 확인한다.
 
 ## Important Changes
 

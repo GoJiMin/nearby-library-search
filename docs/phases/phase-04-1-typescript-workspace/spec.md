@@ -36,7 +36,7 @@
 - 배포 파이프라인, CI/CD 설정, release automation 도입
 - TypeScript 외 설정 전체를 모노레포 솔루션 스타일로 일괄 전환하는 작업
 
-## 현재 기반 상태
+## 정리 전 문제 상태
 
 - 루트 `tsconfig.json`은 현재 `{"files": []}`만 포함하고 있어 `pnpm exec tsc -p tsconfig.json` 실행 시 `TS18002`를 발생시킨다.
 - 루트 `package.json`의 `typecheck:all`은 `pnpm -r --if-present exec tsc -p tsconfig.json` 형태라 현재 정상 동작하지 않는다.
@@ -46,6 +46,15 @@
 - `packages/contracts/tsconfig.json`은 `noEmit: true`라 project references의 참조 대상이 될 수 없다.
 - 현재 코드베이스에서 `@nearby-library-search/contracts`는 web, bff 모두 `import type`로만 사용하고 있다.
 - `packages/contracts/package.json`의 `types`는 현재 `./src/index.ts`를 가리킨다.
+
+## 현재 구현 기준
+
+- 루트 `tsconfig.json`은 `packages/contracts`, `apps/web`, `apps/bff`를 reference로 가지는 solution-style workspace entrypoint다.
+- 루트 `package.json`의 `typecheck:all`은 `pnpm exec tsc -b tsconfig.json`으로 정리됐다.
+- `packages/contracts/tsconfig.json`은 `composite + declaration + emitDeclarationOnly + outDir=dist` 기준의 declaration-only upstream project다.
+- `packages/contracts/package.json`의 `types`는 `./dist/src/index.d.ts`를 가리킨다.
+- `apps/web/tsconfig.json`은 `composite + noEmit`을 유지하면서 `packages/contracts` reference와 source path alias를 함께 가진다.
+- `apps/bff/tsconfig.json`은 `composite`을 유지하면서 `packages/contracts` reference와 source path alias를 함께 가진다.
 
 ## 디렉터리 기준
 
@@ -119,10 +128,12 @@
   - `composite: true`
   - `noEmit: true`
   - 기존 `@/*` alias 유지
+  - `@nearby-library-search/contracts -> ../../packages/contracts/src/index.ts` source path alias 추가
   - `packages/contracts` reference 추가
 - `apps/web`는 참조 대상이 아니라 consumer project이므로 `noEmit: true`를 유지할 수 있다.
 - `apps/web`는 declaration 산출물을 만들지 않는다.
 - `apps/web`는 여전히 `tsconfig.web.json`을 확장한다.
+- source path alias는 개별 `pnpm typecheck:web` 실행 시 prebuilt declaration 산출물에 의존하지 않도록 유지한다.
 
 ### 5. `apps/bff` project references 기준
 
@@ -130,9 +141,11 @@
 - `apps/bff/tsconfig.json`은 아래 기준으로 정리한다.
   - `composite: true`
   - 기존 `rootDir`, `outDir` 유지
+  - `@nearby-library-search/contracts -> ../../packages/contracts/src/index.ts` source path alias 추가
   - `packages/contracts` reference 추가
 - `apps/bff`는 서버 빌드가 필요하므로 현재 emit 구조를 유지한다.
 - `apps/bff`는 여전히 `tsconfig.server.json`을 확장한다.
+- source path alias는 개별 `pnpm typecheck:bff` 실행 시 prebuilt declaration 산출물에 의존하지 않도록 유지한다.
 
 ### 6. scripts와 타입체크 진입점
 
@@ -149,6 +162,7 @@
 - `references`는 TypeScript project graph를 설명하는 설정이다.
 - `extends`는 공통 옵션 공유 용도이고, `references`를 대체하지 않는다.
 - `packages/contracts`는 upstream project로 두고, `apps/web`, `apps/bff`가 이를 참조한다.
+- `apps/web`, `apps/bff`는 package resolution과 별도로 `paths`를 통해 `@nearby-library-search/contracts`를 source entry로 해석한다.
 - `apps/web`와 `apps/bff`가 서로를 직접 참조하는 구조는 도입하지 않는다.
 - `features`, `entities`, `shared`의 import 규칙은 이번 phase 범위에서 변경하지 않는다.
 
