@@ -2,11 +2,11 @@
 
 ## 1. 루트 solution `tsconfig` 진입점 정리
 
-- [ ] 루트 `tsconfig.json`의 placeholder 구조를 제거한다.
-- [ ] 루트 `tsconfig.json`에 `files: []`를 유지한다.
-- [ ] 루트 `tsconfig.json`에 `packages/contracts` reference를 추가한다.
-- [ ] 루트 `tsconfig.json`에 `apps/web` reference를 추가한다.
-- [ ] 루트 `tsconfig.json`에 `apps/bff` reference를 추가한다.
+- [x] 루트 `tsconfig.json`의 placeholder 구조를 제거한다.
+- [x] 루트 `tsconfig.json`에 `files: []`를 유지한다.
+- [x] 루트 `tsconfig.json`에 `packages/contracts` reference를 추가한다.
+- [x] 루트 `tsconfig.json`에 `apps/web` reference를 추가한다.
+- [x] 루트 `tsconfig.json`에 `apps/bff` reference를 추가한다.
 
 ## 2. `packages/contracts` TypeScript 설정 정리
 
