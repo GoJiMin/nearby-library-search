@@ -5,7 +5,7 @@
 - `entities` 레이어에 `book`, `library`, `region` 도메인 슬라이스를 정의한다.
 - BFF와 `packages/contracts`를 기준으로 웹 앱이 직접 엔드포인트나 raw 응답 구조를 알지 않도록 엔티티 경계를 고정한다.
 - 이후 `features`, `pages`가 요청 데이터는 선언형으로 소비하고, 정적 참조 데이터는 엔티티 공개 모델로 재사용하도록 기준을 표준화한다.
-- 도메인별 요청 함수, 쿼리 키, 쿼리 옵션, 서스펜스 훅, 정적 상수, selector, 최소 비즈니스 로직을 각 슬라이스 내부로 정리한다.
+- 도메인별 요청 함수, 쿼리 키, 쿼리 옵션, 서스펜스 훅, 정적 상수, 최소 검증 helper, 최소 비즈니스 로직을 각 슬라이스 내부로 정리한다.
 
 ## 기술 결정
 
@@ -30,9 +30,9 @@
 
 - `entities/book`에 도서 검색과 도서 상세 조회 모델을 정의한다.
 - `entities/library`에 ISBN + 지역 기준 도서관 조회 모델을 정의한다.
-- `entities/region`에 지역 및 세부 지역 선택용 정적 데이터 모델과 selector를 정의한다.
+- `entities/region`에 지역 및 세부 지역 선택용 정적 데이터 모델과 검증 helper를 정의한다.
 - `book`, `library`에는 API 함수, 쿼리 키 팩터리, 쿼리 옵션 팩터리, 서스펜스 훅을 정의한다.
-- `region`에는 상수, selector, helper를 정의한다.
+- `region`에는 상수와 helper를 정의한다.
 - BFF 응답을 앱 내부에서 그대로 재사용할 수 있는 영역과 파생 모델이 필요한 영역의 경계를 정의한다.
 - 엔티티 레이어에서 로딩과 에러를 직접 처리하지 않고 상위 Suspense/Error Boundary에 위임하는 기준을 정리한다.
 - Phase 4 구현을 바로 분해할 수 있는 `task.md` 작성 기준을 마련한다.
@@ -66,7 +66,7 @@
   - `model`: 입력 타입, 쿼리 키, 쿼리 옵션, 서스펜스 훅, 파생 비즈니스 로직
   - `index.ts`: 슬라이스 공개 API
 - `src/entities/region`
-  - `model`: 옵션 타입, 정적 상수, selector, 지역 종속 로직
+  - `model`: 옵션 타입, 정적 상수, 지역 종속 로직
   - `index.ts`: 슬라이스 공개 API
 
 각 슬라이스는 슬라이스 바깥에서 `index.ts`만 공개 진입점으로 사용한다. 세그먼트 디렉터리 내부에는 별도 barrel export를 두지 않는다.
@@ -88,8 +88,8 @@
 - 쿼리 옵션도 훅 파일 안에서 인라인으로 만들지 않고, `model` 내부 별도 팩터리 객체에서만 관리한다.
 - `bookQueries.ts`, `libraryQueries.ts`는 쿼리 키/옵션 팩터리 전용 파일로 유지한다.
 - React Query 훅 이름은 역할이 드러나게 `useGet...` 형식으로 명시한다.
-- 정적 참조 데이터는 React Query로 감싸지 않고 `model` 상수와 selector/helper로 공개한다.
-- 슬라이스 `index.ts`는 훅, 쿼리 키, 쿼리 옵션, 입력 스키마, parse helper, 상수, helper, selector, 슬라이스 공개 타입만 export한다.
+- 정적 참조 데이터는 React Query로 감싸지 않고 `model` 상수와 helper로 공개한다.
+- 슬라이스 `index.ts`는 훅, 쿼리 키, 쿼리 옵션, 입력 스키마, parse helper, 상수, helper, 슬라이스 공개 타입만 export한다.
 - `book`, `library`의 `index.ts`는 내부 `api` 요청 함수를 export하지 않는다.
 - 재사용 가능한 도메인 계약 타입은 `packages/contracts`를 우선 사용한다.
 - 엔티티 내부 전용 파생 타입은 contracts 타입으로 표현할 수 없을 때만 추가한다.
@@ -302,7 +302,7 @@ export function useGetSearchBooks(params: BookSearchParams) {
 #### 책임
 
 - 지역 선택 UI가 사용할 시도/세부 지역 데이터를 제공한다.
-- 선택한 `region`에 종속된 `detailRegion` 목록을 정적 selector 인터페이스로 제공한다.
+- 선택한 `region` 코드로 세부 지역 목록에 즉시 접근할 수 있는 정적 keyed object를 제공한다.
 - 현재 Phase 4에서는 네트워크 엔드포인트가 아니라 정적 데이터 소스를 직접 사용한다.
 
 #### 데이터 소스 결정
@@ -330,24 +330,21 @@ export function useGetSearchBooks(params: BookSearchParams) {
     - `label: string`
 - `REGION_OPTIONS`는 전체 시도 목록 상수다.
 - `DETAIL_REGION_OPTIONS_BY_REGION`는 시도 코드별 세부 지역 목록 상수다.
-- `getRegionOptions()`는 전체 시도 목록을 반환하는 selector다.
-- `getDetailRegionOptions(region)`는 특정 시도의 세부 지역 목록을 반환하는 selector다.
 - `isDetailRegionOfRegion(region, detailRegion)`는 세부 지역 코드가 선택된 시도에 속하는지 판별하는 helper다.
 - `detailRegion` 데이터는 반드시 상위 `region` 코드와 함께 보관한다.
-- 특정 `region`에 세부 지역 데이터가 없으면 빈 배열을 반환하고 에러를 만들지 않는다.
+- 특정 `region`에 세부 지역 데이터가 없으면 `DETAIL_REGION_OPTIONS_BY_REGION[region] ?? []` 형태로 빈 배열을 사용하고 에러를 만들지 않는다.
 
 #### 앱 내부 모델 규칙
 
 - 지역 선택용 데이터는 contracts의 코드 타입을 재사용하되 label은 엔티티 내부 모델이 소유한다.
 - `DetailRegionOption.region`은 항상 `DetailRegionOption.code`의 앞 2자리와 동일해야 한다.
 - 지역 선택에 필요한 정렬과 표기명은 상수 정의 단계에서 고정하고, 조회 시점에 다시 계산하지 않는다.
+- UI는 `REGION_OPTIONS`를 1차 select 데이터로, `DETAIL_REGION_OPTIONS_BY_REGION[selectedRegion] ?? []`를 2차 select 데이터로 직접 사용한다.
 
 #### 공개 API
 
 - `REGION_OPTIONS`
 - `DETAIL_REGION_OPTIONS_BY_REGION`
-- `getRegionOptions`
-- `getDetailRegionOptions`
 - `isDetailRegionOfRegion`
 - `RegionOption`
 - `DetailRegionOption`
@@ -377,7 +374,7 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - `book`, `library` 슬라이스는 `api`, `model`, `index.ts` 구조로 정리된다.
 - `region` 슬라이스는 `model`, `index.ts` 구조로 정리된다.
 - `book`, `library` 엔티티 요청 함수는 `requestGet`만 사용한다.
-- `features`, `pages`는 요청 데이터는 엔티티 훅으로, 지역 참조 데이터는 엔티티 상수/selector로 사용하도록 구조가 정리된다.
+- `features`, `pages`는 요청 데이터는 엔티티 훅으로, 지역 참조 데이터는 엔티티 상수/helper로 사용하도록 구조가 정리된다.
 - `book`, `library` 읽기 훅은 query key factory와 query options factory를 거쳐 `useSuspenseQuery`를 사용한다.
 - `book`, `library` 입력 검증은 `zod` 기반 모델 스키마로 수행되고, 공통 정규화 로직은 `shared/validation`을 통해 재사용된다.
 - 지역 선택 데이터가 정적 모델로 문서화되고, 이후 BFF로 이동 가능한 교체 지점이 남아 있다.

@@ -69,26 +69,23 @@
 - [x] `DetailRegionOption.region` 필드를 포함해 상위 region 종속 관계를 명시한다.
 - [x] 문서 원본과 코드 상수의 값 체계가 일치하는지 대조한다.
 
-## 7. `region` selector/helper 구현
+## 7. `region` helper 구현
 
-- [ ] `apps/web/src/entities/region/model/regionSelectors.ts`를 추가한다.
-- [ ] 전체 시도 목록을 반환하는 `getRegionOptions` selector를 구현한다.
-- [ ] 특정 `region`의 세부 지역 목록을 반환하는 `getDetailRegionOptions` selector를 구현한다.
-- [ ] 세부 지역이 없는 경우 빈 배열을 반환하도록 정리한다.
-- [ ] 선택된 `detailRegion`이 `region`에 속하는지 판별하는 `isDetailRegionOfRegion` helper를 구현한다.
+- [ ] `apps/web/src/entities/region/model`에 `isDetailRegionOfRegion` helper를 구현한다.
+- [ ] `DETAIL_REGION_OPTIONS_BY_REGION[region] ?? []` 패턴으로 세부 지역이 없는 경우도 빈 배열로 안전하게 접근할 수 있도록 사용 기준을 정리한다.
 
 ## 8. 슬라이스 공개 API 정리
 
 - [ ] `apps/web/src/entities/book/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, 공개 타입만 export하도록 정리한다.
 - [ ] `apps/web/src/entities/library/index.ts`가 훅, query key, query options, 입력 스키마, parse helper, helper, 공개 타입만 export하도록 정리한다.
-- [ ] `apps/web/src/entities/region/index.ts`가 상수, selector, helper, 공개 타입만 export하도록 정리한다.
+- [ ] `apps/web/src/entities/region/index.ts`가 상수, helper, 공개 타입만 export하도록 정리한다.
 - [ ] 슬라이스 외부에서 내부 파일 직접 import가 필요하지 않도록 공개 경계를 고정한다.
 
 ## 9. 순수 로직 중심 테스트 작성
 
 - [ ] `book`에서 schema parse helper나 순수 로직이 분리되면 해당 로직만 최소 유닛 테스트로 검증한다.
 - [ ] `library`에서 좌표 판별이나 빈 결과 판별 helper가 분리되면 해당 로직만 최소 유닛 테스트로 검증한다.
-- [ ] `region`의 selector/helper와 region-detailRegion 종속 관계를 유닛 테스트로 검증한다.
+- [ ] `region`의 helper와 region-detailRegion 종속 관계를 유닛 테스트로 검증한다.
 - [ ] 엔티티 테스트 범위에 API 요청 함수 검증이 포함되지 않았는지 점검한다.
 - [ ] 엔티티 테스트 범위에 React Query 훅이나 외부 라이브러리 동작 검증이 포함되지 않았는지 점검한다.
 
