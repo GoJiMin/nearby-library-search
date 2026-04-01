@@ -164,7 +164,8 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - 도서 검색과 도서 상세 조회를 하나의 도메인 슬라이스에서 제공한다.
 - BFF의 도서 관련 엔드포인트를 호출하는 내부 API 함수를 제공한다.
 - 입력 경계에서 사용할 스키마, 쿼리 키 생성, 서스펜스 훅 제공을 담당한다.
-- `bookSchema.ts`, `bookQueries.ts`, `useGetSearchBooks.ts`, `useGetBookDetail.ts`로 모델 책임을 분리한다.
+- 기본 모델 파일은 `bookSchema.ts`, `bookQueries.ts`, `useGetSearchBooks.ts`, `useGetBookDetail.ts`로 구성한다.
+- 도서 상세 응답 해석용 순수 로직이 필요할 때만 `bookDetail.ts`를 추가한다.
 
 #### API 세그먼트
 
@@ -200,6 +201,7 @@ export function useGetSearchBooks(params: BookSearchParams) {
 - `booksQueryKeys`는 search/detail 하위 네임스페이스를 분리한다.
 - `booksQueryOptions.search`와 `booksQueryOptions.detail`는 내부 API 함수만 호출한다.
 - `useGetSearchBooks(params)`와 `useGetBookDetail(isbn13)`를 공개한다.
+- `bookDetail.ts`는 `book === null` 해석, 대출 정보 파생 상태 계산 같은 순수 상세 도메인 로직이 실제로 필요할 때만 둔다.
 - 검색 파라미터 유효성 검증 실패는 `ZodError`로 상위 Error Boundary 경로에 위임하고, BFF 400 응답도 엔티티에서 삼키지 않는다.
 
 #### 앱 내부 모델 규칙

@@ -37,12 +37,11 @@
 ## 4. `book` 상세 모델 구현
 
 - [ ] `apps/web/src/entities/book/model/bookSchema.ts`에 상세 조회용 입력 스키마를 추가한다.
-- [ ] `apps/web/src/entities/book/model/bookDetail.ts`를 추가한다.
 - [ ] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryKeys.detail`를 구현한다.
 - [ ] `apps/web/src/entities/book/model/bookQueries.ts`에 `booksQueryOptions.detail`를 구현한다.
 - [ ] `apps/web/src/entities/book/model/useGetBookDetail.ts`를 추가한다.
 - [ ] `useGetBookDetail`을 `useSuspenseQuery` 기반으로 구현한다.
-- [ ] 도서 상세 응답의 `book === null` 해석에 필요한 최소 helper 또는 타입 기준을 정리한다.
+- [ ] 도서 상세 응답의 `book === null` 해석에 필요한 순수 helper나 타입 기준이 생기면 `apps/web/src/entities/book/model/bookDetail.ts`를 추가한다.
 
 ## 5. `library` API 및 모델 구현
 
