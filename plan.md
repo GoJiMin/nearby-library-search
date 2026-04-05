@@ -74,6 +74,18 @@
 - [x] 루트 README와 후속 문서에 TypeScript workspace 기준이 필요하면 반영한다.
 - [x] Phase 4-1 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
+## Phase 4-2. UX/UI 설계 기준 정리
+
+- [ ] 루트 `.impeccable.md`와 `AGENTS.md`의 Design Context를 Phase 4-2 설계의 source of truth로 고정한다.
+- [ ] Phase 5 MVP 전체 플로우를 화면/상태/행동 기준으로 설계한다.
+- [ ] 홈 검색 시작, 도서 선택, 지역 선택, 결과 지도·목록 화면의 정보 위계와 CTA를 고정한다.
+- [ ] 로딩, 빈 상태, 오류 상태를 공통 톤과 상태 매트릭스 기준으로 정리한다.
+- [ ] 라이트/다크 모드, 색상, 타이포, 간격, 밀도, 모션 규칙을 문서로 고정한다.
+- [ ] 모바일과 데스크톱의 레이아웃 계약과 반응형 기준을 정리한다.
+- [ ] HomePage audit에서 드러난 첫 행동 부재, 중첩 카드, 대비 부족 문제를 설계 단계에서 해소한다.
+- [ ] Phase 5 구현자가 추가 디자인 결정을 하지 않아도 되도록 design handoff spec을 완성한다.
+- [ ] Phase 4-2 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+
 ## Phase 5. Features 레이어 MVP 구현
 
 - [ ] 랜딩 페이지의 검색 경험을 구현한다.
