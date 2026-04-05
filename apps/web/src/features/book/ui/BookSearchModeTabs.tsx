@@ -1,33 +1,23 @@
-import type {BookSearchMode, BookSearchModeMeta} from '../model/useBookSearchStart';
+import {BOOK_SEARCH_MODE_CONFIG, BOOK_SEARCH_MODE_ORDER, type BookSearchMode} from '../model/useBookSearchStart';
 
 type BookSearchModeTabsProps = {
   baseId: string;
-  searchModeConfig: Readonly<Record<BookSearchMode, BookSearchModeMeta>>;
-  searchModeOrder: ReadonlyArray<BookSearchMode>;
   searchMode: BookSearchMode;
-  tabListLabel: string;
   onChangeSearchMode: (searchMode: BookSearchMode) => void;
 };
 
-function BookSearchModeTabs({
-  baseId,
-  searchModeConfig,
-  searchModeOrder,
-  searchMode,
-  tabListLabel,
-  onChangeSearchMode,
-}: BookSearchModeTabsProps) {
+function BookSearchModeTabs({baseId, searchMode, onChangeSearchMode}: BookSearchModeTabsProps) {
   const tabPanelId = `${baseId}-panel`;
 
   return (
     <div
-      aria-label={tabListLabel}
+      aria-label="검색 기준 선택"
       className="bg-surface-muted inline-flex w-full rounded-pill p-1 sm:w-auto"
       role="tablist"
     >
-      {searchModeOrder.map(mode => {
+      {BOOK_SEARCH_MODE_ORDER.map(mode => {
         const isSelected = mode === searchMode;
-        const option = searchModeConfig[mode];
+        const option = BOOK_SEARCH_MODE_CONFIG[mode];
 
         return (
           <button

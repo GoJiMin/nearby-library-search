@@ -1,7 +1,7 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import {Heading, Text} from '@/shared/ui';
-import {BOOK_SEARCH_MODE_CONFIG, BOOK_SEARCH_MODE_ORDER, useBookSearchStart} from '../model/useBookSearchStart';
+import {useBookSearchStart} from '../model/useBookSearchStart';
 import {BookSearchModeTabs} from './BookSearchModeTabs';
 import {BookSearchQueryForm} from './BookSearchQueryForm';
 
@@ -12,7 +12,6 @@ type BookSearchStartProps = {
 function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   const baseId = useId();
   const {queryText, searchMode, setQueryText, setSearchMode} = useBookSearchStart();
-  const activeSearchModeOption = BOOK_SEARCH_MODE_CONFIG[searchMode];
   const normalizedQuery = queryText.trim();
   const isSubmitDisabled = normalizedQuery.length === 0;
 
@@ -48,27 +47,17 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
         <Text size="sm">첫 검색 시작 기능의 상태 경계와 제출 구조를 준비합니다.</Text>
       </div>
 
-      <BookSearchQueryForm
-        baseId={baseId}
-        disabledHelperText={activeSearchModeOption.disabledHelperText}
-        formLabel="도서 검색 시작"
-        inputLabel={activeSearchModeOption.inputLabel}
-        isSubmitDisabled={isSubmitDisabled}
-        onQueryTextChange={setQueryText}
-        onSubmit={handleSubmit}
-        placeholder={activeSearchModeOption.placeholder}
-        queryText={queryText}
-        searchMode={searchMode}
-      >
-        <BookSearchModeTabs
+      <div className="space-y-4">
+        <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
+        <BookSearchQueryForm
           baseId={baseId}
-          onChangeSearchMode={setSearchMode}
+          isSubmitDisabled={isSubmitDisabled}
+          onQueryTextChange={setQueryText}
+          onSubmit={handleSubmit}
+          queryText={queryText}
           searchMode={searchMode}
-          searchModeConfig={BOOK_SEARCH_MODE_CONFIG}
-          searchModeOrder={BOOK_SEARCH_MODE_ORDER}
-          tabListLabel="검색 기준 선택"
         />
-      </BookSearchQueryForm>
+      </div>
     </section>
   );
 }

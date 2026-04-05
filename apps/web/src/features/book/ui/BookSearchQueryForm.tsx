@@ -1,15 +1,10 @@
-import type {BookSearchMode} from '../model/useBookSearchStart';
-import type {ReactNode, SyntheticEvent} from 'react';
+import {BOOK_SEARCH_MODE_CONFIG, type BookSearchMode} from '../model/useBookSearchStart';
+import type {SyntheticEvent} from 'react';
 import {Button, Input, Text} from '@/shared/ui';
 
 type BookSearchQueryFormProps = {
   baseId: string;
-  children?: ReactNode;
-  disabledHelperText: string;
-  formLabel: string;
-  inputLabel: string;
   isSubmitDisabled: boolean;
-  placeholder: string;
   queryText: string;
   searchMode: BookSearchMode;
   onQueryTextChange: (queryText: string) => void;
@@ -18,35 +13,29 @@ type BookSearchQueryFormProps = {
 
 function BookSearchQueryForm({
   baseId,
-  children,
-  disabledHelperText,
-  formLabel,
-  inputLabel,
   isSubmitDisabled,
-  placeholder,
   queryText,
   searchMode,
   onQueryTextChange,
   onSubmit,
 }: BookSearchQueryFormProps) {
+  const activeSearchModeOption = BOOK_SEARCH_MODE_CONFIG[searchMode];
   const inputId = `${baseId}-input`;
   const tabPanelId = `${baseId}-panel`;
   const tabPanelLabelledBy = `${baseId}-tab-${searchMode}`;
 
   return (
-    <form aria-label={formLabel} className="space-y-4" onSubmit={onSubmit}>
-      {children}
-
+    <form aria-label="도서 검색 시작" className="space-y-4" onSubmit={onSubmit}>
       <div aria-labelledby={tabPanelLabelledBy} className="space-y-4" id={tabPanelId} role="tabpanel">
         <div className="space-y-2">
           <label className="text-text text-sm font-medium" htmlFor={inputId}>
-            {inputLabel}
+            {activeSearchModeOption.inputLabel}
           </label>
           <Input
             id={inputId}
             name="queryText"
             onChange={event => onQueryTextChange(event.target.value)}
-            placeholder={placeholder}
+            placeholder={activeSearchModeOption.placeholder}
             value={queryText}
           />
         </div>
@@ -58,7 +47,7 @@ function BookSearchQueryForm({
 
           {isSubmitDisabled ? (
             <Text size="sm" tone="muted">
-              {disabledHelperText}
+              {activeSearchModeOption.disabledHelperText}
             </Text>
           ) : null}
         </div>
