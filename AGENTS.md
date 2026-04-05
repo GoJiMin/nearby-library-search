@@ -66,3 +66,33 @@
 - For example, use `rounded-3xl` instead of `rounded-[24px]`, and `min-w-55` instead of `min-w-[220px]`.
 - Use arbitrary values only when there is no meaningful built-in utility or project token for the value.
 - `calc(...)`, custom shadows, or one-off visual adjustments without an equivalent scale utility are acceptable exceptions.
+
+## Design Context
+
+### Users
+
+- The primary users are general neighborhood residents, people interested in reading, and university students.
+- Their main job is to quickly find a nearby library that currently holds the book they want.
+- Usage is likely short-session and task-oriented, so screens should be immediately understandable and action-forward.
+
+### Brand Personality
+
+- The product should feel game-like, easy to use, and simple.
+- The interface should communicate calmness and speed while still feeling distinctive.
+- It should avoid both institutional stiffness and generic utility-app blandness.
+
+### Aesthetic Direction
+
+- Use Toss- and Karrot-level UX clarity as a reference for ease of use, while maintaining a cleaner and more distinctive visual identity.
+- Support both light mode and dark mode.
+- Avoid uncontrolled gradients and purple-heavy palettes.
+- Avoid rigid public-service aesthetics, card-within-card AI-style layouts, and inconsistent typography or spacing between screens.
+- Preserve a stable visual system with clear hierarchy, rounded surfaces, and restrained but memorable accents.
+
+### Design Principles
+
+- Make the first action obvious and immediate so users can start searching without hesitation.
+- Build on a calm foundation, then add a small number of distinctive visual moments instead of constant visual noise.
+- Treat consistency in typography, spacing, density, and feedback as a core quality requirement.
+- Let flows feel light and game-like, but keep information architecture and interaction patterns unambiguous.
+- Treat accessibility as a default: follow WCAG principles, maintain strong contrast, clear focus states, light/dark readiness, and avoid unnecessary motion.
