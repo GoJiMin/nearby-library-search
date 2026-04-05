@@ -8,10 +8,10 @@
 
 ## 2. `features/book` 검색 시작 feature 골격 구성
 
-- [ ] `features/book` 안에 검색 시작 기능의 UI/model 분리 기준을 만든다.
-- [ ] 검색 모드와 입력값을 다루는 최소 로컬 상태 구조를 정리한다.
-- [ ] `features/book/index.ts`에서 검색 시작 feature의 공개 진입점을 노출한다.
-- [ ] 검색 시작 feature의 기본 integration test 파일을 추가한다.
+- [x] `features/book` 안에 검색 시작 기능의 UI/model 분리 기준을 만든다.
+- [x] 검색 모드와 입력값을 다루는 최소 로컬 상태 구조를 정리한다.
+- [x] `features/book/index.ts`에서 검색 시작 feature의 공개 진입점을 노출한다.
+- [x] 검색 시작 feature의 기본 integration test 파일을 추가한다.
 
 ## 3. 검색 모드 세그먼트 탭 구현
 
