@@ -2,13 +2,15 @@ import {useState} from 'react';
 
 type BookSearchMode = 'title' | 'author';
 
-const BOOK_SEARCH_MODE_OPTIONS: ReadonlyArray<{
+type BookSearchModeOption = {
   disabledHelperText: string;
   inputLabel: string;
   label: string;
   placeholder: string;
   value: BookSearchMode;
-}> = [
+};
+
+const BOOK_SEARCH_MODE_OPTIONS: ReadonlyArray<BookSearchModeOption> = [
   {
     disabledHelperText: '검색을 시작하려면 책 제목을 입력해주세요.',
     inputLabel: '책 제목',
@@ -38,4 +40,4 @@ function useBookSearchStart() {
 }
 
 export {BOOK_SEARCH_MODE_OPTIONS, useBookSearchStart};
-export type {BookSearchMode};
+export type {BookSearchMode, BookSearchModeOption};

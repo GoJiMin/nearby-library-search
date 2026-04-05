@@ -1,7 +1,9 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
-import {Button, Heading, Input, Text} from '@/shared/ui';
+import {Heading, Text} from '@/shared/ui';
 import {BOOK_SEARCH_MODE_OPTIONS, useBookSearchStart} from '../model/useBookSearchStart';
+import {BookSearchModeTabs} from './BookSearchModeTabs';
+import {BookSearchQueryForm} from './BookSearchQueryForm';
 
 type BookSearchStartProps = {
   onSubmitSearch: (params: BookSearchParams) => void;
@@ -50,62 +52,28 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
         <Text size="sm">첫 검색 시작 기능의 상태 경계와 제출 구조를 준비합니다.</Text>
       </div>
 
-      <form aria-label="도서 검색 시작" className="space-y-4" onSubmit={handleSubmit}>
-        <div
-          aria-label="검색 기준 선택"
-          className="bg-surface-muted inline-flex w-full rounded-pill p-1 sm:w-auto"
-          role="tablist"
-        >
-          {BOOK_SEARCH_MODE_OPTIONS.map(option => {
-            const isSelected = option.value === searchMode;
-
-            return (
-              <button
-                key={option.value}
-                aria-controls={tabPanelId}
-                aria-selected={isSelected}
-                className={`focus-visible:ring-accent-soft min-h-11 flex-1 rounded-pill px-4 py-2 text-sm font-semibold outline-none transition-colors focus-visible:ring-4 sm:flex-none ${
-                  isSelected ? 'bg-accent text-white shadow-soft' : 'text-text-muted hover:bg-surface-strong hover:text-text'
-                }`}
-                id={`${baseId}-tab-${option.value}`}
-                onClick={() => setSearchMode(option.value)}
-                role="tab"
-                tabIndex={isSelected ? 0 : -1}
-                type="button"
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <div aria-labelledby={selectedTabId} className="space-y-4" id={tabPanelId} role="tabpanel">
-          <div className="space-y-2">
-            <label className="text-text text-sm font-medium" htmlFor={inputId}>
-              {activeSearchModeOption.inputLabel}
-            </label>
-            <Input
-              id={inputId}
-              name="queryText"
-              onChange={event => setQueryText(event.target.value)}
-              placeholder={activeSearchModeOption.placeholder}
-              value={queryText}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Button disabled={isSubmitDisabled} type="submit">
-              검색 시작
-            </Button>
-
-            {isSubmitDisabled ? (
-              <Text size="sm" tone="muted">
-                {activeSearchModeOption.disabledHelperText}
-              </Text>
-            ) : null}
-          </div>
-        </div>
-      </form>
+      <BookSearchQueryForm
+        disabledHelperText={activeSearchModeOption.disabledHelperText}
+        formLabel="도서 검색 시작"
+        inputId={inputId}
+        inputLabel={activeSearchModeOption.inputLabel}
+        isSubmitDisabled={isSubmitDisabled}
+        onQueryTextChange={setQueryText}
+        onSubmit={handleSubmit}
+        placeholder={activeSearchModeOption.placeholder}
+        queryText={queryText}
+        tabPanelId={tabPanelId}
+        tabPanelLabelledBy={selectedTabId}
+      >
+        <BookSearchModeTabs
+          onChangeSearchMode={setSearchMode}
+          options={BOOK_SEARCH_MODE_OPTIONS}
+          searchMode={searchMode}
+          tabIdPrefix={`${baseId}-tab`}
+          tabListLabel="검색 기준 선택"
+          tabPanelId={tabPanelId}
+        />
+      </BookSearchQueryForm>
     </section>
   );
 }
