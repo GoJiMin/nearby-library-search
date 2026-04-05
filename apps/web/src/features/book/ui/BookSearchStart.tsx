@@ -1,7 +1,7 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import {Heading, Text} from '@/shared/ui';
-import {BOOK_SEARCH_MODE_OPTIONS, useBookSearchStart} from '../model/useBookSearchStart';
+import {BOOK_SEARCH_MODE_CONFIG, BOOK_SEARCH_MODE_ORDER, useBookSearchStart} from '../model/useBookSearchStart';
 import {BookSearchModeTabs} from './BookSearchModeTabs';
 import {BookSearchQueryForm} from './BookSearchQueryForm';
 
@@ -12,8 +12,7 @@ type BookSearchStartProps = {
 function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   const baseId = useId();
   const {queryText, searchMode, setQueryText, setSearchMode} = useBookSearchStart();
-  const activeSearchModeOption =
-    BOOK_SEARCH_MODE_OPTIONS.find(option => option.value === searchMode) ?? BOOK_SEARCH_MODE_OPTIONS[0];
+  const activeSearchModeOption = BOOK_SEARCH_MODE_CONFIG[searchMode];
   const normalizedQuery = queryText.trim();
   const isSubmitDisabled = normalizedQuery.length === 0;
 
@@ -64,8 +63,9 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
         <BookSearchModeTabs
           baseId={baseId}
           onChangeSearchMode={setSearchMode}
-          options={BOOK_SEARCH_MODE_OPTIONS}
           searchMode={searchMode}
+          searchModeConfig={BOOK_SEARCH_MODE_CONFIG}
+          searchModeOrder={BOOK_SEARCH_MODE_ORDER}
           tabListLabel="검색 기준 선택"
         />
       </BookSearchQueryForm>
