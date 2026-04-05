@@ -16,9 +16,6 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
     BOOK_SEARCH_MODE_OPTIONS.find(option => option.value === searchMode) ?? BOOK_SEARCH_MODE_OPTIONS[0];
   const normalizedQuery = queryText.trim();
   const isSubmitDisabled = normalizedQuery.length === 0;
-  const inputId = `${baseId}-input`;
-  const selectedTabId = `${baseId}-tab-${searchMode}`;
-  const tabPanelId = `${baseId}-panel`;
 
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,25 +50,23 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
       </div>
 
       <BookSearchQueryForm
+        baseId={baseId}
         disabledHelperText={activeSearchModeOption.disabledHelperText}
         formLabel="도서 검색 시작"
-        inputId={inputId}
         inputLabel={activeSearchModeOption.inputLabel}
         isSubmitDisabled={isSubmitDisabled}
         onQueryTextChange={setQueryText}
         onSubmit={handleSubmit}
         placeholder={activeSearchModeOption.placeholder}
         queryText={queryText}
-        tabPanelId={tabPanelId}
-        tabPanelLabelledBy={selectedTabId}
+        searchMode={searchMode}
       >
         <BookSearchModeTabs
+          baseId={baseId}
           onChangeSearchMode={setSearchMode}
           options={BOOK_SEARCH_MODE_OPTIONS}
           searchMode={searchMode}
-          tabIdPrefix={`${baseId}-tab`}
           tabListLabel="검색 기준 선택"
-          tabPanelId={tabPanelId}
         />
       </BookSearchQueryForm>
     </section>

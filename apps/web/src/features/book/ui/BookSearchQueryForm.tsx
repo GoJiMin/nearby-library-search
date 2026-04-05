@@ -1,35 +1,38 @@
+import type {BookSearchMode} from '../model/useBookSearchStart';
 import type {ReactNode, SyntheticEvent} from 'react';
 import {Button, Input, Text} from '@/shared/ui';
 
 type BookSearchQueryFormProps = {
+  baseId: string;
   children?: ReactNode;
   disabledHelperText: string;
   formLabel: string;
-  inputId: string;
   inputLabel: string;
   isSubmitDisabled: boolean;
   placeholder: string;
   queryText: string;
-  tabPanelId: string;
-  tabPanelLabelledBy: string;
+  searchMode: BookSearchMode;
   onQueryTextChange: (queryText: string) => void;
   onSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
 };
 
 function BookSearchQueryForm({
+  baseId,
   children,
   disabledHelperText,
   formLabel,
-  inputId,
   inputLabel,
   isSubmitDisabled,
   placeholder,
   queryText,
-  tabPanelId,
-  tabPanelLabelledBy,
+  searchMode,
   onQueryTextChange,
   onSubmit,
 }: BookSearchQueryFormProps) {
+  const inputId = `${baseId}-input`;
+  const tabPanelId = `${baseId}-panel`;
+  const tabPanelLabelledBy = `${baseId}-tab-${searchMode}`;
+
   return (
     <form aria-label={formLabel} className="space-y-4" onSubmit={onSubmit}>
       {children}

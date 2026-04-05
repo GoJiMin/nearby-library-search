@@ -1,22 +1,22 @@
 import type {BookSearchMode, BookSearchModeOption} from '../model/useBookSearchStart';
 
 type BookSearchModeTabsProps = {
+  baseId: string;
   options: ReadonlyArray<BookSearchModeOption>;
   searchMode: BookSearchMode;
   tabListLabel: string;
-  tabPanelId: string;
-  tabIdPrefix: string;
   onChangeSearchMode: (searchMode: BookSearchMode) => void;
 };
 
 function BookSearchModeTabs({
+  baseId,
   options,
   searchMode,
   tabListLabel,
-  tabPanelId,
-  tabIdPrefix,
   onChangeSearchMode,
 }: BookSearchModeTabsProps) {
+  const tabPanelId = `${baseId}-panel`;
+
   return (
     <div
       aria-label={tabListLabel}
@@ -34,7 +34,7 @@ function BookSearchModeTabs({
             className={`focus-visible:ring-accent-soft min-h-11 flex-1 rounded-pill px-4 py-2 text-sm font-semibold outline-none transition-colors focus-visible:ring-4 sm:flex-none ${
               isSelected ? 'bg-accent text-white shadow-soft' : 'text-text-muted hover:bg-surface-strong hover:text-text'
             }`}
-            id={`${tabIdPrefix}-${option.value}`}
+            id={`${baseId}-tab-${option.value}`}
             onClick={() => onChangeSearchMode(option.value)}
             role="tab"
             tabIndex={isSelected ? 0 : -1}
