@@ -14,11 +14,11 @@
 
 ## 3. Screen Inventory 정리
 
-- [ ] `Home / Search Start` 화면의 목적과 핵심 CTA를 정의한다.
-- [ ] `Book Search Result / Book Select` 화면의 목적과 핵심 CTA를 정의한다.
-- [ ] `Region Selection Dialog`의 목적과 핵심 CTA를 정의한다.
-- [ ] `Library Result` 화면의 목적과 핵심 CTA를 정의한다.
-- [ ] 공통 `loading / empty / error / disabled` 상태를 별도 화면 계약으로 정리한다.
+- [x] `Home / Search Start` 화면의 목적과 핵심 CTA를 정의한다.
+- [x] `Book Search Result / Book Select` 화면의 목적과 핵심 CTA를 정의한다.
+- [x] `Region Selection Dialog`의 목적과 핵심 CTA를 정의한다.
+- [x] `Library Result` 화면의 목적과 핵심 CTA를 정의한다.
+- [x] 공통 `loading / empty / error / disabled` 상태를 별도 화면 계약으로 정리한다.
 
 ## 4. 홈 검색 시작 화면 계약
 
