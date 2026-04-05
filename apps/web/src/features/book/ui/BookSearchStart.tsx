@@ -1,9 +1,10 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
-import {Heading, Text} from '@/shared/ui';
+import {Heading} from '@/shared/ui';
 import {useBookSearchStart} from '../model/useBookSearchStart';
 import {BookSearchModeTabs} from './BookSearchModeTabs';
 import {BookSearchQueryForm} from './BookSearchQueryForm';
+import {BookSearchSupport} from './BookSearchSupport';
 
 type BookSearchStartProps = {
   onSubmitSearch: (params: BookSearchParams) => void;
@@ -40,11 +41,10 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
       aria-labelledby="book-search-start-heading"
       className="rounded-panel border-line bg-surface-strong shadow-card w-full border px-6 py-8 sm:px-8 sm:py-10"
     >
-      <div className="mb-6 space-y-2">
+      <div className="mb-6">
         <Heading as="h2" id="book-search-start-heading" size="xl">
           도서 검색 시작
         </Heading>
-        <Text size="sm">첫 검색 시작 기능의 상태 경계와 제출 구조를 준비합니다.</Text>
       </div>
 
       <div className="space-y-4">
@@ -57,6 +57,7 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
           queryText={queryText}
           searchMode={searchMode}
         />
+        <BookSearchSupport onSelectExampleQuery={setQueryText} searchMode={searchMode} />
       </div>
     </section>
   );
