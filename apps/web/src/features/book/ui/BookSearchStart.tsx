@@ -1,4 +1,4 @@
-import type {FormEvent} from 'react';
+import type {SyntheticEvent} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import {Button, Heading, Input, Text} from '@/shared/ui';
 import {useBookSearchStart} from '../model/useBookSearchStart';
@@ -11,7 +11,7 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   const {queryText, searchMode, setQueryText} = useBookSearchStart();
   const normalizedQuery = queryText.trim();
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!normalizedQuery) {
