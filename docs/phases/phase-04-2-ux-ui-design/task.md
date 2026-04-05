@@ -85,10 +85,10 @@
 
 ## 13. Phase 5 handoff 정리
 
-- [ ] Phase 5 구현자가 추가 디자인 결정을 하지 않아도 되는지 점검한다.
-- [ ] `spec.md` 기준이 실제 구현 task로 분해 가능한지 점검한다.
-- [ ] 필요하면 HomePage audit 결과를 Phase 4-2 문서에 다시 연결한다.
-- [ ] Phase 4-2 완료 후 Phase 5를 시작할 수 있는지 최종 점검한다.
+- [x] Phase 5 구현자가 추가 디자인 결정을 하지 않아도 되는지 점검한다.
+- [x] `spec.md` 기준이 실제 구현 task로 분해 가능한지 점검한다.
+- [x] 필요하면 HomePage audit 결과를 Phase 4-2 문서에 다시 연결한다.
+- [x] Phase 4-2 완료 후 Phase 5를 시작할 수 있는지 최종 점검한다.
 
 ## Important Changes
 
