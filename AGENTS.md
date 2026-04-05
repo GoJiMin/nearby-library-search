@@ -11,18 +11,30 @@
 - Each slice may include segments such as `ui`, `lib`, and `model` when needed.
 - Every slice must expose its public API through an `index.ts` file.
 - Place page components under the slice `ui` segment.
+- Use the `pages` layer for route-level UI instead of placing page components inside the router slice.
 - Do not add barrel exports at the layer root.
 - Do not add barrel exports inside each segment directory.
 - Do not import from individual files inside a slice from outside that slice.
 - Do not export slice members by targeting individual files directly. Use the slice `index.ts` barrel export only.
-- Use the `pages` layer for route-level UI instead of placing page components inside the router slice.
-- Split files only when a file has too many responsibilities or when reuse is likely enough to justify the extra file.
-- If those conditions are not met, keep related logic together in a single file.
 
-## Git
+## Runtime Boundaries
 
-- Commit titles must be explicit enough that anyone can understand the purpose of the change from the title alone.
-- Avoid vague titles such as phase-only summaries or generic dependency updates without user-facing meaning.
+- Web client-exposed environment variables must use the `VITE_` prefix only.
+- Keep public web env in `apps/web/.env` and server-only env in `apps/bff/.env`.
+- `VITE_API_BASE_URL` must point to the Fastify BFF only.
+- Server-only secrets for the BFF must not use the `VITE_` prefix.
+- External Open API auth keys must be stored and read only in the BFF runtime environment.
+- Do not access `import.meta.env` directly in components, pages, features, entities, or shared UI code.
+- Read client runtime configuration through the `@/shared/env` slice only.
+- `entities`, `features`, and `pages` must not call `fetch` directly for application API requests.
+- Route application API requests through the public API exposed by the `@/shared/request` slice only.
+- `@/shared/request` must target the Fastify BFF `/api` namespace only.
+- The web app must not call external provider Open APIs directly once the BFF is introduced.
+- Route provider API traffic through the Fastify BFF only.
+- Import reusable UI primitives through `@/shared/ui` only.
+- Do not import files directly from inside `src/shared/ui`.
+- The `shared` layer must not contain domain-specific business knowledge.
+- Keep `shared` limited to reusable primitives, platform rules, and cross-domain utilities.
 
 ## Testing
 
@@ -36,30 +48,6 @@
 - For Fastify BFF routes, prefer `createApp().inject()` based integration tests over port-bound server tests.
 - Mock external Open API calls at the `requestLibraryApi` boundary in BFF tests.
 
-## Configuration
-
-- Web client-exposed environment variables must use the `VITE_` prefix only.
-- Do not access `import.meta.env` directly in components, pages, features, entities, or shared UI code.
-- Read client env values through the `@/shared/env` slice only.
-- Keep public web env in `apps/web/.env` and server-only env in `apps/bff/.env`.
-- `VITE_API_BASE_URL` must point to the Fastify BFF only.
-- Server-only secrets for the BFF must not use the `VITE_` prefix.
-- External Open API auth keys must be stored and read only in the BFF runtime environment.
-
-## Shared Layer
-
-- `entities`, `features`, and `pages` must not call `fetch` directly for application API requests.
-- Route application API requests through the public API exposed by the `@/shared/request` slice only.
-- `@/shared/request` must target the Fastify BFF `/api` namespace only.
-- The web app must not call external provider Open APIs directly once the BFF is introduced.
-- Route provider API traffic through the Fastify BFF only.
-- `entities`, `features`, and `pages` must not access `import.meta.env` directly.
-- Read client runtime configuration through `@/shared/env` only.
-- Import reusable UI primitives through `@/shared/ui` only.
-- Do not import files directly from inside `src/shared/ui`.
-- The `shared` layer must not contain domain-specific business knowledge.
-- Keep `shared` limited to reusable primitives, platform rules, and cross-domain utilities.
-
 ## Styling
 
 - Prefer Tailwind's canonical utility classes over arbitrary values whenever an equivalent scale utility exists.
@@ -67,7 +55,47 @@
 - Use arbitrary values only when there is no meaningful built-in utility or project token for the value.
 - `calc(...)`, custom shadows, or one-off visual adjustments without an equivalent scale utility are acceptable exceptions.
 
+## Workflow Rules
+
+### Git
+
+- Commit titles must be explicit enough that anyone can understand the purpose of the change from the title alone.
+- Avoid vague titles such as phase-only summaries or generic dependency updates without user-facing meaning.
+
+### UI/UX Source of Truth
+
+- Phase 5 and later UI/UX implementation must always reference `docs/phases/phase-04-2-ux-ui-design/spec.md` first.
+- Treat that document as the implementation contract for screen structure, interaction, state handling, responsive behavior, accessibility, theme, and motion until a later approved spec explicitly supersedes it.
+
+### Skill Enforcement
+
+- Treat `impeccable` as a design operating model, not as a single standalone skill.
+- The primary design context source of truth is the root `.impeccable.md` file.
+- For design implementation work, use `frontend-design` as the base skill and pair it with the relevant design skills for the task.
+- Use the following impeccable skill families proactively when the task matches:
+- Layout and hierarchy: `arrange`, `distill`, `normalize`, `extract`
+- Typography and copy: `typeset`, `clarify`
+- Responsive and resilience: `adapt`, `harden`
+- Motion and personality: `animate`, `delight`, `bolder`, `quieter`, `colorize`, `overdrive`
+- Review and finish: `audit`, `critique`, `polish`
+- Onboarding and empty states: `onboard`
+- UI performance: `optimize`
+- Use `teach-impeccable` only when the design context is missing or needs to be refreshed.
+- For React component architecture, state design, refactoring, data flow, or performance work, actively use `vercel-react-best-practices`.
+- For substantial implementation, design, review, refactor, or audit work, proactively identify and use relevant skills instead of waiting for the user to name them.
+
+### Component Design
+
+- Write test-friendly code with clear state boundaries, explicit props, and user-visible behavior that can be verified through RTL queries.
+- Do not let a single component own too many responsibilities such as data loading, complex state orchestration, large layout composition, and detailed interaction logic all at once.
+- Split files or components when responsibility, reuse potential, or testability clearly improves.
+- Do not split files only for ceremony; keep related logic together when extra indirection does not improve clarity.
+
 ## Design Context
+
+- The root `.impeccable.md` file is the primary design context source of truth.
+- This section is a working mirror for implementation rules and quick reference.
+- If this section and `.impeccable.md` ever conflict, follow `.impeccable.md` and then sync this file.
 
 ### Users
 
