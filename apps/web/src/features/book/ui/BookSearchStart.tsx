@@ -10,7 +10,10 @@ type BookSearchStartProps = {
 function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   const baseId = useId();
   const {queryText, searchMode, setQueryText, setSearchMode} = useBookSearchStart();
+  const activeSearchModeOption =
+    BOOK_SEARCH_MODE_OPTIONS.find(option => option.value === searchMode) ?? BOOK_SEARCH_MODE_OPTIONS[0];
   const normalizedQuery = queryText.trim();
+  const isSubmitDisabled = normalizedQuery.length === 0;
   const inputId = `${baseId}-input`;
   const selectedTabId = `${baseId}-tab-${searchMode}`;
   const tabPanelId = `${baseId}-panel`;
@@ -79,19 +82,28 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
         <div aria-labelledby={selectedTabId} className="space-y-4" id={tabPanelId} role="tabpanel">
           <div className="space-y-2">
             <label className="text-text text-sm font-medium" htmlFor={inputId}>
-              검색어
+              {activeSearchModeOption.inputLabel}
             </label>
             <Input
               id={inputId}
               name="queryText"
               onChange={event => setQueryText(event.target.value)}
+              placeholder={activeSearchModeOption.placeholder}
               value={queryText}
             />
           </div>
 
-          <Button disabled={normalizedQuery.length === 0} type="submit">
-            검색 시작
-          </Button>
+          <div className="space-y-2">
+            <Button disabled={isSubmitDisabled} type="submit">
+              검색 시작
+            </Button>
+
+            {isSubmitDisabled ? (
+              <Text size="sm" tone="muted">
+                {activeSearchModeOption.disabledHelperText}
+              </Text>
+            ) : null}
+          </div>
         </div>
       </form>
     </section>

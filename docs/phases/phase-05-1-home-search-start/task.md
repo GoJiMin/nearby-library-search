@@ -22,11 +22,11 @@
 
 ## 4. 단일 입력 필드와 검색 CTA 구현
 
-- [ ] 현재 검색 모드에 맞는 라벨과 placeholder를 가진 단일 입력 필드를 구현한다.
-- [ ] trim 기준 유효 입력일 때만 검색 CTA가 활성화되도록 구현한다.
-- [ ] Enter 입력과 CTA 클릭이 같은 제출 흐름을 타도록 구현한다.
-- [ ] 비활성 CTA 근처에 이유 설명 텍스트를 노출한다.
-- [ ] 입력/CTA/disabled helper 흐름을 integration test로 검증한다.
+- [x] 현재 검색 모드에 맞는 라벨과 placeholder를 가진 단일 입력 필드를 구현한다.
+- [x] trim 기준 유효 입력일 때만 검색 CTA가 활성화되도록 구현한다.
+- [x] Enter 입력과 CTA 클릭이 같은 제출 흐름을 타도록 구현한다.
+- [x] 비활성 CTA 근처에 이유 설명 텍스트를 노출한다.
+- [x] 입력/CTA/disabled helper 흐름을 integration test로 검증한다.
 
 ## 5. 예시 검색어와 보조 설명 구현
 
