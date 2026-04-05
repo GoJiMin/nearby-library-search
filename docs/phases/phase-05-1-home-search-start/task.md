@@ -2,9 +2,9 @@
 
 ## 1. Phase 5 feature baseline 정리
 
-- [ ] `features` 레이어 기준을 `book`, `region`, `library` 도메인 slice로 고정한다.
-- [ ] `features/book`, `features/region`, `features/library` 기본 디렉터리와 `index.ts` 공개 API 구조를 정리한다.
-- [ ] 기존 `features/nearby-library-search` placeholder slice를 Phase 5 baseline에서 제외한다.
+- [x] `features` 레이어 기준을 `book`, `region`, `library` 도메인 slice로 고정한다.
+- [x] `features/book`, `features/region`, `features/library` 기본 디렉터리와 `index.ts` 공개 API 구조를 정리한다.
+- [x] 기존 `features/nearby-library-search` placeholder slice를 Phase 5 baseline에서 제외한다.
 
 ## 2. `features/book` 검색 시작 feature 골격 구성
 
