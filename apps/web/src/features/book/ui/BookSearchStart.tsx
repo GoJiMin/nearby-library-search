@@ -1,4 +1,4 @@
-import type {SyntheticEvent} from 'react';
+import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import {Button, Heading, Input, Text} from '@/shared/ui';
 import {BOOK_SEARCH_MODE_OPTIONS, useBookSearchStart} from '../model/useBookSearchStart';
@@ -8,10 +8,12 @@ type BookSearchStartProps = {
 };
 
 function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
+  const baseId = useId();
   const {queryText, searchMode, setQueryText, setSearchMode} = useBookSearchStart();
   const normalizedQuery = queryText.trim();
-  const selectedTabId = `book-search-start-tab-${searchMode}`;
-  const tabPanelId = 'book-search-start-panel';
+  const inputId = `${baseId}-input`;
+  const selectedTabId = `${baseId}-tab-${searchMode}`;
+  const tabPanelId = `${baseId}-panel`;
 
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,7 +64,7 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
                 className={`focus-visible:ring-accent-soft min-h-11 flex-1 rounded-pill px-4 py-2 text-sm font-semibold outline-none transition-colors focus-visible:ring-4 sm:flex-none ${
                   isSelected ? 'bg-accent text-white shadow-soft' : 'text-text-muted hover:bg-surface-strong hover:text-text'
                 }`}
-                id={`book-search-start-tab-${option.value}`}
+                id={`${baseId}-tab-${option.value}`}
                 onClick={() => setSearchMode(option.value)}
                 role="tab"
                 tabIndex={isSelected ? 0 : -1}
@@ -76,11 +78,11 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
 
         <div aria-labelledby={selectedTabId} className="space-y-4" id={tabPanelId} role="tabpanel">
           <div className="space-y-2">
-            <label className="text-text text-sm font-medium" htmlFor="book-search-start-input">
+            <label className="text-text text-sm font-medium" htmlFor={inputId}>
               검색어
             </label>
             <Input
-              id="book-search-start-input"
+              id={inputId}
               name="queryText"
               onChange={event => setQueryText(event.target.value)}
               value={queryText}
