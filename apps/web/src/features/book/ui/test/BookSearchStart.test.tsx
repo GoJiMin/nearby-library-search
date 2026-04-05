@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
+import {MAX_BOOK_SEARCH_TERM_LENGTH} from '@/entities/book';
 import {BookSearchStart} from '@/features/book';
 
 describe('BookSearchStart', () => {
@@ -15,7 +16,9 @@ describe('BookSearchStart', () => {
     expect(screen.getByRole('tab', {name: '책 제목'})).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveValue('');
+    expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveProperty('maxLength', MAX_BOOK_SEARCH_TERM_LENGTH);
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toBeInTheDocument();
+    expect(screen.getByText(`0 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '검색 시작'})).toBeDisabled();
     expect(screen.getByText('검색을 시작하려면 책 제목을 입력해주세요.')).toBeInTheDocument();
     expect(
@@ -92,6 +95,7 @@ describe('BookSearchStart', () => {
     await user.type(input, '파친코');
 
     expect(submitButton).toBeEnabled();
+    expect(screen.getByText(`3 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`)).toBeInTheDocument();
     expect(screen.queryByText('검색을 시작하려면 책 제목을 입력해주세요.')).not.toBeInTheDocument();
   });
 
@@ -119,16 +123,41 @@ describe('BookSearchStart', () => {
     await user.click(screen.getByRole('button', {name: '검색 시작'}));
 
     expect(onSubmitSearch).toHaveBeenCalledTimes(1);
+    expect(onSubmitSearch).toHaveBeenCalledWith({
+      page: 1,
+      title: '파친코',
+    });
   });
 
-  it('Enter 입력으로도 제출 흐름을 실행한다', async () => {
+  it('Enter 입력으로도 저자명 canonical payload를 제출한다', async () => {
     const user = userEvent.setup();
     const onSubmitSearch = vi.fn();
 
     render(<BookSearchStart onSubmitSearch={onSubmitSearch} />);
 
-    await user.type(screen.getByRole('textbox', {name: '책 제목'}), '파친코{enter}');
+    await user.click(screen.getByRole('tab', {name: '저자명'}));
+    await user.type(screen.getByRole('textbox', {name: '저자명'}), '한강{enter}');
 
     expect(onSubmitSearch).toHaveBeenCalledTimes(1);
+    expect(onSubmitSearch).toHaveBeenCalledWith({
+      author: '한강',
+      page: 1,
+    });
+  });
+
+  it('예시 검색어 클릭 후 제출해도 canonical payload를 만든다', async () => {
+    const user = userEvent.setup();
+    const onSubmitSearch = vi.fn();
+
+    render(<BookSearchStart onSubmitSearch={onSubmitSearch} />);
+
+    await user.click(screen.getByRole('button', {name: '아몬드'}));
+    await user.click(screen.getByRole('button', {name: '검색 시작'}));
+
+    expect(onSubmitSearch).toHaveBeenCalledTimes(1);
+    expect(onSubmitSearch).toHaveBeenCalledWith({
+      page: 1,
+      title: '아몬드',
+    });
   });
 });

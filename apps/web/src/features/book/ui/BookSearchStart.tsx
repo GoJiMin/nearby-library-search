@@ -1,6 +1,7 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import {Heading} from '@/shared/ui';
+import {createBookSearchStartParams} from '../model/createBookSearchStartParams';
 import {useBookSearchStart} from '../model/useBookSearchStart';
 import {BookSearchModeTabs} from './BookSearchModeTabs';
 import {BookSearchQueryForm} from './BookSearchQueryForm';
@@ -23,17 +24,7 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
       return;
     }
 
-    onSubmitSearch(
-      searchMode === 'title'
-        ? {
-            page: 1,
-            title: normalizedQuery,
-          }
-        : {
-            author: normalizedQuery,
-            page: 1,
-          },
-    );
+    onSubmitSearch(createBookSearchStartParams({queryText, searchMode}));
   }
 
   return (

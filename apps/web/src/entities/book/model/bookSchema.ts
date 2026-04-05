@@ -53,6 +53,7 @@ function parseBookDetailParams(params: unknown): BookDetailParams {
 
 export {
   BOOK_SEARCH_PAGE_SIZE,
+  MAX_BOOK_SEARCH_TERM_LENGTH,
   bookDetailParamsSchema,
   parseBookDetailParams,
   parseSearchBooksParams,

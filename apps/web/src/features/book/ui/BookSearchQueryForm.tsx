@@ -1,6 +1,7 @@
-import {BOOK_SEARCH_MODE_CONFIG, type BookSearchMode} from '../model/useBookSearchStart';
+import {MAX_BOOK_SEARCH_TERM_LENGTH} from '@/entities/book';
 import type {SyntheticEvent} from 'react';
 import {Button, Input, Text} from '@/shared/ui';
+import {BOOK_SEARCH_MODE_CONFIG, type BookSearchMode} from '../model/useBookSearchStart';
 
 type BookSearchQueryFormProps = {
   baseId: string;
@@ -20,9 +21,12 @@ function BookSearchQueryForm({
   onSubmit,
 }: BookSearchQueryFormProps) {
   const activeSearchModeOption = BOOK_SEARCH_MODE_CONFIG[searchMode];
+  const characterCountId = `${baseId}-character-count`;
+  const helperTextId = `${baseId}-helper`;
   const inputId = `${baseId}-input`;
   const tabPanelId = `${baseId}-panel`;
   const tabPanelLabelledBy = `${baseId}-tab-${searchMode}`;
+  const queryTextLength = queryText.length;
 
   return (
     <form aria-label="도서 검색 시작" className="space-y-4" onSubmit={onSubmit}>
@@ -32,12 +36,18 @@ function BookSearchQueryForm({
             {activeSearchModeOption.inputLabel}
           </label>
           <Input
+            aria-describedby={isSubmitDisabled ? `${helperTextId} ${characterCountId}` : characterCountId}
             id={inputId}
+            maxLength={MAX_BOOK_SEARCH_TERM_LENGTH}
             name="queryText"
             onChange={event => onQueryTextChange(event.target.value)}
             placeholder={activeSearchModeOption.placeholder}
             value={queryText}
           />
+
+          <Text className="tabular-nums" id={characterCountId} size="sm" tone="muted">
+            {queryTextLength} / {MAX_BOOK_SEARCH_TERM_LENGTH}
+          </Text>
         </div>
 
         <div className="space-y-2">
@@ -46,7 +56,7 @@ function BookSearchQueryForm({
           </Button>
 
           {isSubmitDisabled ? (
-            <Text size="sm" tone="muted">
+            <Text id={helperTextId} size="sm" tone="muted">
               {activeSearchModeOption.disabledHelperText}
             </Text>
           ) : null}

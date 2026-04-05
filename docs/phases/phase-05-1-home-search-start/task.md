@@ -38,11 +38,11 @@
 
 ## 6. canonical 검색 제출 계약 연결
 
-- [ ] 제출 시 `parseSearchBooksParams`를 사용해 canonical `BookSearchParams`를 만든다.
-- [ ] 제목 모드와 저자 모드가 각각 `{title, page: 1}` / `{author, page: 1}` 형태로 정규화되도록 연결한다.
-- [ ] 실제 검색 결과 소비는 하지 않고, Phase 5-2로 넘길 제출 handoff 구조만 유지한다.
-- [ ] 제출 handoff를 integration test로 검증한다.
-- [ ] 별도 순수 helper를 추출했다면 그 helper에 한해 focused unit test를 추가한다.
+- [x] 제출 시 `parseSearchBooksParams`를 사용해 canonical `BookSearchParams`를 만든다.
+- [x] 제목 모드와 저자 모드가 각각 `{title, page: 1}` / `{author, page: 1}` 형태로 정규화되도록 연결한다.
+- [x] 실제 검색 결과 소비는 하지 않고, Phase 5-2로 넘길 제출 handoff 구조만 유지한다.
+- [x] 제출 handoff를 integration test로 검증한다.
+- [x] 별도 순수 helper를 추출했다면 그 helper에 한해 focused unit test를 추가한다.
 
 ## 7. `pages/home` 조합 구조 교체
 
