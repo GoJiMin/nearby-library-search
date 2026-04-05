@@ -2,9 +2,9 @@
 
 ## 1. 디자인 컨텍스트 기준 고정
 
-- [ ] 루트 `.impeccable.md`의 사용자/브랜드/미감 기준을 Phase 4-2 설계의 source of truth로 명시한다.
-- [ ] `AGENTS.md`의 `Design Context`와 충돌하지 않는지 점검한다.
-- [ ] Phase 4-2 문서에서 사용할 톤을 `절제된 게임감`으로 고정한다.
+- [x] 루트 `.impeccable.md`의 사용자/브랜드/미감 기준을 Phase 4-2 설계의 source of truth로 명시한다.
+- [x] `AGENTS.md`의 `Design Context`와 충돌하지 않는지 점검한다.
+- [x] Phase 4-2 문서에서 사용할 톤을 `절제된 게임감`으로 고정한다.
 
 ## 2. MVP 전체 플로우 정의
 
