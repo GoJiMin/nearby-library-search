@@ -42,7 +42,9 @@
 - Do not write isolated unit tests for every file by default.
 - Avoid unnecessary tests that do not improve confidence in user-facing behavior.
 - Prefer integration tests organized around user-visible features and flows.
+- In user-facing integration tests, prefer `@testing-library/user-event` over `fireEvent` by default.
 - In integration tests, use accessibility-first queries such as `getByRole`, `getByLabelText`, and similar Testing Library queries.
+- Use `fireEvent` only for low-level DOM events or narrow edge cases that `user-event` does not model well.
 - Add focused unit tests only when complex UI branching or pure logic needs detailed verification.
 - Use unit tests to cover edge cases, failure cases, and error-handling paths when integration tests alone are not sufficient.
 - For Fastify BFF routes, prefer `createApp().inject()` based integration tests over port-bound server tests.

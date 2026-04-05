@@ -70,6 +70,8 @@
 
 - Phase 5-1부터 feature 구현은 구현과 테스트를 같은 단계에서 함께 완료하는 기준으로 진행한다.
 - 테스트 기본값은 `features/book`과 `pages/home` 기준의 integration test다.
+- 사용자 경험 기준 integration test는 기본적으로 `@testing-library/user-event`를 사용한다.
+- `fireEvent`는 저수준 DOM 이벤트나 `user-event`로 다루기 어려운 예외 케이스에만 제한한다.
 - unit test는 추출된 순수 로직이나 UI 분기처럼 integration test만으로 신뢰 확보가 부족한 경우에만 추가한다.
 - `pages/home`는 조합만 담당하고, 검색 시작 세부 로직과 테스트 중심은 `features/book`에 둔다.
 
@@ -87,5 +89,6 @@
 
 - 기능 구현 시 테스트 작성은 필수다.
 - 테스트 우선순위는 integration test > focused unit test다.
+- integration test의 상호작용 기본값은 `user-event`다.
 - unit test는 UI 분기나 추출된 순수 로직에만 제한한다.
 - Phase 5-1은 `features/book`의 검색 시작 기능만 구현하고, 실제 검색 결과 화면은 Phase 5-2에서 다룬다.

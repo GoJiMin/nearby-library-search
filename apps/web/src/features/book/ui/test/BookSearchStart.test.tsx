@@ -1,4 +1,5 @@
-import {fireEvent, render, screen} from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import {BookSearchStart} from '@/features/book';
 
@@ -18,21 +19,23 @@ describe('BookSearchStart', () => {
     expect(onSubmitSearch).not.toHaveBeenCalled();
   });
 
-  it('탭 전환 후에도 입력값을 유지한다', () => {
+  it('탭 전환 후에도 입력값을 유지한다', async () => {
+    const user = userEvent.setup();
+
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
 
     const input = screen.getByRole('textbox', {name: '검색어'});
     const titleTab = screen.getByRole('tab', {name: '책 제목'});
     const authorTab = screen.getByRole('tab', {name: '저자명'});
 
-    fireEvent.change(input, {target: {value: '파친코'}});
-    fireEvent.click(authorTab);
+    await user.type(input, '파친코');
+    await user.click(authorTab);
 
     expect(authorTab).toHaveAttribute('aria-selected', 'true');
     expect(titleTab).toHaveAttribute('aria-selected', 'false');
     expect(input).toHaveValue('파친코');
 
-    fireEvent.click(titleTab);
+    await user.click(titleTab);
 
     expect(titleTab).toHaveAttribute('aria-selected', 'true');
     expect(authorTab).toHaveAttribute('aria-selected', 'false');
