@@ -1,15 +1,17 @@
 import type {SyntheticEvent} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import {Button, Heading, Input, Text} from '@/shared/ui';
-import {useBookSearchStart} from '../model/useBookSearchStart';
+import {BOOK_SEARCH_MODE_OPTIONS, useBookSearchStart} from '../model/useBookSearchStart';
 
 type BookSearchStartProps = {
   onSubmitSearch: (params: BookSearchParams) => void;
 };
 
 function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
-  const {queryText, searchMode, setQueryText} = useBookSearchStart();
+  const {queryText, searchMode, setQueryText, setSearchMode} = useBookSearchStart();
   const normalizedQuery = queryText.trim();
+  const selectedTabId = `book-search-start-tab-${searchMode}`;
+  const tabPanelId = 'book-search-start-panel';
 
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,25 +46,51 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
       </div>
 
       <form aria-label="도서 검색 시작" className="space-y-4" onSubmit={handleSubmit}>
-        <Text as="p" size="sm">
-          검색 기준: {searchMode === 'title' ? '책 제목' : '저자명'}
-        </Text>
+        <div
+          aria-label="검색 기준 선택"
+          className="bg-surface-muted inline-flex w-full rounded-pill p-1 sm:w-auto"
+          role="tablist"
+        >
+          {BOOK_SEARCH_MODE_OPTIONS.map(option => {
+            const isSelected = option.value === searchMode;
 
-        <div className="space-y-2">
-          <label className="text-text text-sm font-medium" htmlFor="book-search-start-input">
-            검색어
-          </label>
-          <Input
-            id="book-search-start-input"
-            name="queryText"
-            onChange={event => setQueryText(event.target.value)}
-            value={queryText}
-          />
+            return (
+              <button
+                key={option.value}
+                aria-controls={tabPanelId}
+                aria-selected={isSelected}
+                className={`focus-visible:ring-accent-soft min-h-11 flex-1 rounded-pill px-4 py-2 text-sm font-semibold outline-none transition-colors focus-visible:ring-4 sm:flex-none ${
+                  isSelected ? 'bg-accent text-white shadow-soft' : 'text-text-muted hover:bg-surface-strong hover:text-text'
+                }`}
+                id={`book-search-start-tab-${option.value}`}
+                onClick={() => setSearchMode(option.value)}
+                role="tab"
+                tabIndex={isSelected ? 0 : -1}
+                type="button"
+              >
+                {option.label}
+              </button>
+            );
+          })}
         </div>
 
-        <Button disabled={normalizedQuery.length === 0} type="submit">
-          검색 시작
-        </Button>
+        <div aria-labelledby={selectedTabId} className="space-y-4" id={tabPanelId} role="tabpanel">
+          <div className="space-y-2">
+            <label className="text-text text-sm font-medium" htmlFor="book-search-start-input">
+              검색어
+            </label>
+            <Input
+              id="book-search-start-input"
+              name="queryText"
+              onChange={event => setQueryText(event.target.value)}
+              value={queryText}
+            />
+          </div>
+
+          <Button disabled={normalizedQuery.length === 0} type="submit">
+            검색 시작
+          </Button>
+        </div>
       </form>
     </section>
   );
