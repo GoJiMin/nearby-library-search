@@ -15,16 +15,16 @@ function renderRouter(initialEntries: string[]) {
 }
 
 describe('app router integration', () => {
-  it('renders the home route with the app shell and initial state', () => {
+  it('renders the home route with the app shell and search start feature', () => {
     renderRouter(['/']);
 
-    expect(
-      screen.getByRole('heading', {
-        name: '책 제목만 입력하면 가까운 도서관을 바로 보여드릴게요',
-      }),
-    ).toBeInTheDocument();
     expect(screen.getByText('동네 도서관 찾기')).toBeInTheDocument();
-    expect(screen.getByText('초기 상태')).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '찾고 싶은 책을 먼저 검색해보세요'})).toBeInTheDocument();
+    expect(screen.getByRole('tablist', {name: '검색 기준 선택'})).toBeInTheDocument();
+    expect(screen.getByRole('textbox', {name: '책 제목'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '검색 시작'})).toBeInTheDocument();
+    expect(screen.queryByText('책 제목만 입력하면 가까운 도서관을 바로 보여드릴게요')).not.toBeInTheDocument();
+    expect(screen.queryByText('초기 상태')).not.toBeInTheDocument();
   });
 
   it('renders the not found route for an unknown path', () => {

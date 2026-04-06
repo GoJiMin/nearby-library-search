@@ -46,10 +46,10 @@
 
 ## 7. `pages/home` 조합 구조 교체
 
-- [ ] `pages/home/ui/HomePage.tsx`에서 설명형 placeholder 구조를 제거한다.
-- [ ] `HomePage`가 `features/book` 검색 시작 feature를 조합하는 얇은 route shell이 되도록 정리한다.
-- [ ] 반복 카드 3개, nested card, empty-state 랜딩 패턴이 남아 있지 않은지 점검한다.
-- [ ] 홈 route integration test를 Phase 5-1 기준으로 갱신한다.
+- [x] `pages/home/ui/HomePage.tsx`에서 설명형 placeholder 구조를 제거한다.
+- [x] `HomePage`가 `features/book` 검색 시작 feature를 조합하는 얇은 route shell이 되도록 정리한다.
+- [x] 반복 카드 3개, nested card, empty-state 랜딩 패턴이 남아 있지 않은지 점검한다.
+- [x] 홈 route integration test를 Phase 5-1 기준으로 갱신한다.
 
 ## 8. 접근성과 상호작용 하드닝
 
