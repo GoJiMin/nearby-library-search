@@ -13,11 +13,20 @@ function BookSearchSupport({onSelectExampleQuery, searchMode}: BookSearchSupport
   const {exampleQueries} = BOOK_SEARCH_MODE_CONFIG[searchMode];
 
   return (
-    <div className="space-y-3">
-      <Text size="sm">{BOOK_SEARCH_SUPPORT_COPY}</Text>
+    <div className="space-y-2.5">
+      <Text className="max-w-2xl text-balance" size="sm" tone="muted">
+        {BOOK_SEARCH_SUPPORT_COPY}
+      </Text>
       <div className="flex flex-wrap gap-2">
         {exampleQueries.map(exampleQuery => (
-          <Button key={exampleQuery} onClick={() => onSelectExampleQuery(exampleQuery)} size="sm" type="button" variant="secondary">
+          <Button
+            key={exampleQuery}
+            className="min-h-9 rounded-full border-0 bg-surface px-3 text-[0.8125rem] font-medium text-text-muted shadow-none hover:bg-surface-strong hover:text-text"
+            onClick={() => onSelectExampleQuery(exampleQuery)}
+            size="sm"
+            type="button"
+            variant="secondary"
+          >
             {exampleQuery}
           </Button>
         ))}

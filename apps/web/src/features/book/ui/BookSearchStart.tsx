@@ -32,28 +32,26 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
       aria-labelledby="book-search-start-heading"
       className="w-full rounded-[28px] border border-white/70 bg-white/90 p-3 shadow-card backdrop-blur-xl sm:p-4"
     >
-      <div className="mb-3 px-1">
-        <Heading
-          as="h2"
-          className="text-left text-[0.7rem] leading-5 font-medium tracking-[0.14em] text-text-muted uppercase"
-          id="book-search-start-heading"
-          size="md"
-        >
-          도서 검색 시작
-        </Heading>
-      </div>
+      <Heading as="h2" className="sr-only" id="book-search-start-heading" size="md">
+        도서 검색 시작
+      </Heading>
 
-      <div className="space-y-3">
-        <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
-        <BookSearchQueryForm
-          baseId={baseId}
-          isSubmitDisabled={isSubmitDisabled}
-          onQueryTextChange={setQueryText}
-          onSubmit={handleSubmit}
-          queryText={queryText}
-          searchMode={searchMode}
-        />
-        <BookSearchSupport onSelectExampleQuery={setQueryText} searchMode={searchMode} />
+      <div className="space-y-4">
+        <div className="space-y-3">
+          <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
+          <BookSearchQueryForm
+            baseId={baseId}
+            isSubmitDisabled={isSubmitDisabled}
+            onQueryTextChange={setQueryText}
+            onSubmit={handleSubmit}
+            queryText={queryText}
+            searchMode={searchMode}
+          />
+        </div>
+
+        <div className="border-white/70 rounded-3xl border bg-white/40 px-4 py-3 shadow-soft">
+          <BookSearchSupport onSelectExampleQuery={setQueryText} searchMode={searchMode} />
+        </div>
       </div>
     </section>
   );
