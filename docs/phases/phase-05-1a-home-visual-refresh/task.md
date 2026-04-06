@@ -2,9 +2,9 @@
 
 ## 1. 참조 화면 계약 고정
 
-- [ ] `stitch_design_specification_implementation.zip`의 `screen.png`, `code.html`, `DESIGN.md`를 홈 리디자인의 참조 자료로 고정한다.
-- [ ] 스크린샷에서 따라갈 비율, 위계, 강조 방식과 프로젝트 문맥상 바꿔야 할 요소를 구분해 정리한다.
-- [ ] 홈 리디자인의 참조 우선순위를 `screen.png` → `code.html` → `DESIGN.md` 기준으로 고정한다.
+- [x] `stitch_design_specification_implementation.zip`의 `screen.png`, `code.html`, `DESIGN.md`를 홈 리디자인의 참조 자료로 고정한다.
+- [x] 스크린샷에서 따라갈 비율, 위계, 강조 방식과 프로젝트 문맥상 바꿔야 할 요소를 구분해 정리한다.
+- [x] 홈 리디자인의 참조 우선순위를 `screen.png` → `code.html` → `DESIGN.md` 기준으로 고정한다.
 
 ## 2. 홈 히어로 카피와 구조 재설계
 
