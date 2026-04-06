@@ -2,10 +2,10 @@
 
 ## 1. 결과 화면 URL 상태 baseline 정리
 
-- [ ] 홈 route 결과 상태의 source of truth를 URL 검색 파라미터로 고정한다.
-- [ ] `title | author | page`를 canonical 검색 상태로 해석하는 최소 model 구조를 만든다.
-- [ ] URL 상태가 없거나 유효하지 않을 때 검색 시작 화면으로 돌아가는 기준을 정리한다.
-- [ ] URL 상태 해석을 검증하는 focused unit test를 추가한다.
+- [x] 홈 route 결과 상태의 source of truth를 URL 검색 파라미터로 고정한다.
+- [x] `title | author | page`를 canonical 검색 상태로 해석하는 최소 model 구조를 만든다.
+- [x] URL 상태가 없거나 유효하지 않을 때 검색 시작 화면으로 돌아가는 기준을 정리한다.
+- [x] URL 상태 해석을 검증하는 focused unit test를 추가한다.
 
 ## 2. `features/book` 결과 화면 feature 골격 구성
 
