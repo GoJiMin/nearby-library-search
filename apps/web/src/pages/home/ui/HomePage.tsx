@@ -7,8 +7,8 @@ function HomePage() {
   function handleSubmitSearch(_params: BookSearchParams) {}
 
   return (
-    <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col items-center justify-center gap-9 pt-10 pb-12 text-center sm:gap-10 sm:pt-14 sm:pb-16 lg:gap-12 lg:pt-20">
-      <div className="flex w-full max-w-4xl flex-col items-center gap-5 sm:gap-6">
+    <section className="flex h-full w-full max-w-5xl flex-1 flex-col items-center justify-center">
+      <div className="mb-10 flex flex-col gap-6 text-center">
         <BrandMessage />
         <Text className="leading-[1.55] text-balance" size="base">
           궁금한 책의 제목이나 저자를 검색창에 입력해 보세요.
@@ -17,10 +17,8 @@ function HomePage() {
         </Text>
       </div>
 
-      <div className="w-full max-w-xl">
-        <BookSearchStart onSubmitSearch={handleSubmitSearch} />
-      </div>
-    </div>
+      <BookSearchStart onSubmitSearch={handleSubmitSearch} />
+    </section>
   );
 }
 
