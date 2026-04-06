@@ -8,7 +8,7 @@ function HomePage() {
 
   return (
     <section className="flex h-full w-full max-w-5xl flex-1 flex-col items-center justify-center">
-      <div className="mb-10 flex flex-col gap-6 text-center">
+      <div className="mb-10 flex flex-col gap-5 text-center">
         <BrandMessage />
         <Text className="leading-[1.55] text-balance" size="base">
           궁금한 책의 제목이나 저자를 검색창에 입력해 보세요.

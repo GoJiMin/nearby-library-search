@@ -28,7 +28,7 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   return (
     <section
       aria-labelledby="book-search-start-heading"
-      className="flex w-full max-w-2xl flex-col items-center justify-center gap-5"
+      className="flex w-full max-w-2xl flex-col items-center justify-center gap-4"
     >
       <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
       <BookSearchQueryForm
