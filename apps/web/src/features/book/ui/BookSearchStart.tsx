@@ -30,15 +30,20 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   return (
     <section
       aria-labelledby="book-search-start-heading"
-      className="rounded-panel border-line bg-surface-strong shadow-card w-full border px-6 py-8 sm:px-8 sm:py-10"
+      className="w-full rounded-[28px] border border-white/70 bg-white/90 p-3 shadow-card backdrop-blur-xl sm:p-4"
     >
-      <div className="mb-6">
-        <Heading as="h2" id="book-search-start-heading" size="xl">
+      <div className="mb-3 px-1">
+        <Heading
+          as="h2"
+          className="text-left text-[0.7rem] leading-5 font-medium tracking-[0.14em] text-text-muted uppercase"
+          id="book-search-start-heading"
+          size="md"
+        >
           도서 검색 시작
         </Heading>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
         <BookSearchQueryForm
           baseId={baseId}

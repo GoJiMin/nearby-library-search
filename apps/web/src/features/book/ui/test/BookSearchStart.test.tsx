@@ -21,8 +21,8 @@ describe('BookSearchStart', () => {
     expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveClass('focus-visible:ring-accent-soft');
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toBeInTheDocument();
     expect(screen.getByText(`0 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`)).toBeInTheDocument();
-    expect(screen.getByRole('button', {name: '검색 시작'})).toBeDisabled();
-    expect(screen.getByRole('button', {name: '검색 시작'})).toHaveClass('focus-visible:ring-accent-soft');
+    expect(screen.getByRole('button', {name: '검색'})).toBeDisabled();
+    expect(screen.getByRole('button', {name: '검색'})).toHaveClass('focus-visible:ring-accent-soft');
     expect(screen.getByText('검색을 시작하려면 책 제목을 입력해주세요.')).toBeInTheDocument();
     expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveAccessibleDescription(
       new RegExp(`검색을 시작하려면 책 제목을 입력해주세요\\.\\s*0 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`),
@@ -108,7 +108,7 @@ describe('BookSearchStart', () => {
 
     await user.type(screen.getByRole('textbox', {name: '책 제목'}), '파친코');
     await user.tab();
-    expect(screen.getByRole('button', {name: '검색 시작'})).toHaveFocus();
+    expect(screen.getByRole('button', {name: '검색'})).toHaveFocus();
   });
 
   it('저자명 탭 전환 시 예시 검색어를 author 목록으로 바꾼다', async () => {
@@ -131,7 +131,7 @@ describe('BookSearchStart', () => {
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
 
     const input = screen.getByRole('textbox', {name: '책 제목'});
-    const submitButton = screen.getByRole('button', {name: '검색 시작'});
+    const submitButton = screen.getByRole('button', {name: '검색'});
 
     await user.type(input, '   ');
 
@@ -145,7 +145,7 @@ describe('BookSearchStart', () => {
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
 
     const input = screen.getByRole('textbox', {name: '책 제목'});
-    const submitButton = screen.getByRole('button', {name: '검색 시작'});
+    const submitButton = screen.getByRole('button', {name: '검색'});
 
     await user.type(input, '파친코');
 
@@ -164,7 +164,7 @@ describe('BookSearchStart', () => {
     await user.click(screen.getByRole('button', {name: '아몬드'}));
 
     expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveValue('아몬드');
-    expect(screen.getByRole('button', {name: '검색 시작'})).toBeEnabled();
+    expect(screen.getByRole('button', {name: '검색'})).toBeEnabled();
     expect(screen.queryByText('검색을 시작하려면 책 제목을 입력해주세요.')).not.toBeInTheDocument();
     expect(onSubmitSearch).not.toHaveBeenCalled();
   });
@@ -176,7 +176,7 @@ describe('BookSearchStart', () => {
     render(<BookSearchStart onSubmitSearch={onSubmitSearch} />);
 
     await user.type(screen.getByRole('textbox', {name: '책 제목'}), '파친코');
-    await user.click(screen.getByRole('button', {name: '검색 시작'}));
+    await user.click(screen.getByRole('button', {name: '검색'}));
 
     expect(onSubmitSearch).toHaveBeenCalledTimes(1);
     expect(onSubmitSearch).toHaveBeenCalledWith({
@@ -208,7 +208,7 @@ describe('BookSearchStart', () => {
     render(<BookSearchStart onSubmitSearch={onSubmitSearch} />);
 
     await user.click(screen.getByRole('button', {name: '아몬드'}));
-    await user.click(screen.getByRole('button', {name: '검색 시작'}));
+    await user.click(screen.getByRole('button', {name: '검색'}));
 
     expect(onSubmitSearch).toHaveBeenCalledTimes(1);
     expect(onSubmitSearch).toHaveBeenCalledWith({

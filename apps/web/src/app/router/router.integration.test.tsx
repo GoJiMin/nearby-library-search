@@ -25,7 +25,7 @@ describe('app router integration', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('tablist', {name: '검색 기준 선택'})).toBeInTheDocument();
     expect(screen.getByRole('textbox', {name: '책 제목'})).toBeInTheDocument();
-    expect(screen.getByRole('button', {name: '검색 시작'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '검색'})).toBeInTheDocument();
     expect(screen.queryByText('책 제목만 입력하면 가까운 도서관을 바로 보여드릴게요')).not.toBeInTheDocument();
     expect(screen.queryByText('초기 상태')).not.toBeInTheDocument();
   });
