@@ -15,12 +15,18 @@ describe('BookSearchStart', () => {
     expect(screen.getByRole('tablist', {name: '검색 기준 선택'})).toBeInTheDocument();
     expect(screen.getByRole('tab', {name: '책 제목'})).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('tab', {name: '책 제목'})).toHaveClass('focus-visible:ring-accent-soft');
     expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveValue('');
     expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveProperty('maxLength', MAX_BOOK_SEARCH_TERM_LENGTH);
+    expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveClass('focus-visible:ring-accent-soft');
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toBeInTheDocument();
     expect(screen.getByText(`0 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`)).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '검색 시작'})).toBeDisabled();
+    expect(screen.getByRole('button', {name: '검색 시작'})).toHaveClass('focus-visible:ring-accent-soft');
     expect(screen.getByText('검색을 시작하려면 책 제목을 입력해주세요.')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveAccessibleDescription(
+      new RegExp(`검색을 시작하려면 책 제목을 입력해주세요\\.\\s*0 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`),
+    );
     expect(
       screen.getByText('책 제목이나 저자명으로 검색을 시작하면, 원하는 책을 고른 뒤 가까운 도서관을 바로 찾을 수 있어요.'),
     ).toBeInTheDocument();
@@ -54,6 +60,55 @@ describe('BookSearchStart', () => {
     expect(authorTab).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveValue('파친코');
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toBeInTheDocument();
+  });
+
+  it('키보드로 탭을 이동하고 선택 상태를 바꿀 수 있다', async () => {
+    const user = userEvent.setup();
+
+    render(<BookSearchStart onSubmitSearch={vi.fn()} />);
+
+    const titleTab = screen.getByRole('tab', {name: '책 제목'});
+    const authorTab = screen.getByRole('tab', {name: '저자명'});
+
+    titleTab.focus();
+    expect(titleTab).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+
+    expect(authorTab).toHaveFocus();
+    expect(authorTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('textbox', {name: '저자명'})).toBeInTheDocument();
+
+    await user.keyboard('{ArrowLeft}');
+
+    expect(titleTab).toHaveFocus();
+    expect(titleTab).toHaveAttribute('aria-selected', 'true');
+
+    await user.keyboard('{End}');
+
+    expect(authorTab).toHaveFocus();
+    expect(authorTab).toHaveAttribute('aria-selected', 'true');
+
+    await user.keyboard('{Home}');
+
+    expect(titleTab).toHaveFocus();
+    expect(titleTab).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('키보드 탭 순서로 세그먼트 탭, 입력, CTA에 접근할 수 있다', async () => {
+    const user = userEvent.setup();
+
+    render(<BookSearchStart onSubmitSearch={vi.fn()} />);
+
+    await user.tab();
+    expect(screen.getByRole('tab', {name: '책 제목'})).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveFocus();
+
+    await user.type(screen.getByRole('textbox', {name: '책 제목'}), '파친코');
+    await user.tab();
+    expect(screen.getByRole('button', {name: '검색 시작'})).toHaveFocus();
   });
 
   it('저자명 탭 전환 시 예시 검색어를 author 목록으로 바꾼다', async () => {
@@ -97,6 +152,7 @@ describe('BookSearchStart', () => {
     expect(submitButton).toBeEnabled();
     expect(screen.getByText(`3 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`)).toBeInTheDocument();
     expect(screen.queryByText('검색을 시작하려면 책 제목을 입력해주세요.')).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', {name: '책 제목'})).toHaveAccessibleDescription(`3 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`);
   });
 
   it('예시 검색어 클릭 시 입력값만 채우고 자동 제출하지 않는다', async () => {
