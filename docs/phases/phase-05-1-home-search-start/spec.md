@@ -54,8 +54,9 @@
 
 ## 현재 기반 상태
 
-- `apps/web/src/features`에는 현재 `nearby-library-search` placeholder slice만 존재한다.
-- `pages/home/ui/HomePage.tsx`는 설명형 placeholder 화면이며, 실제 검색 시작 UI가 없다.
+- `apps/web/src/features`는 `book`, `region`, `library` 도메인 slice 기준으로 정리돼 있다.
+- `features/book`는 `BookSearchStart` 공개 API와 검색 시작 기능의 로컬 상태, 제출 helper, 테스트 구성을 가진다.
+- `pages/home/ui/HomePage.tsx`는 `h1 + BookSearchStart`를 조합하는 얇은 route shell 구조로 정리돼 있다.
 - `entities/book`는 `parseSearchBooksParams`, `BookSearchParams`, `useGetSearchBooks`를 공개하고 있다.
 - `shared/ui`는 `Input`, `Button`, `Heading`, `Text` 등 홈 검색 시작 화면 구현에 필요한 공통 primitive를 이미 제공한다.
 - Phase 4-2 문서에서는 홈 화면의 순서와 금지 패턴, CTA, 접근성, 반응형, 카피 기준이 이미 결정 완료 상태다.
@@ -130,6 +131,7 @@
   - 제목 모드: `{title, page: 1}`
   - 저자 모드: `{author, page: 1}`
 - trim 기준 빈 입력은 제출할 수 없다.
+- 입력은 엔티티 스키마의 최대 길이 제한을 넘지 않도록 `maxLength`와 글자 수 표시를 함께 제공한다.
 - 비활성 상태의 이유 설명은 검색 입력/CTA 근처의 가시 텍스트로 노출한다.
 - Enter 입력으로도 제출 가능해야 한다.
 

@@ -61,10 +61,10 @@
 
 ## 9. 최종 검증
 
-- [ ] `features/book` 검색 시작 기능의 integration test가 통과하는지 확인한다.
-- [ ] 필요한 범위의 unit test만 남아 있고 과도한 file-by-file unit test가 없는지 점검한다.
-- [ ] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`가 성공하는지 확인한다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 5-1 범위와 실제 구현 결과가 어긋나지 않는지 확인한다.
+- [x] `features/book` 검색 시작 기능의 integration test가 통과하는지 확인한다.
+- [x] 필요한 범위의 unit test만 남아 있고 과도한 file-by-file unit test가 없는지 점검한다.
+- [x] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`가 성공하는지 확인한다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 5-1 범위와 실제 구현 결과가 어긋나지 않는지 확인한다.
 
 ## Important Changes
 
