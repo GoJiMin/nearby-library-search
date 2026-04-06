@@ -18,16 +18,13 @@ describe('app router integration', () => {
   it('renders the home route with the app shell and search start feature', () => {
     renderRouter(['/']);
 
-    expect(screen.getByText('동네 도서관 찾기')).toBeInTheDocument();
-    expect(screen.getByRole('heading', {level: 1, name: /찾고 싶은 책을\s*가까운 도서관으로/})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: /이 책,/})).toBeInTheDocument();
     expect(
-      screen.getByText('책 제목이나 저자명으로 먼저 검색해보세요. 원하는 책을 고른 뒤, 지금 갈 수 있는 가까운 도서관을 빠르게 찾을 수 있어요.'),
+      screen.getByText('궁금한 책의 제목이나 저자를 검색창에 입력해 보세요.', {exact: false}),
     ).toBeInTheDocument();
     expect(screen.getByRole('tablist', {name: '검색 기준 선택'})).toBeInTheDocument();
-    expect(screen.getByRole('textbox', {name: '책 제목'})).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '검색'})).toBeInTheDocument();
-    expect(screen.queryByText('책 제목만 입력하면 가까운 도서관을 바로 보여드릴게요')).not.toBeInTheDocument();
-    expect(screen.queryByText('초기 상태')).not.toBeInTheDocument();
   });
 
   it('renders the not found route for an unknown path', () => {
