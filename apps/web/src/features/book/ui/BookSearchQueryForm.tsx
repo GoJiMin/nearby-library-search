@@ -36,12 +36,12 @@ function BookSearchQueryForm({
           <label className="sr-only" htmlFor={inputId}>
             {activeSearchModeOption.inputLabel}
           </label>
-          <div className="rounded-3xl bg-surface-muted p-2 shadow-soft">
+          <div className="rounded-3xl border border-white/80 bg-surface-muted p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
             <div className="relative flex items-center gap-2">
               <LucideIcon className="pointer-events-none absolute left-4 size-5 text-text-muted" icon={Search} strokeWidth={1.8} />
               <Input
                 aria-describedby={isSubmitDisabled ? `${helperTextId} ${characterCountId}` : characterCountId}
-                className="min-h-14 rounded-2xl border-0 bg-transparent py-4 pr-2 pl-11 shadow-none focus-visible:ring-0"
+                className="min-h-14 rounded-2xl border-0 bg-transparent py-4 pr-2 pl-11 text-[0.98rem] shadow-none placeholder:text-[#8f96a6] focus-visible:ring-0"
                 id={inputId}
                 maxLength={MAX_BOOK_SEARCH_TERM_LENGTH}
                 name="queryText"
@@ -50,7 +50,7 @@ function BookSearchQueryForm({
                 value={queryText}
               />
               <Button
-                className="bg-linear-to-br from-accent to-accent-strong min-h-11 shrink-0 rounded-2xl px-5 text-sm font-bold shadow-soft hover:bg-accent-strong sm:px-6"
+                className="bg-linear-to-br from-accent to-accent-strong min-h-11 shrink-0 rounded-2xl px-5 text-sm font-bold shadow-[0_12px_24px_-12px_rgba(27,100,218,0.9)] hover:brightness-105 sm:px-6"
                 disabled={isSubmitDisabled}
                 type="submit"
               >

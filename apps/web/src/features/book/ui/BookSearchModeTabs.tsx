@@ -42,7 +42,7 @@ function BookSearchModeTabs({baseId, searchMode, onChangeSearchMode}: BookSearch
   return (
     <div
       aria-label="검색 기준 선택"
-      className="inline-flex w-fit rounded-2xl bg-surface px-1.5 py-1.5 shadow-soft"
+      className="inline-flex w-fit rounded-2xl border border-white/75 bg-surface px-1.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]"
       role="tablist"
     >
       {BOOK_SEARCH_MODE_ORDER.map((mode, index) => {

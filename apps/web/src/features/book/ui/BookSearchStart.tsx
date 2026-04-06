@@ -28,16 +28,13 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   }
 
   return (
-    <section
-      aria-labelledby="book-search-start-heading"
-      className="w-full rounded-[28px] border border-white/70 bg-white/90 p-3 shadow-card backdrop-blur-xl sm:p-4"
-    >
+    <section aria-labelledby="book-search-start-heading" className="w-full">
       <Heading as="h2" className="sr-only" id="book-search-start-heading" size="md">
         도서 검색 시작
       </Heading>
 
       <div className="space-y-4">
-        <div className="space-y-3">
+        <div className="space-y-3 rounded-[30px] border border-white/80 bg-white/90 p-3 shadow-[0_22px_52px_-30px_rgba(15,23,42,0.38)] backdrop-blur-xl sm:p-4">
           <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
           <BookSearchQueryForm
             baseId={baseId}
@@ -49,7 +46,7 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
           />
         </div>
 
-        <div className="border-white/70 rounded-3xl border bg-white/40 px-4 py-3 shadow-soft">
+        <div className="px-1">
           <BookSearchSupport onSelectExampleQuery={setQueryText} searchMode={searchMode} />
         </div>
       </div>
