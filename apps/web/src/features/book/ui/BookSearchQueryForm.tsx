@@ -30,50 +30,31 @@ function BookSearchQueryForm({
   const queryTextLength = queryText.length;
 
   return (
-    <form aria-label="도서 검색 시작" className="space-y-4" onSubmit={onSubmit}>
-      <div aria-labelledby={tabPanelLabelledBy} className="space-y-3" id={tabPanelId} role="tabpanel">
-        <div className="space-y-2">
-          <label className="sr-only" htmlFor={inputId}>
-            {activeSearchModeOption.inputLabel}
-          </label>
-          <div className="rounded-3xl border border-white/80 bg-surface-muted p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
-            <div className="relative flex items-center gap-2">
-              <LucideIcon className="pointer-events-none absolute left-4 size-5 text-text-muted" icon={Search} strokeWidth={1.8} />
-              <Input
-                aria-describedby={isSubmitDisabled ? `${helperTextId} ${characterCountId}` : characterCountId}
-                className="min-h-14 rounded-2xl border-0 bg-transparent py-4 pr-2 pl-11 text-[0.98rem] shadow-none placeholder:text-[#8f96a6] focus-visible:ring-0"
-                id={inputId}
-                maxLength={MAX_BOOK_SEARCH_TERM_LENGTH}
-                name="queryText"
-                onChange={event => onQueryTextChange(event.target.value)}
-                placeholder={activeSearchModeOption.placeholder}
-                value={queryText}
-              />
-              <Button
-                className="bg-linear-to-br from-accent to-accent-strong min-h-11 shrink-0 rounded-2xl px-5 text-sm font-bold shadow-[0_12px_24px_-12px_rgba(27,100,218,0.9)] hover:brightness-105 sm:px-6"
-                disabled={isSubmitDisabled}
-                type="submit"
-              >
-                검색
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-start justify-between gap-2 px-1">
-            {isSubmitDisabled ? (
-              <Text className="max-w-lg text-balance" id={helperTextId} size="sm" tone="muted">
-                {activeSearchModeOption.disabledHelperText}
-              </Text>
-            ) : (
-              <span aria-hidden="true" />
-            )}
-
-            <Text className="tabular-nums" id={characterCountId} size="sm" tone="muted">
-              {queryTextLength} / {MAX_BOOK_SEARCH_TERM_LENGTH}
-            </Text>
-          </div>
-        </div>
+    <form aria-label="도서 검색 시작" className="w-full" onSubmit={onSubmit}>
+      <div aria-labelledby={tabPanelLabelledBy} className="flex items-center gap-2" id={tabPanelId} role="tabpanel">
+        <Input
+          aria-describedby={isSubmitDisabled ? `${helperTextId} ${characterCountId}` : characterCountId}
+          className="rounded-2xl border-0 bg-white/65 py-4 pr-2 pl-6 shadow-none placeholder:text-[#8f96a6] focus-visible:ring-0"
+          id={inputId}
+          maxLength={MAX_BOOK_SEARCH_TERM_LENGTH}
+          name="queryText"
+          onChange={event => onQueryTextChange(event.target.value)}
+          placeholder={activeSearchModeOption.placeholder}
+          value={queryText}
+          autoComplete="off"
+        />
+        <Button
+          className="rounded-2xl py-4 disabled:bg-gray-400"
+          disabled={isSubmitDisabled}
+          type="submit"
+          aria-label="검색"
+        >
+          <LucideIcon className="text-white" icon={Search} strokeWidth={1.8} size={26} />
+        </Button>
       </div>
+      <Text className="mt-2 pr-20 text-end tabular-nums" id={characterCountId} size="sm" tone="muted">
+        {queryTextLength} / {MAX_BOOK_SEARCH_TERM_LENGTH}
+      </Text>
     </form>
   );
 }

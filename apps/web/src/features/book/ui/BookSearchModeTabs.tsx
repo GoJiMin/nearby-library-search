@@ -42,7 +42,7 @@ function BookSearchModeTabs({baseId, searchMode, onChangeSearchMode}: BookSearch
   return (
     <div
       aria-label="검색 기준 선택"
-      className="inline-flex w-fit rounded-2xl border border-white/75 bg-surface px-1.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]"
+      className="bg-surface inline-flex w-fit rounded-xl border border-white/75 px-1.5 py-1.5 font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]"
       role="tablist"
     >
       {BOOK_SEARCH_MODE_ORDER.map((mode, index) => {
@@ -54,10 +54,8 @@ function BookSearchModeTabs({baseId, searchMode, onChangeSearchMode}: BookSearch
             key={mode}
             aria-controls={tabPanelId}
             aria-selected={isSelected}
-            className={`focus-visible:ring-accent-soft min-h-10 rounded-xl px-5 py-2 text-sm outline-none transition-all duration-200 focus-visible:ring-4 ${
-              isSelected
-                ? 'bg-surface-strong text-accent-strong font-semibold shadow-soft'
-                : 'text-text-muted font-medium hover:text-text'
+            className={`focus-visible:ring-accent-soft rounded-xl px-5 py-2 transition-all duration-200 outline-none focus-visible:ring-4 ${
+              isSelected ? 'bg-surface-strong text-accent shadow-soft' : 'text-text-muted hover:text-text'
             }`}
             id={`${baseId}-tab-${mode}`}
             onClick={() => onChangeSearchMode(mode)}

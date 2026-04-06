@@ -1,11 +1,9 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
-import {Heading} from '@/shared/ui';
 import {createBookSearchStartParams} from '../model/createBookSearchStartParams';
 import {useBookSearchStart} from '../model/useBookSearchStart';
 import {BookSearchModeTabs} from './BookSearchModeTabs';
 import {BookSearchQueryForm} from './BookSearchQueryForm';
-import {BookSearchSupport} from './BookSearchSupport';
 
 type BookSearchStartProps = {
   onSubmitSearch: (params: BookSearchParams) => void;
@@ -28,28 +26,19 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   }
 
   return (
-    <section aria-labelledby="book-search-start-heading" className="w-full">
-      <Heading as="h2" className="sr-only" id="book-search-start-heading" size="md">
-        도서 검색 시작
-      </Heading>
-
-      <div className="space-y-4">
-        <div className="space-y-3 rounded-[30px] border border-white/80 bg-white/90 p-3 shadow-[0_22px_52px_-30px_rgba(15,23,42,0.38)] backdrop-blur-xl sm:p-4">
-          <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
-          <BookSearchQueryForm
-            baseId={baseId}
-            isSubmitDisabled={isSubmitDisabled}
-            onQueryTextChange={setQueryText}
-            onSubmit={handleSubmit}
-            queryText={queryText}
-            searchMode={searchMode}
-          />
-        </div>
-
-        <div className="px-1">
-          <BookSearchSupport onSelectExampleQuery={setQueryText} searchMode={searchMode} />
-        </div>
-      </div>
+    <section
+      aria-labelledby="book-search-start-heading"
+      className="flex w-full max-w-2xl flex-col items-center justify-center gap-5"
+    >
+      <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
+      <BookSearchQueryForm
+        baseId={baseId}
+        isSubmitDisabled={isSubmitDisabled}
+        onQueryTextChange={setQueryText}
+        onSubmit={handleSubmit}
+        queryText={queryText}
+        searchMode={searchMode}
+      />
     </section>
   );
 }
