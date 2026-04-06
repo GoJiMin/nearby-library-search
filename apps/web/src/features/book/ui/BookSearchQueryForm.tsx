@@ -23,7 +23,6 @@ function BookSearchQueryForm({
 }: BookSearchQueryFormProps) {
   const activeSearchModeOption = BOOK_SEARCH_MODE_CONFIG[searchMode];
   const characterCountId = `${baseId}-character-count`;
-  const helperTextId = `${baseId}-helper`;
   const inputId = `${baseId}-input`;
   const tabPanelId = `${baseId}-panel`;
   const tabPanelLabelledBy = `${baseId}-tab-${searchMode}`;
@@ -31,10 +30,15 @@ function BookSearchQueryForm({
 
   return (
     <form aria-label="도서 검색 시작" className="w-full" onSubmit={onSubmit}>
-      <div aria-labelledby={tabPanelLabelledBy} className="flex items-center gap-2" id={tabPanelId} role="tabpanel">
+      <div
+        aria-labelledby={tabPanelLabelledBy}
+        className="relative flex w-full items-center"
+        id={tabPanelId}
+        role="tabpanel"
+      >
         <Input
-          aria-describedby={isSubmitDisabled ? `${helperTextId} ${characterCountId}` : characterCountId}
-          className="rounded-2xl border-0 bg-white/65 py-4 pr-2 pl-6 shadow-none placeholder:text-[#8f96a6] focus-visible:ring-0"
+          aria-describedby={characterCountId}
+          className="w-full rounded-2xl border-0 bg-white/65 py-3 pr-14 pl-6 shadow-sm placeholder:text-[#8f96a6] focus-visible:ring-0 md:py-5 md:pr-16"
           id={inputId}
           maxLength={MAX_BOOK_SEARCH_TERM_LENGTH}
           name="queryText"
@@ -44,15 +48,21 @@ function BookSearchQueryForm({
           autoComplete="off"
         />
         <Button
-          className="rounded-2xl py-4 disabled:bg-gray-400"
+          className="text-accent absolute right-2 flex aspect-square items-center justify-center rounded-xl p-2 transition-colors disabled:text-gray-300 md:right-3"
           disabled={isSubmitDisabled}
           type="submit"
           aria-label="검색"
+          variant="ghost"
         >
-          <LucideIcon className="text-white" icon={Search} strokeWidth={1.8} size={26} />
+          <LucideIcon
+            className={isSubmitDisabled ? 'text-gray-400' : 'text-primary'}
+            icon={Search}
+            strokeWidth={2.2}
+            size={24}
+          />
         </Button>
       </div>
-      <Text className="mt-2 pr-20 text-end tabular-nums" id={characterCountId} size="sm" tone="muted">
+      <Text className="mt-2 pr-4 text-end tabular-nums opacity-60" id={characterCountId} size="sm" tone="muted">
         {queryTextLength} / {MAX_BOOK_SEARCH_TERM_LENGTH}
       </Text>
     </form>

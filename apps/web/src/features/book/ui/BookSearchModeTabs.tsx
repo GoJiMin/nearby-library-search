@@ -54,7 +54,7 @@ function BookSearchModeTabs({baseId, searchMode, onChangeSearchMode}: BookSearch
             key={mode}
             aria-controls={tabPanelId}
             aria-selected={isSelected}
-            className={`focus-visible:ring-accent-soft rounded-xl px-5 py-2 text-sm transition-all duration-200 outline-none focus-visible:ring-4 ${
+            className={`focus-visible:ring-accent-soft rounded-xl px-6 py-1 text-xs transition-all duration-200 outline-none focus-visible:ring-4 md:px-5 md:py-2 md:text-sm ${
               isSelected ? 'bg-surface-strong text-accent shadow-soft' : 'text-text-muted hover:text-text'
             }`}
             id={`${baseId}-tab-${mode}`}

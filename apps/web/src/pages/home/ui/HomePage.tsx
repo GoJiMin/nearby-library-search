@@ -8,9 +8,9 @@ function HomePage() {
 
   return (
     <section className="flex h-full w-full max-w-5xl flex-1 flex-col items-center justify-center">
-      <div className="mb-10 flex flex-col gap-5 text-center">
+      <div className="mb-5 flex flex-col gap-5 text-center md:mb-6 md:gap-6">
         <BrandMessage />
-        <Text className="leading-[1.55] text-balance" size="base">
+        <Text className="leading-[1.55] text-balance" size="sm">
           궁금한 책의 제목이나 저자를 검색창에 입력해 보세요.
           <br />
           지금 바로 빌릴 수 있는 가장 가까운 도서관을 찾아드릴게요.
