@@ -42,10 +42,10 @@
 
 ## 7. 검증과 문서 동기화
 
-- [ ] 홈 route integration test를 새 히어로 구조 기준으로 갱신한다.
-- [ ] 검색 시작 feature의 기존 기능 테스트가 새 비주얼 구조에서도 계속 통과하는지 확인한다.
-- [ ] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
-- [ ] `plan.md`, `spec.md`, `task.md`를 실제 구현 결과와 동기화한다.
+- [x] 홈 route integration test를 새 히어로 구조 기준으로 갱신한다.
+- [x] 검색 시작 feature의 기존 기능 테스트가 새 비주얼 구조에서도 계속 통과하는지 확인한다.
+- [x] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
+- [x] `plan.md`, `spec.md`, `task.md`를 실제 구현 결과와 동기화한다.
 
 ## Important Changes
 

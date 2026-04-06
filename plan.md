@@ -99,11 +99,11 @@
 
 ## Phase 5-1A. 홈 메인 화면 스크린샷 정합 리디자인
 
-- [ ] `stitch_design_specification_implementation.zip`의 `screen.png`, `code.html`, `DESIGN.md`를 홈 메인 화면 리디자인의 참조 기준으로 고정한다.
-- [ ] 현재 홈 화면을 중앙 히어로 + 단일 검색 슬랩 구조로 재구성해 스크린샷과 최대한 비슷한 인상과 비율을 구현한다.
-- [ ] 검색 시작 feature의 기능 계약은 유지한 채, support 영역과 표면 계층을 보조 정보 수준으로 재배치한다.
-- [ ] 홈 route 시각 구조, 반응형, 접근성, 문서 상태를 리디자인 결과에 맞게 검증한다.
-- [ ] Phase 5-1A 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [x] `stitch_design_specification_implementation.zip`의 `screen.png`, `code.html`, `DESIGN.md`를 홈 메인 화면 리디자인의 참조 기준으로 고정한다.
+- [x] 현재 홈 화면을 중앙 히어로 + 단일 검색 슬랩 구조로 재구성해 스크린샷과 최대한 비슷한 인상과 비율을 구현한다.
+- [x] 검색 시작 feature의 기능 계약은 유지한 채, support 영역과 표면 계층을 보조 정보 수준으로 재배치한다.
+- [x] 홈 route 시각 구조, 반응형, 접근성, 문서 상태를 리디자인 결과에 맞게 검증한다.
+- [x] Phase 5-1A 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
 ## Phase 5-2. 도서 검색 결과와 도서 선택 구현
 
