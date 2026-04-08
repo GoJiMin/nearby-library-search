@@ -3,10 +3,6 @@ import type {BookSearchParams} from '@/entities/book';
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book';
 import {Button, Card, Heading, Text} from '@/shared/ui';
 
-function handleOpenBookDetail() {}
-
-function handleSelectBook() {}
-
 function BookSearchResultPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -53,14 +49,7 @@ function BookSearchResultPage() {
     );
   }
 
-  return (
-    <BookSearchResult
-      onOpenBookDetail={handleOpenBookDetail}
-      onSelectBook={handleSelectBook}
-      onSubmitSearch={handleSubmitSearch}
-      params={urlStateResult.data.params}
-    />
-  );
+  return <BookSearchResult onSubmitSearch={handleSubmitSearch} params={urlStateResult.data.params} />;
 }
 
 export {BookSearchResultPage};

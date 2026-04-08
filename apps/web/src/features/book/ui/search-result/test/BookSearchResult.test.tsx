@@ -72,7 +72,7 @@ describe('BookSearchResult', () => {
     expect(screen.getByRole('tab', {name: '책 제목'})).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toHaveValue('파친코');
-    expect(screen.getByRole('heading', {level: 1, name: '"파친코"에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '파친코에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
     expect(screen.queryByRole('heading', {name: '검색 결과'})).not.toBeInTheDocument();
   });
 

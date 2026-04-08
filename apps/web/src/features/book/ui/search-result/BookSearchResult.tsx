@@ -2,6 +2,7 @@ import {Suspense} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../model/bookSearchResult.contract';
 import {Text} from '@/shared/ui';
+import {BookSearchResultActionContext} from './bookSearchResultActionContext';
 import {BookSearchResultContent} from './BookSearchResultContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
 
@@ -23,19 +24,22 @@ function BookSearchResult({params, onOpenBookDetail, onSelectBook, onSubmitSearc
           onSubmitSearch={onSubmitSearch}
           params={params}
         />
-        <Suspense
-          fallback={
-            <Text className="w-full px-2" role="status" size="sm">
-              도서를 찾고 있습니다.
-            </Text>
-          }
+        <BookSearchResultActionContext.Provider
+          value={{
+            onOpenBookDetail,
+            onSelectBook,
+          }}
         >
-          <BookSearchResultContent
-            onOpenBookDetail={onOpenBookDetail}
-            onSelectBook={onSelectBook}
-            params={params}
-          />
-        </Suspense>
+          <Suspense
+            fallback={
+              <Text className="w-full px-2" role="status" size="sm">
+                도서를 찾고 있습니다.
+              </Text>
+            }
+          >
+            <BookSearchResultContent params={params} />
+          </Suspense>
+        </BookSearchResultActionContext.Provider>
       </div>
     </section>
   );

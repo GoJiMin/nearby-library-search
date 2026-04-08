@@ -1,12 +1,10 @@
 import {BarChart3, BookOpen, Fingerprint} from 'lucide-react';
 import type {BookSearchItem} from '@/entities/book';
-import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../model/bookSearchResult.contract';
 import {Card, Heading, LucideIcon, Text} from '@/shared/ui';
+import {useBookSearchResultActions} from './bookSearchResultActionContext';
 
 type BookSearchResultCardProps = {
   item: BookSearchItem;
-  onOpenBookDetail?: (payload: BookDetailActionPayload) => void;
-  onSelectBook?: (payload: BookSelectionActionPayload) => void;
 };
 
 function createPublisherPublicationLabel(item: BookSearchItem) {
@@ -17,8 +15,31 @@ function createPublisherPublicationLabel(item: BookSearchItem) {
   return item.publisher ?? item.publicationYear;
 }
 
-function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearchResultCardProps) {
+type BookSearchResultActionButtonProps = {
+  children: string;
+  onClick: () => void;
+  tone: 'default' | 'muted';
+};
+
+function BookSearchResultActionButton({children, onClick, tone}: BookSearchResultActionButtonProps) {
+  return (
+    <button
+      className={`focus-visible:ring-accent-soft rounded-full px-1 py-1 text-sm transition-colors outline-none focus-visible:ring-4 ${
+        tone === 'default'
+          ? 'text-text font-semibold hover:text-accent focus-visible:text-accent'
+          : 'text-text-muted font-medium hover:text-accent focus-visible:text-accent'
+      }`}
+      type="button"
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
+function BookSearchResultCard({item}: BookSearchResultCardProps) {
   const publisherPublicationLabel = createPublisherPublicationLabel(item);
+  const {onOpenBookDetail, onSelectBook} = useBookSearchResultActions();
 
   return (
     <article>
@@ -85,9 +106,8 @@ function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearch
             </div>
 
             <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2">
-              <button
-                className="text-text-muted focus-visible:ring-accent-soft hover:text-accent focus-visible:text-accent cursor-pointer rounded-full px-1 py-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-4"
-                type="button"
+              <BookSearchResultActionButton
+                tone="muted"
                 onClick={() => {
                   onOpenBookDetail?.({
                     isbn13: item.isbn13,
@@ -95,10 +115,9 @@ function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearch
                 }}
               >
                 상세 보기
-              </button>
-              <button
-                className="text-text-muted focus-visible:ring-accent-soft hover:text-accent focus-visible:text-accent cursor-pointer rounded-full px-1 py-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-4"
-                type="button"
+              </BookSearchResultActionButton>
+              <BookSearchResultActionButton
+                tone="default"
                 onClick={() => {
                   onSelectBook?.({
                     author: item.author,
@@ -108,7 +127,7 @@ function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearch
                 }}
               >
                 소장 도서관 찾기
-              </button>
+              </BookSearchResultActionButton>
             </div>
           </div>
         </div>
