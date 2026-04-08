@@ -9,3 +9,4 @@ export {
 export {useGetBookDetail} from './model/useGetBookDetail';
 export {useGetSearchBooks} from './model/useGetSearchBooks';
 export type {BookDetailParams, BookSearchParams} from './model/bookSchema';
+export type {BookSearchItem, BookSearchResponse} from '@nearby-library-search/contracts';

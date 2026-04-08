@@ -1,4 +1,7 @@
+import {Suspense} from 'react';
 import type {BookSearchParams} from '@/entities/book';
+import {Text} from '@/shared/ui';
+import {BookSearchResultContent} from './BookSearchResultContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
 
 type BookSearchResultProps = {
@@ -17,6 +20,15 @@ function BookSearchResult({params, onSubmitSearch}: BookSearchResultProps) {
           onSubmitSearch={onSubmitSearch}
           params={params}
         />
+        <Suspense
+          fallback={
+            <Text className="w-full px-2" role="status" size="sm">
+              도서를 찾고 있습니다.
+            </Text>
+          }
+        >
+          <BookSearchResultContent params={params} />
+        </Suspense>
       </div>
     </section>
   );

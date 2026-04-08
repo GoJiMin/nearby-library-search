@@ -1,9 +1,41 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {createMemoryRouter, RouterProvider} from 'react-router-dom';
-import {describe, expect, it} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
 import {routes} from './router';
+
+const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
+  mockBookSearchResponse: {
+    items: [
+      {
+        author: '이민진',
+        detailUrl: null,
+        imageUrl: null,
+        isbn13: '9788954682155',
+        loanCount: 12,
+        publicationYear: '2018',
+        publisher: '문학사상',
+        title: '파친코',
+      },
+    ],
+    totalCount: 12,
+  },
+  mockUseGetSearchBooks: vi.fn(),
+}));
+
+vi.mock('@/entities/book', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/entities/book')>();
+
+  return {
+    ...actual,
+    useGetSearchBooks: mockUseGetSearchBooks,
+  };
+});
+
+beforeEach(() => {
+  mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
+});
 
 function renderRouter(initialEntries: string[]) {
   const router = createMemoryRouter(routes, {initialEntries});
@@ -51,6 +83,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
+    expect(screen.getByRole('heading', {level: 1, name: '"한강"에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
   });
 
   it('updates the result route search params and resets page to 1 when re-searching', async () => {
