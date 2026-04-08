@@ -1,18 +1,7 @@
 import {ZodError} from 'zod';
 import {parseSearchBooksParams, type BookSearchParams} from '@/entities/book';
+import type {RecoverableResult} from '@/shared/feedback';
 import type {BookSearchMode} from './useBookSearchStart';
-
-type RecoveryUiHint = 'silent' | 'inline' | 'toast' | 'redirect';
-
-type RecoverableResult<TData, TReason extends string = string> =
-  | {data: TData; kind: 'ok'}
-  | {kind: 'empty'}
-  | {
-      defaultUiHint: RecoveryUiHint;
-      kind: 'recoverable';
-      message?: string;
-      reason: TReason;
-    };
 
 type BookSearchResultUrlState = {
   params: BookSearchParams;
@@ -127,6 +116,4 @@ export type {
   BookSearchResultUrlState,
   BookSearchResultUrlStateReason,
   BookSearchResultUrlStateResult,
-  RecoverableResult,
-  RecoveryUiHint,
 };
