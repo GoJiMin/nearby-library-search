@@ -4,6 +4,7 @@ import type {ReactElement} from 'react';
 import {MemoryRouter} from 'react-router-dom';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {BookSearchResult} from '@/features/book';
+import {RequestGetError} from '@/shared/request';
 
 const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
   mockBookSearchResponse: {
@@ -299,7 +300,14 @@ describe('BookSearchResult', () => {
 
   it('조회 에러가 나면 검색 바를 유지한 채 인라인 복구 UI와 다시 시도 버튼을 표시한다', async () => {
     mockUseGetSearchBooks.mockImplementation(() => {
-      throw new Error('boom');
+      throw new RequestGetError({
+        endpoint: '/api/books/search?title=파친코&page=1',
+        message: '도서 검색 정보를 불러오지 못했습니다.',
+        method: 'GET',
+        name: 'BOOK_SEARCH_UPSTREAM_ERROR',
+        requestBody: null,
+        status: 502,
+      });
     });
 
     renderBookSearchResult(
@@ -314,8 +322,9 @@ describe('BookSearchResult', () => {
     );
 
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
-    expect(await screen.findByRole('heading', {level: 1, name: '파친코 검색 결과를 불러오지 못했어요.'})).toBeInTheDocument();
-    expect(screen.getByText('잠시 후 다시 시도하거나 검색어를 수정해보세요.')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {level: 1, name: '데이터를 불러오는 중 오류가 발생했습니다'})).toBeInTheDocument();
+    expect(screen.getByText('조용한 서고에서 길을 잃은 것 같습니다.')).toBeInTheDocument();
+    expect(screen.getByText('도서 검색 서버와 연결이 원활하지 않아요. 잠시 후 다시 시도해주세요.')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
   });
 

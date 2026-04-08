@@ -35,8 +35,8 @@ function BookSearchResult({createPageHref, params, onOpenBookDetail, onSelectBoo
           }}
         >
           <QueryErrorBoundary
-            fallback={({reset}) => (
-              <BookSearchResultErrorContent onRetry={reset} queryText={queryText} />
+            fallback={({error, reset}) => (
+              <BookSearchResultErrorContent error={error} onRetry={reset} />
             )}
           >
             <Suspense fallback={<BookSearchResultLoadingContent queryText={queryText} />}>

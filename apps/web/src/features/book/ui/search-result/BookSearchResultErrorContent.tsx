@@ -1,27 +1,37 @@
-import {Button, Card, Heading, Text} from '@/shared/ui';
+import {SearchX} from 'lucide-react';
+import {getServerErrorDisplayMessage} from '@/shared/request';
+import {Button, Card, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type BookSearchResultErrorContentProps = {
+  error: Error;
   onRetry: () => void;
-  queryText: string;
 };
 
-function BookSearchResultErrorContent({onRetry, queryText}: BookSearchResultErrorContentProps) {
+function BookSearchResultErrorContent({error, onRetry}: BookSearchResultErrorContentProps) {
+  const message = getServerErrorDisplayMessage(error);
+
   return (
-    <div className="flex w-full flex-col gap-5">
-      <Heading as="h1" size="lg">
-        <span className="text-accent">{queryText}</span> 검색 결과를 불러오지 못했어요.
-      </Heading>
-      <Card className="border-line w-full rounded-3xl border px-5 py-5 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.08)]">
-        <div className="flex flex-col gap-4">
-          <Text size="sm">잠시 후 다시 시도하거나 검색어를 수정해보세요.</Text>
-          <div>
-            <Button onClick={onRetry} size="sm" type="button">
-              다시 시도
-            </Button>
-          </div>
+    <Card className="w-full px-6 py-10 sm:min-h-96 sm:px-10 sm:py-14">
+      <div className="flex flex-col items-center justify-center gap-6 text-center sm:min-h-80">
+        <div className="bg-surface-muted text-text-muted inline-flex h-20 w-20 items-center justify-center rounded-full">
+          <LucideIcon className="h-9 w-9" icon={SearchX} />
         </div>
-      </Card>
-    </div>
+        <div className="flex max-w-md flex-col gap-2">
+          <Heading as="h1" className="text-center" size="md">
+            데이터를 불러오는 중 오류가 발생했습니다
+          </Heading>
+          <Text className="text-center" size="sm">
+            조용한 서고에서 길을 잃은 것 같습니다.
+          </Text>
+          <Text className="text-center" size="sm">
+            {message}
+          </Text>
+        </div>
+        <Button onClick={onRetry} size="sm" type="button">
+          다시 시도
+        </Button>
+      </div>
+    </Card>
   );
 }
 
