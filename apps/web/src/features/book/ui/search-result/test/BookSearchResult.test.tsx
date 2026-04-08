@@ -145,9 +145,9 @@ describe('BookSearchResult', () => {
 
     expect(screen.getByRole('list', {name: '도서 검색 결과 목록'})).toBeInTheDocument();
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
-    expect(screen.getByRole('heading', {level: 2, name: '파친코'})).toBeInTheDocument();
-    expect(screen.getByRole('heading', {level: 2, name: '아몬드'})).toBeInTheDocument();
-    expect(screen.getByRole('heading', {level: 2, name: '채식주의자'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 3, name: '파친코'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 3, name: '아몬드'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 3, name: '채식주의자'})).toBeInTheDocument();
     expect(screen.getByText('이민진')).toBeInTheDocument();
     expect(screen.getByText('손원평')).toBeInTheDocument();
   });
