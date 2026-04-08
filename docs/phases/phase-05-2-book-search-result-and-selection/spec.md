@@ -24,7 +24,8 @@
   - URL 상태와 화면 파생값은 effect로 중복 상태를 만들지 않고, 가능한 한 현재 URL과 query 결과에서 직접 계산한다.
   - 컴포넌트는 역할 단위로 분리하되, 현재 `features/book` 내부 코드 스타일을 그대로 따른다.
 - 코드 구조 기준
-  - `pages/home`는 route shell과 화면 전환 조합만 담당한다.
+  - `pages/home`는 검색 시작 route shell만 담당한다.
+  - `pages/book-search-result`는 `/books` 결과 route shell과 URL 상태 분기만 담당한다.
   - 결과 조회, 결과 리스트, 페이지네이션, 카드 버튼은 `features/book`가 담당한다.
   - `entities/book`는 검색 params, query hook, 응답 타입, 상세 조회 hook을 공개한다.
 - URL 상태 기준
@@ -41,7 +42,7 @@
 
 ## 구현 범위
 
-- 검색 제출 후 홈 route 안에서 결과 화면으로 전환되는 구조를 명세로 고정한다.
+- 검색 제출 후 `/books` route로 이동하는 구조를 명세로 고정한다.
 - 결과 화면 상단의 압축 검색 바, 결과 요약 영역, 단일 컬럼 결과 카드 리스트, 페이지네이션 구조를 정리한다.
 - `useGetSearchBooks`를 사용한 결과 조회 계약과 URL 기반 페이지 전환 규칙을 정리한다.
 - 결과 카드에 표시할 실제 필드, 표시 우선순위, 버튼 구조, 없는 필드 처리 방식을 정리한다.
@@ -55,13 +56,13 @@
 - 도서관 결과 화면 구현
 - 카카오맵 연동
 - 존재하지 않는 설명 필드나 추천 문구 추가
-- 결과 화면 외 새로운 route 분리
 - 앱 전역 URL 상태 관리 프레임워크 도입
 
 ## 현재 기반 상태
 
 - `features/book`는 이미 검색 시작 기능 `BookSearchStart`와 canonical 검색 params 생성 helper를 가진다.
 - `pages/home/ui/HomePage.tsx`는 현재 홈 메인 화면과 `BookSearchStart`를 조합하는 route shell이다.
+- 결과 화면은 `/books` route에서 별도 page slice로 진입하도록 정리한다.
 - `entities/book`는 아래 공개 API를 이미 가진다.
   - `parseSearchBooksParams`
   - `useGetSearchBooks`
@@ -83,28 +84,26 @@
     - `loanCount`
 - 따라서 스크린샷에 보이는 카드 설명 문단은 현재 계약에 없으므로 구현 대상에 포함하지 않는다.
 
-## 화면 전환 계약
+## 라우트 전환 계약
 
-### 1. 홈 route의 두 가지 모드
+### 1. 검색 시작 route와 결과 route
 
-- 홈 route는 URL 상태에 따라 두 가지 모드 중 하나를 렌더한다.
-  - 검색 시작 모드
-  - 검색 결과 모드
-- URL에 유효한 `title` 또는 `author`가 없으면 검색 시작 모드를 렌더한다.
-- URL에 유효한 `title` 또는 `author`가 있으면 검색 결과 모드를 렌더한다.
-- 검색 결과 모드에서는 `Phase 5-1A`의 히어로 구조를 숨기고, 스크린샷처럼 압축된 결과 화면만 보여준다.
+- 홈 route `/`는 검색 시작 화면만 렌더한다.
+- 결과 route `/books`는 검색 결과 화면만 렌더한다.
+- `/books`는 URL 검색 파라미터를 source of truth로 사용한다.
+- 결과 route에서는 `Phase 5-1A`의 홈 히어로 구조를 재사용하지 않고, 스크린샷처럼 압축된 결과 화면만 보여준다.
 
-### 2. 검색 시작에서 결과 화면으로의 전환
+### 2. 검색 시작에서 결과 route로의 전환
 
 - `BookSearchStart` 제출은 기존 canonical `BookSearchParams`를 만든다.
-- `pages/home`는 제출된 params를 URL 검색 파라미터로 기록한다.
+- `pages/home`는 제출된 params를 `/books` route URL 검색 파라미터로 기록한다.
 - 검색 시작 제출 시 `page`는 항상 `1`로 시작한다.
-- URL이 갱신되면 결과 화면이 렌더되고 `useGetSearchBooks`가 해당 params로 조회를 수행한다.
+- route가 `/books`로 전환되면 결과 화면이 렌더되고 `useGetSearchBooks`가 해당 params로 조회를 수행한다.
 
-### 3. 결과 화면 내부 재검색
+### 3. 결과 route 내부 재검색
 
 - 결과 화면 상단 검색 바는 현재 URL 상태를 초기값으로 가진다.
-- 사용자가 검색어를 수정하거나 검색 모드를 바꾸고 다시 제출하면 URL이 새 params로 갱신된다.
+- 사용자가 검색어를 수정하거나 검색 모드를 바꾸고 다시 제출하면 `/books` URL이 새 params로 갱신된다.
 - 결과 화면에서 새 검색을 제출할 때는 항상 `page=1`로 리셋한다.
 - 탭 전환 중 입력값은 유지한다.
 - URL에 반영되기 전까지의 편집 상태는 결과 검색 바 내부 로컬 상태로 유지할 수 있다.
@@ -198,7 +197,8 @@
   - `page`는 양의 정수만 허용한다.
 - URL 파라미터 파싱은 `parseSearchBooksParams`를 사용한다.
 - 유효하지 않은 `page`는 기본값 `1`로 보정한다.
-- 유효하지 않은 검색 상태 전체는 검색 시작 화면으로 복귀시킨다.
+- `/books`에 검색 상태가 전혀 없으면 `/`로 복귀시킨다.
+- `/books`에 잘못된 검색 상태가 있으면 결과 route 안에서 인라인 복구 UI를 렌더한다.
 
 ### 2. 페이지네이션
 
@@ -238,11 +238,18 @@
 
 ### 1. `pages/home`
 
-- route shell과 URL 상태 기반 화면 전환만 담당한다.
-- 검색 시작 모드와 결과 모드의 분기 기준은 URL params다.
+- 검색 시작 route shell만 담당한다.
+- 검색 제출 시 canonical params를 `/books` route URL로 반영한다.
 - `pages/home`는 결과 카드 렌더링, 페이지네이션 계산, 도서 선택 버튼 세부 로직을 직접 소유하지 않는다.
 
-### 2. `features/book`
+### 2. `pages/book-search-result`
+
+- `/books` route shell과 URL 상태 분기만 담당한다.
+- URL 상태 해석 결과가 `ok`면 `features/book` 결과 화면을 렌더한다.
+- URL 상태 해석 결과가 `empty`면 `/`로 복귀시킨다.
+- URL 상태 해석 결과가 `recoverable`이면 결과 route 안에서 인라인 복구 UI를 렌더한다.
+
+### 3. `features/book`
 
 - 이번 phase에서 같은 `features/book` slice 안에 아래 역할을 추가한다.
   - 결과 화면 상단 검색 바
@@ -270,7 +277,7 @@
 
 ## 완료 기준
 
-- 문서만 읽고 검색 시작 화면에서 결과 화면으로 어떤 기준으로 전환되는지 설명할 수 있어야 한다.
+- 문서만 읽고 홈 검색 시작 화면에서 `/books` 결과 route로 어떻게 이동하는지 설명할 수 있어야 한다.
 - 문서만 읽고 결과 화면이 왜 URL 기반 상태를 source of truth로 가지는지 설명할 수 있어야 한다.
 - 문서만 읽고 결과 카드에 어떤 필드를 어떤 우선순위로 보여주는지 구현할 수 있어야 한다.
 - 문서만 읽고 `상세 보기`와 `소장 도서관 찾기` 버튼이 이번 phase에서 어디까지 구현되고, 무엇을 후속 phase로 넘기는지 설명할 수 있어야 한다.
@@ -278,8 +285,9 @@
 
 ## 테스트 기준
 
-- URL에 유효한 `title` 또는 `author`가 있으면 결과 화면이 바로 렌더링돼야 한다.
-- URL이 없거나 잘못되면 검색 시작 화면이 렌더링돼야 한다.
+- `/books` URL에 유효한 `title` 또는 `author`가 있으면 결과 화면이 렌더링돼야 한다.
+- `/books` URL에 검색 상태가 없으면 `/`로 복귀해야 한다.
+- `/books` URL이 잘못되면 결과 route 안에서 인라인 복구 UI가 렌더링돼야 한다.
 - 결과 화면은 스크린샷처럼 상단 검색 바, 결과 요약, 카드 리스트, 페이지네이션 구조를 가져야 한다.
 - 결과 카드는 실제 필드만 렌더링해야 하며, 설명 문단은 렌더링하지 않아야 한다.
 - `상세 보기`와 `소장 도서관 찾기`는 모두 버튼이어야 한다.
@@ -291,7 +299,7 @@
 ## 기본 가정
 
 - Phase 5-2의 새 문서 경로는 `docs/phases/phase-05-2-book-search-result-and-selection/spec.md`로 고정한다.
-- 결과 화면은 홈 route 안에서 URL 상태 기반으로 전환되는 단일 페이지 흐름으로 유지한다.
+- 결과 화면은 `/books` 별도 route에서 URL 상태를 source of truth로 유지한다.
 - 스크린샷 정합은 최대한 강하게 맞추되, 실제 계약에 없는 설명 문단과 가짜 데이터는 추가하지 않는다.
 - `상세 보기`와 `소장 도서관 찾기`의 실제 다이얼로그 구현은 후속 phase에서 진행한다.
 - 코드 구조와 테스트 위치는 현재 `features/book` 구현 스타일을 그대로 따른다.

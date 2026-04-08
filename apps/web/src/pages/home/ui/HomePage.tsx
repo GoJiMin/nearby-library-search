@@ -1,10 +1,30 @@
+import {useNavigate} from 'react-router-dom';
 import {BookSearchStart} from '@/features/book';
 import type {BookSearchParams} from '@/entities/book';
 import {Text} from '@/shared/ui';
 import {BrandMessage} from './BrandMessage';
 
 function HomePage() {
-  function handleSubmitSearch(_params: BookSearchParams) {}
+  const navigate = useNavigate();
+
+  function handleSubmitSearch(params: BookSearchParams) {
+    const searchParams = new URLSearchParams({
+      page: String(params.page),
+    });
+
+    if (params.title) {
+      searchParams.set('title', params.title);
+    }
+
+    if (params.author) {
+      searchParams.set('author', params.author);
+    }
+
+    navigate({
+      pathname: '/books',
+      search: `?${searchParams.toString()}`,
+    });
+  }
 
   return (
     <section className="flex h-full w-full max-w-5xl flex-1 flex-col items-center justify-center">

@@ -2,17 +2,17 @@
 
 ## 1. 결과 화면 URL 상태 baseline 정리
 
-- [x] 홈 route 결과 상태의 source of truth를 URL 검색 파라미터로 고정한다.
+- [x] 결과 route 상태의 source of truth를 URL 검색 파라미터로 고정한다.
 - [x] `title | author | page`를 canonical 검색 상태로 해석하는 최소 model 구조를 만든다.
-- [x] URL 상태가 없거나 유효하지 않을 때 검색 시작 화면으로 돌아가는 기준을 정리한다.
+- [x] URL 상태가 없거나 유효하지 않을 때의 route 처리 기준을 정리한다.
 - [x] URL 상태 해석을 검증하는 focused unit test를 추가한다.
 
-## 2. `features/book` 결과 화면 feature 골격 구성
+## 2. 결과 route와 `features/book` 결과 화면 feature 골격 구성
 
-- [ ] `features/book` 안에 결과 화면 orchestration 구조를 만든다.
-- [ ] 결과 조회, 리스트, 페이지네이션, 카드 action을 역할 단위로 나눌 최소 UI/model 경계를 정리한다.
-- [ ] `features/book/index.ts`에서 결과 화면 공개 API를 노출한다.
-- [ ] 결과 화면 기본 integration test 파일을 추가한다.
+- [x] `features/book` 안에 결과 화면 orchestration 구조를 만든다.
+- [x] `pages/book-search-result` route shell과 `features/book` 결과 화면의 최소 책임 경계를 정리한다.
+- [x] `features/book/index.ts`에서 결과 화면 공개 API를 노출한다.
+- [x] 결과 화면 기본 integration test 파일을 추가한다.
 
 ## 3. 상단 결과 검색 바 구현
 
@@ -58,11 +58,11 @@
 - [ ] error 상태에서 인라인 복구 UI와 다시 시도 흐름을 제공한다.
 - [ ] 세 상태를 integration test로 검증한다.
 
-## 9. `pages/home` 조합 구조 확장
+## 9. 검색 시작 route와 결과 route 연결
 
-- [ ] `pages/home`가 URL 상태에 따라 검색 시작 화면과 결과 화면을 전환하도록 정리한다.
-- [ ] 검색 시작 제출이 URL 업데이트로 이어지고, 결과 화면이 같은 route 안에서 렌더링되도록 연결한다.
-- [ ] 홈 route integration test를 Phase 5-2 기준으로 갱신한다.
+- [x] `pages/home`가 검색 제출 시 `/books` route로 이동하도록 정리한다.
+- [x] `pages/book-search-result`가 URL 상태를 기준으로 결과 화면 또는 복구 UI를 렌더링하도록 연결한다.
+- [x] route integration test를 Phase 5-2 기준으로 갱신한다.
 
 ## 10. 최종 검증과 문서 동기화
 
@@ -72,14 +72,14 @@
 
 ## Important Changes
 
-- 이번 phase는 URL 기반 결과 상태와 같은 home route 안에서의 화면 전환을 먼저 구현하도록 순서를 고정한다.
+- 이번 phase는 URL 기반 결과 상태와 `/books` 결과 route 구조를 먼저 구현하도록 순서를 고정한다.
 - `상세 보기`와 `소장 도서관 찾기`는 이번 phase에서 버튼과 handoff까지만 구현하고, 실제 다이얼로그는 후속 phase로 넘긴다.
 - 결과 카드에는 실제 계약 필드만 사용하고, 스크린샷의 설명 문단처럼 없는 데이터는 구현하지 않는다.
 - 코드 구조와 테스트 파일 위치는 현재 `features/book` 스타일을 그대로 따른다.
 
 ## Test Plan
 
-- URL에 유효한 `title|author + page`가 있으면 결과 화면이 복원된다.
+- `/books`에 유효한 `title|author + page`가 있으면 결과 화면이 복원된다.
 - 상단 검색 바에서 재검색 시 URL이 갱신되고 `page=1`로 리셋된다.
 - 결과 카드가 실제 필드만 렌더링하고, 없는 필드는 숨긴다.
 - `상세 보기`, `소장 도서관 찾기` 버튼이 각각 올바른 handoff를 만든다.
@@ -93,4 +93,4 @@
 - 구현과 테스트를 같은 단계에서 완료하는 현재 프로젝트 규칙을 그대로 따른다.
 - integration test의 상호작용 기본값은 `@testing-library/user-event`다.
 - focused unit test는 URL 파싱, 페이지 수 계산처럼 순수 로직이 실제로 분리될 때만 추가한다.
-- 이번 phase는 결과 화면과 도서 선택 handoff까지 다루고, 상세/지역 선택 다이얼로그 자체 구현은 다루지 않는다.
+- 이번 phase는 `/books` 결과 화면과 도서 선택 handoff까지 다루고, 상세/지역 선택 다이얼로그 자체 구현은 다루지 않는다.

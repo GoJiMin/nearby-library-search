@@ -1,6 +1,7 @@
 import type {RouteObject} from 'react-router-dom';
 import {createBrowserRouter} from 'react-router-dom';
 import {RootLayout} from '@/app/layouts';
+import {BookSearchResultPage} from '@/pages/book-search-result';
 import {HomePage} from '@/pages/home';
 import {NotFoundPage} from '@/pages/not-found';
 import {RouteErrorPage} from '@/pages/route-error';
@@ -14,6 +15,10 @@ const routes = [
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: 'books',
+        element: <BookSearchResultPage />,
       },
       {
         path: '*',
