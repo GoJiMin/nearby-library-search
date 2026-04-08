@@ -52,6 +52,47 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('localhost 개발 origin 요청에 CORS 허용 헤더를 반환한다', async () => {
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      headers: {
+        origin: 'http://127.0.0.1:5173',
+      },
+      method: 'GET',
+      url: '/health',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['access-control-allow-origin']).toBe('http://127.0.0.1:5173');
+    expect(response.headers['access-control-allow-methods']).toBe('GET,HEAD,OPTIONS');
+    expect(response.headers.vary).toBe('Origin');
+
+    await app.close();
+  });
+
+  it('preflight OPTIONS 요청에 204와 허용 헤더를 반환한다', async () => {
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      headers: {
+        'access-control-request-headers': 'content-type',
+        origin: 'http://localhost:5173',
+      },
+      method: 'OPTIONS',
+      url: '/api/books/search',
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+    expect(response.headers['access-control-allow-methods']).toBe('GET,HEAD,OPTIONS');
+    expect(response.headers['access-control-allow-headers']).toBe('content-type');
+
+    await app.close();
+  });
+
   it('도서 검색 조건이 없으면 외부 호출 없이 400 에러를 반환한다', async () => {
     const {createApp} = await import('./createApp.js');
     const app = createApp();
