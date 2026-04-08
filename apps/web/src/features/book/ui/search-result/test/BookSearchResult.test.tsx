@@ -271,4 +271,112 @@ describe('BookSearchResult', () => {
     expect(screen.getByRole('link', {name: '3페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=3');
     expect(screen.getByRole('link', {name: '5페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=5');
   });
+
+  it('총 페이지가 1개면 페이지네이션을 렌더링하지 않는다', () => {
+    mockUseGetSearchBooks.mockReturnValueOnce({
+      ...mockBookSearchResponse,
+      totalCount: 10,
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    expect(screen.queryByRole('navigation', {name: '도서 검색 결과 페이지네이션'})).not.toBeInTheDocument();
+  });
+
+  it('첫 페이지에서는 이전 페이지가 비활성화되고 말줄임 하나와 앞쪽 숫자만 보인다', () => {
+    mockUseGetSearchBooks.mockReturnValueOnce({
+      ...mockBookSearchResponse,
+      totalCount: 100,
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const pagination = screen.getByRole('navigation', {name: '도서 검색 결과 페이지네이션'});
+
+    expect(within(pagination).getByLabelText('이전 페이지')).toHaveAttribute('aria-disabled', 'true');
+    expect(within(pagination).getByRole('link', {name: '다음 페이지'})).toHaveAttribute(
+      'href',
+      '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=2',
+    );
+    expect(within(pagination).getAllByLabelText('페이지 생략')).toHaveLength(1);
+    expect(within(pagination).getByText('1')).toHaveAttribute('aria-current', 'page');
+    expect(within(pagination).getByRole('link', {name: '2페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByRole('link', {name: '3페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByRole('link', {name: '10페이지'})).toBeInTheDocument();
+  });
+
+  it('마지막 페이지에서는 다음 페이지가 비활성화되고 말줄임 하나와 마지막 숫자만 보인다', () => {
+    mockUseGetSearchBooks.mockReturnValueOnce({
+      ...mockBookSearchResponse,
+      totalCount: 100,
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={page => `/books?title=${encodeURIComponent('파친코')}&page=${page}`}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 10,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const pagination = screen.getByRole('navigation', {name: '도서 검색 결과 페이지네이션'});
+
+    expect(within(pagination).getByRole('link', {name: '이전 페이지'})).toHaveAttribute(
+      'href',
+      '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=9',
+    );
+    expect(within(pagination).getByLabelText('다음 페이지')).toHaveAttribute('aria-disabled', 'true');
+    expect(within(pagination).getAllByLabelText('페이지 생략')).toHaveLength(1);
+    expect(within(pagination).getByRole('link', {name: '8페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByRole('link', {name: '9페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByText('10')).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('중간 페이지에서는 양쪽 말줄임과 현재 주변 숫자를 모두 표시한다', () => {
+    mockUseGetSearchBooks.mockReturnValueOnce({
+      ...mockBookSearchResponse,
+      totalCount: 100,
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 5,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const pagination = screen.getByRole('navigation', {name: '도서 검색 결과 페이지네이션'});
+
+    expect(within(pagination).getAllByLabelText('페이지 생략')).toHaveLength(2);
+    expect(within(pagination).getByRole('link', {name: '1페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByRole('link', {name: '4페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByText('5')).toHaveAttribute('aria-current', 'page');
+    expect(within(pagination).getByRole('link', {name: '6페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByRole('link', {name: '10페이지'})).toBeInTheDocument();
+  });
 });

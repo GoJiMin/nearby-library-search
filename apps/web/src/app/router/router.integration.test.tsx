@@ -122,6 +122,23 @@ describe('app router integration', () => {
     ).toHaveAttribute('aria-current', 'page');
   });
 
+  it('moves forward and backward with previous/next pagination links while preserving the query', async () => {
+    const user = userEvent.setup();
+    const {router} = renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('link', {name: '다음 페이지'}));
+
+    expect(router.state.location.pathname).toBe('/books');
+    expect(new URLSearchParams(router.state.location.search).get('title')).toBe('파친코');
+    expect(new URLSearchParams(router.state.location.search).get('page')).toBe('2');
+
+    await user.click(await screen.findByRole('link', {name: '이전 페이지'}));
+
+    expect(router.state.location.pathname).toBe('/books');
+    expect(new URLSearchParams(router.state.location.search).get('title')).toBe('파친코');
+    expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
+  });
+
   it('redirects the empty book result route to the home page', async () => {
     renderRouter(['/books']);
 

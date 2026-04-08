@@ -28,6 +28,7 @@ function BookSearchResultPagination({createPageHref, currentPage, totalPages}: B
     <nav aria-label="도서 검색 결과 페이지네이션" className="flex items-center justify-center gap-2 pt-6 pb-8">
       {isFirstPage ? (
         <span
+          aria-label="이전 페이지"
           aria-disabled="true"
           className="border-line text-text-muted inline-flex h-10 w-10 items-center justify-center rounded-full border opacity-50"
         >
@@ -47,9 +48,10 @@ function BookSearchResultPagination({createPageHref, currentPage, totalPages}: B
         if (item.type === 'ellipsis') {
           return (
             <span
-              aria-hidden="true"
+              aria-label="페이지 생략"
               className="text-text-muted inline-flex h-10 w-10 items-center justify-center"
               key={item.id}
+              role="img"
             >
               <LucideIcon className="h-4 w-4" icon={MoreHorizontal} strokeWidth={2} />
             </span>
@@ -84,6 +86,7 @@ function BookSearchResultPagination({createPageHref, currentPage, totalPages}: B
 
       {isLastPage ? (
         <span
+          aria-label="다음 페이지"
           aria-disabled="true"
           className="border-line text-text-muted inline-flex h-10 w-10 items-center justify-center rounded-full border opacity-50"
         >
