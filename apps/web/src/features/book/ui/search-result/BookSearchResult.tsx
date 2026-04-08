@@ -1,15 +1,18 @@
 import {Suspense} from 'react';
 import type {BookSearchParams} from '@/entities/book';
+import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../model/bookSearchResult.contract';
 import {Text} from '@/shared/ui';
 import {BookSearchResultContent} from './BookSearchResultContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
 
 type BookSearchResultProps = {
+  onOpenBookDetail?: (payload: BookDetailActionPayload) => void;
+  onSelectBook?: (payload: BookSelectionActionPayload) => void;
   onSubmitSearch: (params: BookSearchParams) => void;
   params: BookSearchParams;
 };
 
-function BookSearchResult({params, onSubmitSearch}: BookSearchResultProps) {
+function BookSearchResult({params, onOpenBookDetail, onSelectBook, onSubmitSearch}: BookSearchResultProps) {
   const searchBarKey = `${params.title ? 'title' : 'author'}:${params.title ?? params.author ?? ''}`;
 
   return (
@@ -27,7 +30,11 @@ function BookSearchResult({params, onSubmitSearch}: BookSearchResultProps) {
             </Text>
           }
         >
-          <BookSearchResultContent params={params} />
+          <BookSearchResultContent
+            onOpenBookDetail={onOpenBookDetail}
+            onSelectBook={onSelectBook}
+            params={params}
+          />
         </Suspense>
       </div>
     </section>

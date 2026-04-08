@@ -170,17 +170,19 @@
 
 ### 6. 카드 버튼 계약
 
-- 각 카드의 액션은 오른쪽 하단에 둔다.
-- 버튼 순서는 아래로 고정한다.
+- 각 카드의 액션은 메타 정보 바로 아래 한 줄에 둔다.
+- 액션 순서는 아래로 고정한다.
   - `상세 보기`
   - `소장 도서관 찾기`
+- 두 액션 모두 semantic은 `button`으로 유지하되, 시각적으로는 배경과 테두리가 없는 텍스트 액션으로 구현한다.
+- hover와 focus 시 텍스트는 브랜드 accent 색으로 강조한다.
 - `상세 보기`
-  - secondary button
+  - 텍스트 secondary action
   - 후속 phase의 도서 상세 다이얼로그 트리거
   - handoff payload는 최소 `isbn13`
   - 이번 phase에서는 버튼 존재와 click handoff 계약만 고정한다.
 - `소장 도서관 찾기`
-  - primary button
+  - 텍스트 primary action
   - 도서 선택/확정의 의미를 가진다.
   - 후속 phase의 지역 선택 다이얼로그 트리거
   - handoff payload는 최소 `isbn13`, `title`, `author`

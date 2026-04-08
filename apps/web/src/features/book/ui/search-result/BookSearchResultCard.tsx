@@ -1,9 +1,12 @@
 import {BarChart3, BookOpen, Fingerprint} from 'lucide-react';
 import type {BookSearchItem} from '@/entities/book';
+import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../model/bookSearchResult.contract';
 import {Card, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type BookSearchResultCardProps = {
   item: BookSearchItem;
+  onOpenBookDetail?: (payload: BookDetailActionPayload) => void;
+  onSelectBook?: (payload: BookSelectionActionPayload) => void;
 };
 
 function createPublisherPublicationLabel(item: BookSearchItem) {
@@ -14,7 +17,7 @@ function createPublisherPublicationLabel(item: BookSearchItem) {
   return item.publisher ?? item.publicationYear;
 }
 
-function BookSearchResultCard({item}: BookSearchResultCardProps) {
+function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearchResultCardProps) {
   const publisherPublicationLabel = createPublisherPublicationLabel(item);
 
   return (
@@ -42,7 +45,7 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
             )}
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col justify-between gap-4">
+          <div className="flex min-w-0 flex-1 flex-col gap-4">
             <div className="space-y-3">
               <div className="space-y-1">
                 <Heading as="h2" className="line-clamp-2" size="md">
@@ -90,7 +93,32 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
               </div>
             </div>
 
-            <div aria-hidden className="min-h-10" />
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <button
+                className="text-text-muted focus-visible:ring-accent-soft rounded-full px-1 py-1 text-sm font-medium transition-colors outline-none hover:text-accent focus-visible:text-accent focus-visible:ring-4"
+                type="button"
+                onClick={() => {
+                  onOpenBookDetail?.({
+                    isbn13: item.isbn13,
+                  });
+                }}
+              >
+                상세 보기
+              </button>
+              <button
+                className="text-text focus-visible:ring-accent-soft rounded-full px-1 py-1 text-sm font-semibold transition-colors outline-none hover:text-accent focus-visible:text-accent focus-visible:ring-4"
+                type="button"
+                onClick={() => {
+                  onSelectBook?.({
+                    author: item.author,
+                    isbn13: item.isbn13,
+                    title: item.title,
+                  });
+                }}
+              >
+                소장 도서관 찾기
+              </button>
+            </div>
           </div>
         </div>
       </Card>

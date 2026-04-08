@@ -140,6 +140,46 @@ describe('BookSearchResult', () => {
     expect(within(thirdItem).getByText('총 대출 7건')).toBeInTheDocument();
   });
 
+  it('텍스트 액션 버튼을 메타 정보 아래에 렌더링하고 올바른 handoff payload를 전달한다', async () => {
+    const user = userEvent.setup();
+    const onOpenBookDetail = vi.fn();
+    const onSelectBook = vi.fn();
+
+    render(
+      <BookSearchResult
+        onOpenBookDetail={onOpenBookDetail}
+        onSelectBook={onSelectBook}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const [firstItem] = screen.getAllByRole('listitem');
+    const firstItemQueries = within(firstItem);
+    const detailButton = firstItemQueries.getByRole('button', {name: '상세 보기'});
+    const selectButton = firstItemQueries.getByRole('button', {name: '소장 도서관 찾기'});
+
+    expect(onOpenBookDetail).not.toHaveBeenCalled();
+    expect(onSelectBook).not.toHaveBeenCalled();
+
+    await user.click(detailButton);
+    await user.click(selectButton);
+
+    expect(onOpenBookDetail).toHaveBeenCalledTimes(1);
+    expect(onOpenBookDetail).toHaveBeenCalledWith({
+      isbn13: '9788954682155',
+    });
+    expect(onSelectBook).toHaveBeenCalledTimes(1);
+    expect(onSelectBook).toHaveBeenCalledWith({
+      author: '이민진',
+      isbn13: '9788954682155',
+      title: '파친코',
+    });
+  });
+
   it('탭 전환 시 입력값을 유지한다', async () => {
     const user = userEvent.setup();
 
