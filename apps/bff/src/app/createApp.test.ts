@@ -24,6 +24,10 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
 describe('createApp integration', () => {
   beforeEach(() => {
     requestLibraryApiMock.mockReset();
+    vi.resetModules();
+    delete process.env.USE_DEV_FIXTURES;
+    process.env.LIBRARY_API_BASE_URL = 'https://example.com';
+    process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   });
 
   afterEach(() => {
@@ -104,6 +108,32 @@ describe('createApp integration', () => {
         title: 'react',
       },
     });
+
+    await app.close();
+  });
+
+  it('개발용 fixture 모드가 켜져 있으면 외부 호출 없이 검색 결과를 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/search?title=파친코',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      items: [
+        expect.objectContaining({
+          author: '이민진',
+          title: '파친코',
+        }),
+      ],
+      totalCount: 1,
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });

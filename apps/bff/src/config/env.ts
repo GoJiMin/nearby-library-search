@@ -31,6 +31,24 @@ function readPortEnv() {
   return port;
 }
 
+function readBooleanEnv(name: string, defaultValue = false) {
+  const value = readStringEnv(name).toLowerCase();
+
+  if (!value) {
+    return defaultValue;
+  }
+
+  if (value === 'true' || value === '1' || value === 'yes' || value === 'on') {
+    return true;
+  }
+
+  if (value === 'false' || value === '0' || value === 'no' || value === 'off') {
+    return false;
+  }
+
+  throw new Error(`Invalid server env: ${name} must be a boolean-like value`);
+}
+
 function readBaseUrlEnv() {
   const value = readRequiredStringEnv('LIBRARY_API_BASE_URL');
   let url: URL;
@@ -51,6 +69,10 @@ function readBaseUrlEnv() {
 export const serverEnv = {
   host: readStringEnv('HOST') || DEFAULT_HOST,
   port: readPortEnv(),
+};
+
+export const developmentConfig = {
+  useDevFixtures: readBooleanEnv('USE_DEV_FIXTURES', false),
 };
 
 export const libraryApiConfig = {

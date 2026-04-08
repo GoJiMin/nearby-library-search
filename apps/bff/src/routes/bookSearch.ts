@@ -2,6 +2,7 @@ import type {BookSearchItem, BookSearchResponse, ErrorResponse} from '@nearby-li
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
+import {developmentConfig} from '../config/env.js';
 import {bookSearchQuerySchema} from '../schemas/book.js';
 import type {BookSearchQuery} from '../schemas/book.js';
 import {getDocRecords, getLibraryApiResponseRoot} from '../utils/libraryApiResponse.js';
@@ -12,6 +13,7 @@ import {
   toLibraryApiErrorResponse,
 } from '../utils/error.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../utils/normalize.js';
+import {createBookSearchFixtureResponse} from './bookSearchFixture.js';
 
 type Result<T> =
   | {
@@ -176,6 +178,10 @@ export const bookSearchRoute: FastifyPluginAsync = async app => {
       reply.status(parsedQuery.error.status);
 
       return parsedQuery.error;
+    }
+
+    if (developmentConfig.useDevFixtures) {
+      return createBookSearchFixtureResponse(parsedQuery.value);
     }
 
     const bookSearchPayload = await fetchBookSearchPayload(parsedQuery.value);
