@@ -1,5 +1,6 @@
 export {booksQueryKeys, booksQueryOptions} from './model/bookQueries';
 export {
+  BOOK_SEARCH_PAGE_SIZE,
   MAX_BOOK_SEARCH_TERM_LENGTH,
   bookDetailParamsSchema,
   parseBookDetailParams,

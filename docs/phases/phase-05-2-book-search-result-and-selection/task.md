@@ -45,11 +45,11 @@
 
 ## 7. URL 기반 페이지네이션 구현
 
-- [ ] `totalCount`와 `BOOK_SEARCH_PAGE_SIZE`로 전체 페이지 수를 계산한다.
-- [ ] 스크린샷 기준의 `이전 / 숫자 / 다음` 페이지네이션을 구현한다.
-- [ ] 페이지 전환 시 URL의 `page`만 갱신되도록 연결한다.
-- [ ] 페이지 수 계산 helper를 추출했다면 focused unit test를 추가한다.
-- [ ] 페이지 전환, 뒤로가기, 새로고침 복원 시나리오를 integration test로 검증한다.
+- [x] `totalCount`와 `BOOK_SEARCH_PAGE_SIZE`로 전체 페이지 수를 계산한다.
+- [x] 스크린샷 기준의 `이전 / 숫자 / 다음` 페이지네이션을 구현한다.
+- [x] 페이지 전환 시 URL의 `page`만 갱신되도록 연결한다.
+- [x] 페이지 수 계산 helper를 추출했다면 focused unit test를 추가한다.
+- [x] 페이지 전환, 뒤로가기, 새로고침 복원 시나리오를 integration test로 검증한다.
 
 ## 8. loading, empty, error 상태 구현
 

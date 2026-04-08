@@ -1,5 +1,7 @@
 import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type {ReactElement} from 'react';
+import {MemoryRouter} from 'react-router-dom';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {BookSearchResult} from '@/features/book';
 
@@ -55,10 +57,19 @@ beforeEach(() => {
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
 });
 
+function createPageHref(page: number) {
+  return `/books?title=${encodeURIComponent('파친코')}&page=${page}`;
+}
+
+function renderBookSearchResult(ui: ReactElement) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
+
 describe('BookSearchResult', () => {
   it('책 제목 검색 params로 결과 검색 바를 초기화한다', () => {
-    render(
+    renderBookSearchResult(
       <BookSearchResult
+        createPageHref={createPageHref}
         onSubmitSearch={vi.fn()}
         params={{
           page: 2,
@@ -77,8 +88,9 @@ describe('BookSearchResult', () => {
   });
 
   it('저자명 검색 params로 결과 검색 바를 초기화한다', () => {
-    render(
+    renderBookSearchResult(
       <BookSearchResult
+        createPageHref={page => `/books?author=${encodeURIComponent('한강')}&page=${page}`}
         onSubmitSearch={vi.fn()}
         params={{
           author: '한강',
@@ -92,8 +104,9 @@ describe('BookSearchResult', () => {
   });
 
   it('결과 요약과 단일 컬럼 결과 리스트를 렌더링한다', () => {
-    render(
+    renderBookSearchResult(
       <BookSearchResult
+        createPageHref={createPageHref}
         onSubmitSearch={vi.fn()}
         params={{
           page: 1,
@@ -112,8 +125,9 @@ describe('BookSearchResult', () => {
   });
 
   it('카드 메타 정보 우선순위와 필드 숨김 규칙을 따른다', () => {
-    render(
+    renderBookSearchResult(
       <BookSearchResult
+        createPageHref={createPageHref}
         onSubmitSearch={vi.fn()}
         params={{
           page: 1,
@@ -145,8 +159,9 @@ describe('BookSearchResult', () => {
     const onOpenBookDetail = vi.fn();
     const onSelectBook = vi.fn();
 
-    render(
+    renderBookSearchResult(
       <BookSearchResult
+        createPageHref={createPageHref}
         onOpenBookDetail={onOpenBookDetail}
         onSelectBook={onSelectBook}
         onSubmitSearch={vi.fn()}
@@ -183,8 +198,9 @@ describe('BookSearchResult', () => {
   it('탭 전환 시 입력값을 유지한다', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderBookSearchResult(
       <BookSearchResult
+        createPageHref={createPageHref}
         onSubmitSearch={vi.fn()}
         params={{
           page: 3,
@@ -206,8 +222,9 @@ describe('BookSearchResult', () => {
     const user = userEvent.setup();
     const onSubmitSearch = vi.fn();
 
-    render(
+    renderBookSearchResult(
       <BookSearchResult
+        createPageHref={createPageHref}
         onSubmitSearch={onSubmitSearch}
         params={{
           page: 2,
@@ -227,5 +244,31 @@ describe('BookSearchResult', () => {
       page: 1,
       title: '아몬드',
     });
+  });
+
+  it('전체 페이지 수와 현재 페이지에 맞는 페이지네이션을 렌더링한다', () => {
+    mockUseGetSearchBooks.mockReturnValueOnce({
+      ...mockBookSearchResponse,
+      totalCount: 42,
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 2,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('navigation', {name: '도서 검색 결과 페이지네이션'})).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: '이전 페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=1');
+    expect(screen.getByRole('link', {name: '다음 페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=3');
+    expect(screen.getByRole('link', {name: '1페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=1');
+    expect(screen.getByText('2')).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', {name: '3페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=3');
+    expect(screen.getByRole('link', {name: '5페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=5');
   });
 });

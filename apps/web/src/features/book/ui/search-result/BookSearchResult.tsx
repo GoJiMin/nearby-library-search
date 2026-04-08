@@ -7,13 +7,14 @@ import {BookSearchResultContent} from './BookSearchResultContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
 
 type BookSearchResultProps = {
+  createPageHref: (page: number) => string;
   onOpenBookDetail?: (payload: BookDetailActionPayload) => void;
   onSelectBook?: (payload: BookSelectionActionPayload) => void;
   onSubmitSearch: (params: BookSearchParams) => void;
   params: BookSearchParams;
 };
 
-function BookSearchResult({params, onOpenBookDetail, onSelectBook, onSubmitSearch}: BookSearchResultProps) {
+function BookSearchResult({createPageHref, params, onOpenBookDetail, onSelectBook, onSubmitSearch}: BookSearchResultProps) {
   const searchBarKey = `${params.title ? 'title' : 'author'}:${params.title ?? params.author ?? ''}`;
 
   return (
@@ -37,7 +38,7 @@ function BookSearchResult({params, onOpenBookDetail, onSelectBook, onSubmitSearc
               </Text>
             }
           >
-            <BookSearchResultContent params={params} />
+            <BookSearchResultContent createPageHref={createPageHref} params={params} />
           </Suspense>
         </BookSearchResultActionContext.Provider>
       </div>

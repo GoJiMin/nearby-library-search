@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {act, render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {createMemoryRouter, RouterProvider} from 'react-router-dom';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
@@ -99,6 +99,27 @@ describe('app router integration', () => {
     expect(router.state.location.pathname).toBe('/books');
     expect(new URLSearchParams(router.state.location.search).get('title')).toBe('채식주의자');
     expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
+  });
+
+  it('updates only the page search param when clicking pagination links and supports browser back', async () => {
+    const user = userEvent.setup();
+    const {router} = renderRouter(['/books?title=파친코&page=2']);
+
+    await user.click(await screen.findByRole('link', {name: '1페이지'}));
+
+    expect(router.state.location.pathname).toBe('/books');
+    expect(new URLSearchParams(router.state.location.search).get('title')).toBe('파친코');
+    expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
+
+    await act(async () => {
+      await router.navigate(-1);
+    });
+
+    expect(new URLSearchParams(router.state.location.search).get('title')).toBe('파친코');
+    expect(new URLSearchParams(router.state.location.search).get('page')).toBe('2');
+    expect(
+      within(screen.getByRole('navigation', {name: '도서 검색 결과 페이지네이션'})).getByText('2'),
+    ).toHaveAttribute('aria-current', 'page');
   });
 
   it('redirects the empty book result route to the home page', async () => {

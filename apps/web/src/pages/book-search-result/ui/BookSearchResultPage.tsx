@@ -8,6 +8,26 @@ function BookSearchResultPage() {
   const [searchParams] = useSearchParams();
   const urlStateResult = readBookSearchResultUrlState(searchParams);
 
+  function createPageHref(page: number) {
+    const nextSearchParams = new URLSearchParams({
+      page: String(page),
+    });
+
+    if (urlStateResult.kind !== 'ok') {
+      return '/books';
+    }
+
+    if (urlStateResult.data.params.title) {
+      nextSearchParams.set('title', urlStateResult.data.params.title);
+    }
+
+    if (urlStateResult.data.params.author) {
+      nextSearchParams.set('author', urlStateResult.data.params.author);
+    }
+
+    return `/books?${nextSearchParams.toString()}`;
+  }
+
   function handleSubmitSearch(params: BookSearchParams) {
     const nextSearchParams = new URLSearchParams({
       page: String(params.page),
@@ -49,7 +69,13 @@ function BookSearchResultPage() {
     );
   }
 
-  return <BookSearchResult onSubmitSearch={handleSubmitSearch} params={urlStateResult.data.params} />;
+  return (
+    <BookSearchResult
+      createPageHref={createPageHref}
+      onSubmitSearch={handleSubmitSearch}
+      params={urlStateResult.data.params}
+    />
+  );
 }
 
 export {BookSearchResultPage};
