@@ -43,14 +43,15 @@ function renderRouteErrorPage() {
 }
 
 describe('RouteErrorPage', () => {
-  it('renders the shared secondary header and navigates back to home', async () => {
+  it('renders the simple fallback state and navigates back to home', async () => {
     const user = userEvent.setup();
     const {router} = renderRouteErrorPage();
 
-    expect(await screen.findByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
-    expect(screen.getByRole('heading', {name: '화면을 불러오지 못했습니다'})).toBeInTheDocument();
+    expect(screen.queryByRole('link', {name: '메인으로'})).not.toBeInTheDocument();
+    expect(await screen.findByRole('heading', {name: '화면을 불러오지 못했어요'})).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: '홈으로 돌아가기'})).toHaveAttribute('href', '/');
 
-    await user.click(screen.getByRole('link', {name: '메인으로'}));
+    await user.click(screen.getByRole('link', {name: '홈으로 돌아가기'}));
 
     expect(router.state.location.pathname).toBe('/');
     expect(await screen.findByText('홈 화면')).toBeInTheDocument();
