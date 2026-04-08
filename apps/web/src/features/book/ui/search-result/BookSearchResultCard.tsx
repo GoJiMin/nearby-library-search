@@ -18,17 +18,12 @@ function createPublisherPublicationLabel(item: BookSearchItem) {
 type BookSearchResultActionButtonProps = {
   children: string;
   onClick: () => void;
-  tone: 'default' | 'muted';
 };
 
-function BookSearchResultActionButton({children, onClick, tone}: BookSearchResultActionButtonProps) {
+function BookSearchResultActionButton({children, onClick}: BookSearchResultActionButtonProps) {
   return (
     <button
-      className={`focus-visible:ring-accent-soft rounded-full px-1 py-1 text-sm transition-colors outline-none focus-visible:ring-4 ${
-        tone === 'default'
-          ? 'text-text font-semibold hover:text-accent focus-visible:text-accent'
-          : 'text-text-muted font-medium hover:text-accent focus-visible:text-accent'
-      }`}
+      className="text-text-muted focus-visible:ring-accent-soft hover:text-accent focus-visible:text-accent cursor-pointer rounded-full px-1 py-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-4"
       type="button"
       onClick={onClick}
     >
@@ -107,7 +102,6 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
 
             <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2">
               <BookSearchResultActionButton
-                tone="muted"
                 onClick={() => {
                   onOpenBookDetail?.({
                     isbn13: item.isbn13,
@@ -117,7 +111,6 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
                 상세 보기
               </BookSearchResultActionButton>
               <BookSearchResultActionButton
-                tone="default"
                 onClick={() => {
                   onSelectBook?.({
                     author: item.author,
