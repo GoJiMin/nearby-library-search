@@ -4,9 +4,9 @@ import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../mo
 import {QueryErrorBoundary} from '@/shared/feedback';
 import {BookSearchResultActionContext} from './bookSearchResultActionContext';
 import {BookSearchResultContent} from './BookSearchResultContent';
-import {BookSearchResultErrorContent} from './BookSearchResultErrorContent';
-import {BookSearchResultLoadingContent} from './BookSearchResultLoadingContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
+import {BookSearchResultErrorContent} from './states/BookSearchResultErrorContent';
+import {BookSearchResultLoadingContent} from './states/BookSearchResultLoadingContent';
 
 type BookSearchResultProps = {
   createPageHref: (page: number) => string;

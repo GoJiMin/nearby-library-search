@@ -1,8 +1,8 @@
 import {BOOK_SEARCH_PAGE_SIZE, useGetSearchBooks, type BookSearchParams} from '@/entities/book';
 import {Heading} from '@/shared/ui';
-import {BookSearchResultEmptyContent} from './BookSearchResultEmptyContent';
 import {BookSearchResultList} from './BookSearchResultList';
 import {BookSearchResultPagination} from './BookSearchResultPagination';
+import {BookSearchResultEmptyContent} from './states/BookSearchResultEmptyContent';
 
 type BookSearchResultContentProps = {
   createPageHref: (page: number) => string;
