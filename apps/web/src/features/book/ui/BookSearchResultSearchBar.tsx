@@ -15,21 +15,20 @@ function BookSearchResultSearchBar({params, onSubmitSearch}: BookSearchResultSea
   const baseId = useId();
   const initialSearchMode: BookSearchMode = params.title ? 'title' : 'author';
   const initialQueryText = params.title ?? params.author ?? '';
-  const {queryText, searchMode, setQueryText, setSearchMode} = useBookSearchStart({
-    initialQueryText,
-    initialSearchMode,
-  });
-  const normalizedQuery = queryText.trim();
-  const isSubmitDisabled = normalizedQuery.length === 0;
+  const {canSubmit, normalizedQuery, queryText, searchMode, setQueryText, setSearchMode} =
+    useBookSearchStart({
+      initialQueryText,
+      initialSearchMode,
+    });
 
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!normalizedQuery) {
+    if (!canSubmit) {
       return;
     }
 
-    onSubmitSearch(createBookSearchStartParams({queryText, searchMode}));
+    onSubmitSearch(createBookSearchStartParams({normalizedQuery, searchMode}));
   }
 
   return (
@@ -37,8 +36,8 @@ function BookSearchResultSearchBar({params, onSubmitSearch}: BookSearchResultSea
       <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
       <BookSearchQueryForm
         baseId={baseId}
+        canSubmit={canSubmit}
         formLabel="도서 결과 재검색"
-        isSubmitDisabled={isSubmitDisabled}
         onQueryTextChange={setQueryText}
         onSubmit={handleSubmit}
         queryText={queryText}

@@ -12,8 +12,12 @@ function useBookSearchStart({
 }: UseBookSearchStartOptions = {}) {
   const [searchMode, setSearchMode] = useState<BookSearchMode>(initialSearchMode);
   const [queryText, setQueryText] = useState(initialQueryText);
+  const normalizedQuery = queryText.trim();
+  const canSubmit = normalizedQuery.length > 0;
 
   return {
+    canSubmit,
+    normalizedQuery,
     queryText,
     searchMode,
     setQueryText,

@@ -2,16 +2,14 @@ import {parseSearchBooksParams, type BookSearchParams} from '@/entities/book';
 import type {BookSearchMode} from './bookSearchStart.contract';
 
 type CreateBookSearchStartParamsProps = {
-  queryText: string;
+  normalizedQuery: string;
   searchMode: BookSearchMode;
 };
 
 function createBookSearchStartParams({
-  queryText,
+  normalizedQuery,
   searchMode,
 }: CreateBookSearchStartParamsProps): BookSearchParams {
-  const normalizedQuery = queryText.trim();
-
   return parseSearchBooksParams(
     searchMode === 'title'
       ? {

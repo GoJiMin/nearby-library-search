@@ -11,18 +11,17 @@ type BookSearchStartProps = {
 
 function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
   const baseId = useId();
-  const {queryText, searchMode, setQueryText, setSearchMode} = useBookSearchStart();
-  const normalizedQuery = queryText.trim();
-  const isSubmitDisabled = normalizedQuery.length === 0;
+  const {canSubmit, normalizedQuery, queryText, searchMode, setQueryText, setSearchMode} =
+    useBookSearchStart();
 
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!normalizedQuery) {
+    if (!canSubmit) {
       return;
     }
 
-    onSubmitSearch(createBookSearchStartParams({queryText, searchMode}));
+    onSubmitSearch(createBookSearchStartParams({normalizedQuery, searchMode}));
   }
 
   return (
@@ -33,7 +32,7 @@ function BookSearchStart({onSubmitSearch}: BookSearchStartProps) {
       <BookSearchModeTabs baseId={baseId} onChangeSearchMode={setSearchMode} searchMode={searchMode} />
       <BookSearchQueryForm
         baseId={baseId}
-        isSubmitDisabled={isSubmitDisabled}
+        canSubmit={canSubmit}
         onQueryTextChange={setQueryText}
         onSubmit={handleSubmit}
         queryText={queryText}

@@ -6,8 +6,8 @@ import {BOOK_SEARCH_MODE_CONFIG, type BookSearchMode} from '../model/bookSearchS
 
 type BookSearchQueryFormProps = {
   baseId: string;
+  canSubmit: boolean;
   formLabel?: string;
-  isSubmitDisabled: boolean;
   queryText: string;
   searchMode: BookSearchMode;
   onQueryTextChange: (queryText: string) => void;
@@ -16,8 +16,8 @@ type BookSearchQueryFormProps = {
 
 function BookSearchQueryForm({
   baseId,
+  canSubmit,
   formLabel = '도서 검색 시작',
-  isSubmitDisabled,
   queryText,
   searchMode,
   onQueryTextChange,
@@ -51,13 +51,13 @@ function BookSearchQueryForm({
         />
         <Button
           className="text-accent absolute right-2 flex aspect-square items-center justify-center rounded-xl p-2 transition-colors disabled:text-gray-300 md:right-3"
-          disabled={isSubmitDisabled}
+          disabled={!canSubmit}
           type="submit"
           aria-label="검색"
           variant="ghost"
         >
           <LucideIcon
-            className={isSubmitDisabled ? 'text-gray-400' : 'text-primary'}
+            className={canSubmit ? 'text-primary' : 'text-gray-400'}
             icon={Search}
             strokeWidth={2.2}
             size={24}
