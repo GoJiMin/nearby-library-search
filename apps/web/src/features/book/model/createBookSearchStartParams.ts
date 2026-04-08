@@ -1,5 +1,5 @@
 import {parseSearchBooksParams, type BookSearchParams} from '@/entities/book';
-import type {BookSearchMode} from './bookSearchStart';
+import type {BookSearchMode} from './bookSearchStart.contract';
 
 type CreateBookSearchStartParamsProps = {
   queryText: string;

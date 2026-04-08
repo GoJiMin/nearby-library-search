@@ -1,5 +1,5 @@
 import {type KeyboardEvent, useRef} from 'react';
-import {BOOK_SEARCH_MODE_CONFIG, BOOK_SEARCH_MODE_ORDER, type BookSearchMode} from '../model/bookSearchStart';
+import {BOOK_SEARCH_MODE_CONFIG, BOOK_SEARCH_MODE_ORDER, type BookSearchMode} from '../model/bookSearchStart.contract';
 
 type BookSearchModeTabsProps = {
   baseId: string;

@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import type {BookSearchMode} from './bookSearchStart';
+import type {BookSearchMode} from './bookSearchStart.contract';
 
 function useBookSearchStart() {
   const [searchMode, setSearchMode] = useState<BookSearchMode>('title');
