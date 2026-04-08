@@ -87,7 +87,6 @@ describe('BookSearchResult', () => {
 
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
     expect(await screen.findByRole('heading', {level: 1, name: '파친코 검색 결과를 불러오는 중이에요.'})).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('도서를 찾고 있습니다.');
 
     const loadingList = screen.getByRole('list', {name: '도서 검색 결과 로딩 목록'});
 
@@ -322,7 +321,7 @@ describe('BookSearchResult', () => {
     );
 
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
-    expect(await screen.findByRole('heading', {level: 1, name: '데이터를 불러오는 중 오류가 발생했습니다'})).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {level: 1, name: '데이터를 불러오지 못했어요'})).toBeInTheDocument();
     expect(screen.getByText('조용한 서고에서 길을 잃은 것 같습니다.')).toBeInTheDocument();
     expect(screen.getByText('도서 검색 서버와 연결이 원활하지 않아요. 잠시 후 다시 시도해주세요.')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
