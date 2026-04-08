@@ -8,11 +8,14 @@ import {routes} from './router';
 function renderRouter(initialEntries: string[]) {
   const router = createMemoryRouter(routes, {initialEntries});
 
-  return render(
-    <AppProvider>
-      <RouterProvider router={router} />
-    </AppProvider>,
-  );
+  return {
+    router,
+    ...render(
+      <AppProvider>
+        <RouterProvider router={router} />
+      </AppProvider>,
+    ),
+  };
 }
 
 describe('app router integration', () => {
@@ -30,23 +33,39 @@ describe('app router integration', () => {
 
   it('navigates from the home route to the book result route after search submit', async () => {
     const user = userEvent.setup();
-
-    renderRouter(['/']);
+    const {router} = renderRouter(['/']);
 
     await user.type(screen.getByRole('textbox'), '파친코');
     await user.click(screen.getByRole('button', {name: '검색'}));
 
-    expect(await screen.findByRole('heading', {level: 1, name: '검색 결과'})).toBeInTheDocument();
-    expect(screen.getByText('책 제목')).toBeInTheDocument();
-    expect(screen.getByText('파친코')).toBeInTheDocument();
+    expect(await screen.findByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/books');
+    expect(new URLSearchParams(router.state.location.search).get('title')).toBe('파친코');
+    expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
   });
 
   it('renders the book result route when the url has valid search params', () => {
     renderRouter(['/books?author=한강&page=2']);
 
-    expect(screen.getByRole('heading', {level: 1, name: '검색 결과'})).toBeInTheDocument();
-    expect(screen.getByText('저자명')).toBeInTheDocument();
-    expect(screen.getByText('한강')).toBeInTheDocument();
+    expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
+    expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+    expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
+  });
+
+  it('updates the result route search params and resets page to 1 when re-searching', async () => {
+    const user = userEvent.setup();
+    const {router} = renderRouter(['/books?title=파친코&page=2']);
+
+    const input = await screen.findByRole('textbox');
+
+    await user.clear(input);
+    await user.type(input, '채식주의자');
+    await user.click(screen.getByRole('button', {name: '검색'}));
+
+    expect(router.state.location.pathname).toBe('/books');
+    expect(new URLSearchParams(router.state.location.search).get('title')).toBe('채식주의자');
+    expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
   });
 
   it('redirects the empty book result route to the home page', async () => {

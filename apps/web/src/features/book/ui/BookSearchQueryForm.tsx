@@ -6,6 +6,7 @@ import {BOOK_SEARCH_MODE_CONFIG, type BookSearchMode} from '../model/bookSearchS
 
 type BookSearchQueryFormProps = {
   baseId: string;
+  formLabel?: string;
   isSubmitDisabled: boolean;
   queryText: string;
   searchMode: BookSearchMode;
@@ -15,6 +16,7 @@ type BookSearchQueryFormProps = {
 
 function BookSearchQueryForm({
   baseId,
+  formLabel = '도서 검색 시작',
   isSubmitDisabled,
   queryText,
   searchMode,
@@ -29,7 +31,7 @@ function BookSearchQueryForm({
   const queryTextLength = queryText.length;
 
   return (
-    <form aria-label="도서 검색 시작" className="w-full" onSubmit={onSubmit}>
+    <form aria-label={formLabel} className="w-full" onSubmit={onSubmit}>
       <div
         aria-labelledby={tabPanelLabelledBy}
         className="relative flex w-full items-center"

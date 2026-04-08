@@ -1,10 +1,31 @@
-import {Link, Navigate, useSearchParams} from 'react-router-dom';
+import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
+import type {BookSearchParams} from '@/entities/book';
 import {BookSearchResultScreen, readBookSearchResultUrlState} from '@/features/book';
 import {Button, Card, Heading, Text} from '@/shared/ui';
 
 function BookSearchResultPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlStateResult = readBookSearchResultUrlState(searchParams);
+
+  function handleSubmitSearch(params: BookSearchParams) {
+    const nextSearchParams = new URLSearchParams({
+      page: String(params.page),
+    });
+
+    if (params.title) {
+      nextSearchParams.set('title', params.title);
+    }
+
+    if (params.author) {
+      nextSearchParams.set('author', params.author);
+    }
+
+    navigate({
+      pathname: '/books',
+      search: `?${nextSearchParams.toString()}`,
+    });
+  }
 
   if (urlStateResult.kind === 'empty') {
     return <Navigate replace to="/" />;
@@ -28,7 +49,7 @@ function BookSearchResultPage() {
     );
   }
 
-  return <BookSearchResultScreen params={urlStateResult.data.params} />;
+  return <BookSearchResultScreen onSubmitSearch={handleSubmitSearch} params={urlStateResult.data.params} />;
 }
 
 export {BookSearchResultPage};
