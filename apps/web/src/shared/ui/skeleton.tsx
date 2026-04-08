@@ -9,12 +9,7 @@ function mergeClassNames(...inputs: ClassValue[]) {
 }
 
 function Skeleton({className, ...props}: SkeletonProps) {
-  return (
-    <div
-      className={mergeClassNames('bg-surface-muted animate-pulse rounded-2xl', className)}
-      {...props}
-    />
-  );
+  return <div className={mergeClassNames('animate-pulse rounded-2xl bg-black/10', className)} {...props} />;
 }
 
 export {Skeleton};
