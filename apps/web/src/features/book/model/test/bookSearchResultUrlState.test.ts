@@ -9,12 +9,15 @@ describe('readBookSearchResultUrlState', () => {
     });
 
     expect(readBookSearchResultUrlState(searchParams)).toEqual({
-      params: {
-        page: 2,
-        title: '파친코',
+      data: {
+        params: {
+          page: 2,
+          title: '파친코',
+        },
+        queryText: '파친코',
+        searchMode: 'title',
       },
-      queryText: '파친코',
-      searchMode: 'title',
+      kind: 'ok',
     });
   });
 
@@ -25,12 +28,15 @@ describe('readBookSearchResultUrlState', () => {
     });
 
     expect(readBookSearchResultUrlState(searchParams)).toEqual({
-      params: {
-        author: '한강',
-        page: 1,
+      data: {
+        params: {
+          author: '한강',
+          page: 1,
+        },
+        queryText: '한강',
+        searchMode: 'author',
       },
-      queryText: '한강',
-      searchMode: 'author',
+      kind: 'ok',
     });
   });
 
@@ -40,12 +46,15 @@ describe('readBookSearchResultUrlState', () => {
     });
 
     expect(readBookSearchResultUrlState(searchParams)).toEqual({
-      params: {
-        page: 1,
-        title: '아몬드',
+      data: {
+        params: {
+          page: 1,
+          title: '아몬드',
+        },
+        queryText: '아몬드',
+        searchMode: 'title',
       },
-      queryText: '아몬드',
-      searchMode: 'title',
+      kind: 'ok',
     });
   });
 
@@ -56,12 +65,15 @@ describe('readBookSearchResultUrlState', () => {
     });
 
     expect(readBookSearchResultUrlState(searchParams)).toEqual({
-      params: {
-        page: 1,
-        title: '채식주의자',
+      data: {
+        params: {
+          page: 1,
+          title: '채식주의자',
+        },
+        queryText: '채식주의자',
+        searchMode: 'title',
       },
-      queryText: '채식주의자',
-      searchMode: 'title',
+      kind: 'ok',
     });
   });
 
@@ -71,18 +83,41 @@ describe('readBookSearchResultUrlState', () => {
       title: '소년이 온다',
     });
 
-    expect(readBookSearchResultUrlState(searchParams)).toBeNull();
+    expect(readBookSearchResultUrlState(searchParams)).toEqual({
+      defaultUiHint: 'inline',
+      kind: 'recoverable',
+      message: '잘못된 검색 주소입니다. 검색어를 다시 입력해주세요.',
+      reason: 'multiple-query-types',
+    });
   });
 
-  it('검색어가 없으면 invalid 상태로 본다', () => {
-    expect(readBookSearchResultUrlState(new URLSearchParams())).toBeNull();
+  it('검색어가 없으면 empty 상태로 본다', () => {
+    expect(readBookSearchResultUrlState(new URLSearchParams())).toEqual({kind: 'empty'});
   });
 
-  it('공백만 있는 검색어는 invalid 상태로 본다', () => {
+  it('공백만 있는 검색어는 recoverable invalid 상태로 본다', () => {
     const searchParams = new URLSearchParams({
       title: '   ',
     });
 
-    expect(readBookSearchResultUrlState(searchParams)).toBeNull();
+    expect(readBookSearchResultUrlState(searchParams)).toEqual({
+      defaultUiHint: 'inline',
+      kind: 'recoverable',
+      message: '잘못된 검색 주소입니다. 검색어를 다시 입력해주세요.',
+      reason: 'invalid-search-params',
+    });
+  });
+
+  it('길이 제한을 넘는 검색어는 recoverable invalid 상태로 본다', () => {
+    const searchParams = new URLSearchParams({
+      title: '가'.repeat(101),
+    });
+
+    expect(readBookSearchResultUrlState(searchParams)).toEqual({
+      defaultUiHint: 'inline',
+      kind: 'recoverable',
+      message: '잘못된 검색 주소입니다. 검색어를 다시 입력해주세요.',
+      reason: 'invalid-search-params',
+    });
   });
 });
