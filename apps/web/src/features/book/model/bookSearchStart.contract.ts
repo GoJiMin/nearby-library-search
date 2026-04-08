@@ -1,4 +1,5 @@
 type BookSearchMode = 'title' | 'author';
+type BookSearchQueryTextByMode = Record<BookSearchMode, string>;
 
 type BookSearchModeMeta = {
   disabledHelperText: string;
@@ -28,4 +29,4 @@ const BOOK_SEARCH_MODE_CONFIG: Readonly<Record<BookSearchMode, BookSearchModeMet
 const BOOK_SEARCH_MODE_ORDER: ReadonlyArray<BookSearchMode> = ['title', 'author'];
 
 export {BOOK_SEARCH_MODE_CONFIG, BOOK_SEARCH_MODE_ORDER};
-export type {BookSearchMode, BookSearchModeMeta};
+export type {BookSearchMode, BookSearchModeMeta, BookSearchQueryTextByMode};

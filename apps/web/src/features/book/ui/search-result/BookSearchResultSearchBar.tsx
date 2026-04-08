@@ -14,10 +14,12 @@ type BookSearchResultSearchBarProps = {
 function BookSearchResultSearchBar({params, onSubmitSearch}: BookSearchResultSearchBarProps) {
   const baseId = useId();
   const initialSearchMode: BookSearchMode = params.title ? 'title' : 'author';
-  const initialQueryText = params.title ?? params.author ?? '';
+  const initialQueryTextByMode = params.title
+    ? {title: params.title}
+    : {author: params.author ?? ''};
   const {canSubmit, normalizedQuery, queryText, searchMode, setQueryText, setSearchMode} =
     useBookSearchStart({
-      initialQueryText,
+      initialQueryTextByMode,
       initialSearchMode,
     });
 

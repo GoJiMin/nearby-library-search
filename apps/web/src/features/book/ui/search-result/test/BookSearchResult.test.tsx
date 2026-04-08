@@ -223,7 +223,7 @@ describe('BookSearchResult', () => {
     });
   });
 
-  it('탭 전환 시 입력값을 유지한다', async () => {
+  it('탭 전환 시 모드별 마지막 입력값을 따로 기억한다', async () => {
     const user = userEvent.setup();
 
     renderBookSearchResult(
@@ -239,11 +239,17 @@ describe('BookSearchResult', () => {
 
     await user.click(screen.getByRole('tab', {name: '저자명'}));
 
-    expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('채식주의자');
+    expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('');
+
+    await user.type(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요'), '한강');
 
     await user.click(screen.getByRole('tab', {name: '책 제목'}));
 
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toHaveValue('채식주의자');
+
+    await user.click(screen.getByRole('tab', {name: '저자명'}));
+
+    expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
   });
 
   it('재검색 제출 시 page를 1로 리셋한 canonical payload를 전달한다', async () => {

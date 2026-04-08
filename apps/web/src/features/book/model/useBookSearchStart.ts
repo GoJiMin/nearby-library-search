@@ -1,19 +1,30 @@
 import {useState} from 'react';
-import type {BookSearchMode} from './bookSearchStart.contract';
+import type {BookSearchMode, BookSearchQueryTextByMode} from './bookSearchStart.contract';
 
 type UseBookSearchStartOptions = {
-  initialQueryText?: string;
+  initialQueryTextByMode?: Partial<BookSearchQueryTextByMode>;
   initialSearchMode?: BookSearchMode;
 };
 
 function useBookSearchStart({
-  initialQueryText = '',
+  initialQueryTextByMode,
   initialSearchMode = 'title',
 }: UseBookSearchStartOptions = {}) {
   const [searchMode, setSearchMode] = useState<BookSearchMode>(initialSearchMode);
-  const [queryText, setQueryText] = useState(initialQueryText);
+  const [queryTextByMode, setQueryTextByMode] = useState<BookSearchQueryTextByMode>(() => ({
+    author: initialQueryTextByMode?.author ?? '',
+    title: initialQueryTextByMode?.title ?? '',
+  }));
+  const queryText = queryTextByMode[searchMode];
   const normalizedQuery = queryText.trim();
   const canSubmit = normalizedQuery.length > 0;
+
+  function setQueryText(nextQueryText: string) {
+    setQueryTextByMode(previousQueryTextByMode => ({
+      ...previousQueryTextByMode,
+      [searchMode]: nextQueryText,
+    }));
+  }
 
   return {
     canSubmit,

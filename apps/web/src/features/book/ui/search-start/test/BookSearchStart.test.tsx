@@ -24,7 +24,7 @@ describe('BookSearchStart', () => {
     expect(onSubmitSearch).not.toHaveBeenCalled();
   });
 
-  it('탭 전환 시 placeholder를 바꾸고 입력값은 유지한다', async () => {
+  it('탭 전환 시 모드별 마지막 입력값을 따로 기억한다', async () => {
     const user = userEvent.setup();
 
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
@@ -38,12 +38,18 @@ describe('BookSearchStart', () => {
 
     expect(authorTab).toHaveAttribute('aria-selected', 'true');
     expect(titleTab).toHaveAttribute('aria-selected', 'false');
-    expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('파친코');
+    expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('');
+
+    await user.type(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요'), '한강');
 
     await user.click(titleTab);
 
     expect(titleTab).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toHaveValue('파친코');
+
+    await user.click(authorTab);
+
+    expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
   });
 
   it('키보드로 탭을 이동하고 선택 상태를 바꿀 수 있다', async () => {
