@@ -50,7 +50,7 @@ function BookSearchQueryForm({
           autoComplete="off"
         />
         <Button
-          className="text-accent absolute right-2 flex aspect-square items-center justify-center rounded-xl p-2 transition-colors disabled:text-gray-300 md:right-3"
+          className="text-accent absolute right-2 flex aspect-square cursor-pointer items-center justify-center rounded-xl p-2 transition-colors disabled:text-gray-300 md:right-3"
           disabled={!canSubmit}
           type="submit"
           aria-label="검색"
