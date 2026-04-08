@@ -196,6 +196,7 @@ describe('shared/request', () => {
   it('shared/request는 BFF base URL 없이 요청하지 않는다', async () => {
     await expect(
       requestGet({
+        baseUrl: '',
         endpoint: '/api/libraries',
       }),
     ).rejects.toThrow('VITE_API_BASE_URL must point to the Fastify BFF.');

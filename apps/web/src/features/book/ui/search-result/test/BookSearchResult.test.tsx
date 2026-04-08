@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {BookSearchResult} from '@/features/book';
@@ -9,7 +9,7 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
       {
         author: '이민진',
         detailUrl: null,
-        imageUrl: null,
+        imageUrl: 'https://example.com/books/pachinko.jpg',
         isbn13: '9788954682155',
         loanCount: 12,
         publicationYear: '2018',
@@ -21,10 +21,20 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
         detailUrl: null,
         imageUrl: null,
         isbn13: '9791196447182',
-        loanCount: 8,
-        publicationYear: '2017',
+        loanCount: null,
+        publicationYear: null,
         publisher: '창비',
         title: '아몬드',
+      },
+      {
+        author: '한강',
+        detailUrl: null,
+        imageUrl: null,
+        isbn13: '9788936434124',
+        loanCount: 7,
+        publicationYear: '2007',
+        publisher: null,
+        title: '채식주의자',
       },
     ],
     totalCount: 12,
@@ -93,11 +103,41 @@ describe('BookSearchResult', () => {
     );
 
     expect(screen.getByRole('list', {name: '도서 검색 결과 목록'})).toBeInTheDocument();
-    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
     expect(screen.getByRole('heading', {level: 2, name: '파친코'})).toBeInTheDocument();
     expect(screen.getByRole('heading', {level: 2, name: '아몬드'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 2, name: '채식주의자'})).toBeInTheDocument();
     expect(screen.getByText('이민진')).toBeInTheDocument();
     expect(screen.getByText('손원평')).toBeInTheDocument();
+  });
+
+  it('카드 메타 정보 우선순위와 필드 숨김 규칙을 따른다', () => {
+    render(
+      <BookSearchResult
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const [firstItem, secondItem, thirdItem] = screen.getAllByRole('listitem');
+
+    expect(within(firstItem).getByRole('img', {name: '파친코 표지 이미지'})).toBeInTheDocument();
+    expect(within(firstItem).getByText('문학사상, 2018')).toBeInTheDocument();
+    expect(within(firstItem).getByText('ISBN: 9788954682155')).toBeInTheDocument();
+    expect(within(firstItem).getByText('총 대출 12건')).toBeInTheDocument();
+
+    expect(within(secondItem).getByRole('img', {name: '아몬드 표지 없음'})).toBeInTheDocument();
+    expect(within(secondItem).getByText('창비')).toBeInTheDocument();
+    expect(within(secondItem).getByText('ISBN: 9791196447182')).toBeInTheDocument();
+    expect(within(secondItem).queryByText(/^총 대출 /)).not.toBeInTheDocument();
+
+    expect(within(thirdItem).getByRole('img', {name: '채식주의자 표지 없음'})).toBeInTheDocument();
+    expect(within(thirdItem).getByText('2007')).toBeInTheDocument();
+    expect(within(thirdItem).getByText('ISBN: 9788936434124')).toBeInTheDocument();
+    expect(within(thirdItem).getByText('총 대출 7건')).toBeInTheDocument();
   });
 
   it('탭 전환 시 입력값을 유지한다', async () => {

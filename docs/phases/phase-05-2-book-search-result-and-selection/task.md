@@ -30,10 +30,10 @@
 
 ## 5. 결과 카드 정보 구조 구현
 
-- [ ] 카드에 `title`, `author`, `publisher/publicationYear`, `isbn13`, `loanCount`, `imageUrl`만 사용해 메타 정보를 렌더링한다.
-- [ ] 없는 필드는 해당 조각만 숨기고, 존재하지 않는 설명 문단은 구현하지 않는다.
-- [ ] `imageUrl`이 없을 때 중립적 표지 placeholder를 렌더링한다.
-- [ ] 카드 정보 우선순위와 필드 숨김 규칙을 integration test로 검증한다.
+- [x] 카드에 `title`, `author`, `publisher/publicationYear`, `isbn13`, `loanCount`, `imageUrl`만 사용해 메타 정보를 렌더링한다.
+- [x] 없는 필드는 해당 조각만 숨기고, 존재하지 않는 설명 문단은 구현하지 않는다.
+- [x] `imageUrl`이 없을 때 중립적 표지 placeholder를 렌더링한다.
+- [x] 카드 정보 우선순위와 필드 숨김 규칙을 integration test로 검증한다.
 
 ## 6. 카드 버튼과 선택 handoff 구현
 
