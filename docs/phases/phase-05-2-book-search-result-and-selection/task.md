@@ -66,9 +66,9 @@
 
 ## 10. 최종 검증과 문서 동기화
 
-- [ ] `features/book` 결과 화면 integration test와 필요한 focused unit test만 남아 있는지 점검한다.
-- [ ] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 5-2 범위와 실제 구현 결과를 동기화한다.
+- [x] `features/book` 결과 화면 integration test와 필요한 focused unit test만 남아 있는지 점검한다.
+- [x] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 5-2 범위와 실제 구현 결과를 동기화한다.
 
 ## Important Changes
 

@@ -34,6 +34,9 @@
 - 클라이언트 환경변수는 `@/shared/env`를 통해서만 읽습니다.
 - `VITE_API_BASE_URL`은 web이 호출할 Fastify BFF base URL입니다.
 - 외부 Open API 인증키는 웹 앱이 아니라 BFF 서버 환경변수에서만 관리합니다.
+- 현재 라우트 구조는 `/` 검색 시작 화면과 `/books` 도서 검색 결과 화면으로 나뉩니다.
+- `features/book`는 검색 시작, 결과 화면, 결과 카드, 페이지네이션, 결과 상태 처리를 함께 담당합니다.
+- `shared/request`는 공통 요청 API와 함께 query error boundary 복구와 서버 에러 메시지 매핑 helper를 공개합니다.
 
 ## Entities 레이어 현재 구성
 
@@ -101,6 +104,14 @@ pnpm build:all
 - Phase 4 작업 목록: `docs/phases/phase-04-entities/task.md`
 - Phase 4-1 명세: `docs/phases/phase-04-1-typescript-workspace/spec.md`
 - Phase 4-1 작업 목록: `docs/phases/phase-04-1-typescript-workspace/task.md`
+- Phase 4-2 명세: `docs/phases/phase-04-2-ux-ui-design/spec.md`
+- Phase 4-2 작업 목록: `docs/phases/phase-04-2-ux-ui-design/task.md`
+- Phase 5-1 명세: `docs/phases/phase-05-1-home-search-start/spec.md`
+- Phase 5-1 작업 목록: `docs/phases/phase-05-1-home-search-start/task.md`
+- Phase 5-1A 명세: `docs/phases/phase-05-1a-home-visual-refresh/spec.md`
+- Phase 5-1A 작업 목록: `docs/phases/phase-05-1a-home-visual-refresh/task.md`
+- Phase 5-2 명세: `docs/phases/phase-05-2-book-search-result-and-selection/spec.md`
+- Phase 5-2 작업 목록: `docs/phases/phase-05-2-book-search-result-and-selection/task.md`
 
 ## 현재 상태
 
@@ -109,4 +120,8 @@ pnpm build:all
 - Phase 3 모노레포 전환과 Fastify BFF 구성 완료
 - Phase 4 entities 레이어 구성 완료
 - Phase 4-1 TypeScript workspace 정리 완료
-- web 테스트는 현재 `shared/request`, router integration, `library`/`region` 엔티티 순수 helper 검증까지 포함합니다.
+- Phase 4-2 UX/UI 설계 기준 정리 완료
+- Phase 5-1 홈 검색 시작 화면 구현 완료
+- Phase 5-1A 홈 메인 화면 리디자인 완료
+- Phase 5-2 `/books` 결과 화면, URL 기반 페이지네이션, loading/empty/error 상태, 카드 handoff 구현 완료
+- web 테스트는 현재 `shared/request`, `features/book` 검색 시작/결과 화면 integration, router integration, `book`/`library`/`region` 순수 helper 검증까지 포함합니다.
