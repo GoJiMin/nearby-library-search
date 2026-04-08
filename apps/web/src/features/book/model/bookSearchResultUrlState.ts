@@ -1,7 +1,7 @@
 import {ZodError} from 'zod';
 import {parseSearchBooksParams, type BookSearchParams} from '@/entities/book';
 import type {RecoverableResult} from '@/shared/feedback';
-import type {BookSearchMode} from './useBookSearchStart';
+import type {BookSearchMode} from './bookSearchStart';
 
 type BookSearchResultUrlState = {
   params: BookSearchParams;
