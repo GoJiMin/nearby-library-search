@@ -1,4 +1,4 @@
-import {Heading, Skeleton, Text} from '@/shared/ui';
+import {Heading, Skeleton} from '@/shared/ui';
 
 type BookSearchResultLoadingContentProps = {
   queryText: string;
@@ -40,9 +40,6 @@ function BookSearchResultLoadingContent({queryText}: BookSearchResultLoadingCont
       <Heading as="h1" size="lg">
         <span className="text-accent">{queryText}</span> 검색 결과를 불러오는 중이에요.
       </Heading>
-      <Text role="status" size="sm">
-        도서를 찾고 있습니다.
-      </Text>
       <ul aria-label="도서 검색 결과 로딩 목록" className="grid gap-4">
         {Array.from({length: 5}, (_, index) => (
           <li key={index}>

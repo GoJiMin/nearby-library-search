@@ -1,4 +1,4 @@
-const COMMON_REQUEST_ERROR_MESSAGE = '일시적인 연결 문제일 수 있으니 다시 시도해 주세요.';
+const COMMON_REQUEST_ERROR_MESSAGE = '일시적인 연결 문제일 수 있으니 잠시 후 다시 시도해 주세요.';
 const DEFAULT_SERVER_ERROR_MESSAGE = '현재 서버가 원활하지 않아요. 잠시 후 다시 시도해주세요.';
 
 const SERVER_ERROR_MESSAGE_MAP = {

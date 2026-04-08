@@ -16,7 +16,7 @@ const headingSizeClassName = {
   display: 'text-3xl md:text-5xl leading-[1.06] tracking-[-0.05em]',
   xl: 'text-3xl leading-[1.12] tracking-[-0.05em]',
   lg: 'text-2xl leading-[1.16] tracking-[-0.03em]',
-  md: 'text-xl leading-[1.2] tracking-[-0.02em]',
+  md: 'text-lg md:text-xl leading-[1.2] tracking-[-0.02em]',
 } as const;
 
 function Heading({as, children, className, size = 'lg', ...props}: HeadingProps) {
