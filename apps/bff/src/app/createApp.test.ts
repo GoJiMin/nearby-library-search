@@ -179,6 +179,68 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('개발용 fixture 모드에서 페이지네이션 확인용 검색 결과를 여러 페이지로 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/search?author=%EA%B1%B4%EC%B6%95%EC%97%B0%EA%B5%AC%ED%9A%8C&page=2',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      items: [
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 11',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 12',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 13',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 14',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 15',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 16',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 17',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 18',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 19',
+        }),
+        expect.objectContaining({
+          author: '건축연구회',
+          title: '건축 연습 20',
+        }),
+      ],
+      totalCount: 24,
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
   it('도서 검색 업스트림 실패를 502 표준 에러로 정규화한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
