@@ -22,15 +22,11 @@ function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearch
 
   return (
     <article>
-      <Card className="border-line w-full rounded-3xl border bg-surface-strong px-4 py-4 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.08)] sm:px-5 sm:py-5">
+      <Card className="border-line bg-surface-strong w-full rounded-3xl border px-4 py-4 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.08)] sm:px-5 sm:py-5">
         <div className="flex gap-4 sm:gap-6">
           <div className="bg-surface-muted relative flex h-32 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl sm:h-40 sm:w-28">
             {item.imageUrl ? (
-              <img
-                alt={`${item.title} 표지 이미지`}
-                className="h-full w-full object-cover"
-                src={item.imageUrl}
-              />
+              <img alt={`${item.title} 표지 이미지`} className="h-full w-full object-cover" src={item.imageUrl} />
             ) : (
               <div
                 aria-label={`${item.title} 표지 없음`}
@@ -69,12 +65,7 @@ function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearch
                   </Text>
                 ) : null}
 
-                <Text
-                  as="span"
-                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm"
-                  size="sm"
-                  tone="muted"
-                >
+                <Text as="span" className="inline-flex items-center gap-1.5 text-xs sm:text-sm" size="sm" tone="muted">
                   <LucideIcon className="h-3.5 w-3.5 shrink-0" icon={Fingerprint} strokeWidth={1.75} />
                   {`ISBN: ${item.isbn13}`}
                 </Text>
@@ -93,9 +84,9 @@ function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearch
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2">
               <button
-                className="text-text-muted focus-visible:ring-accent-soft rounded-full px-1 py-1 text-sm font-medium transition-colors outline-none hover:text-accent focus-visible:text-accent focus-visible:ring-4"
+                className="text-text-muted focus-visible:ring-accent-soft hover:text-accent focus-visible:text-accent cursor-pointer rounded-full px-1 py-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-4"
                 type="button"
                 onClick={() => {
                   onOpenBookDetail?.({
@@ -106,7 +97,7 @@ function BookSearchResultCard({item, onOpenBookDetail, onSelectBook}: BookSearch
                 상세 보기
               </button>
               <button
-                className="text-text focus-visible:ring-accent-soft rounded-full px-1 py-1 text-sm font-semibold transition-colors outline-none hover:text-accent focus-visible:text-accent focus-visible:ring-4"
+                className="text-text-muted focus-visible:ring-accent-soft hover:text-accent focus-visible:text-accent cursor-pointer rounded-full px-1 py-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-4"
                 type="button"
                 onClick={() => {
                   onSelectBook?.({
