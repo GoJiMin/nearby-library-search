@@ -159,8 +159,8 @@ describe('app router integration', () => {
   it('renders the not found route for an unknown path', () => {
     renderRouter(['/missing']);
 
-    expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
-    expect(screen.getByRole('heading', {name: '페이지를 찾을 수 없습니다'})).toBeInTheDocument();
+    expect(screen.queryByRole('link', {name: '메인으로'})).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', {name: '페이지를 찾을 수 없어요'})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: '홈으로 돌아가기'})).toHaveAttribute('href', '/');
   });
 });

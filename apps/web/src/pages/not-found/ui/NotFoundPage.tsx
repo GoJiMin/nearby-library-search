@@ -1,28 +1,21 @@
 import {Link} from 'react-router-dom';
-import {SecondaryPageHeader} from '@/app/layouts';
+import {Heading, Text} from '@/shared/ui';
 
 function NotFoundPage() {
   return (
-    <div className="flex w-full flex-1 flex-col">
-      <SecondaryPageHeader />
-      <div className="flex min-h-[calc(100vh-96px)] items-center">
-        <section className="rounded-panel border-line bg-surface-strong shadow-card w-full border px-6 py-8 sm:px-10 sm:py-12">
-          <div className="rounded-pill bg-accent-soft text-accent-strong mb-4 inline-flex px-3 py-2 text-sm font-medium">
-            404
-          </div>
-          <h1 className="mb-4">페이지를 찾을 수 없습니다</h1>
-          <p className="mb-8 max-w-xl">
-            요청한 경로가 존재하지 않거나 아직 준비되지 않았습니다. 홈으로 돌아가서 다시 탐색해 주세요.
-          </p>
-          <Link
-            className="rounded-pill bg-accent inline-flex items-center px-5 py-3 text-sm font-semibold text-white"
-            to="/"
-          >
-            홈으로 돌아가기
-          </Link>
-        </section>
-      </div>
-    </div>
+    <section className="flex min-h-[calc(100vh-96px)] flex-col items-center justify-center">
+      <Heading as="h1" size="xl" className="mb-4">
+        페이지를 찾을 수 없어요
+      </Heading>
+      <Text size="sm">요청한 경로가 존재하지 않거나 아직 준비되지 않았습니다.</Text>
+      <Text size="sm">홈으로 돌아가서 다시 탐색해 주세요.</Text>
+      <Link
+        className="bg-accent mt-6 inline-flex items-center rounded-xl px-5 py-3 text-sm font-semibold text-white"
+        to="/"
+      >
+        홈으로 돌아가기
+      </Link>
+    </section>
   );
 }
 
