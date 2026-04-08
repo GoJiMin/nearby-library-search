@@ -20,5 +20,7 @@ export {Input} from './input';
 export type {InputProps} from './input';
 export {LucideIcon} from './LucideIcon';
 export type {LucideIconProps} from './LucideIcon';
+export {Skeleton} from './skeleton';
+export type {SkeletonProps} from './skeleton';
 export {Text} from './text';
 export type {TextProps} from './text';

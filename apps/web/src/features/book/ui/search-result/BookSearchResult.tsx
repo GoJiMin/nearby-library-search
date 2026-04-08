@@ -1,9 +1,11 @@
 import {Suspense} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../model/bookSearchResult.contract';
-import {Text} from '@/shared/ui';
+import {QueryErrorBoundary} from '@/shared/feedback';
 import {BookSearchResultActionContext} from './bookSearchResultActionContext';
 import {BookSearchResultContent} from './BookSearchResultContent';
+import {BookSearchResultErrorContent} from './BookSearchResultErrorContent';
+import {BookSearchResultLoadingContent} from './BookSearchResultLoadingContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
 
 type BookSearchResultProps = {
@@ -16,6 +18,7 @@ type BookSearchResultProps = {
 
 function BookSearchResult({createPageHref, params, onOpenBookDetail, onSelectBook, onSubmitSearch}: BookSearchResultProps) {
   const searchBarKey = `${params.title ? 'title' : 'author'}:${params.title ?? params.author ?? ''}`;
+  const queryText = params.title ?? params.author ?? '';
 
   return (
     <section aria-label="도서 검색 결과 화면" className="flex w-full flex-1 justify-center px-4 py-12 sm:px-6">
@@ -31,15 +34,15 @@ function BookSearchResult({createPageHref, params, onOpenBookDetail, onSelectBoo
             onSelectBook,
           }}
         >
-          <Suspense
-            fallback={
-              <Text className="w-full px-2" role="status" size="sm">
-                도서를 찾고 있습니다.
-              </Text>
-            }
+          <QueryErrorBoundary
+            fallback={({reset}) => (
+              <BookSearchResultErrorContent onRetry={reset} queryText={queryText} />
+            )}
           >
-            <BookSearchResultContent createPageHref={createPageHref} params={params} />
-          </Suspense>
+            <Suspense fallback={<BookSearchResultLoadingContent queryText={queryText} />}>
+              <BookSearchResultContent createPageHref={createPageHref} params={params} queryText={queryText} />
+            </Suspense>
+          </QueryErrorBoundary>
         </BookSearchResultActionContext.Provider>
       </div>
     </section>

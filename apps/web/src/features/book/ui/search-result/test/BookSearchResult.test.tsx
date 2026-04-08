@@ -66,6 +66,34 @@ function renderBookSearchResult(ui: ReactElement) {
 }
 
 describe('BookSearchResult', () => {
+  it('로딩 중에는 검색 바를 유지하고 결과 카드 형태의 스켈레톤 5개를 렌더링한다', async () => {
+    const pendingPromise = new Promise(() => {});
+
+    mockUseGetSearchBooks.mockImplementation(() => {
+      throw pendingPromise;
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 2,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {level: 1, name: '파친코 검색 결과를 불러오는 중이에요.'})).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('도서를 찾고 있습니다.');
+
+    const loadingList = screen.getByRole('list', {name: '도서 검색 결과 로딩 목록'});
+
+    expect(loadingList).toBeInTheDocument();
+    expect(within(loadingList).getAllByRole('listitem')).toHaveLength(5);
+  });
+
   it('책 제목 검색 params로 결과 검색 바를 초기화한다', () => {
     renderBookSearchResult(
       <BookSearchResult
@@ -244,6 +272,51 @@ describe('BookSearchResult', () => {
       page: 1,
       title: '아몬드',
     });
+  });
+
+  it('검색 결과가 비어 있으면 0건 요약과 재검색 유도 텍스트를 표시한다', () => {
+    mockUseGetSearchBooks.mockReturnValueOnce({
+      items: [],
+      totalCount: 0,
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '없는 책',
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('heading', {level: 1, name: '없는 책에 대한 0개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+    expect(screen.getByText('검색 결과가 없어요. 검색어를 조금 바꿔 다시 검색해보세요.')).toBeInTheDocument();
+    expect(screen.queryByRole('list', {name: '도서 검색 결과 목록'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation', {name: '도서 검색 결과 페이지네이션'})).not.toBeInTheDocument();
+  });
+
+  it('조회 에러가 나면 검색 바를 유지한 채 인라인 복구 UI와 다시 시도 버튼을 표시한다', async () => {
+    mockUseGetSearchBooks.mockImplementation(() => {
+      throw new Error('boom');
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {level: 1, name: '파친코 검색 결과를 불러오지 못했어요.'})).toBeInTheDocument();
+    expect(screen.getByText('잠시 후 다시 시도하거나 검색어를 수정해보세요.')).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
   });
 
   it('전체 페이지 수와 현재 페이지에 맞는 페이지네이션을 렌더링한다', () => {

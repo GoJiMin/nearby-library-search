@@ -1,17 +1,22 @@
 import {BOOK_SEARCH_PAGE_SIZE, useGetSearchBooks, type BookSearchParams} from '@/entities/book';
 import {Heading} from '@/shared/ui';
+import {BookSearchResultEmptyContent} from './BookSearchResultEmptyContent';
 import {BookSearchResultList} from './BookSearchResultList';
 import {BookSearchResultPagination} from './BookSearchResultPagination';
 
 type BookSearchResultContentProps = {
   createPageHref: (page: number) => string;
   params: BookSearchParams;
+  queryText: string;
 };
 
-function BookSearchResultContent({createPageHref, params}: BookSearchResultContentProps) {
+function BookSearchResultContent({createPageHref, params, queryText}: BookSearchResultContentProps) {
   const {items, totalCount} = useGetSearchBooks(params);
-  const queryText = params.title ?? params.author ?? '';
   const totalPages = Math.ceil(totalCount / BOOK_SEARCH_PAGE_SIZE);
+
+  if (totalCount === 0) {
+    return <BookSearchResultEmptyContent queryText={queryText} />;
+  }
 
   return (
     <div className="flex w-full flex-col gap-5">
