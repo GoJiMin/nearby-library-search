@@ -16,18 +16,20 @@ type BookSearchResultProps = {
   params: BookSearchParams;
 };
 
-function BookSearchResult({createPageHref, params, onOpenBookDetail, onSelectBook, onSubmitSearch}: BookSearchResultProps) {
+function BookSearchResult({
+  createPageHref,
+  params,
+  onOpenBookDetail,
+  onSelectBook,
+  onSubmitSearch,
+}: BookSearchResultProps) {
   const searchBarKey = `${params.title ? 'title' : 'author'}:${params.title ?? params.author ?? ''}`;
   const queryText = params.title ?? params.author ?? '';
 
   return (
-    <section aria-label="도서 검색 결과 화면" className="flex w-full flex-1 justify-center px-4 py-12 sm:px-6">
+    <section aria-label="도서 검색 결과 화면" className="flex w-full flex-1 justify-center py-2 sm:px-6 md:py-0">
       <div className="flex w-full max-w-5xl flex-col items-center gap-6">
-        <BookSearchResultSearchBar
-          key={searchBarKey}
-          onSubmitSearch={onSubmitSearch}
-          params={params}
-        />
+        <BookSearchResultSearchBar key={searchBarKey} onSubmitSearch={onSubmitSearch} params={params} />
         <BookSearchResultActionContext.Provider
           value={{
             onOpenBookDetail,
@@ -35,9 +37,7 @@ function BookSearchResult({createPageHref, params, onOpenBookDetail, onSelectBoo
           }}
         >
           <QueryErrorBoundary
-            fallback={({error, reset}) => (
-              <BookSearchResultErrorContent error={error} onRetry={reset} />
-            )}
+            fallback={({error, reset}) => <BookSearchResultErrorContent error={error} onRetry={reset} />}
           >
             <Suspense fallback={<BookSearchResultLoadingContent queryText={queryText} />}>
               <BookSearchResultContent createPageHref={createPageHref} params={params} queryText={queryText} />
