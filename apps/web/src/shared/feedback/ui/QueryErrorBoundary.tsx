@@ -1,5 +1,6 @@
 import {QueryErrorResetBoundary} from '@tanstack/react-query';
-import {Component, type ReactNode} from 'react';
+import {ErrorBoundary, type FallbackProps} from 'react-error-boundary';
+import type {ReactNode} from 'react';
 
 type QueryErrorBoundaryFallbackProps = {
   error: Error;
@@ -11,49 +12,21 @@ type QueryErrorBoundaryProps = {
   fallback: (props: QueryErrorBoundaryFallbackProps) => ReactNode;
 };
 
-type QueryErrorBoundaryRootProps = QueryErrorBoundaryProps & {
-  onReset: () => void;
-};
-
-type QueryErrorBoundaryRootState = {
-  error: Error | null;
-};
-
-class QueryErrorBoundaryRoot extends Component<QueryErrorBoundaryRootProps, QueryErrorBoundaryRootState> {
-  state: QueryErrorBoundaryRootState = {
-    error: null,
-  };
-
-  static getDerivedStateFromError(error: Error) {
-    return {error};
-  }
-
-  reset = () => {
-    this.props.onReset();
-    this.setState({
-      error: null,
-    });
-  };
-
-  render() {
-    if (this.state.error) {
-      return this.props.fallback({
-        error: this.state.error,
-        reset: this.reset,
-      });
-    }
-
-    return this.props.children;
-  }
-}
-
 function QueryErrorBoundary({children, fallback}: QueryErrorBoundaryProps) {
   return (
     <QueryErrorResetBoundary>
       {({reset}) => (
-        <QueryErrorBoundaryRoot fallback={fallback} onReset={reset}>
+        <ErrorBoundary
+          fallbackRender={({error, resetErrorBoundary}: FallbackProps) =>
+            fallback({
+              error: error instanceof Error ? error : new Error('알 수 없는 오류가 발생했습니다.'),
+              reset: resetErrorBoundary,
+            })
+          }
+          onReset={reset}
+        >
           {children}
-        </QueryErrorBoundaryRoot>
+        </ErrorBoundary>
       )}
     </QueryErrorResetBoundary>
   );
