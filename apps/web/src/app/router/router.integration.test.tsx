@@ -61,6 +61,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('tablist', {name: '검색 기준 선택'})).toBeInTheDocument();
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '검색'})).toBeInTheDocument();
+    expect(screen.queryByRole('link', {name: '메인으로'})).not.toBeInTheDocument();
   });
 
   it('navigates from the home route to the book result route after search submit', async () => {
@@ -79,6 +80,7 @@ describe('app router integration', () => {
   it('renders the book result route when the url has valid search params', () => {
     renderRouter(['/books?author=한강&page=2']);
 
+    expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
     expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'true');
@@ -149,6 +151,7 @@ describe('app router integration', () => {
   it('renders an inline recovery state for invalid book result urls', () => {
     renderRouter(['/books?title=&page=abc']);
 
+    expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
     expect(screen.getByRole('heading', {level: 1, name: '검색 결과를 불러올 수 없어요'})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: '검색 다시 시작'})).toHaveAttribute('href', '/');
   });
@@ -156,6 +159,7 @@ describe('app router integration', () => {
   it('renders the not found route for an unknown path', () => {
     renderRouter(['/missing']);
 
+    expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
     expect(screen.getByRole('heading', {name: '페이지를 찾을 수 없습니다'})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: '홈으로 돌아가기'})).toHaveAttribute('href', '/');
   });
