@@ -1,5 +1,5 @@
-export {BookSearchStart} from './ui/BookSearchStart';
-export type {BookSearchStartProps} from './ui/BookSearchStart';
+export {BookSearchStart} from './ui/search-start/BookSearchStart';
+export type {BookSearchStartProps} from './ui/search-start/BookSearchStart';
 export {readBookSearchResultUrlState} from './model/bookSearchResultUrlState';
-export {BookSearchResultScreen} from './ui/BookSearchResultScreen';
-export type {BookSearchResultScreenProps} from './ui/BookSearchResultScreen';
+export {BookSearchResult} from './ui/search-result/BookSearchResult';
+export type {BookSearchResultProps} from './ui/search-result/BookSearchResult';

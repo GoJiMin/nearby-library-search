@@ -1,12 +1,12 @@
 import type {BookSearchParams} from '@/entities/book';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
 
-type BookSearchResultScreenProps = {
+type BookSearchResultProps = {
   onSubmitSearch: (params: BookSearchParams) => void;
   params: BookSearchParams;
 };
 
-function BookSearchResultScreen({params, onSubmitSearch}: BookSearchResultScreenProps) {
+function BookSearchResult({params, onSubmitSearch}: BookSearchResultProps) {
   const searchBarKey = `${params.title ? 'title' : 'author'}:${params.title ?? params.author ?? ''}`;
 
   return (
@@ -22,5 +22,5 @@ function BookSearchResultScreen({params, onSubmitSearch}: BookSearchResultScreen
   );
 }
 
-export {BookSearchResultScreen};
-export type {BookSearchResultScreenProps};
+export {BookSearchResult};
+export type {BookSearchResultProps};

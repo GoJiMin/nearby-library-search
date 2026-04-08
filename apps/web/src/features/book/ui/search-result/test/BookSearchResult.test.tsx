@@ -1,12 +1,12 @@
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
-import {BookSearchResultScreen} from '@/features/book';
+import {BookSearchResult} from '@/features/book';
 
-describe('BookSearchResultScreen', () => {
+describe('BookSearchResult', () => {
   it('책 제목 검색 params로 결과 검색 바를 초기화한다', () => {
     render(
-      <BookSearchResultScreen
+      <BookSearchResult
         onSubmitSearch={vi.fn()}
         params={{
           page: 2,
@@ -24,7 +24,7 @@ describe('BookSearchResultScreen', () => {
 
   it('저자명 검색 params로 결과 검색 바를 초기화한다', () => {
     render(
-      <BookSearchResultScreen
+      <BookSearchResult
         onSubmitSearch={vi.fn()}
         params={{
           author: '한강',
@@ -41,7 +41,7 @@ describe('BookSearchResultScreen', () => {
     const user = userEvent.setup();
 
     render(
-      <BookSearchResultScreen
+      <BookSearchResult
         onSubmitSearch={vi.fn()}
         params={{
           page: 3,
@@ -64,7 +64,7 @@ describe('BookSearchResultScreen', () => {
     const onSubmitSearch = vi.fn();
 
     render(
-      <BookSearchResultScreen
+      <BookSearchResult
         onSubmitSearch={onSubmitSearch}
         params={{
           page: 2,

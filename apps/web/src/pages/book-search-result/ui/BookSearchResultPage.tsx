@@ -1,6 +1,6 @@
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import type {BookSearchParams} from '@/entities/book';
-import {BookSearchResultScreen, readBookSearchResultUrlState} from '@/features/book';
+import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book';
 import {Button, Card, Heading, Text} from '@/shared/ui';
 
 function BookSearchResultPage() {
@@ -49,7 +49,7 @@ function BookSearchResultPage() {
     );
   }
 
-  return <BookSearchResultScreen onSubmitSearch={handleSubmitSearch} params={urlStateResult.data.params} />;
+  return <BookSearchResult onSubmitSearch={handleSubmitSearch} params={urlStateResult.data.params} />;
 }
 
 export {BookSearchResultPage};

@@ -1,10 +1,10 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
-import type {BookSearchMode} from '../model/bookSearchStart.contract';
-import {createBookSearchStartParams} from '../model/createBookSearchStartParams';
-import {useBookSearchStart} from '../model/useBookSearchStart';
-import {BookSearchModeTabs} from './BookSearchModeTabs';
-import {BookSearchQueryForm} from './BookSearchQueryForm';
+import type {BookSearchMode} from '../../model/bookSearchStart.contract';
+import {createBookSearchStartParams} from '../../model/createBookSearchStartParams';
+import {useBookSearchStart} from '../../model/useBookSearchStart';
+import {BookSearchModeTabs} from '../search-controls/BookSearchModeTabs';
+import {BookSearchQueryForm} from '../search-controls/BookSearchQueryForm';
 
 type BookSearchResultSearchBarProps = {
   params: BookSearchParams;

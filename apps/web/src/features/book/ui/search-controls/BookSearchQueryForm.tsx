@@ -2,7 +2,7 @@ import {MAX_BOOK_SEARCH_TERM_LENGTH} from '@/entities/book';
 import {Search} from 'lucide-react';
 import type {SyntheticEvent} from 'react';
 import {Button, Input, LucideIcon, Text} from '@/shared/ui';
-import {BOOK_SEARCH_MODE_CONFIG, type BookSearchMode} from '../model/bookSearchStart.contract';
+import {BOOK_SEARCH_MODE_CONFIG, type BookSearchMode} from '../../model/bookSearchStart.contract';
 
 type BookSearchQueryFormProps = {
   baseId: string;

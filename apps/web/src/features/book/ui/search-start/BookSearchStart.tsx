@@ -1,9 +1,9 @@
 import {type SyntheticEvent, useId} from 'react';
 import type {BookSearchParams} from '@/entities/book';
-import {createBookSearchStartParams} from '../model/createBookSearchStartParams';
-import {useBookSearchStart} from '../model/useBookSearchStart';
-import {BookSearchModeTabs} from './BookSearchModeTabs';
-import {BookSearchQueryForm} from './BookSearchQueryForm';
+import {createBookSearchStartParams} from '../../model/createBookSearchStartParams';
+import {useBookSearchStart} from '../../model/useBookSearchStart';
+import {BookSearchModeTabs} from '../search-controls/BookSearchModeTabs';
+import {BookSearchQueryForm} from '../search-controls/BookSearchQueryForm';
 
 type BookSearchStartProps = {
   onSubmitSearch: (params: BookSearchParams) => void;
