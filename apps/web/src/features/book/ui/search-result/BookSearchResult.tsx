@@ -1,8 +1,8 @@
 import {Suspense} from 'react';
 import type {BookSearchParams} from '@/entities/book';
+import {BookSearchResultActionContext} from '../../lib/bookSearchResultActionContext';
 import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../model/bookSearchResult.contract';
 import {QueryErrorBoundary} from '@/shared/feedback';
-import {BookSearchResultActionContext} from './bookSearchResultActionContext';
 import {BookSearchResultContent} from './BookSearchResultContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
 import {BookSearchResultErrorContent} from './states/BookSearchResultErrorContent';

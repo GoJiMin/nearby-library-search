@@ -1,7 +1,7 @@
 import {BarChart3, BookOpen, Fingerprint} from 'lucide-react';
 import type {BookSearchItem} from '@/entities/book';
+import {useBookSearchResultActions} from '../../lib/bookSearchResultActionContext';
 import {Card, Heading, LucideIcon, Text} from '@/shared/ui';
-import {useBookSearchResultActions} from './bookSearchResultActionContext';
 
 type BookSearchResultCardProps = {
   item: BookSearchItem;
