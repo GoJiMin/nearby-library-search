@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   Heading,
@@ -75,6 +74,7 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        aria-describedby={undefined}
         className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),600px)] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 px-2 sm:px-6"
         showCloseButton={false}
       >

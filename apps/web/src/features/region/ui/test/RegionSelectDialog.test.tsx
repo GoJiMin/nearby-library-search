@@ -22,7 +22,6 @@ describe('RegionSelectDialog', () => {
     const dialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
 
     expect(dialog).toBeInTheDocument();
-    expect(screen.getByText('선택한 책을 기준으로 도서관 검색 지역을 고르는 단계예요.')).toBeInTheDocument();
     expect(document.querySelector('[data-slot="region-dialog-progress-rail"]')).toBeInstanceOf(HTMLElement);
     expect(screen.getByRole('heading', {name: '시/도'})).toBeInTheDocument();
     expect(screen.getByRole('heading', {name: '세부 지역'})).toBeInTheDocument();
