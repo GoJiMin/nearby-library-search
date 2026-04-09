@@ -62,7 +62,7 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         aria-describedby={undefined}
-        className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),600px)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 px-2 sm:px-6"
+        className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),600px)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 px-2 sm:px-6 sm:pb-5"
         showCloseButton={false}
       >
         <DialogHeader className="px-4 pt-6 sm:px-4 sm:pt-2">
@@ -99,9 +99,9 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
             onSelectDetailRegion={handleSelectDetailRegion}
           />
         </section>
-        <DialogFooter className="border-line mt-4 flex flex-col items-start gap-4 border-t px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <DialogFooter className="border-line mt-4 flex flex-col items-start gap-4 border-t px-4 pt-5 pb-4 sm:flex-row sm:items-center sm:justify-between sm:pb-0">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <Text className="text-text-muted text-sm">현재 선택</Text>
+            <Text className="text-text-muted">현재 선택 : </Text>
             <Text className="min-w-0 text-sm font-semibold">{selectionSummaryText}</Text>
           </div>
           <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
