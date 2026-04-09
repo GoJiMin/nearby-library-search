@@ -61,9 +61,9 @@
 
 ## 9. 최종 검증과 문서 동기화
 
-- [ ] `RegionSelectDialog` integration test와 필요한 focused unit test만 남아 있는지 점검한다.
-- [ ] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 5-3 상태를 현재 구현 결과와 동기화한다.
+- [x] `RegionSelectDialog` integration test와 필요한 focused unit test만 남아 있는지 점검한다.
+- [x] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 5-3 상태를 현재 구현 결과와 동기화한다.
 
 ## Important Changes
 
@@ -71,6 +71,7 @@
 - dialog는 새 라이브러리를 직접 붙이지 않고 현재 `@/shared/ui`의 dialog primitive를 사용한다.
 - 상위 지역 선택은 필수, 세부 지역은 optional refinement, 기본값은 항상 `전체`라는 계약을 그대로 따른다.
 - canonical handoff는 `LibrarySearchParams` 기준으로 고정하고, 실제 도서관 결과 조회와 결과 화면은 Phase 5-4로 넘긴다.
+- 사용자 요청에 따라 시각 polish와 모바일 전용 재배치 항목은 이번 마감 범위에서 제외하고, 기능/접근성/검증 기준만 우선 마감한다.
 
 ## Test Plan
 
