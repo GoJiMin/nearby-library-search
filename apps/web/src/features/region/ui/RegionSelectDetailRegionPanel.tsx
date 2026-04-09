@@ -41,7 +41,7 @@ function RegionSelectDetailRegionPanel({
       </Heading>
       {isDetailRegionEnabled ? (
         <div className="flex min-h-0 flex-1 flex-col">
-          <ul className="flex-1 space-y-1 overflow-y-auto py-2 pr-2 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5">
+          <ul className="[&::-webkit-scrollbar-thumb]:bg-line flex-1 space-y-1 overflow-y-auto py-2 pr-2 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
             <li>
               <RegionSelectRowButton
                 isSelected={selectedDetailRegion == null}
@@ -81,8 +81,8 @@ function RegionSelectDetailRegionPanel({
         </div>
       ) : (
         <div className="flex-1 px-2 py-2">
-          <div className="bg-surface-muted/70 flex h-full min-h-73 items-center justify-center rounded-2xl px-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
-            <p className="text-text-muted text-sm leading-6">{detailRegionHelperMessage}</p>
+          <div className="flex h-full min-h-73 items-center justify-center rounded-2xl px-8 text-center">
+            <p className="text-sm leading-6 text-gray-600">{detailRegionHelperMessage}</p>
           </div>
         </div>
       )}

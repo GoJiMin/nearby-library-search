@@ -14,11 +14,11 @@ function getDetailRegionHelperMessage({
   selectedRegion?: RegionSelectionState['region'];
 }) {
   if (selectedRegion == null) {
-    return '시/도를 먼저 선택하면 세부 지역을 고를 수 있어요.';
+    return '시/도를 먼저 선택해주세요.';
   }
 
   if (isDetailRegionFallback) {
-    return '세부 지역 없이 이 지역 전체를 검색합니다.';
+    return '세종시는 세부 지역 구분이 없어 전체 지역으로 검색합니다.';
   }
 
   return null;
