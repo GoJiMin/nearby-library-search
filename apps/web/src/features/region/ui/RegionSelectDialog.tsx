@@ -63,13 +63,19 @@ type RegionSelectDialogProps = {
 };
 
 function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selectedBook}: RegionSelectDialogProps) {
-  const {detailRegionOptions, handleSelectDetailRegion, handleSelectRegion, selectedDetailRegion, selectedRegion} =
-    useRegionSelectDialogDraft({lastSelection});
+  const {
+    detailRegionHelperMessage,
+    handleSelectDetailRegion,
+    handleSelectRegion,
+    isDetailRegionEnabled,
+    isDetailRegionFallback,
+    selectedDetailRegion,
+    selectedRegion,
+    visibleDetailRegionOptions,
+  } = useRegionSelectDialogDraft({lastSelection});
 
   void onConfirm;
   void selectedBook;
-
-  const isDetailRegionEnabled = selectedRegion != null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -147,32 +153,16 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
               세부 지역
             </Heading>
             {isDetailRegionEnabled ? (
-              <ul className={SCROLL_AREA_CLASS}>
-                <li>
-                  <RegionSelectRowButton
-                    isSelected={selectedDetailRegion == null}
-                    onClick={() => {
-                      handleSelectDetailRegion(undefined);
-                    }}
-                    trailing={
-                      !selectedDetailRegion ? (
-                        <LucideIcon
-                          className="text-accent h-4.5 w-4.5 shrink-0"
-                          icon={CheckCircle2}
-                          strokeWidth={2.1}
-                        />
-                      ) : null
-                    }
-                  >
-                    전체
-                  </RegionSelectRowButton>
-                </li>
-                {detailRegionOptions.map(detailRegionOption => (
-                  <li key={detailRegionOption.code}>
+              <div className="flex min-h-0 flex-1 flex-col">
+                <ul className={SCROLL_AREA_CLASS}>
+                  <li>
                     <RegionSelectRowButton
-                      isSelected={selectedDetailRegion === detailRegionOption.code}
+                      isSelected={selectedDetailRegion == null}
+                      onClick={() => {
+                        handleSelectDetailRegion(undefined);
+                      }}
                       trailing={
-                        selectedDetailRegion === detailRegionOption.code ? (
+                        !selectedDetailRegion ? (
                           <LucideIcon
                             className="text-accent h-4.5 w-4.5 shrink-0"
                             icon={CheckCircle2}
@@ -180,28 +170,45 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
                           />
                         ) : null
                       }
-                      onClick={() => {
-                        handleSelectDetailRegion(detailRegionOption.code);
-                      }}
                     >
-                      {detailRegionOption.label}
+                      전체
                     </RegionSelectRowButton>
                   </li>
-                ))}
-              </ul>
+                  {visibleDetailRegionOptions.map(detailRegionOption => (
+                    <li key={detailRegionOption.code}>
+                      <RegionSelectRowButton
+                        isSelected={selectedDetailRegion === detailRegionOption.code}
+                        trailing={
+                          selectedDetailRegion === detailRegionOption.code ? (
+                            <LucideIcon
+                              className="text-accent h-4.5 w-4.5 shrink-0"
+                              icon={CheckCircle2}
+                              strokeWidth={2.1}
+                            />
+                          ) : null
+                        }
+                        onClick={() => {
+                          handleSelectDetailRegion(detailRegionOption.code);
+                        }}
+                      >
+                        {detailRegionOption.label}
+                      </RegionSelectRowButton>
+                    </li>
+                  ))}
+                </ul>
+                {isDetailRegionFallback && detailRegionHelperMessage ? (
+                  <p className="text-text-muted px-4 pt-2 pb-4 text-sm leading-6">{detailRegionHelperMessage}</p>
+                ) : null}
+              </div>
             ) : (
               <div className="flex-1 px-2 py-2">
                 <div
-                  aria-hidden="true"
-                  className="bg-surface-muted/70 h-full min-h-[292px] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
-                />
+                  className="bg-surface-muted/70 flex h-full min-h-[292px] items-center justify-center rounded-2xl px-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
+                >
+                  <p className="text-text-muted text-sm leading-6">{detailRegionHelperMessage}</p>
+                </div>
               </div>
             )}
-            <span className="sr-only">
-              {isDetailRegionEnabled
-                ? `${detailRegionOptions.length}개의 세부 지역을 선택할 수 있습니다.`
-                : '시도를 먼저 선택해야 세부 지역을 고를 수 있습니다.'}
-            </span>
           </section>
         </section>
       </DialogContent>

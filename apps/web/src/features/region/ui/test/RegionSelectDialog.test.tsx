@@ -47,6 +47,7 @@ describe('RegionSelectDialog', () => {
     const detailRegionSection = await screen.findByRole('region', {name: '세부 지역'});
 
     expect(detailRegionSection).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('시/도를 먼저 선택하면 세부 지역을 고를 수 있어요.')).toBeInTheDocument();
     expect(screen.queryByRole('button', {name: '전체'})).not.toBeInTheDocument();
   });
 
@@ -74,6 +75,7 @@ describe('RegionSelectDialog', () => {
     expect(detailRegionSection).toHaveAttribute('aria-disabled', 'false');
     expect(screen.getByRole('button', {name: '전체'})).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', {name: '마포구'})).toBeInTheDocument();
+    expect(screen.queryByText('세부 지역 없이 이 지역 전체를 검색합니다.')).not.toBeInTheDocument();
   });
 
   it('상위 지역을 바꾸면 세부 지역 선택이 전체로 초기화된다', async () => {
@@ -102,6 +104,30 @@ describe('RegionSelectDialog', () => {
 
     expect(screen.getByRole('button', {name: '전체'})).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', {name: '마포구'})).not.toBeInTheDocument();
+  });
+
+  it('세종처럼 실질적인 세부 지역이 없는 경우 전체만 유지하고 fallback 안내 문구를 보여준다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <RegionSelectDialog
+        lastSelection={null}
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        selectedBook={{
+          author: '이민진',
+          isbn13: '9788954682155',
+          title: '파친코',
+        }}
+      />,
+    );
+
+    await user.click(await screen.findByRole('button', {name: '세종'}));
+
+    expect(screen.getByRole('button', {name: '전체'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('세부 지역 없이 이 지역 전체를 검색합니다.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: '세종시'})).not.toBeInTheDocument();
   });
 
   it('닫기 버튼 클릭 시 onOpenChange(false)를 호출한다', async () => {
