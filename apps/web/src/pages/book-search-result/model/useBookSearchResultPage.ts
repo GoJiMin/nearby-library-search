@@ -11,8 +11,7 @@ type UseBookSearchResultPageArgs = {
 };
 
 function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs) {
-  const [selectedBook, setSelectedBook] = useState<BookSelectionActionPayload | null>(null);
-  const [isRegionDialogOpen, setIsRegionDialogOpen] = useState(false);
+  const [regionDialogBook, setRegionDialogBook] = useState<BookSelectionActionPayload | null>(null);
   const [lastRegionSelection] = useState<RegionSelectionState | null>(null);
 
   function createPageHref(page: number) {
@@ -51,12 +50,13 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
   }
 
   function handleRegionDialogOpenChange(open: boolean) {
-    setIsRegionDialogOpen(open);
+    if (!open) {
+      setRegionDialogBook(null);
+    }
   }
 
   function handleSelectBook(payload: BookSelectionActionPayload) {
-    setSelectedBook(payload);
-    setIsRegionDialogOpen(true);
+    setRegionDialogBook(payload);
   }
 
   function handleConfirmRegion(nextParams: LibrarySearchParams) {
@@ -69,9 +69,9 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     handleRegionDialogOpenChange,
     handleSelectBook,
     handleSubmitSearch,
-    isRegionDialogOpen,
+    isRegionDialogOpen: regionDialogBook != null,
     lastRegionSelection,
-    selectedBook,
+    selectedBook: regionDialogBook,
   };
 }
 

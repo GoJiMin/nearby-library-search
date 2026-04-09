@@ -39,7 +39,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         lastSelection={lastRegionSelection}
         onConfirm={handleConfirmRegion}
         onOpenChange={handleRegionDialogOpenChange}
-        open={selectedBook != null && isRegionDialogOpen}
+        open={isRegionDialogOpen}
         selectedBook={selectedBook}
       />
     </>

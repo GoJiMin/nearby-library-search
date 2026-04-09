@@ -46,7 +46,7 @@ describe('useBookSearchResultPage', () => {
     expect(result.current.isRegionDialogOpen).toBe(true);
   });
 
-  it('dialog open 상태를 직접 닫을 수 있다', () => {
+  it('dialog를 닫으면 선택된 도서와 open 상태를 함께 정리한다', () => {
     const navigate = vi.fn();
     const {result} = renderHook(() =>
       useBookSearchResultPage({
@@ -70,6 +70,7 @@ describe('useBookSearchResultPage', () => {
       result.current.handleRegionDialogOpenChange(false);
     });
 
+    expect(result.current.selectedBook).toBeNull();
     expect(result.current.isRegionDialogOpen).toBe(false);
   });
 
