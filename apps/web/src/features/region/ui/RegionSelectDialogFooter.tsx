@@ -17,7 +17,7 @@ function RegionSelectDialogFooter({
 }: RegionSelectDialogFooterProps) {
   return (
     <DialogFooter className="border-line mt-4 flex flex-col items-start gap-4 border-t px-4 pt-5 pb-4 sm:flex-row sm:items-center sm:justify-between sm:pb-0">
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
+      <div aria-atomic="true" aria-live="polite" className="flex min-w-0 flex-wrap items-center gap-2">
         <Text className="text-text-muted">현재 선택 : </Text>
         <Text className="min-w-0 text-sm font-semibold">{selectionSummaryText}</Text>
       </div>

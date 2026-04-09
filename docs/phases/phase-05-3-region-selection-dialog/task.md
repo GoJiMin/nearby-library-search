@@ -56,8 +56,8 @@
 
 - [ ] 선택 row 강조, 체크 아이콘, `bg-accent` 기반 활성 상태를 스크린샷 톤에 맞게 정리한다.
 - [ ] 모바일에서는 2열을 세로 stack으로 바꾸고 footer 버튼을 더 넓게 배치한다.
-- [ ] 포커스 트랩, 키보드 탭 순서, disabled semantics, `aria-selected` 또는 동등한 선택 구조를 점검한다.
-- [ ] feature integration test에 키보드 이동과 접근성 기준을 추가한다.
+- [x] 포커스 트랩, 키보드 탭 순서, disabled semantics, `aria-selected` 또는 동등한 선택 구조를 점검한다.
+- [x] feature integration test에 키보드 이동과 접근성 기준을 추가한다.
 
 ## 9. 최종 검증과 문서 동기화
 

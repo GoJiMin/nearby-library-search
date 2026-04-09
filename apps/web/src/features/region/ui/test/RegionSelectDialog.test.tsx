@@ -1,7 +1,19 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import {RegionSelectDialog} from '@/features/region';
+
+async function tabUntilFocused(user: ReturnType<typeof userEvent.setup>, target: HTMLElement, maxSteps = 32) {
+  for (let index = 0; index < maxSteps; index += 1) {
+    if (target === document.activeElement) {
+      return;
+    }
+
+    await user.tab();
+  }
+
+  throw new Error('target element was not focused within the expected tab sequence');
+}
 
 describe('RegionSelectDialog', () => {
   it('선택된 책이 있으면 지역 선택 dialog shell을 렌더링한다', async () => {
@@ -156,6 +168,31 @@ describe('RegionSelectDialog', () => {
     await user.click(screen.getByRole('button', {name: '마포구'}));
 
     expect(screen.getByText('서울 > 마포구')).toBeInTheDocument();
+  });
+
+  it('현재 선택 요약은 live region으로 제공된다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <RegionSelectDialog
+        lastSelection={null}
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        selectedBook={{
+          author: '이민진',
+          isbn13: '9788954682155',
+          title: '파친코',
+        }}
+      />,
+    );
+
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+
+    const summaryWrapper = screen.getByText('서울 전체').closest('div');
+
+    expect(summaryWrapper).toHaveAttribute('aria-live', 'polite');
+    expect(summaryWrapper).toHaveAttribute('aria-atomic', 'true');
   });
 
   it('마지막 확정 선택이 있으면 처음부터 해당 region과 detail을 복원한다', async () => {
@@ -399,5 +436,52 @@ describe('RegionSelectDialog', () => {
     await user.click(overlay);
 
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('dialog 안에서 키보드 탭 이동으로 region, detail, footer까지 접근하고 포커스를 가둔다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <RegionSelectDialog
+        lastSelection={{
+          detailRegion: '11140',
+          region: '11',
+        }}
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        selectedBook={{
+          author: '이민진',
+          isbn13: '9788954682155',
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const dialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
+    const closeButton = screen.getByRole('button', {name: '닫기'});
+    const seoulButton = screen.getByRole('button', {name: '서울'});
+    const mapoButton = screen.getByRole('button', {name: '마포구'});
+    const resetButton = screen.getByRole('button', {name: '초기화'});
+    const confirmButton = screen.getByRole('button', {name: '선택 완료'});
+
+    await waitFor(() => {
+      expect(dialog.contains(document.activeElement)).toBe(true);
+    });
+
+    await tabUntilFocused(user, seoulButton);
+    expect(seoulButton).toHaveFocus();
+
+    await tabUntilFocused(user, mapoButton);
+    expect(mapoButton).toHaveFocus();
+
+    await tabUntilFocused(user, resetButton);
+    expect(resetButton).toHaveFocus();
+
+    await user.tab();
+    expect(confirmButton).toHaveFocus();
+
+    await user.tab();
+    expect(closeButton).toHaveFocus();
   });
 });
