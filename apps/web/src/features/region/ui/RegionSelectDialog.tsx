@@ -79,7 +79,10 @@ function RegionSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[min(calc(100vw-32px),640px)] gap-0 overflow-hidden p-0" showCloseButton={false}>
+      <DialogContent
+        className="grid h-[min(calc(100vh-32px),640px)] w-[min(calc(100vw-32px),640px)] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0"
+        showCloseButton={false}
+      >
         <DialogHeader className="bg-surface px-6 pt-6 pb-5 sm:px-8 sm:pt-7 sm:pb-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
@@ -114,7 +117,7 @@ function RegionSelectDialog({
           </div>
         </DialogHeader>
 
-        <section className="grid min-h-[356px] grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] overflow-hidden">
+        <section className="grid min-h-0 grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] overflow-hidden">
           <section aria-labelledby="region-dialog-region-heading" className="bg-surface-muted/35 flex min-h-0 flex-col">
             <div className="px-5 py-3">
               <h3 className="text-text-muted text-[11px] font-semibold tracking-[0.08em] uppercase" id="region-dialog-region-heading">
