@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {ChevronRight, MapPin} from 'lucide-react';
+import {CheckCircle2, ChevronRight, MapPin} from 'lucide-react';
 import type {ReactNode} from 'react';
 import {REGION_OPTIONS} from '@/entities/region';
 import type {LibrarySearchParams} from '@/entities/library';
@@ -24,6 +24,9 @@ type RegionSelectRowButtonProps = {
   trailing?: ReactNode;
 };
 
+const SCROLL_AREA_CLASS =
+  'flex-1 overflow-y-auto px-2 py-2 [scrollbar-color:theme(colors.line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5';
+
 function RegionSelectRowButton({
   children,
   isSelected = false,
@@ -35,12 +38,12 @@ function RegionSelectRowButton({
     <button
       aria-pressed={isSelected}
       className={clsx(
-        'flex w-full cursor-pointer items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-sm transition-colors',
+        'flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-4 py-3.5 text-left text-[15px] transition-colors',
         isSelected
           ? selectionTone === 'accent'
-            ? 'bg-accent text-on-primary shadow-sm'
-            : 'bg-surface-strong text-text shadow-[0_10px_24px_-12px_rgba(25,28,30,0.18)]'
-          : 'text-text hover:bg-surface-muted',
+            ? 'bg-accent text-on-primary shadow-[0_12px_24px_-14px_rgba(55,85,195,0.75)]'
+            : 'bg-surface-muted text-text shadow-[0_10px_24px_-18px_rgba(25,28,30,0.28)]'
+          : 'text-text hover:bg-surface-muted/80',
       )}
       type="button"
       onClick={onClick}
@@ -111,71 +114,86 @@ function RegionSelectDialog({
           </div>
         </DialogHeader>
 
-        <section className="grid grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] overflow-hidden">
-          <section aria-labelledby="region-dialog-region-heading" className="bg-surface-muted/40 px-4 py-5 sm:px-5">
-            <h3 className="text-text-muted text-xs font-semibold tracking-wide uppercase" id="region-dialog-region-heading">
-              시/도
-            </h3>
-            <ul className="mt-4 space-y-1.5">
-              {REGION_OPTIONS.map(regionOption => (
-                <li key={regionOption.code}>
-                  <RegionSelectRowButton
-                    isSelected={regionOption.code === selectedRegion}
-                    selectionTone="accent"
-                    trailing={
-                      regionOption.code === selectedRegion ? (
-                        <LucideIcon className="h-4 w-4 shrink-0" icon={ChevronRight} strokeWidth={2.1} />
-                      ) : null
-                    }
-                    onClick={() => {
-                      handleSelectRegion(regionOption.code);
-                    }}
-                  >
-                    {regionOption.label}
-                  </RegionSelectRowButton>
-                </li>
-              ))}
-            </ul>
+        <section className="grid min-h-[356px] grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] overflow-hidden">
+          <section aria-labelledby="region-dialog-region-heading" className="bg-surface-muted/35 flex min-h-0 flex-col">
+            <div className="px-5 py-3">
+              <h3 className="text-text-muted text-[11px] font-semibold tracking-[0.08em] uppercase" id="region-dialog-region-heading">
+                시/도
+              </h3>
+            </div>
+            <div className={SCROLL_AREA_CLASS}>
+              <ul className="space-y-1">
+                {REGION_OPTIONS.map(regionOption => (
+                  <li key={regionOption.code}>
+                    <RegionSelectRowButton
+                      isSelected={regionOption.code === selectedRegion}
+                      selectionTone="accent"
+                      trailing={
+                        regionOption.code === selectedRegion ? (
+                          <LucideIcon className="h-4 w-4 shrink-0" icon={ChevronRight} strokeWidth={2.1} />
+                        ) : null
+                      }
+                      onClick={() => {
+                        handleSelectRegion(regionOption.code);
+                      }}
+                    >
+                      {regionOption.label}
+                    </RegionSelectRowButton>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
 
           <section
             aria-disabled={!isDetailRegionEnabled}
             aria-labelledby="region-dialog-detail-heading"
-            className={clsx('bg-surface px-4 py-5 sm:px-5', !isDetailRegionEnabled && 'opacity-60')}
+            className={clsx('bg-surface flex min-h-0 flex-col', !isDetailRegionEnabled && 'opacity-60')}
           >
-            <h3 className="text-text-muted text-xs font-semibold tracking-wide uppercase" id="region-dialog-detail-heading">
-              세부 지역
-            </h3>
+            <div className="px-5 py-3">
+              <h3 className="text-text-muted text-[11px] font-semibold tracking-[0.08em] uppercase" id="region-dialog-detail-heading">
+                세부 지역
+              </h3>
+            </div>
             {isDetailRegionEnabled ? (
-              <ul className="mt-4 space-y-1.5">
-                <li>
-                  <RegionSelectRowButton
-                    isSelected={selectedDetailRegion == null}
-                    onClick={() => {
-                      handleSelectDetailRegion(undefined);
-                    }}
-                  >
-                    전체
-                  </RegionSelectRowButton>
-                </li>
-                {detailRegionOptions.map(detailRegionOption => (
-                  <li key={detailRegionOption.code}>
+              <div className={SCROLL_AREA_CLASS}>
+                <ul className="space-y-1">
+                  <li>
                     <RegionSelectRowButton
-                      isSelected={selectedDetailRegion === detailRegionOption.code}
+                      isSelected={selectedDetailRegion == null}
                       onClick={() => {
-                        handleSelectDetailRegion(detailRegionOption.code);
+                        handleSelectDetailRegion(undefined);
                       }}
                     >
-                      {detailRegionOption.label}
+                      전체
                     </RegionSelectRowButton>
                   </li>
-                ))}
-              </ul>
+                  {detailRegionOptions.map(detailRegionOption => (
+                    <li key={detailRegionOption.code}>
+                      <RegionSelectRowButton
+                        isSelected={selectedDetailRegion === detailRegionOption.code}
+                        trailing={
+                          selectedDetailRegion === detailRegionOption.code ? (
+                            <LucideIcon className="text-accent h-4.5 w-4.5 shrink-0" icon={CheckCircle2} strokeWidth={2.1} />
+                          ) : null
+                        }
+                        onClick={() => {
+                          handleSelectDetailRegion(detailRegionOption.code);
+                        }}
+                      >
+                        {detailRegionOption.label}
+                      </RegionSelectRowButton>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : (
-              <div
-                aria-hidden="true"
-                className="bg-surface-muted/70 mt-4 min-h-72 rounded-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
-              />
+              <div className="flex-1 px-2 py-2">
+                <div
+                  aria-hidden="true"
+                  className="bg-surface-muted/70 h-full min-h-[292px] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]"
+                />
+              </div>
             )}
             <span className="sr-only">
               {isDetailRegionEnabled
