@@ -9,10 +9,10 @@
 
 ## 2. `features/region` 공개 API와 최소 골격 구성
 
-- [ ] `features/region`에 `RegionSelectDialog` public feature를 추가한다.
-- [ ] `features/region/index.ts`에서 dialog 공개 API를 노출한다.
-- [ ] dialog 입력 계약을 `open`, `selectedBook`, `lastSelection`, `onOpenChange`, `onConfirm`으로 고정한다.
-- [ ] 기본 integration test 파일을 추가한다.
+- [x] `features/region`에 `RegionSelectDialog` public feature를 추가한다.
+- [x] `features/region/index.ts`에서 dialog 공개 API를 노출한다.
+- [x] dialog 입력 계약을 `open`, `selectedBook`, `lastSelection`, `onOpenChange`, `onConfirm`으로 고정한다.
+- [x] 기본 integration test 파일을 추가한다.
 
 ## 3. dialog shell과 스크린샷 상단 구조 구현
 
