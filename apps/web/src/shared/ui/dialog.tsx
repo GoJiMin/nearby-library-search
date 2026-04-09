@@ -61,13 +61,16 @@ const DialogContent = forwardRef<
   );
 });
 
-function DialogHeader({className, ...props}: ComponentPropsWithoutRef<'div'>) {
-  return <div className={mergeClassNames('flex flex-col gap-2 text-left', className)} {...props} />;
+function DialogHeader({className, ...props}: ComponentPropsWithoutRef<'header'>) {
+  return <header className={mergeClassNames('flex flex-col gap-2 text-left', className)} {...props} />;
 }
 
-function DialogFooter({className, ...props}: ComponentPropsWithoutRef<'div'>) {
+function DialogFooter({className, ...props}: ComponentPropsWithoutRef<'footer'>) {
   return (
-    <div className={mergeClassNames('flex flex-col-reverse gap-3 sm:flex-row sm:justify-end', className)} {...props} />
+    <footer
+      className={mergeClassNames('flex flex-col-reverse gap-3 sm:flex-row sm:justify-end', className)}
+      {...props}
+    />
   );
 }
 
