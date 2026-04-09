@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import {CheckCircle2} from 'lucide-react';
 import {Heading, LucideIcon} from '@/shared/ui';
-import {REGION_SELECT_SCROLL_AREA_CLASS, RegionSelectRowButton} from './RegionSelectRowButton';
+import {RegionSelectRowButton} from './RegionSelectRowButton';
 
 type VisibleDetailRegionOption = {
   code: string;
@@ -41,7 +41,7 @@ function RegionSelectDetailRegionPanel({
       </Heading>
       {isDetailRegionEnabled ? (
         <div className="flex min-h-0 flex-1 flex-col">
-          <ul className={REGION_SELECT_SCROLL_AREA_CLASS}>
+          <ul className="flex-1 space-y-1 overflow-y-auto py-2 pr-2 [scrollbar-color:theme(colors.line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5">
             <li>
               <RegionSelectRowButton
                 isSelected={selectedDetailRegion == null}
@@ -81,7 +81,7 @@ function RegionSelectDetailRegionPanel({
         </div>
       ) : (
         <div className="flex-1 px-2 py-2">
-          <div className="bg-surface-muted/70 flex h-full min-h-[292px] items-center justify-center rounded-2xl px-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
+          <div className="bg-surface-muted/70 flex h-full min-h-73 items-center justify-center rounded-2xl px-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
             <p className="text-text-muted text-sm leading-6">{detailRegionHelperMessage}</p>
           </div>
         </div>

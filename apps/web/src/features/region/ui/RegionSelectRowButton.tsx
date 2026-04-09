@@ -9,9 +9,6 @@ type RegionSelectRowButtonProps = {
   trailing?: ReactNode;
 };
 
-const REGION_SELECT_SCROLL_AREA_CLASS =
-  'flex-1 space-y-1 overflow-y-auto py-2 pr-2 [scrollbar-color:theme(colors.line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5';
-
 function RegionSelectRowButton({
   children,
   isSelected = false,
@@ -39,5 +36,5 @@ function RegionSelectRowButton({
   );
 }
 
-export {REGION_SELECT_SCROLL_AREA_CLASS, RegionSelectRowButton};
+export {RegionSelectRowButton};
 export type {RegionSelectRowButtonProps};
