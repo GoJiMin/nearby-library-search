@@ -26,6 +26,10 @@ body,
   min-height: 100vh;
 }
 
+button {
+  cursor: pointer;
+}
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
