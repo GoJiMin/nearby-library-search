@@ -34,16 +34,16 @@
 - [x] 상위 지역 선택 전 세부 지역 영역 아래에 비활성 이유 설명을 구현한다.
 - [x] 세종처럼 세부 지역이 1개뿐인 경우에도 기본값은 `전체`를 유지하도록 구현한다.
 - [x] 세부 지역이 실질적으로 없을 때 `전체`만 유지하고 전체 검색 안내 문구를 노출한다.
-- [ ] fallback 케이스에서도 `선택 완료`가 동작하는지 integration test로 검증한다.
+- [x] fallback 케이스에서도 `선택 완료`가 동작하는지 integration test로 검증한다.
 
 ## 6. footer 요약, 초기화, 선택 완료 handoff 구현
 
-- [ ] footer에 `현재 선택` 요약을 구현한다.
-- [ ] 요약은 `서울 전체`, `서울 > 마포구`, `지역을 선택해주세요` 규칙으로 갱신되게 한다.
-- [ ] `초기화`는 draft를 완전히 비선택 상태로 되돌리게 한다.
-- [ ] `선택 완료`는 `parseSearchLibrariesParams`로 canonicalize한 `LibrarySearchParams`를 만든 뒤 `onConfirm`에 전달한다.
-- [ ] `전체` 선택 시 `detailRegion`이 빠진 payload, 세부 지역 선택 시 `detailRegion`이 포함된 payload를 integration test로 검증한다.
-- [ ] draft → canonical params 변환 helper를 별도로 뺐다면 그 부분만 focused unit test를 추가한다.
+- [x] footer에 `현재 선택` 요약을 구현한다.
+- [x] 요약은 `서울 전체`, `서울 > 마포구`, `지역을 선택해주세요` 규칙으로 갱신되게 한다.
+- [x] `초기화`는 draft를 완전히 비선택 상태로 되돌리게 한다.
+- [x] `선택 완료`는 `parseSearchLibrariesParams`로 canonicalize한 `LibrarySearchParams`를 만든 뒤 `onConfirm`에 전달한다.
+- [x] `전체` 선택 시 `detailRegion`이 빠진 payload, 세부 지역 선택 시 `detailRegion`이 포함된 payload를 integration test로 검증한다.
+- [x] draft → canonical params 변환 helper를 별도로 뺐다면 그 부분만 focused unit test를 추가한다.
 
 ## 7. reopen 복원과 page 연계 구현
 
