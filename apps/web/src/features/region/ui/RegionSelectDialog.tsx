@@ -1,14 +1,7 @@
 import {MapPin, X} from 'lucide-react';
 import type {LibrarySearchParams} from '@/entities/library';
 import type {BookSelectionActionPayload} from '@/features/book';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  LucideIcon,
-} from '@/shared/ui';
+import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, LucideIcon} from '@/shared/ui';
 import {createRegionSelectConfirmParams} from '../model/createRegionSelectConfirmParams';
 import type {RegionSelectionState} from '../model/regionSelectDialog.contract';
 import {useRegionSelectDialogDraft} from '../model/useRegionSelectDialogDraft';
@@ -60,7 +53,7 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         aria-describedby={undefined}
-        className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),600px)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 px-2 sm:px-6 sm:pb-5"
+        className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),580px)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 px-2 sm:px-6 sm:pb-5"
         showCloseButton={false}
       >
         <DialogHeader className="px-4 pt-6 sm:px-4 sm:pt-2">
