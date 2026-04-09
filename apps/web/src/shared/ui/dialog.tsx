@@ -19,6 +19,7 @@ const DialogOverlay = forwardRef<
 >(function DialogOverlay({className, ...props}, ref) {
   return (
     <DialogPrimitive.Overlay
+      data-slot="dialog-overlay"
       className={mergeClassNames('fixed inset-0 z-50 bg-slate-950/24 backdrop-blur-[2px]', className)}
       ref={ref}
       {...props}
@@ -26,14 +27,19 @@ const DialogOverlay = forwardRef<
   );
 });
 
+type DialogContentProps = ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+  showCloseButton?: boolean;
+};
+
 const DialogContent = forwardRef<
   ElementRef<typeof DialogPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(function DialogContent({children, className, ...props}, ref) {
+  DialogContentProps
+>(function DialogContent({children, className, showCloseButton = true, ...props}, ref) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
+        data-slot="dialog-content"
         className={mergeClassNames(
           'border-line bg-surface-strong rounded-panel shadow-card fixed top-1/2 left-1/2 z-50 grid w-[min(calc(100vw-32px),560px)] -translate-x-1/2 -translate-y-1/2 gap-5 border p-6 outline-none sm:p-8',
           className,
@@ -42,12 +48,14 @@ const DialogContent = forwardRef<
         {...props}
       >
         {children}
-        <DialogPrimitive.Close
-          aria-label="닫기"
-          className="text-text-muted hover:text-text hover:bg-surface-muted focus-visible:ring-accent-soft absolute top-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
-        >
-          <X className="h-5 w-5" />
-        </DialogPrimitive.Close>
+        {showCloseButton ? (
+          <DialogPrimitive.Close
+            aria-label="닫기"
+            className="text-text-muted hover:text-text hover:bg-surface-muted focus-visible:ring-accent-soft absolute top-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
+          >
+            <X className="h-5 w-5" />
+          </DialogPrimitive.Close>
+        ) : null}
       </DialogPrimitive.Content>
     </DialogPortal>
   );

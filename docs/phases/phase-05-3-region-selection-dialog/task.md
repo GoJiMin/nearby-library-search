@@ -16,10 +16,10 @@
 
 ## 3. dialog shell과 스크린샷 상단 구조 구현
 
-- [ ] `@/shared/ui`의 `Dialog`, `DialogContent`, `DialogTitle`, `DialogClose`를 사용해 modal shell을 구현한다.
-- [ ] 상단에 위치 아이콘, `검색 지역 선택` 제목, 닫기 버튼을 구현한다.
-- [ ] 스크린샷 기준 progress rail을 비상호작용 장식 요소로 추가한다.
-- [ ] overlay dismiss, `ESC`, 닫기 버튼으로 닫히는지 integration test로 검증한다.
+- [x] `@/shared/ui`의 `Dialog`, `DialogContent`, `DialogTitle`, `DialogClose`를 사용해 modal shell을 구현한다.
+- [x] 상단에 위치 아이콘, `검색 지역 선택` 제목, 닫기 버튼을 구현한다.
+- [x] 스크린샷 기준 progress rail을 비상호작용 장식 요소로 추가한다.
+- [x] overlay dismiss, `ESC`, 닫기 버튼으로 닫히는지 integration test로 검증한다.
 
 ## 4. 2열 지역 선택 구조 구현
 

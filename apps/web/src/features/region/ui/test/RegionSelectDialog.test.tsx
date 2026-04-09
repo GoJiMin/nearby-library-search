@@ -19,12 +19,19 @@ describe('RegionSelectDialog', () => {
       />,
     );
 
-    expect(await screen.findByRole('dialog', {name: '검색 지역 선택'})).toBeInTheDocument();
-    expect(screen.getByText('선택한 책을 기준으로 지역을 고르는 단계를 연결하는 중이에요.')).toBeInTheDocument();
+    const dialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByText('선택한 책을 기준으로 도서관 검색 지역을 고르는 단계예요.')).toBeInTheDocument();
     expect(screen.getByText('"파친코" 소장 도서관을 찾기 위한 지역 선택 단계를 준비하고 있어요.')).toBeInTheDocument();
+    expect(document.querySelector('[data-slot="region-dialog-progress-rail"]')).toBeInstanceOf(HTMLElement);
+    expect(screen.getByRole('button', {name: '닫기'})).toBeInTheDocument();
   });
 
-  it('마지막 확정 선택이 있으면 복원 안내 문구를 보여준다', async () => {
+  it('닫기 버튼 클릭 시 onOpenChange(false)를 호출한다', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+
     render(
       <RegionSelectDialog
         lastSelection={{
@@ -32,7 +39,7 @@ describe('RegionSelectDialog', () => {
           region: '11',
         }}
         onConfirm={vi.fn()}
-        onOpenChange={vi.fn()}
+        onOpenChange={onOpenChange}
         open
         selectedBook={{
           author: '이민진',
@@ -42,11 +49,12 @@ describe('RegionSelectDialog', () => {
       />,
     );
 
-    expect(await screen.findByRole('dialog', {name: '검색 지역 선택'})).toBeInTheDocument();
-    expect(screen.getByText('이전에 확정한 지역 선택 상태를 다음 단계에서 다시 복원할 예정이에요.')).toBeInTheDocument();
+    await user.click(await screen.findByRole('button', {name: '닫기'}));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('닫기 버튼 클릭 시 onOpenChange(false)를 호출한다', async () => {
+  it('escape 입력 시 onOpenChange(false)를 호출한다', async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
 
@@ -64,7 +72,41 @@ describe('RegionSelectDialog', () => {
       />,
     );
 
-    await user.click(await screen.findByRole('button', {name: '닫기'}));
+    await screen.findByRole('dialog', {name: '검색 지역 선택'});
+    await user.keyboard('{Escape}');
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('overlay dismiss 시 onOpenChange(false)를 호출한다', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+
+    render(
+      <RegionSelectDialog
+        lastSelection={null}
+        onConfirm={vi.fn()}
+        onOpenChange={onOpenChange}
+        open
+        selectedBook={{
+          author: '이민진',
+          isbn13: '9788954682155',
+          title: '파친코',
+        }}
+      />,
+    );
+
+    await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
+    const overlay = document.querySelector('[data-slot="dialog-overlay"]');
+
+    expect(overlay).toBeInstanceOf(HTMLElement);
+
+    if (!(overlay instanceof HTMLElement)) {
+      throw new Error('dialog overlay not found');
+    }
+
+    await user.click(overlay);
 
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
