@@ -158,6 +158,55 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByText('서울 > 마포구')).toBeInTheDocument();
   });
 
+  it('마지막 확정 선택이 있으면 처음부터 해당 region과 detail을 복원한다', async () => {
+    render(
+      <RegionSelectDialog
+        lastSelection={{
+          detailRegion: '11140',
+          region: '11',
+        }}
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        selectedBook={{
+          author: '이민진',
+          isbn13: '9788954682155',
+          title: '파친코',
+        }}
+      />,
+    );
+
+    await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
+    expect(screen.getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('서울 > 마포구')).toBeInTheDocument();
+  });
+
+  it('마지막 확정 선택에 detailRegion이 없으면 전체 선택 상태로 복원한다', async () => {
+    render(
+      <RegionSelectDialog
+        lastSelection={{
+          region: '11',
+        }}
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+        open
+        selectedBook={{
+          author: '이민진',
+          isbn13: '9788954682155',
+          title: '파친코',
+        }}
+      />,
+    );
+
+    await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
+    expect(screen.getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', {name: '전체'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('서울 전체')).toBeInTheDocument();
+  });
+
   it('초기화를 누르면 draft를 비선택 상태로 되돌린다', async () => {
     const user = userEvent.setup();
 

@@ -12,7 +12,7 @@ type UseBookSearchResultPageArgs = {
 
 function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs) {
   const [regionDialogBook, setRegionDialogBook] = useState<BookSelectionActionPayload | null>(null);
-  const [lastRegionSelection] = useState<RegionSelectionState | null>(null);
+  const [lastRegionSelection, setLastRegionSelection] = useState<RegionSelectionState | null>(null);
 
   function createPageHref(page: number) {
     const nextSearchParams = new URLSearchParams({
@@ -60,7 +60,11 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
   }
 
   function handleConfirmRegion(nextParams: LibrarySearchParams) {
-    void nextParams;
+    setLastRegionSelection({
+      detailRegion: nextParams.detailRegion,
+      region: nextParams.region,
+    });
+    setRegionDialogBook(null);
   }
 
   return {

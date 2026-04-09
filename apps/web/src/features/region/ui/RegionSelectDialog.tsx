@@ -17,7 +17,17 @@ type RegionSelectDialogProps = {
   selectedBook: BookSelectionActionPayload | null;
 };
 
-function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selectedBook}: RegionSelectDialogProps) {
+type RegionSelectDialogContentProps = {
+  lastSelection?: RegionSelectionState | null;
+  onConfirm: (params: LibrarySearchParams) => void;
+  selectedBook: BookSelectionActionPayload;
+};
+
+function RegionSelectDialogContent({
+  lastSelection,
+  onConfirm,
+  selectedBook,
+}: RegionSelectDialogContentProps) {
   const {
     draftSelection,
     detailRegionHelperMessage,
@@ -34,10 +44,10 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
     visibleDetailRegionOptions,
   } = useRegionSelectDialogDraft({lastSelection});
 
-  const isConfirmDisabled = selectedBook == null || !isSelectionComplete;
+  const isConfirmDisabled = !isSelectionComplete;
 
   function handleConfirm() {
-    if (selectedBook == null || draftSelection == null) {
+    if (draftSelection == null) {
       return;
     }
 
@@ -50,54 +60,66 @@ function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selec
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        aria-describedby={undefined}
-        className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),580px)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 px-2 sm:px-6 sm:pb-5"
-        showCloseButton={false}
-      >
-        <DialogHeader className="px-4 pt-6 sm:px-4 sm:pt-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <LucideIcon className="text-accent h-6 w-6 sm:h-7 sm:w-7" icon={MapPin} strokeWidth={2.1} />
-              <DialogTitle className="text-base font-semibold sm:text-lg">검색 지역 선택</DialogTitle>
-            </div>
-            <DialogClose asChild>
-              <button
-                aria-label="닫기"
-                className="text-text-muted hover:text-text hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
-                type="button"
-              >
-                <LucideIcon icon={X} strokeWidth={2.3} />
-              </button>
-            </DialogClose>
+    <DialogContent
+      aria-describedby={undefined}
+      className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),580px)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 px-2 sm:px-6 sm:pb-5"
+      showCloseButton={false}
+    >
+      <DialogHeader className="px-4 pt-6 sm:px-4 sm:pt-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <LucideIcon className="text-accent h-6 w-6 sm:h-7 sm:w-7" icon={MapPin} strokeWidth={2.1} />
+            <DialogTitle className="text-base font-semibold sm:text-lg">검색 지역 선택</DialogTitle>
           </div>
-          <div aria-hidden="true" className="mt-1 md:mt-3" data-slot="region-dialog-progress-rail">
-            <div className="bg-surface-muted grid h-1 grid-cols-2 gap-1 overflow-hidden rounded-full">
-              <div className="bg-accent h-full rounded-full" />
-              <div className="bg-line/60 h-full rounded-full" />
-            </div>
+          <DialogClose asChild>
+            <button
+              aria-label="닫기"
+              className="text-text-muted hover:text-text hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
+              type="button"
+            >
+              <LucideIcon icon={X} strokeWidth={2.3} />
+            </button>
+          </DialogClose>
+        </div>
+        <div aria-hidden="true" className="mt-1 md:mt-3" data-slot="region-dialog-progress-rail">
+          <div className="bg-surface-muted grid h-1 grid-cols-2 gap-1 overflow-hidden rounded-full">
+            <div className="bg-accent h-full rounded-full" />
+            <div className="bg-line/60 h-full rounded-full" />
           </div>
-        </DialogHeader>
-        <section className="mt-3 grid min-h-0 grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] overflow-hidden">
-          <RegionSelectRegionList selectedRegion={selectedRegion} onSelectRegion={handleSelectRegion} />
-          <RegionSelectDetailRegionPanel
-            detailRegionHelperMessage={detailRegionHelperMessage}
-            isDetailRegionEnabled={isDetailRegionEnabled}
-            isDetailRegionFallback={isDetailRegionFallback}
-            selectedDetailRegion={selectedDetailRegion}
-            visibleDetailRegionOptions={visibleDetailRegionOptions}
-            onSelectDetailRegion={handleSelectDetailRegion}
-          />
-        </section>
-        <RegionSelectDialogFooter
-          isConfirmDisabled={isConfirmDisabled}
-          isResetDisabled={isResetDisabled}
-          selectionSummaryText={selectionSummaryText}
-          onConfirm={handleConfirm}
-          onReset={handleReset}
+        </div>
+      </DialogHeader>
+      <section className="mt-3 grid min-h-0 grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] overflow-hidden">
+        <RegionSelectRegionList selectedRegion={selectedRegion} onSelectRegion={handleSelectRegion} />
+        <RegionSelectDetailRegionPanel
+          detailRegionHelperMessage={detailRegionHelperMessage}
+          isDetailRegionEnabled={isDetailRegionEnabled}
+          isDetailRegionFallback={isDetailRegionFallback}
+          selectedDetailRegion={selectedDetailRegion}
+          visibleDetailRegionOptions={visibleDetailRegionOptions}
+          onSelectDetailRegion={handleSelectDetailRegion}
         />
-      </DialogContent>
+      </section>
+      <RegionSelectDialogFooter
+        isConfirmDisabled={isConfirmDisabled}
+        isResetDisabled={isResetDisabled}
+        selectionSummaryText={selectionSummaryText}
+        onConfirm={handleConfirm}
+        onReset={handleReset}
+      />
+    </DialogContent>
+  );
+}
+
+function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selectedBook}: RegionSelectDialogProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {open && selectedBook ? (
+        <RegionSelectDialogContent
+          lastSelection={lastSelection}
+          onConfirm={onConfirm}
+          selectedBook={selectedBook}
+        />
+      ) : null}
     </Dialog>
   );
 }

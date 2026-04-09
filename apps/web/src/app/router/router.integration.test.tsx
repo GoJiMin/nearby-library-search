@@ -34,6 +34,7 @@ vi.mock('@/entities/book', async importOriginal => {
 });
 
 beforeEach(() => {
+  mockUseGetSearchBooks.mockReset();
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
 });
 
@@ -158,6 +159,83 @@ describe('app router integration', () => {
       expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
     });
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+  });
+
+  it('restores the last confirmed region selection when reopening the dialog, even for a different book', async () => {
+    const user = userEvent.setup();
+
+    mockUseGetSearchBooks.mockReturnValue({
+      items: [
+        {
+          author: '이민진',
+          detailUrl: null,
+          imageUrl: null,
+          isbn13: '9788954682155',
+          loanCount: 12,
+          publicationYear: '2018',
+          publisher: '문학사상',
+          title: '파친코',
+        },
+        {
+          author: '한강',
+          detailUrl: null,
+          imageUrl: null,
+          isbn13: '9788936434124',
+          loanCount: 8,
+          publicationYear: '2007',
+          publisher: '창비',
+          title: '채식주의자',
+        },
+      ],
+      totalCount: 2,
+    });
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    const resultList = screen.getByRole('list', {name: '도서 검색 결과 목록'});
+    const libraryButtons = within(resultList).getAllByRole('button', {name: '소장 도서관 찾기'});
+
+    await user.click(libraryButtons[0]);
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '마포구'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+    });
+
+    await user.click(libraryButtons[0]);
+
+    expect(await screen.findByText('서울 > 마포구')).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
+
+    await user.click(screen.getByRole('button', {name: '부산'}));
+    expect(screen.getByText('부산 전체')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+    });
+
+    await user.click(libraryButtons[0]);
+
+    expect(await screen.findByText('서울 > 마포구')).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
+
+    await user.click(screen.getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+    });
+
+    await user.click(libraryButtons[1]);
+
+    expect(await screen.findByText('서울 > 마포구')).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('redirects the empty book result route to the home page', async () => {
