@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  Heading,
   LucideIcon,
 } from '@/shared/ui';
 import type {RegionSelectionState} from '../model/regionSelectDialog.contract';
@@ -119,11 +120,14 @@ function RegionSelectDialog({
 
         <section className="grid min-h-0 grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] overflow-hidden">
           <section aria-labelledby="region-dialog-region-heading" className="bg-surface-muted/35 flex min-h-0 flex-col">
-            <div className="px-5 py-3">
-              <h3 className="text-text-muted text-[11px] font-semibold tracking-[0.08em] uppercase" id="region-dialog-region-heading">
-                시/도
-              </h3>
-            </div>
+            <Heading
+              as="h3"
+              className="text-text-muted px-5 py-3 tracking-[0.08em] uppercase"
+              id="region-dialog-region-heading"
+              size="xs"
+            >
+              시/도
+            </Heading>
             <div className={SCROLL_AREA_CLASS}>
               <ul className="space-y-1">
                 {REGION_OPTIONS.map(regionOption => (
@@ -153,11 +157,14 @@ function RegionSelectDialog({
             aria-labelledby="region-dialog-detail-heading"
             className={clsx('bg-surface flex min-h-0 flex-col', !isDetailRegionEnabled && 'opacity-60')}
           >
-            <div className="px-5 py-3">
-              <h3 className="text-text-muted text-[11px] font-semibold tracking-[0.08em] uppercase" id="region-dialog-detail-heading">
-                세부 지역
-              </h3>
-            </div>
+            <Heading
+              as="h3"
+              className="text-text-muted px-5 py-3 tracking-[0.08em] uppercase"
+              id="region-dialog-detail-heading"
+              size="xs"
+            >
+              세부 지역
+            </Heading>
             {isDetailRegionEnabled ? (
               <div className={SCROLL_AREA_CLASS}>
                 <ul className="space-y-1">

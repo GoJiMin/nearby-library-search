@@ -5,7 +5,7 @@ import {twMerge} from 'tailwind-merge';
 type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
   as?: ElementType;
   children: ReactNode;
-  size?: 'display' | 'xl' | 'lg' | 'md' | 'sm';
+  size?: 'display' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
 };
 
 function mergeClassNames(...inputs: ClassValue[]) {
@@ -18,6 +18,7 @@ const headingSizeClassName = {
   lg: 'text-xl md:text-2xl leading-[1.16] tracking-[-0.03em]',
   md: 'text-lg md:text-xl leading-[1.2] tracking-[-0.02em]',
   sm: 'text-base md:text-lg leading-[1.24] tracking-[-0.01em]',
+  xs: 'text-sm leading-[1.28] tracking-[-0.01em]',
 } as const;
 
 function Heading({as, children, className, size = 'lg', ...props}: HeadingProps) {
