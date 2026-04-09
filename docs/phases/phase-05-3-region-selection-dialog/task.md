@@ -2,10 +2,10 @@
 
 ## 1. `/books` 지역 선택 orchestration baseline 정리
 
-- [ ] `pages/book-search-result`가 `소장 도서관 찾기` 클릭 payload를 받아 dialog open state와 선택된 책 상태를 소유하도록 정리한다.
-- [ ] 마지막 확정 지역 선택 상태를 page에 추가한다.
-- [ ] `features/book`의 `onSelectBook` handoff가 실제 page orchestration으로 연결되도록 바꾼다.
-- [ ] route/page integration test에 카드 CTA 클릭 시 지역 선택 dialog가 열린다는 기준을 추가한다.
+- [x] `pages/book-search-result`가 `소장 도서관 찾기` 클릭 payload를 받아 dialog open state와 선택된 책 상태를 소유하도록 정리한다.
+- [x] 마지막 확정 지역 선택 상태를 page에 추가한다.
+- [x] `features/book`의 `onSelectBook` handoff가 실제 page orchestration으로 연결되도록 바꾼다.
+- [x] route/page integration test에 카드 CTA 클릭 시 지역 선택 dialog가 열린다는 기준을 추가한다.
 
 ## 2. `features/region` 공개 API와 최소 골격 구성
 

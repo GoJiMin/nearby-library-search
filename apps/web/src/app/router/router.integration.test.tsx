@@ -1,4 +1,4 @@
-import {act, render, screen, within} from '@testing-library/react';
+import {act, render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {createMemoryRouter, RouterProvider} from 'react-router-dom';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
@@ -139,6 +139,24 @@ describe('app router integration', () => {
     expect(router.state.location.pathname).toBe('/books');
     expect(new URLSearchParams(router.state.location.search).get('title')).toBe('파친코');
     expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
+  });
+
+  it('opens the region selection dialog when clicking the primary card CTA and closes it again', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+
+    expect(await screen.findByRole('dialog', {name: '검색 지역 선택'})).toBeInTheDocument();
+    expect(screen.getByText('"파친코" 소장 도서관을 찾기 위한 지역 선택 단계를 준비하고 있어요.')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
   it('redirects the empty book result route to the home page', async () => {
