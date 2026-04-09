@@ -149,7 +149,8 @@ describe('app router integration', () => {
     await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
 
     expect(await screen.findByRole('dialog', {name: '검색 지역 선택'})).toBeInTheDocument();
-    expect(screen.getByText('"파친코" 소장 도서관을 찾기 위한 지역 선택 단계를 준비하고 있어요.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', {name: '시/도'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {name: '세부 지역'})).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', {name: '닫기'}));
 
