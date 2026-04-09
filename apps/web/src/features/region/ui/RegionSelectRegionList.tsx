@@ -19,7 +19,7 @@ function RegionSelectRegionList({onSelectRegion, selectedRegion}: RegionSelectRe
       >
         시/도
       </Heading>
-      <ul className="flex-1 space-y-1 overflow-y-auto py-2 pr-2 [scrollbar-color:theme(colors.line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5">
+      <ul className="flex-1 space-y-1 overflow-y-auto py-2 pr-2 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5">
         {REGION_OPTIONS.map(regionOption => (
           <li key={regionOption.code}>
             <RegionSelectRowButton
