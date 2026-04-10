@@ -1,12 +1,12 @@
 import type {LibraryCode, LibrarySearchItem} from '@nearby-library-search/contracts';
 import {useEffect, useRef, useState} from 'react';
 import {hasLibraryCoordinates} from '@/entities/library';
-import {kakaoMapConfig} from '@/shared/env';
-import {loadKakaoMapSdk} from '@/shared/kakao-map';
+import {appConfig, kakaoMapConfig} from '@/shared/env';
+import {KakaoMapSdkLoadError, type KakaoMapSdkLoadErrorCode, loadKakaoMapSdk} from '@/shared/kakao-map';
 import {Heading, Text} from '@/shared/ui';
 import {LibrarySearchResultMapControls, LibrarySearchResultMapPlaceholderBody} from './LibrarySearchResultMapPanel';
 
-type LibrarySearchResultMapStatus = 'loading' | 'ready' | 'unavailable';
+type LibrarySearchResultMapStatus = 'disabled' | 'error' | 'loading' | 'ready';
 type LibrarySearchResultMapProps = {
   items: LibrarySearchItem[];
   onSelectLibrary: (code: LibraryCode) => void;
@@ -35,7 +35,10 @@ function LibrarySearchResultMap({
   selectedLibraryCode,
 }: LibrarySearchResultMapProps) {
   const [status, setStatus] = useState<LibrarySearchResultMapStatus>(() =>
-    kakaoMapConfig.isEnabled ? 'loading' : 'unavailable',
+    kakaoMapConfig.isEnabled ? 'loading' : 'disabled',
+  );
+  const [errorCode, setErrorCode] = useState<KakaoMapSdkLoadErrorCode | null>(() =>
+    kakaoMapConfig.isEnabled ? null : 'disabled',
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
   const kakaoMapsRef = useRef<KakaoMapsNamespace | null>(null);
@@ -90,15 +93,26 @@ function LibrarySearchResultMap({
         }
 
         kakaoMapsRef.current = kakaoMaps;
+        setErrorCode(null);
         setStatus('ready');
 
         relayoutFrameRef.current = window.requestAnimationFrame(() => {
           mapRef.current?.relayout();
         });
       })
-      .catch(() => {
+      .catch(error => {
         if (!isDisposed) {
-          setStatus('unavailable');
+          const nextError =
+            error instanceof KakaoMapSdkLoadError
+              ? error
+              : new KakaoMapSdkLoadError('sdk-not-available', 'Unexpected Kakao Map SDK error.');
+
+          if (appConfig.isDevelopment) {
+            console.error('[KakaoMap] SDK load failed.', nextError);
+          }
+
+          setErrorCode(nextError.code);
+          setStatus(nextError.code === 'disabled' ? 'disabled' : 'error');
         }
       });
 
@@ -295,8 +309,10 @@ function LibrarySearchResultMap({
     };
   }, []);
 
-  if (status === 'unavailable') {
-    return <LibrarySearchResultMapUnavailableBody />;
+  if (status === 'disabled' || status === 'error') {
+    return (
+      <LibrarySearchResultMapUnavailableBody diagnosticCode={appConfig.isDevelopment ? errorCode : null} />
+    );
   }
 
   if (status === 'ready' && coordinateItems.length === 0) {
@@ -311,7 +327,11 @@ function LibrarySearchResultMap({
   );
 }
 
-function LibrarySearchResultMapUnavailableBody() {
+function LibrarySearchResultMapUnavailableBody({
+  diagnosticCode,
+}: {
+  diagnosticCode?: KakaoMapSdkLoadErrorCode | null;
+}) {
   return (
     <>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.38)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.38)_1px,transparent_1px)] bg-[size:44px_44px]" />
@@ -324,6 +344,11 @@ function LibrarySearchResultMapUnavailableBody() {
           <Text className="mt-2" size="sm" tone="muted">
             카카오 지도 설정을 확인한 뒤 다시 시도해 주세요.
           </Text>
+          {diagnosticCode ? (
+            <Text className="mt-3 font-mono" size="xs" tone="muted">
+              개발 진단: {diagnosticCode}
+            </Text>
+          ) : null}
         </div>
       </div>
       <LibrarySearchResultMapControls />

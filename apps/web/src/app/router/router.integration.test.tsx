@@ -135,9 +135,14 @@ vi.mock('@/shared/env', async importOriginal => {
   };
 });
 
-vi.mock('@/shared/kakao-map', () => ({
-  loadKakaoMapSdk: mockLoadKakaoMapSdk,
-}));
+vi.mock('@/shared/kakao-map', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/shared/kakao-map')>();
+
+  return {
+    ...actual,
+    loadKakaoMapSdk: mockLoadKakaoMapSdk,
+  };
+});
 
 beforeEach(() => {
   mockUseGetSearchBooks.mockReset();
