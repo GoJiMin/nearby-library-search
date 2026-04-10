@@ -1,0 +1,1 @@
+export {loadKakaoMapSdk} from './loadKakaoMapSdk';
