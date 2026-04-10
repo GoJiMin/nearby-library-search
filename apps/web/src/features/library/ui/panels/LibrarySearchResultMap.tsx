@@ -27,6 +27,7 @@ const DEFAULT_KAKAO_MAP_CENTER = Object.freeze({
   longitude: 126.978,
 });
 const DEFAULT_KAKAO_MAP_LEVEL = 8;
+const DEFAULT_SELECTED_LIBRARY_LEVEL = 3;
 const DEFAULT_SINGLE_LIBRARY_LEVEL = 4;
 
 function LibrarySearchResultMap({
@@ -62,6 +63,9 @@ function LibrarySearchResultMap({
   const currentSelectedCoordinateCode = currentSelectedCoordinateLibrary?.code ?? null;
   const currentSelectedCoordinateLatitude = currentSelectedCoordinateLibrary?.latitude ?? null;
   const currentSelectedCoordinateLongitude = currentSelectedCoordinateLibrary?.longitude ?? null;
+  const isImplicitCoordinateSelection =
+    currentSelectedCoordinateCode != null &&
+    (selectedLibraryCode == null || currentSelectedLibrary?.code !== selectedLibraryCode);
   const coordinateItemsKey = coordinateItems
     .map(item => `${item.code}:${item.latitude}:${item.longitude}`)
     .join('|');
@@ -272,9 +276,8 @@ function LibrarySearchResultMap({
       return;
     }
 
-    if (suppressedPanCodeRef.current === currentSelectedCoordinateCode) {
+    if (suppressedPanCodeRef.current === currentSelectedCoordinateCode && isImplicitCoordinateSelection) {
       suppressedPanCodeRef.current = null;
-      previousPannedLibraryCodeRef.current = currentSelectedCoordinateCode;
 
       return;
     }
@@ -283,12 +286,15 @@ function LibrarySearchResultMap({
       return;
     }
 
+    map.setLevel(DEFAULT_SELECTED_LIBRARY_LEVEL);
     map.panTo(new kakaoMaps.LatLng(currentSelectedCoordinateLatitude, currentSelectedCoordinateLongitude));
     previousPannedLibraryCodeRef.current = currentSelectedCoordinateCode;
   }, [
     currentSelectedCoordinateCode,
     currentSelectedCoordinateLatitude,
     currentSelectedCoordinateLongitude,
+    isImplicitCoordinateSelection,
+    selectedLibraryCode,
     status,
   ]);
 
@@ -321,7 +327,7 @@ function LibrarySearchResultMap({
 
   return (
     <>
-      <div className="absolute inset-0" data-slot="kakao-map-canvas" ref={containerRef} />
+      <div className="absolute inset-0 z-0" data-slot="kakao-map-canvas" ref={containerRef} />
       {status === 'loading' ? <LibrarySearchResultMapPlaceholderBody /> : <LibrarySearchResultMapControls />}
     </>
   );

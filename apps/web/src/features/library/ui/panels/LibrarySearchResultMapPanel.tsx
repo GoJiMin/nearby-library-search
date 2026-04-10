@@ -35,7 +35,7 @@ function LibrarySearchResultMapPlaceholderBody() {
 
 function LibrarySearchResultMapControls() {
   return (
-    <div className="absolute right-6 bottom-6 flex flex-col gap-2.5">
+    <div className="pointer-events-none absolute right-6 bottom-6 z-10 flex flex-col gap-2.5">
       <LibrarySearchResultMapControl ariaLabel="지도 확대" icon={Plus} />
       <LibrarySearchResultMapControl ariaLabel="지도 축소" icon={Minus} />
       <LibrarySearchResultMapControl ariaLabel="선택 위치로 이동" icon={LocateFixed} />
@@ -53,7 +53,7 @@ function LibrarySearchResultMapControl({
   return (
     <button
       aria-label={ariaLabel}
-      className="shadow-card bg-surface-strong text-text-muted inline-flex h-11 w-11 items-center justify-center rounded-full"
+      className="shadow-card bg-surface-strong text-text-muted pointer-events-auto inline-flex h-11 w-11 items-center justify-center rounded-full"
       type="button"
     >
       <LucideIcon className="h-5 w-5" icon={icon} strokeWidth={2.1} />
