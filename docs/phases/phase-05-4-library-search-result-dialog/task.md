@@ -47,12 +47,12 @@
 
 ## 7. 상태 기반 페이지네이션 구현
 
-- [ ] `LibrarySearchParams.page`를 source of truth로 사용하는 상태 기반 페이지네이션을 구현한다.
-- [ ] `pageSize=10` 고정 규칙을 화면과 helper에서 함께 잠근다.
-- [ ] page 변경 시 `isbn`, `region`, `detailRegion`은 유지하고 `page`만 바뀌도록 연결한다.
-- [ ] `totalPages > 1`일 때만 좌측 리스트 하단에 pagination을 렌더링한다.
-- [ ] 페이지 전환 후 새 페이지 첫 번째 도서관이 기본 선택되는지 검증한다.
-- [ ] page change helper를 분리했다면 focused unit test를 추가한다.
+- [x] `LibrarySearchParams.page`를 source of truth로 사용하는 상태 기반 페이지네이션을 구현한다.
+- [x] `pageSize=10` 고정 규칙을 화면과 helper에서 함께 잠근다.
+- [x] page 변경 시 `isbn`, `region`, `detailRegion`은 유지하고 `page`만 바뀌도록 연결한다.
+- [x] `totalPages > 1`일 때만 좌측 리스트 하단에 pagination을 렌더링한다.
+- [x] 페이지 전환 후 새 페이지 첫 번째 도서관이 기본 선택되는지 검증한다.
+- [x] page change helper를 분리했다면 focused unit test를 추가한다.
 
 ## 8. Kakao Map SDK loader와 map panel baseline 구현
 

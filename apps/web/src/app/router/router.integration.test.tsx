@@ -24,7 +24,8 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
   mockUseGetSearchBooks: vi.fn(),
 }));
 
-const {mockLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(() => ({
+const {mockLibrarySearchResponse, mockSecondPageLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(
+  () => ({
   mockLibrarySearchResponse: {
     detailRegion: '11140',
     isbn: '9788954682155',
@@ -60,8 +61,44 @@ const {mockLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(() => 
     resultCount: 2,
     totalCount: 12,
   },
+  mockSecondPageLibrarySearchResponse: {
+    detailRegion: '11140',
+    isbn: '9788954682155',
+    items: [
+      {
+        address: '서울특별시 마포구 독막로 11',
+        closedDays: '매주 일요일',
+        code: 'LIB0011',
+        fax: null,
+        homepage: null,
+        latitude: 37.5491,
+        longitude: 126.9132,
+        name: '상수문화도서관',
+        operatingTime: '08:00 - 18:00',
+        phone: '02-7777-1111',
+      },
+      {
+        address: '서울특별시 마포구 성지길 12',
+        closedDays: '명절 휴관',
+        code: 'LIB0012',
+        fax: null,
+        homepage: 'https://seongsan.example.com',
+        latitude: 37.5631,
+        longitude: 126.9084,
+        name: '성산열람실',
+        operatingTime: '11:00 - 21:00',
+        phone: '02-8888-2222',
+      },
+    ],
+    page: 2,
+    pageSize: 10,
+    region: '11',
+    resultCount: 2,
+    totalCount: 12,
+  },
   mockUseGetSearchLibraries: vi.fn(),
-}));
+}),
+);
 
 vi.mock('@/entities/book', async importOriginal => {
   const actual = await importOriginal<typeof import('@/entities/book')>();
@@ -85,7 +122,9 @@ beforeEach(() => {
   mockUseGetSearchBooks.mockReset();
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
   mockUseGetSearchLibraries.mockReset();
-  mockUseGetSearchLibraries.mockReturnValue(mockLibrarySearchResponse);
+  mockUseGetSearchLibraries.mockImplementation(params =>
+    params.page === 2 ? mockSecondPageLibrarySearchResponse : mockLibrarySearchResponse,
+  );
 });
 
 function renderRouter(initialEntries: string[]) {
@@ -338,6 +377,38 @@ describe('app router integration', () => {
     });
 
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+  });
+
+  it('도서관 결과 페이지네이션을 바꾸면 새 페이지 첫 항목이 기본 선택되고 detail panel도 함께 갱신된다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    const libraryResultDialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+    const pagination = within(libraryResultDialog).getByRole('navigation', {
+      name: '도서관 검색 결과 페이지네이션',
+    });
+
+    expect(within(pagination).getByText('1')).toHaveAttribute('aria-current', 'page');
+
+    await user.click(within(pagination).getByRole('button', {name: '2페이지'}));
+
+    await waitFor(() => {
+      expect(within(pagination).getByText('2')).toHaveAttribute('aria-current', 'page');
+    });
+
+    const detailPanel = within(libraryResultDialog).getByLabelText('선택된 도서관 정보 패널');
+    const firstSecondPageRow = within(libraryResultDialog).getByRole('button', {name: /상수문화도서관/});
+    const secondSecondPageRow = within(libraryResultDialog).getByRole('button', {name: /성산열람실/});
+
+    expect(firstSecondPageRow).toHaveAttribute('aria-pressed', 'true');
+    expect(secondSecondPageRow).toHaveAttribute('aria-pressed', 'false');
+    expect(within(detailPanel).getByRole('heading', {name: '상수문화도서관'})).toBeInTheDocument();
+    expect(within(detailPanel).getByText('서울특별시 마포구 독막로 11')).toBeInTheDocument();
   });
 
   it('library search가 비어 있으면 지역 다시 선택 CTA로 region dialog를 다시 연다', async () => {

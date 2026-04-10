@@ -42,6 +42,41 @@ const {mockLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(() => 
     resultCount: 2,
     totalCount: 12,
   },
+  mockSecondPageLibrarySearchResponse: {
+    detailRegion: '11140',
+    isbn: '9788954682155',
+    items: [
+      {
+        address: '서울특별시 마포구 독막로 11',
+        closedDays: '매주 일요일',
+        code: 'LIB0011',
+        fax: null,
+        homepage: null,
+        latitude: 37.5491,
+        longitude: 126.9132,
+        name: '상수문화도서관',
+        operatingTime: '08:00 - 18:00',
+        phone: '02-7777-1111',
+      },
+      {
+        address: '서울특별시 마포구 성지길 12',
+        closedDays: '명절 휴관',
+        code: 'LIB0012',
+        fax: null,
+        homepage: 'https://seongsan.example.com',
+        latitude: 37.5631,
+        longitude: 126.9084,
+        name: '성산열람실',
+        operatingTime: '11:00 - 21:00',
+        phone: '02-8888-2222',
+      },
+    ],
+    page: 2,
+    pageSize: 10,
+    region: '11',
+    resultCount: 2,
+    totalCount: 12,
+  },
   mockUseGetSearchLibraries: vi.fn(),
 }));
 
@@ -82,29 +117,33 @@ function renderLibrarySearchResultDialog() {
 }
 
 function renderLibrarySearchResultDialogWithProps({
+  onChangePage = vi.fn(),
   onOpenChange = vi.fn(),
   onSelectLibrary = vi.fn(),
+  params = {
+    detailRegion: '11140',
+    isbn: '9788954682155',
+    page: 1,
+    region: '11',
+  },
   selectedLibraryCode = null,
 }: {
+  onChangePage?: LibrarySearchResultDialogProps['onChangePage'];
   onOpenChange?: LibrarySearchResultDialogProps['onOpenChange'];
   onSelectLibrary?: LibrarySearchResultDialogProps['onSelectLibrary'];
+  params?: NonNullable<LibrarySearchResultDialogProps['params']>;
   selectedLibraryCode?: LibrarySearchResultDialogProps['selectedLibraryCode'];
 } = {}) {
   return render(
     <AppProvider>
       <LibrarySearchResultDialog
         onBackToRegionSelect={vi.fn()}
-        onChangePage={vi.fn()}
+        onChangePage={onChangePage}
         onCheckAvailability={vi.fn()}
         onOpenChange={onOpenChange}
         onSelectLibrary={onSelectLibrary}
         open
-        params={{
-          detailRegion: '11140',
-          isbn: '9788954682155',
-          page: 1,
-          region: '11',
-        }}
+        params={params}
         selectedBook={{
           author: '이민진',
           isbn13: '9788954682155',
@@ -142,6 +181,42 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('둘째 주 월요일')).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
     expect(within(detailPanel).getByText('02-1234-5678')).toBeInTheDocument();
+  });
+
+  it('totalPages가 2 이상이면 상태 기반 페이지네이션을 렌더링하고 현재 페이지를 표시한다', async () => {
+    renderLibrarySearchResultDialog();
+
+    const pagination = await screen.findByRole('navigation', {name: '도서관 검색 결과 페이지네이션'});
+
+    expect(within(pagination).getByText('1')).toHaveAttribute('aria-current', 'page');
+    expect(within(pagination).getByRole('button', {name: '2페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByRole('button', {name: '이전 페이지'})).toBeDisabled();
+    expect(within(pagination).getByRole('button', {name: '다음 페이지'})).not.toBeDisabled();
+  });
+
+  it('페이지 버튼을 누르면 onChangePage를 호출한다', async () => {
+    const user = userEvent.setup();
+    const onChangePage = vi.fn();
+
+    renderLibrarySearchResultDialogWithProps({onChangePage});
+
+    await user.click(await screen.findByRole('button', {name: '2페이지'}));
+
+    expect(onChangePage).toHaveBeenCalledWith(2);
+  });
+
+  it('totalPages가 1이면 페이지네이션을 렌더링하지 않는다', async () => {
+    mockUseGetSearchLibraries.mockReturnValue({
+      ...mockLibrarySearchResponse,
+      resultCount: 2,
+      totalCount: 2,
+    });
+
+    renderLibrarySearchResultDialog();
+
+    await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+
+    expect(screen.queryByRole('navigation', {name: '도서관 검색 결과 페이지네이션'})).not.toBeInTheDocument();
   });
 
   it('selectedLibraryCode가 없으면 첫 번째 도서관을 기본 선택하고 onSelectLibrary로 동기화한다', async () => {
