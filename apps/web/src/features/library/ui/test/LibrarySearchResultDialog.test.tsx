@@ -3,16 +3,23 @@ import userEvent from '@testing-library/user-event';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
 import {LibrarySearchResultDialog} from '@/features/library';
+import {KakaoMapSdkLoadError} from '@/shared/kakao-map';
 import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
 import {LibrarySearchResultDetailFooterCta} from '../panels/LibrarySearchResultDetailPanel';
 
 const {
+  mockAppConfig,
   mockKakaoMapConfig,
   mockLoadKakaoMapSdk,
   mockLibrarySearchResponse,
   mockSecondPageLibrarySearchResponse,
   mockUseGetSearchLibraries,
 } = vi.hoisted(() => ({
+  mockAppConfig: {
+    envName: 'development',
+    isDevelopment: true,
+    isProduction: false,
+  },
   mockKakaoMapConfig: {
     appKey: undefined as string | undefined,
     isEnabled: false,
@@ -105,6 +112,7 @@ vi.mock('@/shared/env', async importOriginal => {
 
   return {
     ...actual,
+    appConfig: mockAppConfig,
     kakaoMapConfig: mockKakaoMapConfig,
   };
 });
@@ -302,6 +310,7 @@ describe('LibrarySearchResultDialog', () => {
       return 1;
     });
     vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -375,20 +384,32 @@ describe('LibrarySearchResultDialog', () => {
     expect(
       within(mapPanel).getByText('카카오 지도 설정을 확인한 뒤 다시 시도해 주세요.'),
     ).toBeInTheDocument();
+    expect(within(mapPanel).getByText('개발 진단: disabled')).toBeInTheDocument();
     expect(mockLoadKakaoMapSdk).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   it('SDK loader가 실패하면 panel 내부 unavailable UI로 fallback한다', async () => {
     mockKakaoMapConfig.appKey = 'test-kakao-app-key';
     mockKakaoMapConfig.isEnabled = true;
-    mockLoadKakaoMapSdk.mockRejectedValue(new Error('sdk load failed'));
+    mockLoadKakaoMapSdk.mockRejectedValue(
+      new KakaoMapSdkLoadError('script-load-failed', 'Failed to load Kakao Map SDK script.'),
+    );
 
     renderLibrarySearchResultDialog();
 
     const mapPanel = await screen.findByLabelText('도서관 지도 패널');
 
     expect(await within(mapPanel).findByText('지도를 표시할 수 없어요')).toBeInTheDocument();
+    expect(within(mapPanel).getByText('개발 진단: script-load-failed')).toBeInTheDocument();
     expect(mockLoadKakaoMapSdk).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(
+      '[KakaoMap] SDK load failed.',
+      expect.objectContaining({
+        code: 'script-load-failed',
+        message: 'Failed to load Kakao Map SDK script.',
+      }),
+    );
   });
 
   it('SDK가 준비되면 실제 Kakao map baseline을 만들고 relayout을 호출한다', async () => {

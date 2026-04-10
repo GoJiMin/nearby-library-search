@@ -345,7 +345,7 @@ function LibrarySearchResultMapUnavailableBody({
             카카오 지도 설정을 확인한 뒤 다시 시도해 주세요.
           </Text>
           {diagnosticCode ? (
-            <Text className="mt-3 font-mono" size="xs" tone="muted">
+            <Text className="mt-3 font-mono text-xs leading-5" size="sm" tone="muted">
               개발 진단: {diagnosticCode}
             </Text>
           ) : null}
