@@ -1,7 +1,11 @@
 import {useEffect} from 'react';
 import {isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
-import {LibrarySearchResultDetailPlaceholder} from './panels/LibrarySearchResultDetailPanel';
+import {
+  LibrarySearchResultDetailBody,
+  LibrarySearchResultDetailFooterCta,
+  LibrarySearchResultDetailPanel,
+} from './panels/LibrarySearchResultDetailPanel';
 import {LibrarySearchResultListBody, LibrarySearchResultListPanel} from './panels/LibrarySearchResultListPanel';
 import {LibrarySearchResultMapPanel, LibrarySearchResultMapPlaceholderBody} from './panels/LibrarySearchResultMapPanel';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
@@ -57,7 +61,11 @@ function LibrarySearchResultContent({
         <LibrarySearchResultMapPanel>
           <LibrarySearchResultMapPlaceholderBody />
         </LibrarySearchResultMapPanel>
-        <LibrarySearchResultDetailPlaceholder onCheckAvailability={onCheckAvailability} />
+        <LibrarySearchResultDetailPanel
+          footer={<LibrarySearchResultDetailFooterCta onCheckAvailability={onCheckAvailability} />}
+        >
+          {currentSelectedLibrary ? <LibrarySearchResultDetailBody library={currentSelectedLibrary} /> : null}
+        </LibrarySearchResultDetailPanel>
       </div>
     </div>
   );
