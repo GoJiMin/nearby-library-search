@@ -20,6 +20,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
+    handleSelectLibrary,
     handleSelectBook,
     handleSubmitSearch,
     isLibraryResultDialogOpen,
@@ -54,7 +55,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         onChangePage={() => {}}
         onCheckAvailability={() => {}}
         onOpenChange={handleLibraryResultDialogOpenChange}
-        onSelectLibrary={() => {}}
+        onSelectLibrary={handleSelectLibrary}
         open={isLibraryResultDialogOpen}
         params={currentLibrarySearchParams}
         selectedBook={libraryResultBook}

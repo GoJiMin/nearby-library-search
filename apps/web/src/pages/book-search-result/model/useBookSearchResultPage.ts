@@ -84,6 +84,10 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     setRegionDialogBook(payload);
   }
 
+  function handleSelectLibrary(code: LibraryCode) {
+    setSelectedLibraryCode(code);
+  }
+
   function handleConfirmRegion(nextParams: LibrarySearchParams) {
     setLastRegionSelection({
       detailRegion: nextParams.detailRegion,
@@ -106,6 +110,7 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
+    handleSelectLibrary,
     handleSelectBook,
     handleSubmitSearch,
     isLibraryResultDialogOpen: currentLibrarySearchParams != null && libraryResultBook != null,

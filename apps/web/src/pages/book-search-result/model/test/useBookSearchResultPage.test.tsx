@@ -216,6 +216,25 @@ describe('useBookSearchResultPage', () => {
     });
   });
 
+  it('도서관을 선택하면 selectedLibraryCode를 저장한다', () => {
+    const navigate = vi.fn();
+    const {result} = renderHook(() =>
+      useBookSearchResultPage({
+        navigate,
+        params: {
+          page: 1,
+          title: '파친코',
+        },
+      }),
+    );
+
+    act(() => {
+      result.current.handleSelectLibrary('LIB0002');
+    });
+
+    expect(result.current.selectedLibraryCode).toBe('LIB0002');
+  });
+
   it('재검색 제출 시 /books route로 navigate한다', () => {
     const navigate = vi.fn();
     const {result} = renderHook(() =>
