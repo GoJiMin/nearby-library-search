@@ -1,7 +1,7 @@
 import {CalendarX2, Clock3, MapPin, Phone, Search} from 'lucide-react';
 import type {ReactNode} from 'react';
 import {Button, LucideIcon, Skeleton} from '@/shared/ui';
-import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
+import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
 
 const detailPlaceholderItems = [
   {icon: Clock3, label: '운영 시간', valueClassName: 'w-40'},

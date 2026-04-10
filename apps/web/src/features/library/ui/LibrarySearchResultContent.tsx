@@ -1,9 +1,8 @@
 import {isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
-import {LibrarySearchResultDesktopShell} from './LibrarySearchResultDesktopShell';
-import {LibrarySearchResultDetailPlaceholder} from './LibrarySearchResultDetailPanel';
-import {LibrarySearchResultListPanel, LibrarySearchResultListPlaceholderBody} from './LibrarySearchResultListPanel';
-import {LibrarySearchResultMapPanel, LibrarySearchResultMapPlaceholderBody} from './LibrarySearchResultMapPanel';
+import {LibrarySearchResultDetailPlaceholder} from './panels/LibrarySearchResultDetailPanel';
+import {LibrarySearchResultListPanel, LibrarySearchResultListPlaceholderBody} from './panels/LibrarySearchResultListPanel';
+import {LibrarySearchResultMapPanel, LibrarySearchResultMapPlaceholderBody} from './panels/LibrarySearchResultMapPanel';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
 
 type LibrarySearchResultContentProps = Pick<
@@ -31,19 +30,17 @@ function LibrarySearchResultContent({
   }
 
   return (
-    <LibrarySearchResultDesktopShell
-      detailPanel={<LibrarySearchResultDetailPlaceholder onCheckAvailability={onCheckAvailability} />}
-      listPanel={
-        <LibrarySearchResultListPanel summary={`총 ${response.totalCount}개의 도서관을 검색했어요.`}>
-          <LibrarySearchResultListPlaceholderBody itemCount={Math.max(1, Math.min(response.items.length, 5))} />
-        </LibrarySearchResultListPanel>
-      }
-      mapPanel={
+    <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[304px_minmax(0,1fr)]">
+      <LibrarySearchResultListPanel summary={`총 ${response.totalCount}개의 도서관을 검색했어요.`}>
+        <LibrarySearchResultListPlaceholderBody itemCount={Math.max(1, Math.min(response.items.length, 5))} />
+      </LibrarySearchResultListPanel>
+      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_220px]">
         <LibrarySearchResultMapPanel>
           <LibrarySearchResultMapPlaceholderBody />
         </LibrarySearchResultMapPanel>
-      }
-    />
+        <LibrarySearchResultDetailPlaceholder onCheckAvailability={onCheckAvailability} />
+      </div>
+    </div>
   );
 }
 
