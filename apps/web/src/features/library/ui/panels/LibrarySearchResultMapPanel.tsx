@@ -28,12 +28,18 @@ function LibrarySearchResultMapPlaceholderBody() {
         <Skeleton className="bg-accent h-12 w-12 rounded-full" />
         <Skeleton className="h-7 w-24 rounded-full bg-white/90" />
       </div>
-      <div className="absolute right-6 bottom-6 flex flex-col gap-2.5">
-        <LibrarySearchResultMapControl ariaLabel="지도 확대" icon={Plus} />
-        <LibrarySearchResultMapControl ariaLabel="지도 축소" icon={Minus} />
-        <LibrarySearchResultMapControl ariaLabel="선택 위치로 이동" icon={LocateFixed} />
-      </div>
+      <LibrarySearchResultMapControls />
     </>
+  );
+}
+
+function LibrarySearchResultMapControls() {
+  return (
+    <div className="absolute right-6 bottom-6 flex flex-col gap-2.5">
+      <LibrarySearchResultMapControl ariaLabel="지도 확대" icon={Plus} />
+      <LibrarySearchResultMapControl ariaLabel="지도 축소" icon={Minus} />
+      <LibrarySearchResultMapControl ariaLabel="선택 위치로 이동" icon={LocateFixed} />
+    </div>
   );
 }
 
@@ -55,5 +61,5 @@ function LibrarySearchResultMapControl({
   );
 }
 
-export {LibrarySearchResultMapPanel, LibrarySearchResultMapPlaceholderBody};
+export {LibrarySearchResultMapControls, LibrarySearchResultMapPanel, LibrarySearchResultMapPlaceholderBody};
 export type {LibrarySearchResultMapPanelProps};

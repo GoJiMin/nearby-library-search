@@ -8,7 +8,8 @@ import {
   LibrarySearchResultDetailPanel,
 } from './panels/LibrarySearchResultDetailPanel';
 import {LibrarySearchResultListBody, LibrarySearchResultListPanel} from './panels/LibrarySearchResultListPanel';
-import {LibrarySearchResultMapPanel, LibrarySearchResultMapPlaceholderBody} from './panels/LibrarySearchResultMapPanel';
+import {LibrarySearchResultMap} from './panels/LibrarySearchResultMap';
+import {LibrarySearchResultMapPanel} from './panels/LibrarySearchResultMapPanel';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
 
 type LibrarySearchResultContentProps = Pick<
@@ -78,7 +79,7 @@ function LibrarySearchResultContent({
       </LibrarySearchResultListPanel>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_220px]">
         <LibrarySearchResultMapPanel>
-          <LibrarySearchResultMapPlaceholderBody />
+          <LibrarySearchResultMap />
         </LibrarySearchResultMapPanel>
         <LibrarySearchResultDetailPanel
           footer={
