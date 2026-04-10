@@ -131,7 +131,10 @@ function createMockKakaoMaps() {
   const panTo = vi.fn();
   const setBounds = vi.fn();
   const setCenter = vi.fn();
-  const setLevel = vi.fn();
+  let currentLevel = 5;
+  const setLevel = vi.fn((nextLevel: number) => {
+    currentLevel = nextLevel;
+  });
   const markerRecords: Array<{
     marker: KakaoMapsMarker;
     options: KakaoMapsMarkerOptions;
@@ -140,6 +143,7 @@ function createMockKakaoMaps() {
   }> = [];
   const markerClickHandlers = new Map<KakaoMapsMarker, () => void>();
   const mapConstructor = vi.fn(function MockMap(this: KakaoMapsMap) {
+    this.getLevel = vi.fn(() => currentLevel);
     this.panTo = panTo;
     this.relayout = relayout;
     this.setBounds = setBounds;
@@ -525,6 +529,7 @@ describe('LibrarySearchResultDialog', () => {
   });
 
   it('리스트에서 좌표가 있는 도서관을 명시적으로 선택하면 확대와 함께 포커스하고 기존 marker를 재생성하지 않는다', async () => {
+    const user = userEvent.setup();
     const {kakaoMaps, markerRecords, panTo, setLevel} = createMockKakaoMaps();
 
     mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
@@ -532,7 +537,7 @@ describe('LibrarySearchResultDialog', () => {
     mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
-    const view = renderLibrarySearchResultDialogWithProps({
+    renderLibrarySearchResultDialogWithProps({
       params: {
         detailRegion: '11140',
         isbn: '9788954682155',
@@ -546,31 +551,7 @@ describe('LibrarySearchResultDialog', () => {
     });
 
     expect(panTo).not.toHaveBeenCalled();
-
-    view.rerender(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            page: 2,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode="LIB0012"
-        />
-      </AppProvider>,
-    );
+    await user.click(screen.getByRole('button', {name: /성산열람실/}));
 
     await waitFor(() => {
       expect(panTo).toHaveBeenCalledTimes(1);
@@ -580,49 +561,43 @@ describe('LibrarySearchResultDialog', () => {
   });
 
   it('기본 선택된 첫 번째 좌표 도서관도 명시적으로 다시 선택하면 확대와 함께 포커스한다', async () => {
+    const user = userEvent.setup();
     const {kakaoMaps, panTo, setLevel} = createMockKakaoMaps();
 
     mockKakaoMapConfig.appKey = 'test-kakao-app-key';
     mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
-    const view = renderLibrarySearchResultDialogWithProps();
+    renderLibrarySearchResultDialogWithProps();
 
     await waitFor(() => {
       expect(screen.getByRole('button', {name: /마포중앙도서관/})).toBeInTheDocument();
     });
 
     expect(panTo).not.toHaveBeenCalled();
-
-    view.rerender(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode="LIB0001"
-        />
-      </AppProvider>,
-    );
+    await user.click(screen.getByRole('button', {name: /마포중앙도서관/}));
 
     await waitFor(() => {
       expect(panTo).toHaveBeenCalledTimes(1);
       expect(setLevel).toHaveBeenCalledWith(3);
     });
+  });
+
+  it('지도 확대와 축소 버튼은 현재 level 기준으로 setLevel을 호출한다', async () => {
+    const user = userEvent.setup();
+    const {kakaoMaps, setLevel} = createMockKakaoMaps();
+
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialog();
+
+    await user.click(await screen.findByRole('button', {name: '지도 확대'}));
+    await user.click(screen.getByRole('button', {name: '지도 축소'}));
+
+    expect(setLevel).toHaveBeenNthCalledWith(1, 4);
+    expect(setLevel).toHaveBeenNthCalledWith(2, 5);
   });
 
   it('좌표가 없는 도서관을 선택하면 panTo하지 않고 목록과 상세 정보만 갱신한다', async () => {
