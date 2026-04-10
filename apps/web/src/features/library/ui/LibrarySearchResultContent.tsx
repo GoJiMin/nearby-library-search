@@ -1,6 +1,7 @@
 import {useEffect} from 'react';
-import {isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
+import {LIBRARY_SEARCH_PAGE_SIZE, isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
+import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
 import {
   LibrarySearchResultDetailBody,
   LibrarySearchResultDetailFooterCta,
@@ -12,13 +13,19 @@ import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmpty
 
 type LibrarySearchResultContentProps = Pick<
   LibrarySearchResultDialogProps,
-  'onBackToRegionSelect' | 'onCheckAvailability' | 'onOpenChange' | 'onSelectLibrary' | 'selectedLibraryCode'
+  | 'onBackToRegionSelect'
+  | 'onChangePage'
+  | 'onCheckAvailability'
+  | 'onOpenChange'
+  | 'onSelectLibrary'
+  | 'selectedLibraryCode'
 > & {
   params: NonNullable<LibrarySearchResultDialogProps['params']>;
 };
 
 function LibrarySearchResultContent({
   onBackToRegionSelect,
+  onChangePage,
   onCheckAvailability,
   onOpenChange,
   onSelectLibrary,
@@ -26,6 +33,9 @@ function LibrarySearchResultContent({
   selectedLibraryCode,
 }: LibrarySearchResultContentProps) {
   const response = useGetSearchLibraries(params);
+  const currentPage = response.page ?? params.page;
+  const pageSize = response.pageSize ?? LIBRARY_SEARCH_PAGE_SIZE;
+  const totalPages = Math.ceil(response.totalCount / pageSize);
   const fallbackSelectedLibrary = response.items[0] ?? null;
   const currentSelectedLibrary =
     response.items.find(item => item.code === selectedLibraryCode) ?? fallbackSelectedLibrary;
@@ -50,7 +60,16 @@ function LibrarySearchResultContent({
 
   return (
     <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[304px_minmax(0,1fr)]">
-      <LibrarySearchResultListPanel summary={`총 ${response.totalCount}개의 도서관을 검색했어요.`}>
+      <LibrarySearchResultListPanel
+        footer={
+          <LibrarySearchResultPagination
+            currentPage={currentPage}
+            onChangePage={onChangePage}
+            totalPages={totalPages}
+          />
+        }
+        summary={`총 ${response.totalCount}개의 도서관을 검색했어요.`}
+      >
         <LibrarySearchResultListBody
           items={response.items}
           onSelectLibrary={onSelectLibrary}

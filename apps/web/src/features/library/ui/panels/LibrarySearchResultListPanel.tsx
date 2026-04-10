@@ -4,6 +4,7 @@ import {Heading, Skeleton, Text} from '@/shared/ui';
 
 type LibrarySearchResultListPanelProps = {
   children: ReactNode;
+  footer?: ReactNode;
   summary: string;
 };
 
@@ -15,7 +16,7 @@ const resultCardSkeletonWidths = [
   {address: 'w-40', meta: 'w-20', title: 'w-28'},
 ] as const;
 
-function LibrarySearchResultListPanel({children, summary}: LibrarySearchResultListPanelProps) {
+function LibrarySearchResultListPanel({children, footer, summary}: LibrarySearchResultListPanelProps) {
   return (
     <aside
       aria-label="검색 결과 목록 패널"
@@ -30,6 +31,7 @@ function LibrarySearchResultListPanel({children, summary}: LibrarySearchResultLi
         </Text>
       </div>
       {children}
+      {footer ? <div className="px-4 pb-6">{footer}</div> : null}
     </aside>
   );
 }

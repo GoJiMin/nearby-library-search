@@ -9,6 +9,7 @@ import {LibrarySearchResultLoadingContent} from './states/LibrarySearchResultLoa
 
 function LibrarySearchResultDialog({
   onBackToRegionSelect,
+  onChangePage,
   onCheckAvailability,
   onOpenChange,
   onSelectLibrary,
@@ -52,6 +53,7 @@ function LibrarySearchResultDialog({
           <Suspense fallback={<LibrarySearchResultLoadingContent onCheckAvailability={onCheckAvailability} />}>
             <LibrarySearchResultContent
               onBackToRegionSelect={onBackToRegionSelect}
+              onChangePage={onChangePage}
               onCheckAvailability={onCheckAvailability}
               onOpenChange={onOpenChange}
               onSelectLibrary={onSelectLibrary}
