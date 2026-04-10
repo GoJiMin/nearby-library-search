@@ -57,6 +57,8 @@ function LibrarySearchResultMap({
   const currentSelectedCoordinateLibrary =
     currentSelectedLibrary && hasLibraryCoordinates(currentSelectedLibrary) ? currentSelectedLibrary : null;
   const currentSelectedCoordinateCode = currentSelectedCoordinateLibrary?.code ?? null;
+  const currentSelectedCoordinateLatitude = currentSelectedCoordinateLibrary?.latitude ?? null;
+  const currentSelectedCoordinateLongitude = currentSelectedCoordinateLibrary?.longitude ?? null;
   const coordinateItemsKey = coordinateItems
     .map(item => `${item.code}:${item.latitude}:${item.longitude}`)
     .join('|');
@@ -143,7 +145,7 @@ function LibrarySearchResultMap({
 
       const marker = new kakaoMaps.Marker({
         image: getMarkerImage({
-          isSelected: item.code === currentSelectedCoordinateCode,
+          isSelected: false,
           kakaoMaps,
           markerImageCache: markerImageCacheRef.current,
         }),
@@ -151,6 +153,10 @@ function LibrarySearchResultMap({
         position: new kakaoMaps.LatLng(item.latitude, item.longitude),
       });
       const clickHandler = () => {
+        if (selectedMarkerCodeRef.current === item.code) {
+          return;
+        }
+
         onSelectLibraryRef.current(item.code);
       };
 
@@ -161,7 +167,7 @@ function LibrarySearchResultMap({
         signature: createMarkerSignature(item),
       });
     });
-  }, [coordinateItems, coordinateItemsKey, currentSelectedCoordinateCode, status]);
+  }, [coordinateItems, coordinateItemsKey, status]);
 
   useEffect(() => {
     if (status !== 'ready') {
@@ -240,26 +246,37 @@ function LibrarySearchResultMap({
       selectedMarkerCodeRef,
     });
 
-    if (kakaoMaps == null || map == null || currentSelectedCoordinateLibrary == null) {
+    if (
+      kakaoMaps == null ||
+      map == null ||
+      currentSelectedCoordinateCode == null ||
+      currentSelectedCoordinateLatitude == null ||
+      currentSelectedCoordinateLongitude == null
+    ) {
       previousPannedLibraryCodeRef.current = null;
 
       return;
     }
 
-    if (suppressedPanCodeRef.current === currentSelectedCoordinateLibrary.code) {
+    if (suppressedPanCodeRef.current === currentSelectedCoordinateCode) {
       suppressedPanCodeRef.current = null;
-      previousPannedLibraryCodeRef.current = currentSelectedCoordinateLibrary.code;
+      previousPannedLibraryCodeRef.current = currentSelectedCoordinateCode;
 
       return;
     }
 
-    if (previousPannedLibraryCodeRef.current === currentSelectedCoordinateLibrary.code) {
+    if (previousPannedLibraryCodeRef.current === currentSelectedCoordinateCode) {
       return;
     }
 
-    map.panTo(new kakaoMaps.LatLng(currentSelectedCoordinateLibrary.latitude, currentSelectedCoordinateLibrary.longitude));
-    previousPannedLibraryCodeRef.current = currentSelectedCoordinateLibrary.code;
-  }, [currentSelectedCoordinateCode, currentSelectedCoordinateLibrary, status]);
+    map.panTo(new kakaoMaps.LatLng(currentSelectedCoordinateLatitude, currentSelectedCoordinateLongitude));
+    previousPannedLibraryCodeRef.current = currentSelectedCoordinateCode;
+  }, [
+    currentSelectedCoordinateCode,
+    currentSelectedCoordinateLatitude,
+    currentSelectedCoordinateLongitude,
+    status,
+  ]);
 
   useEffect(() => {
     const markerRegistry = markerRegistryRef.current;
