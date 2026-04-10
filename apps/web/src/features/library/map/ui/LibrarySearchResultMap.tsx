@@ -7,13 +7,11 @@ import {
   LibrarySearchResultMapPlaceholderBody,
   LibrarySearchResultMapUnavailableBody,
 } from './LibrarySearchResultMapFallback';
-import {
-  createCoordinateItemsKey,
-} from './librarySearchResultMap.viewport';
-import {useKakaoMapInstance} from './useKakaoMapInstance';
-import {type LibrarySearchCoordinateItem} from './librarySearchResultMap.marker';
-import {useLibraryMapMarkers} from './useLibraryMapMarkers';
-import {useLibraryMapViewport} from './useLibraryMapViewport';
+import {type LibrarySearchCoordinateItem} from '../lib/librarySearchResultMap.marker';
+import {createCoordinateItemsKey} from '../lib/librarySearchResultMap.viewport';
+import {useKakaoMapInstance} from '../model/useKakaoMapInstance';
+import {useLibraryMapMarkers} from '../model/useLibraryMapMarkers';
+import {useLibraryMapViewport} from '../model/useLibraryMapViewport';
 
 type LibrarySearchResultMapProps = {
   focusRequest: {code: LibraryCode; requestId: number} | null;

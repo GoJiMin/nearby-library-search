@@ -1,12 +1,12 @@
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {useEffect, useRef} from 'react';
-import type {LibrarySearchCoordinateItem} from './librarySearchResultMap.marker';
+import type {LibrarySearchCoordinateItem} from '../lib/librarySearchResultMap.marker';
 import {
   MAX_KAKAO_MAP_LEVEL,
   MIN_KAKAO_MAP_LEVEL,
   applyInitialMapViewport,
   focusMapOnCoordinateItem,
-} from './librarySearchResultMap.viewport';
+} from '../lib/librarySearchResultMap.viewport';
 
 function useLibraryMapViewport({
   coordinateItems,

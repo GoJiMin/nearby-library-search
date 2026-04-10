@@ -7,8 +7,8 @@ import {
   type LibrarySearchCoordinateItem,
   type MarkerImageCache,
   type MarkerRegistryEntry,
-} from './librarySearchResultMap.marker';
-import {focusMapOnLibrary} from './librarySearchResultMap.viewport';
+} from '../lib/librarySearchResultMap.marker';
+import {focusMapOnLibrary} from '../lib/librarySearchResultMap.viewport';
 
 function useLibraryMapMarkers({
   coordinateItems,

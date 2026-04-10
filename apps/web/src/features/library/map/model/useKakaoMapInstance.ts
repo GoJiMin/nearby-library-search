@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {appConfig, kakaoMapConfig} from '@/shared/env';
 import {KakaoMapSdkLoadError, type KakaoMapSdkLoadErrorCode, loadKakaoMapSdk} from '@/shared/kakao-map';
-import {DEFAULT_KAKAO_MAP_CENTER, DEFAULT_KAKAO_MAP_LEVEL} from './librarySearchResultMap.viewport';
+import {DEFAULT_KAKAO_MAP_CENTER, DEFAULT_KAKAO_MAP_LEVEL} from '../lib/librarySearchResultMap.viewport';
 
 type LibrarySearchResultMapStatus = 'disabled' | 'error' | 'loading' | 'ready';
 

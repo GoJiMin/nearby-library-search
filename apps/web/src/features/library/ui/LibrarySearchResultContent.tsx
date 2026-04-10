@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {LIBRARY_SEARCH_PAGE_SIZE, isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
-import {LibrarySearchResultMap} from '../map/LibrarySearchResultMap';
+import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
 import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
 import {
   LibrarySearchResultDetailBody,

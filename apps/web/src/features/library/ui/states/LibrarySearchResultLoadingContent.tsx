@@ -1,5 +1,5 @@
 import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
-import {LibrarySearchResultMapPlaceholderBody} from '../../map/LibrarySearchResultMapFallback';
+import {LibrarySearchResultMapPlaceholderBody} from '../../map/ui/LibrarySearchResultMapFallback';
 import {LibrarySearchResultDetailPlaceholder} from '../panels/LibrarySearchResultDetailPanel';
 import {LibrarySearchResultListPanel, LibrarySearchResultListPlaceholderBody} from '../panels/LibrarySearchResultListPanel';
 import {LibrarySearchResultMapPanel} from '../panels/LibrarySearchResultMapPanel';
