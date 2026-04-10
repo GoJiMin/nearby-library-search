@@ -32,10 +32,10 @@
 
 ## 5. 좌측 결과 리스트와 기본 선택 구현
 
-- [ ] 결과가 1건 이상이면 현재 페이지 첫 번째 도서관을 기본 선택 상태로 두는 규칙을 구현한다.
-- [ ] 좌측 리스트에 `name`, `address`, `operatingTime | closedDays` 요약을 렌더링한다.
-- [ ] active row 스타일과 keyboard/select interaction을 구현한다.
-- [ ] 좌표 없는 도서관도 리스트에는 그대로 남는지 integration test로 검증한다.
+- [x] 결과가 1건 이상이면 현재 페이지 첫 번째 도서관을 기본 선택 상태로 두는 규칙을 구현한다.
+- [x] 좌측 리스트에 `name`, `address`, `operatingTime | closedDays` 요약을 렌더링한다.
+- [x] active row 스타일과 keyboard/select interaction을 구현한다.
+- [x] 좌표 없는 도서관도 리스트에는 그대로 남는지 integration test로 검증한다.
 
 ## 6. 하단 detail panel과 availability CTA placeholder 구현
 
