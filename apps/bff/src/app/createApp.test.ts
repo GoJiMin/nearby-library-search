@@ -277,6 +277,73 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('개발용 fixture 모드에서 서울 전체 선택은 detailRegion 없이도 각 도서 fixture isbn에 대한 결과를 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/search?isbn=9791192389479&region=11&page=1',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      isbn: '9791192389479',
+      items: [
+        expect.objectContaining({
+          code: 'LIB0001',
+          name: '마포중앙도서관',
+        }),
+        expect.objectContaining({
+          code: 'LIB0002',
+          name: '합정열람실',
+        }),
+        expect.objectContaining({
+          code: 'LIB0003',
+          name: '서강책마루',
+        }),
+        expect.objectContaining({
+          code: 'LIB0004',
+          name: '토정정보도서관',
+        }),
+        expect.objectContaining({
+          code: 'LIB0005',
+          name: '성산서고',
+        }),
+        expect.objectContaining({
+          code: 'LIB0006',
+          name: '상암미디어도서관',
+        }),
+        expect.objectContaining({
+          code: 'LIB0007',
+          name: '망원책나루',
+        }),
+        expect.objectContaining({
+          code: 'LIB0008',
+          name: '연남문고',
+        }),
+        expect.objectContaining({
+          code: 'LIB0009',
+          name: '서교정보서재',
+        }),
+        expect.objectContaining({
+          code: 'LIB0010',
+          name: '홍대창작자료실',
+        }),
+      ],
+      page: 1,
+      pageSize: 10,
+      region: '11',
+      resultCount: 10,
+      totalCount: 12,
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
   it('개발용 fixture 모드에서 조건에 맞는 도서관이 없으면 빈 결과를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
