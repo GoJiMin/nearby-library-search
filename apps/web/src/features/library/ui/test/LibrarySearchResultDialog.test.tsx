@@ -4,7 +4,7 @@ import {describe, expect, it, vi} from 'vitest';
 import {LibrarySearchResultDialog} from '@/features/library';
 
 describe('LibrarySearchResultDialog', () => {
-  it('selectedBook과 params가 있으면 도서관 검색 결과 dialog shell을 렌더링한다', async () => {
+  it('selectedBook과 params가 있으면 도서관 검색 결과 3영역 shell을 렌더링한다', async () => {
     render(
       <LibrarySearchResultDialog
         onBackToRegionSelect={vi.fn()}
@@ -31,9 +31,11 @@ describe('LibrarySearchResultDialog', () => {
     const dialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
 
     expect(dialog).toBeInTheDocument();
-    expect(screen.getByText('파친코')).toBeInTheDocument();
-    expect(screen.getByText('현재 검색 조건')).toBeInTheDocument();
-    expect(screen.getByText('ISBN 9788954682155 / region 11 / detailRegion 11140 / page 1')).toBeInTheDocument();
+    expect(screen.getByRole('heading', {name: '검색 결과'})).toBeInTheDocument();
+    expect(screen.getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
+    expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
+    expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '닫기'})).toBeInTheDocument();
   });
 

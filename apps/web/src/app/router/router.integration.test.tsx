@@ -243,7 +243,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('opens the temporary library result dialog after confirming a region selection and closes it independently', async () => {
+  it('opens the library result dialog after confirming a region selection and closes it independently', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -256,9 +256,11 @@ describe('app router integration', () => {
 
     expect(libraryResultDialog).toBeInTheDocument();
     expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
-    expect(within(libraryResultDialog).getByText('현재 검색 조건')).toBeInTheDocument();
-    expect(within(libraryResultDialog).getByText('ISBN 9788954682155 / region 11 / page 1')).toBeInTheDocument();
-    expect(within(libraryResultDialog).getByText('파친코')).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByRole('heading', {name: '검색 결과'})).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByLabelText('도서관 지도 패널')).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByRole('button', {name: '대출 가능 여부 조회'})).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', {name: '닫기'}));
 

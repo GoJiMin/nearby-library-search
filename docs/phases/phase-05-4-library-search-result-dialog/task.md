@@ -16,10 +16,10 @@
 
 ## 3. dialog shell과 데스크톱 3영역 레이아웃 구현
 
-- [ ] `library_search_result_design_guide/screen.png` 기준의 desktop dialog shell을 구현한다.
-- [ ] 좌측 결과 리스트 패널, 우측 map 패널, 하단 detail panel의 큰 구조만 먼저 고정한다.
-- [ ] 우측 상단 닫기 버튼과 shell-level close interaction을 구현한다.
-- [ ] 이 단계에서는 실제 데이터 연결 전 placeholder skeleton layout만 사용한다.
+- [x] `library_search_result_design_guide/screen.png` 기준의 desktop dialog shell을 구현한다.
+- [x] 좌측 결과 리스트 패널, 우측 map 패널, 하단 detail panel의 큰 구조만 먼저 고정한다.
+- [x] 우측 상단 닫기 버튼과 shell-level close interaction을 구현한다.
+- [x] 이 단계에서는 실제 데이터 연결 전 placeholder skeleton layout만 사용한다.
 
 ## 4. 결과 조회와 loading / empty / error 상태 구현
 
