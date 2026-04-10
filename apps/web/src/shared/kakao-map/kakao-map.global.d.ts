@@ -33,6 +33,7 @@ declare global {
   };
 
   type KakaoMapsMap = {
+    getLevel(): number;
     panTo(latlng: KakaoMapsLatLng): void;
     relayout(): void;
     setBounds(bounds: KakaoMapsLatLngBounds): void;

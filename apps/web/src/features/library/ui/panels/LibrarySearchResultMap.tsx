@@ -8,6 +8,7 @@ import {LibrarySearchResultMapControls, LibrarySearchResultMapPlaceholderBody} f
 
 type LibrarySearchResultMapStatus = 'disabled' | 'error' | 'loading' | 'ready';
 type LibrarySearchResultMapProps = {
+  focusRequest: {code: LibraryCode; requestId: number} | null;
   items: LibrarySearchItem[];
   onSelectLibrary: (code: LibraryCode) => void;
   selectedLibraryCode: LibraryCode | null;
@@ -29,8 +30,11 @@ const DEFAULT_KAKAO_MAP_CENTER = Object.freeze({
 const DEFAULT_KAKAO_MAP_LEVEL = 8;
 const DEFAULT_SELECTED_LIBRARY_LEVEL = 3;
 const DEFAULT_SINGLE_LIBRARY_LEVEL = 4;
+const MIN_KAKAO_MAP_LEVEL = 1;
+const MAX_KAKAO_MAP_LEVEL = 14;
 
 function LibrarySearchResultMap({
+  focusRequest,
   items,
   onSelectLibrary,
   selectedLibraryCode,
@@ -50,10 +54,8 @@ function LibrarySearchResultMap({
   });
   const markerRegistryRef = useRef<Map<LibraryCode, MarkerRegistryEntry>>(new Map());
   const onSelectLibraryRef = useRef(onSelectLibrary);
-  const previousPannedLibraryCodeRef = useRef<LibraryCode | null>(null);
   const relayoutFrameRef = useRef<number | null>(null);
   const selectedMarkerCodeRef = useRef<LibraryCode | null>(null);
-  const suppressedPanCodeRef = useRef<LibraryCode | null>(null);
   const viewportItemsKeyRef = useRef('');
   const fallbackSelectedLibrary = items[0] ?? null;
   const currentSelectedLibrary = items.find(item => item.code === selectedLibraryCode) ?? fallbackSelectedLibrary;
@@ -61,11 +63,6 @@ function LibrarySearchResultMap({
   const currentSelectedCoordinateLibrary =
     currentSelectedLibrary && hasLibraryCoordinates(currentSelectedLibrary) ? currentSelectedLibrary : null;
   const currentSelectedCoordinateCode = currentSelectedCoordinateLibrary?.code ?? null;
-  const currentSelectedCoordinateLatitude = currentSelectedCoordinateLibrary?.latitude ?? null;
-  const currentSelectedCoordinateLongitude = currentSelectedCoordinateLibrary?.longitude ?? null;
-  const isImplicitCoordinateSelection =
-    currentSelectedCoordinateCode != null &&
-    (selectedLibraryCode == null || currentSelectedLibrary?.code !== selectedLibraryCode);
   const coordinateItemsKey = coordinateItems
     .map(item => `${item.code}:${item.latitude}:${item.longitude}`)
     .join('|');
@@ -171,10 +168,12 @@ function LibrarySearchResultMap({
         position: new kakaoMaps.LatLng(item.latitude, item.longitude),
       });
       const clickHandler = () => {
-        if (selectedMarkerCodeRef.current === item.code) {
-          return;
-        }
-
+        focusMapOnLibrary({
+          kakaoMaps,
+          latitude: item.latitude,
+          longitude: item.longitude,
+          map,
+        });
         onSelectLibraryRef.current(item.code);
       };
 
@@ -203,7 +202,6 @@ function LibrarySearchResultMap({
         nextSelectedCode: null,
         selectedMarkerCodeRef,
       });
-      previousPannedLibraryCodeRef.current = null;
       viewportItemsKeyRef.current = '';
 
       return;
@@ -213,11 +211,6 @@ function LibrarySearchResultMap({
       return;
     }
 
-    suppressedPanCodeRef.current =
-      selectedLibraryCode == null || currentSelectedLibrary?.code !== selectedLibraryCode
-        ? currentSelectedCoordinateCode
-        : null;
-    previousPannedLibraryCodeRef.current = null;
     viewportItemsKeyRef.current = coordinateItemsKey;
 
     if (coordinateItems.length === 1) {
@@ -243,8 +236,6 @@ function LibrarySearchResultMap({
     coordinateItems,
     coordinateItemsKey,
     currentSelectedCoordinateCode,
-    currentSelectedLibrary?.code,
-    selectedLibraryCode,
     status,
   ]);
 
@@ -254,7 +245,6 @@ function LibrarySearchResultMap({
     }
 
     const kakaoMaps = kakaoMapsRef.current;
-    const map = mapRef.current;
 
     applySelectedMarker({
       kakaoMaps,
@@ -263,40 +253,28 @@ function LibrarySearchResultMap({
       nextSelectedCode: currentSelectedCoordinateCode,
       selectedMarkerCodeRef,
     });
+  }, [currentSelectedCoordinateCode, status]);
 
-    if (
-      kakaoMaps == null ||
-      map == null ||
-      currentSelectedCoordinateCode == null ||
-      currentSelectedCoordinateLatitude == null ||
-      currentSelectedCoordinateLongitude == null
-    ) {
-      previousPannedLibraryCodeRef.current = null;
-
+  useEffect(() => {
+    if (status !== 'ready' || focusRequest == null) {
       return;
     }
 
-    if (suppressedPanCodeRef.current === currentSelectedCoordinateCode && isImplicitCoordinateSelection) {
-      suppressedPanCodeRef.current = null;
+    const kakaoMaps = kakaoMapsRef.current;
+    const map = mapRef.current;
+    const targetLibrary = coordinateItems.find(item => item.code === focusRequest.code);
 
+    if (kakaoMaps == null || map == null || targetLibrary == null) {
       return;
     }
 
-    if (previousPannedLibraryCodeRef.current === currentSelectedCoordinateCode) {
-      return;
-    }
-
-    map.setLevel(DEFAULT_SELECTED_LIBRARY_LEVEL);
-    map.panTo(new kakaoMaps.LatLng(currentSelectedCoordinateLatitude, currentSelectedCoordinateLongitude));
-    previousPannedLibraryCodeRef.current = currentSelectedCoordinateCode;
-  }, [
-    currentSelectedCoordinateCode,
-    currentSelectedCoordinateLatitude,
-    currentSelectedCoordinateLongitude,
-    isImplicitCoordinateSelection,
-    selectedLibraryCode,
-    status,
-  ]);
+    focusMapOnLibrary({
+      kakaoMaps,
+      latitude: targetLibrary.latitude,
+      longitude: targetLibrary.longitude,
+      map,
+    });
+  }, [coordinateItems, focusRequest, status]);
 
   useEffect(() => {
     const markerRegistry = markerRegistryRef.current;
@@ -328,7 +306,46 @@ function LibrarySearchResultMap({
   return (
     <>
       <div className="absolute inset-0 z-0" data-slot="kakao-map-canvas" ref={containerRef} />
-      {status === 'loading' ? <LibrarySearchResultMapPlaceholderBody /> : <LibrarySearchResultMapControls />}
+      {status === 'loading' ? (
+        <LibrarySearchResultMapPlaceholderBody />
+      ) : (
+        <LibrarySearchResultMapControls
+          isLocateDisabled={currentSelectedCoordinateLibrary == null}
+          onLocate={() => {
+            const kakaoMaps = kakaoMapsRef.current;
+            const map = mapRef.current;
+
+            if (kakaoMaps == null || map == null || currentSelectedCoordinateLibrary == null) {
+              return;
+            }
+
+            focusMapOnLibrary({
+              kakaoMaps,
+              latitude: currentSelectedCoordinateLibrary.latitude,
+              longitude: currentSelectedCoordinateLibrary.longitude,
+              map,
+            });
+          }}
+          onZoomIn={() => {
+            const map = mapRef.current;
+
+            if (map == null) {
+              return;
+            }
+
+            map.setLevel(Math.max(MIN_KAKAO_MAP_LEVEL, map.getLevel() - 1));
+          }}
+          onZoomOut={() => {
+            const map = mapRef.current;
+
+            if (map == null) {
+              return;
+            }
+
+            map.setLevel(Math.min(MAX_KAKAO_MAP_LEVEL, map.getLevel() + 1));
+          }}
+        />
+      )}
     </>
   );
 }
@@ -383,6 +400,21 @@ function LibrarySearchResultMapNoCoordinateBody() {
 
 function createMarkerSignature(item: LibrarySearchItem & {latitude: number; longitude: number}) {
   return `${item.code}:${item.latitude}:${item.longitude}`;
+}
+
+function focusMapOnLibrary({
+  kakaoMaps,
+  latitude,
+  longitude,
+  map,
+}: {
+  kakaoMaps: KakaoMapsNamespace;
+  latitude: number;
+  longitude: number;
+  map: KakaoMapsMap;
+}) {
+  map.setLevel(DEFAULT_SELECTED_LIBRARY_LEVEL);
+  map.panTo(new kakaoMaps.LatLng(latitude, longitude));
 }
 
 function applySelectedMarker({

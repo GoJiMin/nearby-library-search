@@ -1,4 +1,5 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
+import type {LibraryCode} from '@nearby-library-search/contracts';
 import {LIBRARY_SEARCH_PAGE_SIZE, isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
 import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
@@ -33,6 +34,7 @@ function LibrarySearchResultContent({
   params,
   selectedLibraryCode,
 }: LibrarySearchResultContentProps) {
+  const [mapFocusRequest, setMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
   const response = useGetSearchLibraries(params);
   const currentPage = response.page ?? params.page;
   const pageSize = response.pageSize ?? LIBRARY_SEARCH_PAGE_SIZE;
@@ -49,6 +51,14 @@ function LibrarySearchResultContent({
 
     onSelectLibrary(resolvedSelectedLibraryCode);
   }, [onSelectLibrary, resolvedSelectedLibraryCode, selectedLibraryCode]);
+
+  function handleSelectLibraryFromList(code: LibraryCode) {
+    onSelectLibrary(code);
+    setMapFocusRequest(previous => ({
+      code,
+      requestId: (previous?.requestId ?? 0) + 1,
+    }));
+  }
 
   if (isEmptyLibrarySearchResult(response)) {
     return (
@@ -73,13 +83,15 @@ function LibrarySearchResultContent({
       >
         <LibrarySearchResultListBody
           items={response.items}
-          onSelectLibrary={onSelectLibrary}
+          onSelectLibrary={handleSelectLibraryFromList}
           selectedLibraryCode={resolvedSelectedLibraryCode}
         />
       </LibrarySearchResultListPanel>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_220px]">
         <LibrarySearchResultMapPanel>
+          {/* Map focus uses explicit list/marker interactions; default selection keeps the full bounds view. */}
           <LibrarySearchResultMap
+            focusRequest={mapFocusRequest}
             items={response.items}
             onSelectLibrary={onSelectLibrary}
             selectedLibraryCode={selectedLibraryCode}
