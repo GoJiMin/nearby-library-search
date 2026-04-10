@@ -56,11 +56,11 @@
 
 ## 8. Kakao Map SDK loader와 map panel baseline 구현
 
-- [ ] `@/shared/env`의 `kakaoMapConfig`를 사용해 Kakao Maps JS SDK를 지연 로드하는 helper를 구현한다.
-- [ ] `autoload=false` + `kakao.maps.load(...)` 패턴과 dedupe 규칙을 잠근다.
-- [ ] SDK enabled 상태에서는 map instance를 만들고, disabled 상태에서는 map unavailable placeholder를 렌더링한다.
-- [ ] dialog open 이후 `relayout()`이 필요한 구조를 반영한다.
-- [ ] SDK loader와 unavailable fallback을 focused unit/integration test로 검증한다.
+- [x] `@/shared/env`의 `kakaoMapConfig`를 사용해 Kakao Maps JS SDK를 지연 로드하는 helper를 구현한다.
+- [x] `autoload=false` + `kakao.maps.load(...)` 패턴과 dedupe 규칙을 잠근다.
+- [x] SDK enabled 상태에서는 map instance를 만들고, disabled 상태에서는 map unavailable placeholder를 렌더링한다.
+- [x] dialog open 이후 `relayout()`이 필요한 구조를 반영한다.
+- [x] SDK loader와 unavailable fallback을 focused unit/integration test로 검증한다.
 
 ## 9. marker 렌더링과 list / map / detail 선택 동기화 구현
 
