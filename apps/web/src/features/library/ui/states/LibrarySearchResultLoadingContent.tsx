@@ -1,7 +1,8 @@
 import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
+import {LibrarySearchResultMapPlaceholderBody} from '../../map/LibrarySearchResultMapFallback';
 import {LibrarySearchResultDetailPlaceholder} from '../panels/LibrarySearchResultDetailPanel';
 import {LibrarySearchResultListPanel, LibrarySearchResultListPlaceholderBody} from '../panels/LibrarySearchResultListPanel';
-import {LibrarySearchResultMapPanel, LibrarySearchResultMapPlaceholderBody} from '../panels/LibrarySearchResultMapPanel';
+import {LibrarySearchResultMapPanel} from '../panels/LibrarySearchResultMapPanel';
 
 function LibrarySearchResultLoadingContent({
   onCheckAvailability,
