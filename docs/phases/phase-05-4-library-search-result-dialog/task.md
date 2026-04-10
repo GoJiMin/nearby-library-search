@@ -2,17 +2,17 @@
 
 ## 1. `/books` library result orchestration baseline 정리
 
-- [ ] `pages/book-search-result`가 region confirm 이후 library result dialog open state를 소유하도록 정리한다.
-- [ ] page가 `currentLibrarySearchParams`, `selectedLibraryCode`를 소유하도록 추가한다.
-- [ ] region confirm 시 `page=1`로 초기화된 `LibrarySearchParams`를 저장하고 region dialog를 닫은 뒤 library result dialog를 연다.
-- [ ] dialog close 시 `/books` 결과 화면은 유지되고 library dialog state만 종료되는지 route/page integration test로 검증한다.
+- [x] `pages/book-search-result`가 region confirm 이후 library result dialog open state를 소유하도록 정리한다.
+- [x] page가 `currentLibrarySearchParams`, `selectedLibraryCode`를 소유하도록 추가한다.
+- [x] region confirm 시 `page=1`로 초기화된 `LibrarySearchParams`를 저장하고 region dialog를 닫은 뒤 library result dialog를 연다.
+- [x] dialog close 시 `/books` 결과 화면은 유지되고 library dialog state만 종료되는지 route/page integration test로 검증한다.
 
 ## 2. `features/library` 공개 API와 최소 골격 구성
 
-- [ ] `features/library`에 `LibrarySearchResultDialog` public feature를 추가한다.
-- [ ] `features/library/index.ts`에서 dialog 공개 API를 노출한다.
-- [ ] dialog 입력 계약을 `open`, `params`, `selectedBook`, `selectedLibraryCode`, `onOpenChange`, `onBackToRegionSelect`, `onChangePage`, `onSelectLibrary`, `onCheckAvailability`로 고정한다.
-- [ ] 기본 integration test 파일을 추가한다.
+- [x] `features/library`에 `LibrarySearchResultDialog` public feature를 추가한다.
+- [x] `features/library/index.ts`에서 dialog 공개 API를 노출한다.
+- [x] dialog 입력 계약을 `open`, `params`, `selectedBook`, `selectedLibraryCode`, `onOpenChange`, `onBackToRegionSelect`, `onChangePage`, `onSelectLibrary`, `onCheckAvailability`로 고정한다.
+- [x] 기본 integration test 파일을 추가한다.
 
 ## 3. dialog shell과 데스크톱 3영역 레이아웃 구현
 

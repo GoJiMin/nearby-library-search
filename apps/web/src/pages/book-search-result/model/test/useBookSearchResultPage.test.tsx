@@ -109,6 +109,62 @@ describe('useBookSearchResultPage', () => {
     });
     expect(result.current.selectedBook).toBeNull();
     expect(result.current.isRegionDialogOpen).toBe(false);
+    expect(result.current.libraryResultBook).toEqual({
+      author: '이민진',
+      isbn13: '9788954682155',
+      title: '파친코',
+    });
+    expect(result.current.currentLibrarySearchParams).toEqual({
+      detailRegion: '11140',
+      isbn: '9788954682155',
+      page: 1,
+      region: '11',
+    });
+    expect(result.current.isLibraryResultDialogOpen).toBe(true);
+    expect(result.current.selectedLibraryCode).toBeNull();
+  });
+
+  it('library result dialog를 닫으면 library dialog 상태만 정리한다', () => {
+    const navigate = vi.fn();
+    const {result} = renderHook(() =>
+      useBookSearchResultPage({
+        navigate,
+        params: {
+          page: 1,
+          title: '파친코',
+        },
+      }),
+    );
+
+    act(() => {
+      result.current.handleSelectBook({
+        author: '이민진',
+        isbn13: '9788954682155',
+        title: '파친코',
+      });
+    });
+
+    act(() => {
+      result.current.handleConfirmRegion({
+        detailRegion: '11140',
+        isbn: '9788954682155',
+        page: 3,
+        region: '11',
+      });
+    });
+
+    act(() => {
+      result.current.handleLibraryResultDialogOpenChange(false);
+    });
+
+    expect(result.current.isLibraryResultDialogOpen).toBe(false);
+    expect(result.current.currentLibrarySearchParams).toBeNull();
+    expect(result.current.libraryResultBook).toBeNull();
+    expect(result.current.selectedLibraryCode).toBeNull();
+    expect(result.current.lastRegionSelection).toEqual({
+      detailRegion: '11140',
+      region: '11',
+    });
   });
 
   it('재검색 제출 시 /books route로 navigate한다', () => {

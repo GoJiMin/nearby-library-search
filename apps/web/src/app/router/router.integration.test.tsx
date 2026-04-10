@@ -200,8 +200,13 @@ describe('app router integration', () => {
     await user.click(screen.getByRole('button', {name: '마포구'}));
     await user.click(screen.getByRole('button', {name: '선택 완료'}));
 
+    expect(await screen.findByRole('dialog', {name: '도서관 검색 결과'})).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '닫기'}));
+
     await waitFor(() => {
-      expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+      expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
     });
 
     await user.click(libraryButtons[0]);
@@ -236,6 +241,32 @@ describe('app router integration', () => {
     expect(await screen.findByText('서울 > 마포구')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('opens the temporary library result dialog after confirming a region selection and closes it independently', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    const libraryResultDialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+
+    expect(libraryResultDialog).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+    expect(within(libraryResultDialog).getByText('현재 검색 조건')).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByText('ISBN 9788954682155 / region 11 / page 1')).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByText('파친코')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
   it('redirects the empty book result route to the home page', async () => {

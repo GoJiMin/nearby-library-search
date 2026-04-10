@@ -2,6 +2,7 @@ import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book';
+import {LibrarySearchResultDialog} from '@/features/library';
 import {RegionSelectDialog} from '@/features/region';
 import {Button, Card, Heading, Text} from '@/shared/ui';
 import {useBookSearchResultPage} from '../model/useBookSearchResultPage';
@@ -13,14 +14,19 @@ type BookSearchResultPageContentProps = {
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
   const {
+    currentLibrarySearchParams,
     createPageHref,
     handleConfirmRegion,
+    handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
     handleSelectBook,
     handleSubmitSearch,
+    isLibraryResultDialogOpen,
     isRegionDialogOpen,
     lastRegionSelection,
+    libraryResultBook,
     selectedBook,
+    selectedLibraryCode,
   } = useBookSearchResultPage({
     navigate,
     params,
@@ -41,6 +47,17 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         onOpenChange={handleRegionDialogOpenChange}
         open={isRegionDialogOpen}
         selectedBook={selectedBook}
+      />
+      <LibrarySearchResultDialog
+        onBackToRegionSelect={() => {}}
+        onChangePage={() => {}}
+        onCheckAvailability={() => {}}
+        onOpenChange={handleLibraryResultDialogOpenChange}
+        onSelectLibrary={() => {}}
+        open={isLibraryResultDialogOpen}
+        params={currentLibrarySearchParams}
+        selectedBook={libraryResultBook}
+        selectedLibraryCode={selectedLibraryCode}
       />
     </>
   );
