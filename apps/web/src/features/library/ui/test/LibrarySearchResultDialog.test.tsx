@@ -431,6 +431,9 @@ describe('LibrarySearchResultDialog', () => {
 
     expect(within(mapPanel).queryByText('지도를 표시할 수 없어요')).not.toBeInTheDocument();
     expect(mapPanel.querySelector('[data-slot="kakao-map-canvas"]')).not.toBeNull();
+    expect(within(mapPanel).getByRole('button', {name: '지도 확대'})).toBeInTheDocument();
+    expect(within(mapPanel).getByRole('button', {name: '지도 축소'})).toBeInTheDocument();
+    expect(within(mapPanel).getByRole('button', {name: '선택 위치로 이동'})).toBeInTheDocument();
   });
 
   it('selectedLibraryCode가 바뀌어도 map instance를 다시 만들지 않는다', async () => {
@@ -521,8 +524,8 @@ describe('LibrarySearchResultDialog', () => {
     expect(setCenter).not.toHaveBeenCalled();
   });
 
-  it('리스트에서 좌표가 있는 도서관을 명시적으로 선택하면 panTo하고 기존 marker를 재생성하지 않는다', async () => {
-    const {kakaoMaps, markerRecords, panTo} = createMockKakaoMaps();
+  it('리스트에서 좌표가 있는 도서관을 명시적으로 선택하면 확대와 함께 포커스하고 기존 marker를 재생성하지 않는다', async () => {
+    const {kakaoMaps, markerRecords, panTo, setLevel} = createMockKakaoMaps();
 
     mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
     mockKakaoMapConfig.appKey = 'test-kakao-app-key';
@@ -571,7 +574,54 @@ describe('LibrarySearchResultDialog', () => {
 
     await waitFor(() => {
       expect(panTo).toHaveBeenCalledTimes(1);
+      expect(setLevel).toHaveBeenCalledWith(3);
       expect(markerRecords).toHaveLength(2);
+    });
+  });
+
+  it('기본 선택된 첫 번째 좌표 도서관도 명시적으로 다시 선택하면 확대와 함께 포커스한다', async () => {
+    const {kakaoMaps, panTo, setLevel} = createMockKakaoMaps();
+
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    const view = renderLibrarySearchResultDialogWithProps();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: /마포중앙도서관/})).toBeInTheDocument();
+    });
+
+    expect(panTo).not.toHaveBeenCalled();
+
+    view.rerender(
+      <AppProvider>
+        <LibrarySearchResultDialog
+          onBackToRegionSelect={vi.fn()}
+          onChangePage={vi.fn()}
+          onCheckAvailability={vi.fn()}
+          onOpenChange={vi.fn()}
+          onSelectLibrary={vi.fn()}
+          open
+          params={{
+            detailRegion: '11140',
+            isbn: '9788954682155',
+            page: 1,
+            region: '11',
+          }}
+          selectedBook={{
+            author: '이민진',
+            isbn13: '9788954682155',
+            title: '파친코',
+          }}
+          selectedLibraryCode="LIB0001"
+        />
+      </AppProvider>,
+    );
+
+    await waitFor(() => {
+      expect(panTo).toHaveBeenCalledTimes(1);
+      expect(setLevel).toHaveBeenCalledWith(3);
     });
   });
 
