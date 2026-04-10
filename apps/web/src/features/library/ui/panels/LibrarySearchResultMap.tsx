@@ -12,6 +12,11 @@ type LibrarySearchResultMapProps = {
   onSelectLibrary: (code: LibraryCode) => void;
   selectedLibraryCode: LibraryCode | null;
 };
+type MarkerRegistryEntry = {
+  clickHandler: () => void;
+  marker: KakaoMapsMarker;
+  signature: string;
+};
 
 const DEFAULT_KAKAO_MAP_CENTER = Object.freeze({
   latitude: 37.5665,
@@ -22,18 +27,25 @@ const DEFAULT_KAKAO_MAP_LEVEL = 8;
 function LibrarySearchResultMap({
   items,
   onSelectLibrary,
-  selectedLibraryCode,
+  selectedLibraryCode: _selectedLibraryCode,
 }: LibrarySearchResultMapProps) {
   const [status, setStatus] = useState<LibrarySearchResultMapStatus>(() =>
     kakaoMapConfig.isEnabled ? 'loading' : 'unavailable',
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const kakaoMapsRef = useRef<KakaoMapsNamespace | null>(null);
   const mapRef = useRef<KakaoMapsMap | null>(null);
+  const markerRegistryRef = useRef<Map<LibraryCode, MarkerRegistryEntry>>(new Map());
+  const onSelectLibraryRef = useRef(onSelectLibrary);
   const relayoutFrameRef = useRef<number | null>(null);
   const coordinateItems = items.filter(hasLibraryCoordinates);
+  const coordinateItemsKey = coordinateItems
+    .map(item => `${item.code}:${item.latitude}:${item.longitude}`)
+    .join('|');
 
-  void onSelectLibrary;
-  void selectedLibraryCode;
+  useEffect(() => {
+    onSelectLibraryRef.current = onSelectLibrary;
+  }, [onSelectLibrary]);
 
   useEffect(() => {
     if (!kakaoMapConfig.isEnabled) {
@@ -57,6 +69,7 @@ function LibrarySearchResultMap({
           });
         }
 
+        kakaoMapsRef.current = kakaoMaps;
         setStatus('ready');
 
         relayoutFrameRef.current = window.requestAnimationFrame(() => {
@@ -75,6 +88,72 @@ function LibrarySearchResultMap({
       if (relayoutFrameRef.current != null) {
         window.cancelAnimationFrame(relayoutFrameRef.current);
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (status !== 'ready') {
+      return;
+    }
+
+    const kakaoMaps = kakaoMapsRef.current;
+    const map = mapRef.current;
+
+    if (kakaoMaps == null || map == null) {
+      return;
+    }
+
+    const nextCoordinateItemsByCode = new Map(coordinateItems.map(item => [item.code, item]));
+
+    markerRegistryRef.current.forEach((entry, code) => {
+      const nextItem = nextCoordinateItemsByCode.get(code);
+      const nextSignature = nextItem ? createMarkerSignature(nextItem) : null;
+
+      if (nextSignature === entry.signature) {
+        return;
+      }
+
+      kakaoMaps.event.removeListener(entry.marker, 'click', entry.clickHandler);
+      entry.marker.setMap(null);
+      markerRegistryRef.current.delete(code);
+    });
+
+    coordinateItems.forEach(item => {
+      if (markerRegistryRef.current.has(item.code)) {
+        return;
+      }
+
+      const marker = new kakaoMaps.Marker({
+        map,
+        position: new kakaoMaps.LatLng(item.latitude, item.longitude),
+      });
+      const clickHandler = () => {
+        onSelectLibraryRef.current(item.code);
+      };
+
+      kakaoMaps.event.addListener(marker, 'click', clickHandler);
+      markerRegistryRef.current.set(item.code, {
+        clickHandler,
+        marker,
+        signature: createMarkerSignature(item),
+      });
+    });
+  }, [coordinateItems, coordinateItemsKey, status]);
+
+  useEffect(() => {
+    const markerRegistry = markerRegistryRef.current;
+
+    return () => {
+      const kakaoMaps = kakaoMapsRef.current;
+
+      markerRegistry.forEach(entry => {
+        if (kakaoMaps) {
+          kakaoMaps.event.removeListener(entry.marker, 'click', entry.clickHandler);
+        }
+
+        entry.marker.setMap(null);
+      });
+      markerRegistry.clear();
     };
   }, []);
 
@@ -131,6 +210,10 @@ function LibrarySearchResultMapNoCoordinateBody() {
       </div>
     </>
   );
+}
+
+function createMarkerSignature(item: LibrarySearchItem & {latitude: number; longitude: number}) {
+  return `${item.code}:${item.latitude}:${item.longitude}`;
 }
 
 export {LibrarySearchResultMap, LibrarySearchResultMapNoCoordinateBody, LibrarySearchResultMapUnavailableBody};
