@@ -64,12 +64,12 @@
 
 ## 9. marker 렌더링과 list / map / detail 선택 동기화 구현
 
-- [ ] 좌표가 있는 도서관만 marker로 렌더링한다.
-- [ ] 최초 진입 시 `setBounds()`로 전체 marker가 보이게 맞춘다.
-- [ ] 리스트에서 도서관을 선택하면 marker focus와 detail panel이 함께 갱신되게 한다.
-- [ ] marker를 클릭해도 active row와 detail panel이 같은 도서관으로 갱신되게 한다.
-- [ ] 선택 포커스는 `panTo()` 또는 동등한 부드러운 중심 이동으로 고정한다.
-- [ ] selection sync를 feature integration test로 검증한다.
+- [x] 좌표가 있는 도서관만 marker로 렌더링한다.
+- [x] 최초 진입 시 `setBounds()`로 전체 marker가 보이게 맞춘다.
+- [x] 리스트에서 도서관을 선택하면 marker focus와 detail panel이 함께 갱신되게 한다.
+- [x] marker를 클릭해도 active row와 detail panel이 같은 도서관으로 갱신되게 한다.
+- [x] 선택 포커스는 `panTo()` 또는 동등한 부드러운 중심 이동으로 고정한다.
+- [x] selection sync를 feature integration test로 검증한다.
 
 ## 10. region backflow와 reopen reset 규칙 구현
 

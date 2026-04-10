@@ -1,7 +1,7 @@
 import {act, render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {createMemoryRouter, RouterProvider} from 'react-router-dom';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
 import {routes} from './router';
 
@@ -100,6 +100,14 @@ const {mockLibrarySearchResponse, mockSecondPageLibrarySearchResponse, mockUseGe
 }),
 );
 
+const {mockKakaoMapConfig, mockLoadKakaoMapSdk} = vi.hoisted(() => ({
+  mockKakaoMapConfig: {
+    appKey: undefined as string | undefined,
+    isEnabled: false,
+  },
+  mockLoadKakaoMapSdk: vi.fn(),
+}));
+
 vi.mock('@/entities/book', async importOriginal => {
   const actual = await importOriginal<typeof import('@/entities/book')>();
 
@@ -118,6 +126,19 @@ vi.mock('@/entities/library', async importOriginal => {
   };
 });
 
+vi.mock('@/shared/env', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/shared/env')>();
+
+  return {
+    ...actual,
+    kakaoMapConfig: mockKakaoMapConfig,
+  };
+});
+
+vi.mock('@/shared/kakao-map', () => ({
+  loadKakaoMapSdk: mockLoadKakaoMapSdk,
+}));
+
 beforeEach(() => {
   mockUseGetSearchBooks.mockReset();
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
@@ -125,6 +146,19 @@ beforeEach(() => {
   mockUseGetSearchLibraries.mockImplementation(params =>
     params.page === 2 ? mockSecondPageLibrarySearchResponse : mockLibrarySearchResponse,
   );
+  mockKakaoMapConfig.appKey = undefined;
+  mockKakaoMapConfig.isEnabled = false;
+  mockLoadKakaoMapSdk.mockReset();
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+    callback(0);
+
+    return 1;
+  });
+  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 function renderRouter(initialEntries: string[]) {
@@ -137,6 +171,89 @@ function renderRouter(initialEntries: string[]) {
         <RouterProvider router={router} />
       </AppProvider>,
     ),
+  };
+}
+
+function createMockKakaoMaps() {
+  const markerRecords: Array<{
+    marker: KakaoMapsMarker;
+    position: KakaoMapsLatLng;
+  }> = [];
+  const markerClickHandlers = new Map<KakaoMapsMarker, () => void>();
+
+  const kakaoMaps: KakaoMapsNamespace = {
+    LatLng: vi.fn(function MockLatLng(this: KakaoMapsLatLng, latitude: number, longitude: number) {
+      this.getLat = vi.fn(() => latitude);
+      this.getLng = vi.fn(() => longitude);
+    }) as unknown as KakaoMapsNamespace['LatLng'],
+    LatLngBounds: vi.fn(function MockLatLngBounds(this: KakaoMapsLatLngBounds) {
+      this.contain = vi.fn(() => false);
+      this.extend = vi.fn();
+    }) as unknown as KakaoMapsNamespace['LatLngBounds'],
+    Map: vi.fn(function MockMap(this: KakaoMapsMap) {
+      this.panTo = vi.fn();
+      this.relayout = vi.fn();
+      this.setBounds = vi.fn();
+      this.setCenter = vi.fn();
+      this.setLevel = vi.fn();
+    }) as unknown as KakaoMapsNamespace['Map'],
+    Marker: vi.fn(function MockMarker(this: KakaoMapsMarker, options: KakaoMapsMarkerOptions) {
+      this.setImage = vi.fn();
+      this.setMap = vi.fn();
+      markerRecords.push({
+        marker: this,
+        position: options.position,
+      });
+    }) as unknown as KakaoMapsNamespace['Marker'],
+    MarkerImage: vi.fn(function MockMarkerImage(this: KakaoMapsMarkerImage) {
+      return this;
+    }) as unknown as KakaoMapsNamespace['MarkerImage'],
+    Point: vi.fn(function MockPoint(this: KakaoMapsPoint) {
+      this.x = 0;
+      this.y = 0;
+    }) as unknown as KakaoMapsNamespace['Point'],
+    Size: vi.fn(function MockSize(this: KakaoMapsSize) {
+      this.height = 32;
+      this.width = 32;
+    }) as unknown as KakaoMapsNamespace['Size'],
+    event: {
+      addListener: vi.fn((target: KakaoMapsMarker, _type: 'click', handler: () => void) => {
+        markerClickHandlers.set(target, handler);
+      }),
+      removeListener: vi.fn((target: KakaoMapsMarker) => {
+        markerClickHandlers.delete(target);
+      }),
+    },
+    load: vi.fn(onLoad => {
+      onLoad();
+    }),
+  };
+
+  return {
+    kakaoMaps,
+    triggerMarkerClickByCoordinates: ({
+      latitude,
+      longitude,
+    }: {
+      latitude: number;
+      longitude: number;
+    }) => {
+      const record = markerRecords.find(candidate => {
+        return candidate.position.getLat() === latitude && candidate.position.getLng() === longitude;
+      });
+
+      if (record == null) {
+        throw new Error(`Marker at ${latitude}, ${longitude} is not available.`);
+      }
+
+      const handler = markerClickHandlers.get(record.marker);
+
+      if (handler == null) {
+        throw new Error(`Marker at ${latitude}, ${longitude} does not have a click handler.`);
+      }
+
+      handler();
+    },
   };
 }
 
@@ -409,6 +526,49 @@ describe('app router integration', () => {
     expect(secondSecondPageRow).toHaveAttribute('aria-pressed', 'false');
     expect(within(detailPanel).getByRole('heading', {name: '상수문화도서관'})).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 독막로 11')).toBeInTheDocument();
+  });
+
+  it('marker를 클릭하면 같은 도서관이 list active row와 detail panel에 반영된다', async () => {
+    const user = userEvent.setup();
+    const {kakaoMaps, triggerMarkerClickByCoordinates} = createMockKakaoMaps();
+
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    const libraryResultDialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+    const pagination = within(libraryResultDialog).getByRole('navigation', {
+      name: '도서관 검색 결과 페이지네이션',
+    });
+
+    await user.click(within(pagination).getByRole('button', {name: '2페이지'}));
+
+    const firstSecondPageRow = await within(libraryResultDialog).findByRole('button', {name: /상수문화도서관/});
+    const secondSecondPageRow = within(libraryResultDialog).getByRole('button', {name: /성산열람실/});
+    const detailPanel = within(libraryResultDialog).getByLabelText('선택된 도서관 정보 패널');
+
+    expect(firstSecondPageRow).toHaveAttribute('aria-pressed', 'true');
+    expect(secondSecondPageRow).toHaveAttribute('aria-pressed', 'false');
+
+    await act(async () => {
+      triggerMarkerClickByCoordinates({
+        latitude: 37.5631,
+        longitude: 126.9084,
+      });
+    });
+
+    await waitFor(() => {
+      expect(firstSecondPageRow).toHaveAttribute('aria-pressed', 'false');
+      expect(secondSecondPageRow).toHaveAttribute('aria-pressed', 'true');
+      expect(within(detailPanel).getByRole('heading', {name: '성산열람실'})).toBeInTheDocument();
+      expect(within(detailPanel).getByText('서울특별시 마포구 성지길 12')).toBeInTheDocument();
+    });
   });
 
   it('library search가 비어 있으면 지역 다시 선택 CTA로 region dialog를 다시 연다', async () => {

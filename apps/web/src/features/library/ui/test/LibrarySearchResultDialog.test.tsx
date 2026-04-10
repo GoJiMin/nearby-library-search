@@ -6,8 +6,13 @@ import {LibrarySearchResultDialog} from '@/features/library';
 import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
 import {LibrarySearchResultDetailFooterCta} from '../panels/LibrarySearchResultDetailPanel';
 
-const {mockKakaoMapConfig, mockLoadKakaoMapSdk, mockLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(
-  () => ({
+const {
+  mockKakaoMapConfig,
+  mockLoadKakaoMapSdk,
+  mockLibrarySearchResponse,
+  mockSecondPageLibrarySearchResponse,
+  mockUseGetSearchLibraries,
+} = vi.hoisted(() => ({
   mockKakaoMapConfig: {
     appKey: undefined as string | undefined,
     isEnabled: false,
@@ -84,8 +89,7 @@ const {mockKakaoMapConfig, mockLoadKakaoMapSdk, mockLibrarySearchResponse, mockU
     totalCount: 12,
   },
   mockUseGetSearchLibraries: vi.fn(),
-}),
-);
+}));
 
 vi.mock('@/entities/library', async importOriginal => {
   const actual = await importOriginal<typeof import('@/entities/library')>();
@@ -111,27 +115,47 @@ vi.mock('@/shared/kakao-map', () => ({
 
 function createMockKakaoMaps() {
   const relayout = vi.fn();
+  const panTo = vi.fn();
+  const setBounds = vi.fn();
+  const setCenter = vi.fn();
+  const setLevel = vi.fn();
+  const markerRecords: Array<{
+    marker: KakaoMapsMarker;
+    options: KakaoMapsMarkerOptions;
+    setImage: ReturnType<typeof vi.fn>;
+    setMap: ReturnType<typeof vi.fn>;
+  }> = [];
+  const markerClickHandlers = new Map<KakaoMapsMarker, () => void>();
   const mapConstructor = vi.fn(function MockMap(this: KakaoMapsMap) {
-    this.panTo = vi.fn();
+    this.panTo = panTo;
     this.relayout = relayout;
-    this.setBounds = vi.fn();
-    this.setCenter = vi.fn();
-    this.setLevel = vi.fn();
+    this.setBounds = setBounds;
+    this.setCenter = setCenter;
+    this.setLevel = setLevel;
   }) as unknown as KakaoMapsNamespace['Map'];
 
   const kakaoMaps: KakaoMapsNamespace = {
-    LatLng: vi.fn(function MockLatLng(this: KakaoMapsLatLng) {
-      this.getLat = vi.fn(() => 37.5665);
-      this.getLng = vi.fn(() => 126.978);
+    LatLng: vi.fn(function MockLatLng(this: KakaoMapsLatLng, latitude: number, longitude: number) {
+      this.getLat = vi.fn(() => latitude);
+      this.getLng = vi.fn(() => longitude);
     }) as unknown as KakaoMapsNamespace['LatLng'],
     LatLngBounds: vi.fn(function MockLatLngBounds(this: KakaoMapsLatLngBounds) {
       this.contain = vi.fn(() => false);
       this.extend = vi.fn();
     }) as unknown as KakaoMapsNamespace['LatLngBounds'],
     Map: mapConstructor,
-    Marker: vi.fn(function MockMarker(this: KakaoMapsMarker) {
-      this.setImage = vi.fn();
-      this.setMap = vi.fn();
+    Marker: vi.fn(function MockMarker(this: KakaoMapsMarker, options: KakaoMapsMarkerOptions) {
+      const setImage = vi.fn();
+      const setMap = vi.fn();
+
+      this.setImage = setImage;
+      this.setMap = setMap;
+      markerRecords.push({
+        marker: this,
+        options,
+        setImage,
+        setMap,
+      });
     }) as unknown as KakaoMapsNamespace['Marker'],
     MarkerImage: vi.fn(function MockMarkerImage(this: KakaoMapsMarkerImage) {
       return this;
@@ -145,8 +169,12 @@ function createMockKakaoMaps() {
       this.width = 32;
     }) as unknown as KakaoMapsNamespace['Size'],
     event: {
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
+      addListener: vi.fn((target: KakaoMapsMarker, _type: 'click', handler: () => void) => {
+        markerClickHandlers.set(target, handler);
+      }),
+      removeListener: vi.fn((target: KakaoMapsMarker) => {
+        markerClickHandlers.delete(target);
+      }),
     },
     load: vi.fn(onLoad => {
       onLoad();
@@ -156,7 +184,37 @@ function createMockKakaoMaps() {
   return {
     kakaoMaps,
     mapConstructor,
+    markerRecords,
+    panTo,
     relayout,
+    setBounds,
+    setCenter,
+    setLevel,
+    triggerMarkerClickByCoordinates: ({
+      latitude,
+      longitude,
+    }: {
+      latitude: number;
+      longitude: number;
+    }) => {
+      const record = markerRecords.find(candidate => {
+        const position = candidate.options.position;
+
+        return position.getLat() === latitude && position.getLng() === longitude;
+      });
+
+      if (record == null) {
+        throw new Error(`Marker at ${latitude}, ${longitude} is not available.`);
+      }
+
+      const handler = markerClickHandlers.get(record.marker);
+
+      if (handler == null) {
+        throw new Error(`Marker at ${latitude}, ${longitude} does not have a click handler.`);
+      }
+
+      handler();
+    },
   };
 }
 
@@ -392,6 +450,207 @@ describe('LibrarySearchResultDialog', () => {
     await waitFor(() => {
       expect(mapConstructor).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('좌표가 있는 도서관만 marker를 만들고 1건이면 setCenter와 setLevel로 초기 위치를 맞춘다', async () => {
+    const {kakaoMaps, markerRecords, panTo, setBounds, setCenter, setLevel} = createMockKakaoMaps();
+
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialog();
+
+    await waitFor(() => {
+      expect(markerRecords).toHaveLength(1);
+      expect(setCenter).toHaveBeenCalledTimes(1);
+      expect(setLevel).toHaveBeenCalledWith(4);
+    });
+
+    expect(setBounds).not.toHaveBeenCalled();
+    expect(panTo).not.toHaveBeenCalled();
+  });
+
+  it('현재 페이지에 좌표가 여러 건이면 setBounds로 전체 marker 범위를 먼저 맞춘다', async () => {
+    const {kakaoMaps, setBounds, setCenter} = createMockKakaoMaps();
+
+    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialogWithProps({
+      params: {
+        detailRegion: '11140',
+        isbn: '9788954682155',
+        page: 2,
+        region: '11',
+      },
+    });
+
+    await waitFor(() => {
+      expect(setBounds).toHaveBeenCalledTimes(1);
+    });
+
+    expect(setCenter).not.toHaveBeenCalled();
+  });
+
+  it('리스트에서 좌표가 있는 도서관을 명시적으로 선택하면 panTo하고 기존 marker를 재생성하지 않는다', async () => {
+    const {kakaoMaps, markerRecords, panTo} = createMockKakaoMaps();
+
+    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    const view = renderLibrarySearchResultDialogWithProps({
+      params: {
+        detailRegion: '11140',
+        isbn: '9788954682155',
+        page: 2,
+        region: '11',
+      },
+    });
+
+    await waitFor(() => {
+      expect(markerRecords).toHaveLength(2);
+    });
+
+    expect(panTo).not.toHaveBeenCalled();
+
+    view.rerender(
+      <AppProvider>
+        <LibrarySearchResultDialog
+          onBackToRegionSelect={vi.fn()}
+          onChangePage={vi.fn()}
+          onCheckAvailability={vi.fn()}
+          onOpenChange={vi.fn()}
+          onSelectLibrary={vi.fn()}
+          open
+          params={{
+            detailRegion: '11140',
+            isbn: '9788954682155',
+            page: 2,
+            region: '11',
+          }}
+          selectedBook={{
+            author: '이민진',
+            isbn13: '9788954682155',
+            title: '파친코',
+          }}
+          selectedLibraryCode="LIB0012"
+        />
+      </AppProvider>,
+    );
+
+    await waitFor(() => {
+      expect(panTo).toHaveBeenCalledTimes(1);
+      expect(markerRecords).toHaveLength(2);
+    });
+  });
+
+  it('좌표가 없는 도서관을 선택하면 panTo하지 않고 목록과 상세 정보만 갱신한다', async () => {
+    const {kakaoMaps, panTo} = createMockKakaoMaps();
+
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    const view = renderLibrarySearchResultDialogWithProps();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: /마포중앙도서관/})).toBeInTheDocument();
+    });
+
+    expect(panTo).not.toHaveBeenCalled();
+
+    view.rerender(
+      <AppProvider>
+        <LibrarySearchResultDialog
+          onBackToRegionSelect={vi.fn()}
+          onChangePage={vi.fn()}
+          onCheckAvailability={vi.fn()}
+          onOpenChange={vi.fn()}
+          onSelectLibrary={vi.fn()}
+          open
+          params={{
+            detailRegion: '11140',
+            isbn: '9788954682155',
+            page: 1,
+            region: '11',
+          }}
+          selectedBook={{
+            author: '이민진',
+            isbn13: '9788954682155',
+            title: '파친코',
+          }}
+          selectedLibraryCode="LIB0002"
+        />
+      </AppProvider>,
+    );
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+
+    expect(panTo).not.toHaveBeenCalled();
+    expect(within(detailPanel).getByRole('heading', {name: '합정열람실'})).toBeInTheDocument();
+  });
+
+  it('marker를 클릭하면 해당 code로 onSelectLibrary를 호출한다', async () => {
+    const {kakaoMaps, markerRecords, triggerMarkerClickByCoordinates} = createMockKakaoMaps();
+    const onSelectLibrary = vi.fn();
+
+    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialogWithProps({
+      onSelectLibrary,
+      params: {
+        detailRegion: '11140',
+        isbn: '9788954682155',
+        page: 2,
+        region: '11',
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: /상수문화도서관/})).toBeInTheDocument();
+      expect(markerRecords).toHaveLength(2);
+    });
+
+    triggerMarkerClickByCoordinates({
+      latitude: 37.5631,
+      longitude: 126.9084,
+    });
+
+    expect(onSelectLibrary).toHaveBeenCalledWith('LIB0012');
+  });
+
+  it('현재 페이지 결과에 좌표가 하나도 없으면 no-coordinate fallback과 controls hidden을 렌더링한다', async () => {
+    const {kakaoMaps} = createMockKakaoMaps();
+
+    mockUseGetSearchLibraries.mockReturnValue({
+      ...mockLibrarySearchResponse,
+      items: mockLibrarySearchResponse.items.map(item => ({
+        ...item,
+        latitude: null,
+        longitude: null,
+      })),
+    });
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialog();
+
+    const mapPanel = await screen.findByLabelText('도서관 지도 패널');
+
+    expect(within(mapPanel).getByText('지도로 표시할 수 있는 위치 정보가 없어요')).toBeInTheDocument();
+    expect(
+      within(mapPanel).getByText('현재 페이지 결과는 목록과 상세 정보로만 확인할 수 있어요.'),
+    ).toBeInTheDocument();
+    expect(within(mapPanel).queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
   });
 
   it('selectedLibraryCode가 없으면 첫 번째 도서관을 기본 선택하고 onSelectLibrary로 동기화한다', async () => {
