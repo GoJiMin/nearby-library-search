@@ -313,6 +313,19 @@ describe('app router integration', () => {
     expect(within(libraryResultDialog).getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
     expect(within(libraryResultDialog).getByRole('button', {name: '대출 가능 여부 조회'})).toBeInTheDocument();
 
+    const firstLibraryRow = within(libraryResultDialog).getByRole('button', {name: /마포중앙도서관/});
+    const secondLibraryRow = within(libraryResultDialog).getByRole('button', {name: /합정열람실/});
+
+    expect(firstLibraryRow).toHaveAttribute('aria-pressed', 'true');
+    expect(secondLibraryRow).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(secondLibraryRow);
+
+    await waitFor(() => {
+      expect(firstLibraryRow).toHaveAttribute('aria-pressed', 'false');
+      expect(secondLibraryRow).toHaveAttribute('aria-pressed', 'true');
+    });
+
     await user.click(screen.getByRole('button', {name: '닫기'}));
 
     await waitFor(() => {

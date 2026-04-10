@@ -11,9 +11,11 @@ function LibrarySearchResultDialog({
   onBackToRegionSelect,
   onCheckAvailability,
   onOpenChange,
+  onSelectLibrary,
   open,
   params,
   selectedBook,
+  selectedLibraryCode,
 }: LibrarySearchResultDialogProps) {
   if (!open || params == null || selectedBook == null) {
     return null;
@@ -52,7 +54,9 @@ function LibrarySearchResultDialog({
               onBackToRegionSelect={onBackToRegionSelect}
               onCheckAvailability={onCheckAvailability}
               onOpenChange={onOpenChange}
+              onSelectLibrary={onSelectLibrary}
               params={params}
+              selectedLibraryCode={selectedLibraryCode}
             />
           </Suspense>
         </QueryErrorBoundary>

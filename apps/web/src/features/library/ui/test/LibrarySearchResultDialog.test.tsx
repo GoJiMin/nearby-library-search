@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
 import {LibrarySearchResultDialog} from '@/features/library';
+import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
 
 const {mockLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(() => ({
   mockLibrarySearchResponse: {
@@ -79,6 +80,41 @@ function renderLibrarySearchResultDialog() {
   );
 }
 
+function renderLibrarySearchResultDialogWithProps({
+  onOpenChange = vi.fn(),
+  onSelectLibrary = vi.fn(),
+  selectedLibraryCode = null,
+}: {
+  onOpenChange?: LibrarySearchResultDialogProps['onOpenChange'];
+  onSelectLibrary?: LibrarySearchResultDialogProps['onSelectLibrary'];
+  selectedLibraryCode?: LibrarySearchResultDialogProps['selectedLibraryCode'];
+} = {}) {
+  return render(
+    <AppProvider>
+      <LibrarySearchResultDialog
+        onBackToRegionSelect={vi.fn()}
+        onChangePage={vi.fn()}
+        onCheckAvailability={vi.fn()}
+        onOpenChange={onOpenChange}
+        onSelectLibrary={onSelectLibrary}
+        open
+        params={{
+          detailRegion: '11140',
+          isbn: '9788954682155',
+          page: 1,
+          region: '11',
+        }}
+        selectedBook={{
+          author: '이민진',
+          isbn13: '9788954682155',
+          title: '파친코',
+        }}
+        selectedLibraryCode={selectedLibraryCode}
+      />
+    </AppProvider>,
+  );
+}
+
 describe('LibrarySearchResultDialog', () => {
   beforeEach(() => {
     mockUseGetSearchLibraries.mockReset();
@@ -97,6 +133,89 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /마포중앙도서관/})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /합정열람실/})).toBeInTheDocument();
+  });
+
+  it('selectedLibraryCode가 없으면 첫 번째 도서관을 기본 선택하고 onSelectLibrary로 동기화한다', async () => {
+    const onSelectLibrary = vi.fn();
+
+    renderLibrarySearchResultDialogWithProps({onSelectLibrary});
+
+    const firstRow = await screen.findByRole('button', {name: /마포중앙도서관/});
+    const secondRow = screen.getByRole('button', {name: /합정열람실/});
+
+    expect(firstRow).toHaveAttribute('aria-pressed', 'true');
+    expect(secondRow).toHaveAttribute('aria-pressed', 'false');
+
+    await waitFor(() => {
+      expect(onSelectLibrary).toHaveBeenCalledWith('LIB0001');
+    });
+  });
+
+  it('현재 페이지에 없는 selectedLibraryCode가 들어오면 첫 번째 도서관으로 fallback한다', async () => {
+    const onSelectLibrary = vi.fn();
+
+    renderLibrarySearchResultDialogWithProps({
+      onSelectLibrary,
+      selectedLibraryCode: 'LIB9999',
+    });
+
+    const firstRow = await screen.findByRole('button', {name: /마포중앙도서관/});
+
+    expect(firstRow).toHaveAttribute('aria-pressed', 'true');
+    await waitFor(() => {
+      expect(onSelectLibrary).toHaveBeenCalledWith('LIB0001');
+    });
+  });
+
+  it('유효한 selectedLibraryCode가 있으면 해당 도서관을 active row로 유지한다', async () => {
+    const onSelectLibrary = vi.fn();
+
+    renderLibrarySearchResultDialogWithProps({
+      onSelectLibrary,
+      selectedLibraryCode: 'LIB0002',
+    });
+
+    const firstRow = await screen.findByRole('button', {name: /마포중앙도서관/});
+    const secondRow = screen.getByRole('button', {name: /합정열람실/});
+
+    expect(firstRow).toHaveAttribute('aria-pressed', 'false');
+    expect(secondRow).toHaveAttribute('aria-pressed', 'true');
+    expect(onSelectLibrary).not.toHaveBeenCalled();
+  });
+
+  it('리스트 row를 클릭하면 해당 code로 onSelectLibrary를 호출한다', async () => {
+    const user = userEvent.setup();
+    const onSelectLibrary = vi.fn();
+
+    renderLibrarySearchResultDialogWithProps({
+      onSelectLibrary,
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: /합정열람실/}));
+
+    expect(onSelectLibrary).toHaveBeenCalledWith('LIB0002');
+  });
+
+  it('리스트 row는 native button keyboard interaction으로 선택할 수 있다', async () => {
+    const user = userEvent.setup();
+    const onSelectLibrary = vi.fn();
+
+    renderLibrarySearchResultDialogWithProps({
+      onSelectLibrary,
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    const secondRow = await screen.findByRole('button', {name: /합정열람실/});
+
+    secondRow.focus();
+    await user.keyboard('{Enter}');
+    await user.keyboard(' ');
+
+    expect(onSelectLibrary).toHaveBeenCalledWith('LIB0002');
+    expect(onSelectLibrary).toHaveBeenCalledTimes(2);
   });
 
   it('조회가 suspend되면 loading shell을 유지한다', async () => {

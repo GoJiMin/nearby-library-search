@@ -1,3 +1,4 @@
+import type {LibrarySearchItem} from '@nearby-library-search/contracts';
 import type {ReactNode} from 'react';
 import {Heading, Skeleton, Text} from '@/shared/ui';
 
@@ -37,6 +38,12 @@ type LibrarySearchResultListPlaceholderBodyProps = {
   itemCount?: number;
 };
 
+type LibrarySearchResultListBodyProps = {
+  items: LibrarySearchItem[];
+  onSelectLibrary: (code: LibrarySearchItem['code']) => void;
+  selectedLibraryCode: LibrarySearchItem['code'] | null;
+};
+
 function LibrarySearchResultListPlaceholderBody({
   itemCount = resultCardSkeletonWidths.length,
 }: LibrarySearchResultListPlaceholderBodyProps) {
@@ -71,5 +78,62 @@ function LibrarySearchResultListPlaceholderBody({
   );
 }
 
-export {LibrarySearchResultListPanel, LibrarySearchResultListPlaceholderBody};
-export type {LibrarySearchResultListPanelProps, LibrarySearchResultListPlaceholderBodyProps};
+function getLibraryRowMeta(item: LibrarySearchItem) {
+  if (item.operatingTime && item.closedDays) {
+    return `${item.operatingTime} · ${item.closedDays}`;
+  }
+
+  return item.operatingTime ?? item.closedDays ?? '운영 정보 없음';
+}
+
+function LibrarySearchResultListBody({
+  items,
+  onSelectLibrary,
+  selectedLibraryCode,
+}: LibrarySearchResultListBodyProps) {
+  return (
+    <ul
+      aria-label="도서관 검색 결과 목록"
+      className="flex-1 space-y-3 overflow-y-auto px-4 pb-6"
+      role="list"
+    >
+      {items.map(item => {
+        const isSelected = selectedLibraryCode === item.code;
+
+        return (
+          <li key={item.code}>
+            <button
+              aria-pressed={isSelected}
+              className={
+                isSelected
+                  ? 'bg-surface shadow-card border-line/70 flex w-full flex-col gap-4 rounded-3xl border px-4 py-4 text-left'
+                  : 'bg-surface-muted/60 hover:bg-surface-muted/80 flex w-full flex-col gap-4 rounded-3xl px-4 py-4 text-left transition-colors'
+              }
+              onClick={() => onSelectLibrary(item.code)}
+              type="button"
+            >
+              <div className="space-y-2.5">
+                <Heading as="h3" size="sm">
+                  {item.name}
+                </Heading>
+                <Text className="line-clamp-2" size="sm" tone="muted">
+                  {item.address ?? '주소 정보 없음'}
+                </Text>
+              </div>
+              <Text className="text-sm leading-5" size="sm" tone="muted">
+                {getLibraryRowMeta(item)}
+              </Text>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+export {LibrarySearchResultListBody, LibrarySearchResultListPanel, LibrarySearchResultListPlaceholderBody};
+export type {
+  LibrarySearchResultListBodyProps,
+  LibrarySearchResultListPanelProps,
+  LibrarySearchResultListPlaceholderBodyProps,
+};
