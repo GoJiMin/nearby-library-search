@@ -45,6 +45,11 @@ declare global {
     setMap(map: KakaoMapsMap | null): void;
   };
 
+  type KakaoMapsEventNamespace = {
+    addListener(target: KakaoMapsMarker, type: 'click', handler: () => void): void;
+    removeListener(target: KakaoMapsMarker, type: 'click', handler: () => void): void;
+  };
+
   type KakaoMapsNamespace = {
     LatLng: new (latitude: number, longitude: number) => KakaoMapsLatLng;
     LatLngBounds: new () => KakaoMapsLatLngBounds;
@@ -57,6 +62,7 @@ declare global {
     ) => KakaoMapsMarkerImage;
     Point: new (x: number, y: number) => KakaoMapsPoint;
     Size: new (width: number, height: number) => KakaoMapsSize;
+    event: KakaoMapsEventNamespace;
     load(onLoad: () => void): void;
   };
 

@@ -144,6 +144,10 @@ function createMockKakaoMaps() {
       this.height = 32;
       this.width = 32;
     }) as unknown as KakaoMapsNamespace['Size'],
+    event: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
     load: vi.fn(onLoad => {
       onLoad();
     }),

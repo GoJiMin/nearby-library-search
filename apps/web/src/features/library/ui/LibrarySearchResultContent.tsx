@@ -79,7 +79,11 @@ function LibrarySearchResultContent({
       </LibrarySearchResultListPanel>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_220px]">
         <LibrarySearchResultMapPanel>
-          <LibrarySearchResultMap />
+          <LibrarySearchResultMap
+            items={response.items}
+            onSelectLibrary={onSelectLibrary}
+            selectedLibraryCode={selectedLibraryCode}
+          />
         </LibrarySearchResultMapPanel>
         <LibrarySearchResultDetailPanel
           footer={

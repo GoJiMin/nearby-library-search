@@ -25,6 +25,10 @@ function createMockKakaoMaps(): KakaoMapsNamespace {
     Size: vi.fn(function MockSize(this: object) {
       return this;
     }) as unknown as KakaoMapsNamespace['Size'],
+    event: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
     load: vi.fn(onLoad => {
       onLoad();
     }),
