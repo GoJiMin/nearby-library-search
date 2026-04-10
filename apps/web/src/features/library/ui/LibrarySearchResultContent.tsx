@@ -62,7 +62,12 @@ function LibrarySearchResultContent({
           <LibrarySearchResultMapPlaceholderBody />
         </LibrarySearchResultMapPanel>
         <LibrarySearchResultDetailPanel
-          footer={<LibrarySearchResultDetailFooterCta onCheckAvailability={onCheckAvailability} />}
+          footer={
+            <LibrarySearchResultDetailFooterCta
+              disabled={currentSelectedLibrary == null}
+              onCheckAvailability={onCheckAvailability}
+            />
+          }
         >
           {currentSelectedLibrary ? <LibrarySearchResultDetailBody library={currentSelectedLibrary} /> : null}
         </LibrarySearchResultDetailPanel>

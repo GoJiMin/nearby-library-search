@@ -20,6 +20,10 @@ type LibrarySearchResultDetailBodyProps = {
   library: LibrarySearchItem;
 };
 
+type LibrarySearchResultDetailFooterCtaProps = Pick<LibrarySearchResultDialogProps, 'onCheckAvailability'> & {
+  disabled?: boolean;
+};
+
 function LibrarySearchResultDetailPanel({children, footer}: LibrarySearchResultDetailPanelProps) {
   return (
     <section
@@ -81,15 +85,26 @@ function LibrarySearchResultDetailBody({library}: LibrarySearchResultDetailBodyP
           </div>
         ))}
       </div>
+      {library.homepage ? (
+        <a
+          className="text-accent text-sm leading-6 font-medium underline underline-offset-4"
+          href={library.homepage}
+          rel="noreferrer"
+          target="_blank"
+        >
+          도서관 홈페이지 바로가기
+        </a>
+      ) : null}
     </div>
   );
 }
 
 function LibrarySearchResultDetailFooterCta({
+  disabled = false,
   onCheckAvailability,
-}: Pick<LibrarySearchResultDialogProps, 'onCheckAvailability'>) {
+}: LibrarySearchResultDetailFooterCtaProps) {
   return (
-    <Button className="w-full rounded-2xl" onClick={onCheckAvailability} size="lg" variant="default">
+    <Button className="w-full rounded-2xl" disabled={disabled} onClick={onCheckAvailability} size="lg" variant="default">
       <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
       대출 가능 여부 조회
     </Button>
@@ -131,4 +146,8 @@ export {
   LibrarySearchResultDetailPanel,
   LibrarySearchResultDetailPlaceholder,
 };
-export type {LibrarySearchResultDetailBodyProps, LibrarySearchResultDetailPanelProps};
+export type {
+  LibrarySearchResultDetailBodyProps,
+  LibrarySearchResultDetailFooterCtaProps,
+  LibrarySearchResultDetailPanelProps,
+};
