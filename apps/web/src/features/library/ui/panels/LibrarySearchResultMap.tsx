@@ -1,15 +1,23 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {kakaoMapConfig} from '@/shared/env';
 import {loadKakaoMapSdk} from '@/shared/kakao-map';
 import {Heading, Text} from '@/shared/ui';
 import {LibrarySearchResultMapControls, LibrarySearchResultMapPlaceholderBody} from './LibrarySearchResultMapPanel';
 
 type LibrarySearchResultMapStatus = 'loading' | 'ready' | 'unavailable';
+const DEFAULT_KAKAO_MAP_CENTER = Object.freeze({
+  latitude: 37.5665,
+  longitude: 126.978,
+});
+const DEFAULT_KAKAO_MAP_LEVEL = 8;
 
 function LibrarySearchResultMap() {
   const [status, setStatus] = useState<LibrarySearchResultMapStatus>(() =>
     kakaoMapConfig.isEnabled ? 'loading' : 'unavailable',
   );
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<KakaoMapsMap | null>(null);
+  const relayoutFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!kakaoMapConfig.isEnabled) {
@@ -19,10 +27,25 @@ function LibrarySearchResultMap() {
     let isDisposed = false;
 
     loadKakaoMapSdk()
-      .then(() => {
-        if (!isDisposed) {
-          setStatus('ready');
+      .then(kakaoMaps => {
+        const container = containerRef.current;
+
+        if (isDisposed || container == null) {
+          return;
         }
+
+        if (mapRef.current == null) {
+          mapRef.current = new kakaoMaps.Map(container, {
+            center: new kakaoMaps.LatLng(DEFAULT_KAKAO_MAP_CENTER.latitude, DEFAULT_KAKAO_MAP_CENTER.longitude),
+            level: DEFAULT_KAKAO_MAP_LEVEL,
+          });
+        }
+
+        setStatus('ready');
+
+        relayoutFrameRef.current = window.requestAnimationFrame(() => {
+          mapRef.current?.relayout();
+        });
       })
       .catch(() => {
         if (!isDisposed) {
@@ -32,6 +55,10 @@ function LibrarySearchResultMap() {
 
     return () => {
       isDisposed = true;
+
+      if (relayoutFrameRef.current != null) {
+        window.cancelAnimationFrame(relayoutFrameRef.current);
+      }
     };
   }, []);
 
@@ -39,7 +66,12 @@ function LibrarySearchResultMap() {
     return <LibrarySearchResultMapUnavailableBody />;
   }
 
-  return <LibrarySearchResultMapPlaceholderBody />;
+  return (
+    <>
+      <div className="absolute inset-0" data-slot="kakao-map-canvas" ref={containerRef} />
+      {status === 'loading' ? <LibrarySearchResultMapPlaceholderBody /> : <LibrarySearchResultMapControls />}
+    </>
+  );
 }
 
 function LibrarySearchResultMapUnavailableBody() {
