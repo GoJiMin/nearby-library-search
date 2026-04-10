@@ -315,15 +315,20 @@ describe('app router integration', () => {
 
     const firstLibraryRow = within(libraryResultDialog).getByRole('button', {name: /마포중앙도서관/});
     const secondLibraryRow = within(libraryResultDialog).getByRole('button', {name: /합정열람실/});
+    const detailPanel = within(libraryResultDialog).getByLabelText('선택된 도서관 정보 패널');
 
     expect(firstLibraryRow).toHaveAttribute('aria-pressed', 'true');
     expect(secondLibraryRow).toHaveAttribute('aria-pressed', 'false');
+    expect(within(detailPanel).getByRole('heading', {name: '마포중앙도서관'})).toBeInTheDocument();
+    expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
 
     await user.click(secondLibraryRow);
 
     await waitFor(() => {
       expect(firstLibraryRow).toHaveAttribute('aria-pressed', 'false');
       expect(secondLibraryRow).toHaveAttribute('aria-pressed', 'true');
+      expect(within(detailPanel).getByRole('heading', {name: '합정열람실'})).toBeInTheDocument();
+      expect(within(detailPanel).getByText('서울특별시 마포구 양화로 2')).toBeInTheDocument();
     });
 
     await user.click(screen.getByRole('button', {name: '닫기'}));

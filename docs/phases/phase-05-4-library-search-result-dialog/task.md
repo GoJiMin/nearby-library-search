@@ -39,11 +39,11 @@
 
 ## 6. 하단 detail panel과 availability CTA placeholder 구현
 
-- [ ] 선택된 도서관의 `name`, `operatingTime`, `closedDays`, `address`, `phone`을 detail panel에 렌더링한다.
-- [ ] `homepage`는 링크 수준으로만 취급하고 `fax`는 기본 노출에서 제외한다.
-- [ ] `대출 가능 여부 조회` 버튼을 footer CTA로 구현하되 실제 기능은 호출하지 않는다.
-- [ ] 선택된 도서관이 없을 때 CTA 비활성 규칙을 잠근다.
-- [ ] detail panel 렌더와 CTA placeholder handoff를 integration test로 검증한다.
+- [x] 선택된 도서관의 `name`, `operatingTime`, `closedDays`, `address`, `phone`을 detail panel에 렌더링한다.
+- [x] `homepage`는 링크 수준으로만 취급하고 `fax`는 기본 노출에서 제외한다.
+- [x] `대출 가능 여부 조회` 버튼을 footer CTA로 구현하되 실제 기능은 호출하지 않는다.
+- [x] 선택된 도서관이 없을 때 CTA 비활성 규칙을 잠근다.
+- [x] detail panel 렌더와 CTA placeholder handoff를 integration test로 검증한다.
 
 ## 7. 상태 기반 페이지네이션 구현
 
