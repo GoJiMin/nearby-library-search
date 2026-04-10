@@ -23,11 +23,12 @@
 
 ## 4. 결과 조회와 loading / empty / error 상태 구현
 
-- [ ] `useGetSearchLibraries(params)`를 연결한다.
-- [ ] loading 상태에서 dialog shell을 유지한 채 list/map/detail skeleton을 렌더링한다.
-- [ ] `isEmptyLibrarySearchResult` 기준 empty state와 복구 CTA를 구현한다.
-- [ ] query error 시 dialog 내부 recoverable error UI와 `다시 시도` 흐름을 구현한다.
-- [ ] 세 상태를 integration test로 검증한다.
+- [x] `useGetSearchLibraries(params)`를 연결한다.
+- [x] loading 상태에서 dialog shell을 유지한 채 list/map/detail skeleton을 렌더링한다.
+- [x] `isEmptyLibrarySearchResult` 기준 empty state와 복구 CTA를 구현한다.
+- [x] query error 시 dialog 내부 recoverable error UI와 `다시 시도` 흐름을 구현한다.
+- [x] 개발 중 확인용으로 BFF library search fixture 응답을 추가한다.
+- [x] 세 상태를 integration test로 검증한다.
 
 ## 5. 좌측 결과 리스트와 기본 선택 구현
 

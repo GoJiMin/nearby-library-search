@@ -1,9 +1,11 @@
 import type {ErrorResponse, LibrarySearchItem, LibrarySearchResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
+import {developmentConfig} from '../config/env.js';
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import {librarySearchQuerySchema} from '../schemas/library.js';
 import type {LibrarySearchQuery} from '../schemas/library.js';
+import {createLibrarySearchFixtureResponse} from './librarySearchFixture.js';
 import {
   createErrorResponse,
   createRetryableUpstreamRequestError,
@@ -210,6 +212,10 @@ export const librarySearchRoute: FastifyPluginAsync = async app => {
       reply.status(parsedQuery.error.status);
 
       return parsedQuery.error;
+    }
+
+    if (developmentConfig.useDevFixtures) {
+      return createLibrarySearchFixtureResponse(parsedQuery.value);
     }
 
     const librarySearchPayload = await fetchLibrarySearchPayload(parsedQuery.value);

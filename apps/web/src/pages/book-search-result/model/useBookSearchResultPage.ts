@@ -69,6 +69,17 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     }
   }
 
+  function handleBackToRegionSelect() {
+    if (libraryResultBook == null) {
+      return;
+    }
+
+    setRegionDialogBook(libraryResultBook);
+    setCurrentLibrarySearchParams(null);
+    setLibraryResultBook(null);
+    setSelectedLibraryCode(null);
+  }
+
   function handleSelectBook(payload: BookSelectionActionPayload) {
     setRegionDialogBook(payload);
   }
@@ -91,6 +102,7 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
   return {
     createPageHref,
     currentLibrarySearchParams,
+    handleBackToRegionSelect,
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,

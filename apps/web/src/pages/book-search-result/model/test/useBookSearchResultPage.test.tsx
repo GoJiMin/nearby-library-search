@@ -167,6 +167,55 @@ describe('useBookSearchResultPage', () => {
     });
   });
 
+  it('library result dialog에서 지역 다시 선택을 누르면 같은 책으로 region dialog를 다시 연다', () => {
+    const navigate = vi.fn();
+    const {result} = renderHook(() =>
+      useBookSearchResultPage({
+        navigate,
+        params: {
+          page: 1,
+          title: '파친코',
+        },
+      }),
+    );
+
+    act(() => {
+      result.current.handleSelectBook({
+        author: '이민진',
+        isbn13: '9788954682155',
+        title: '파친코',
+      });
+    });
+
+    act(() => {
+      result.current.handleConfirmRegion({
+        detailRegion: '11140',
+        isbn: '9788954682155',
+        page: 1,
+        region: '11',
+      });
+    });
+
+    act(() => {
+      result.current.handleBackToRegionSelect();
+    });
+
+    expect(result.current.isLibraryResultDialogOpen).toBe(false);
+    expect(result.current.currentLibrarySearchParams).toBeNull();
+    expect(result.current.libraryResultBook).toBeNull();
+    expect(result.current.selectedLibraryCode).toBeNull();
+    expect(result.current.isRegionDialogOpen).toBe(true);
+    expect(result.current.selectedBook).toEqual({
+      author: '이민진',
+      isbn13: '9788954682155',
+      title: '파친코',
+    });
+    expect(result.current.lastRegionSelection).toEqual({
+      detailRegion: '11140',
+      region: '11',
+    });
+  });
+
   it('재검색 제출 시 /books route로 navigate한다', () => {
     const navigate = vi.fn();
     const {result} = renderHook(() =>

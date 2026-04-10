@@ -241,6 +241,68 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('개발용 fixture 모드가 켜져 있으면 도서관 검색 결과를 외부 호출 없이 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/search?isbn=9788954682155&region=11&detailRegion=11140&page=2',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      detailRegion: '11140',
+      isbn: '9788954682155',
+      items: [
+        expect.objectContaining({
+          code: 'LIB0011',
+          name: '공덕자료보관실',
+        }),
+        expect.objectContaining({
+          code: 'LIB0012',
+          name: '신촌아카이브',
+        }),
+      ],
+      page: 2,
+      pageSize: 10,
+      region: '11',
+      resultCount: 2,
+      totalCount: 12,
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('개발용 fixture 모드에서 조건에 맞는 도서관이 없으면 빈 결과를 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/search?isbn=9788954682155&region=26&page=1',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      isbn: '9788954682155',
+      items: [],
+      page: 1,
+      pageSize: 10,
+      region: '26',
+      resultCount: 0,
+      totalCount: 0,
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
   it('도서 검색 업스트림 실패를 502 표준 에러로 정규화한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(

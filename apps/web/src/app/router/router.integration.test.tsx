@@ -24,6 +24,45 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
   mockUseGetSearchBooks: vi.fn(),
 }));
 
+const {mockLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(() => ({
+  mockLibrarySearchResponse: {
+    detailRegion: '11140',
+    isbn: '9788954682155',
+    items: [
+      {
+        address: '서울특별시 마포구 월드컵북로 1',
+        closedDays: '둘째 주 월요일',
+        code: 'LIB0001',
+        fax: null,
+        homepage: 'https://library.example.com',
+        latitude: 37.5563,
+        longitude: 126.9236,
+        name: '마포중앙도서관',
+        operatingTime: '09:00 - 22:00',
+        phone: '02-1234-5678',
+      },
+      {
+        address: '서울특별시 마포구 양화로 2',
+        closedDays: '법정 공휴일',
+        code: 'LIB0002',
+        fax: null,
+        homepage: null,
+        latitude: null,
+        longitude: null,
+        name: '합정열람실',
+        operatingTime: '10:00 - 20:00',
+        phone: '02-2222-3333',
+      },
+    ],
+    page: 1,
+    pageSize: 10,
+    region: '11',
+    resultCount: 2,
+    totalCount: 12,
+  },
+  mockUseGetSearchLibraries: vi.fn(),
+}));
+
 vi.mock('@/entities/book', async importOriginal => {
   const actual = await importOriginal<typeof import('@/entities/book')>();
 
@@ -33,9 +72,20 @@ vi.mock('@/entities/book', async importOriginal => {
   };
 });
 
+vi.mock('@/entities/library', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/entities/library')>();
+
+  return {
+    ...actual,
+    useGetSearchLibraries: mockUseGetSearchLibraries,
+  };
+});
+
 beforeEach(() => {
   mockUseGetSearchBooks.mockReset();
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
+  mockUseGetSearchLibraries.mockReset();
+  mockUseGetSearchLibraries.mockReturnValue(mockLibrarySearchResponse);
 });
 
 function renderRouter(initialEntries: string[]) {
@@ -257,6 +307,7 @@ describe('app router integration', () => {
     expect(libraryResultDialog).toBeInTheDocument();
     expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
     expect(within(libraryResultDialog).getByRole('heading', {name: '검색 결과'})).toBeInTheDocument();
+    expect(within(libraryResultDialog).getByText('총 12개의 도서관을 검색했어요.')).toBeInTheDocument();
     expect(within(libraryResultDialog).getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
     expect(within(libraryResultDialog).getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(within(libraryResultDialog).getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
@@ -268,6 +319,64 @@ describe('app router integration', () => {
       expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
     });
 
+    expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+  });
+
+  it('library search가 비어 있으면 지역 다시 선택 CTA로 region dialog를 다시 연다', async () => {
+    const user = userEvent.setup();
+
+    mockUseGetSearchLibraries.mockReturnValue({
+      isbn: '9788954682155',
+      items: [],
+      page: 1,
+      pageSize: 10,
+      region: '11',
+      resultCount: 0,
+      totalCount: 0,
+    });
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    expect(await screen.findByText('선택한 지역에서 소장 도서관을 찾지 못했어요')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '지역 다시 선택'}));
+
+    expect(await screen.findByRole('dialog', {name: '검색 지역 선택'})).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
+    });
+  });
+
+  it('library search가 비어 있으면 다른 책 다시 선택 CTA로 dialog만 닫는다', async () => {
+    const user = userEvent.setup();
+
+    mockUseGetSearchLibraries.mockReturnValue({
+      isbn: '9788954682155',
+      items: [],
+      page: 1,
+      pageSize: 10,
+      region: '11',
+      resultCount: 0,
+      totalCount: 0,
+    });
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    expect(await screen.findByText('선택한 지역에서 소장 도서관을 찾지 못했어요')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '다른 책 다시 선택'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
+    });
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 

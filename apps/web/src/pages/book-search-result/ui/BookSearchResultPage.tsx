@@ -16,6 +16,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
   const {
     currentLibrarySearchParams,
     createPageHref,
+    handleBackToRegionSelect,
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
@@ -49,7 +50,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         selectedBook={selectedBook}
       />
       <LibrarySearchResultDialog
-        onBackToRegionSelect={() => {}}
+        onBackToRegionSelect={handleBackToRegionSelect}
         onChangePage={() => {}}
         onCheckAvailability={() => {}}
         onOpenChange={handleLibraryResultDialogOpenChange}
