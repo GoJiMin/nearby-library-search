@@ -1,16 +1,21 @@
 import type {LibraryCode, LibrarySearchItem} from '@nearby-library-search/contracts';
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef} from 'react';
 import {hasLibraryCoordinates} from '@/entities/library';
-import {appConfig, kakaoMapConfig} from '@/shared/env';
-import {KakaoMapSdkLoadError, type KakaoMapSdkLoadErrorCode, loadKakaoMapSdk} from '@/shared/kakao-map';
-import {LibrarySearchResultMapControls} from '../../map/LibrarySearchResultMapControls';
+import {appConfig} from '@/shared/env';
+import {LibrarySearchResultMapControls} from './LibrarySearchResultMapControls';
 import {
   LibrarySearchResultMapNoCoordinateBody,
   LibrarySearchResultMapPlaceholderBody,
   LibrarySearchResultMapUnavailableBody,
-} from '../../map/LibrarySearchResultMapFallback';
+} from './LibrarySearchResultMapFallback';
+import {
+  DEFAULT_SINGLE_LIBRARY_LEVEL,
+  MAX_KAKAO_MAP_LEVEL,
+  MIN_KAKAO_MAP_LEVEL,
+  focusMapOnLibrary,
+} from './librarySearchResultMap.viewport';
+import {useKakaoMapInstance} from './useKakaoMapInstance';
 
-type LibrarySearchResultMapStatus = 'disabled' | 'error' | 'loading' | 'ready';
 type LibrarySearchResultMapProps = {
   focusRequest: {code: LibraryCode; requestId: number} | null;
   items: LibrarySearchItem[];
@@ -27,38 +32,19 @@ type MarkerImageCache = {
   selected: KakaoMapsMarkerImage | null;
 };
 
-const DEFAULT_KAKAO_MAP_CENTER = Object.freeze({
-  latitude: 37.5665,
-  longitude: 126.978,
-});
-const DEFAULT_KAKAO_MAP_LEVEL = 8;
-const DEFAULT_SELECTED_LIBRARY_LEVEL = 3;
-const DEFAULT_SINGLE_LIBRARY_LEVEL = 4;
-const MIN_KAKAO_MAP_LEVEL = 1;
-const MAX_KAKAO_MAP_LEVEL = 14;
-
 function LibrarySearchResultMap({
   focusRequest,
   items,
   onSelectLibrary,
   selectedLibraryCode,
 }: LibrarySearchResultMapProps) {
-  const [status, setStatus] = useState<LibrarySearchResultMapStatus>(() =>
-    kakaoMapConfig.isEnabled ? 'loading' : 'disabled',
-  );
-  const [errorCode, setErrorCode] = useState<KakaoMapSdkLoadErrorCode | null>(() =>
-    kakaoMapConfig.isEnabled ? null : 'disabled',
-  );
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const kakaoMapsRef = useRef<KakaoMapsNamespace | null>(null);
-  const mapRef = useRef<KakaoMapsMap | null>(null);
+  const {containerRef, errorCode, kakaoMapsRef, mapRef, status} = useKakaoMapInstance();
   const markerImageCacheRef = useRef<MarkerImageCache>({
     default: null,
     selected: null,
   });
   const markerRegistryRef = useRef<Map<LibraryCode, MarkerRegistryEntry>>(new Map());
   const onSelectLibraryRef = useRef(onSelectLibrary);
-  const relayoutFrameRef = useRef<number | null>(null);
   const selectedMarkerCodeRef = useRef<LibraryCode | null>(null);
   const viewportItemsKeyRef = useRef('');
   const fallbackSelectedLibrary = items[0] ?? null;
@@ -76,65 +62,6 @@ function LibrarySearchResultMap({
   }, [onSelectLibrary]);
 
   useEffect(() => {
-    if (!kakaoMapConfig.isEnabled) {
-      return;
-    }
-
-    let isDisposed = false;
-
-    loadKakaoMapSdk()
-      .then(kakaoMaps => {
-        const container = containerRef.current;
-
-        if (isDisposed || container == null) {
-          return;
-        }
-
-        if (mapRef.current == null) {
-          mapRef.current = new kakaoMaps.Map(container, {
-            center: new kakaoMaps.LatLng(DEFAULT_KAKAO_MAP_CENTER.latitude, DEFAULT_KAKAO_MAP_CENTER.longitude),
-            level: DEFAULT_KAKAO_MAP_LEVEL,
-          });
-        }
-
-        kakaoMapsRef.current = kakaoMaps;
-        setErrorCode(null);
-        setStatus('ready');
-
-        relayoutFrameRef.current = window.requestAnimationFrame(() => {
-          mapRef.current?.relayout();
-        });
-      })
-      .catch(error => {
-        if (!isDisposed) {
-          const nextError =
-            error instanceof KakaoMapSdkLoadError
-              ? error
-              : new KakaoMapSdkLoadError('sdk-not-available', 'Unexpected Kakao Map SDK error.');
-
-          if (appConfig.isDevelopment) {
-            console.error('[KakaoMap] SDK load failed.', nextError);
-          }
-
-          setErrorCode(nextError.code);
-          setStatus(nextError.code === 'disabled' ? 'disabled' : 'error');
-        }
-      });
-
-    return () => {
-      isDisposed = true;
-
-      if (relayoutFrameRef.current != null) {
-        window.cancelAnimationFrame(relayoutFrameRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (status !== 'ready') {
-      return;
-    }
-
     const kakaoMaps = kakaoMapsRef.current;
     const map = mapRef.current;
 
@@ -188,13 +115,9 @@ function LibrarySearchResultMap({
         signature: createMarkerSignature(item),
       });
     });
-  }, [coordinateItems, coordinateItemsKey, status]);
+  }, [coordinateItems, coordinateItemsKey, kakaoMapsRef, mapRef]);
 
   useEffect(() => {
-    if (status !== 'ready') {
-      return;
-    }
-
     const kakaoMaps = kakaoMapsRef.current;
     const map = mapRef.current;
 
@@ -236,18 +159,9 @@ function LibrarySearchResultMap({
       nextSelectedCode: currentSelectedCoordinateCode,
       selectedMarkerCodeRef,
     });
-  }, [
-    coordinateItems,
-    coordinateItemsKey,
-    currentSelectedCoordinateCode,
-    status,
-  ]);
+  }, [coordinateItems, coordinateItemsKey, currentSelectedCoordinateCode, kakaoMapsRef, mapRef]);
 
   useEffect(() => {
-    if (status !== 'ready') {
-      return;
-    }
-
     const kakaoMaps = kakaoMapsRef.current;
 
     applySelectedMarker({
@@ -257,18 +171,19 @@ function LibrarySearchResultMap({
       nextSelectedCode: currentSelectedCoordinateCode,
       selectedMarkerCodeRef,
     });
-  }, [currentSelectedCoordinateCode, status]);
+  }, [currentSelectedCoordinateCode, kakaoMapsRef]);
 
   useEffect(() => {
-    if (status !== 'ready' || focusRequest == null) {
+    const kakaoMaps = kakaoMapsRef.current;
+    const map = mapRef.current;
+
+    if (focusRequest == null || kakaoMaps == null || map == null) {
       return;
     }
 
-    const kakaoMaps = kakaoMapsRef.current;
-    const map = mapRef.current;
     const targetLibrary = coordinateItems.find(item => item.code === focusRequest.code);
 
-    if (kakaoMaps == null || map == null || targetLibrary == null) {
+    if (targetLibrary == null) {
       return;
     }
 
@@ -278,14 +193,13 @@ function LibrarySearchResultMap({
       longitude: targetLibrary.longitude,
       map,
     });
-  }, [coordinateItems, focusRequest, status]);
+  }, [coordinateItems, focusRequest, kakaoMapsRef, mapRef]);
 
   useEffect(() => {
     const markerRegistry = markerRegistryRef.current;
+    const kakaoMaps = kakaoMapsRef.current;
 
     return () => {
-      const kakaoMaps = kakaoMapsRef.current;
-
       markerRegistry.forEach(entry => {
         if (kakaoMaps) {
           kakaoMaps.event.removeListener(entry.marker, 'click', entry.clickHandler);
@@ -295,7 +209,7 @@ function LibrarySearchResultMap({
       });
       markerRegistry.clear();
     };
-  }, []);
+  }, [kakaoMapsRef]);
 
   if (status === 'disabled' || status === 'error') {
     return (
@@ -356,21 +270,6 @@ function LibrarySearchResultMap({
 
 function createMarkerSignature(item: LibrarySearchItem & {latitude: number; longitude: number}) {
   return `${item.code}:${item.latitude}:${item.longitude}`;
-}
-
-function focusMapOnLibrary({
-  kakaoMaps,
-  latitude,
-  longitude,
-  map,
-}: {
-  kakaoMaps: KakaoMapsNamespace;
-  latitude: number;
-  longitude: number;
-  map: KakaoMapsMap;
-}) {
-  map.setLevel(DEFAULT_SELECTED_LIBRARY_LEVEL);
-  map.panTo(new kakaoMaps.LatLng(latitude, longitude));
 }
 
 function applySelectedMarker({
@@ -457,5 +356,5 @@ function createMarkerSvgDataUrl(isSelected: boolean) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-export {LibrarySearchResultMap, LibrarySearchResultMapNoCoordinateBody, LibrarySearchResultMapUnavailableBody};
+export {LibrarySearchResultMap};
 export type {LibrarySearchResultMapProps};
