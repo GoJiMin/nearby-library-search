@@ -2,6 +2,17 @@ import {kakaoMapConfig} from '@/shared/env';
 
 const KAKAO_MAP_SDK_SCRIPT_ID = 'kakao-map-sdk';
 let kakaoMapSdkPromise: Promise<KakaoMapsNamespace> | null = null;
+type KakaoMapSdkLoadErrorCode = 'disabled' | 'non-browser' | 'script-load-failed' | 'sdk-not-available';
+
+class KakaoMapSdkLoadError extends Error {
+  code: KakaoMapSdkLoadErrorCode;
+
+  constructor(code: KakaoMapSdkLoadErrorCode, message: string) {
+    super(message);
+    this.code = code;
+    this.name = 'KakaoMapSdkLoadError';
+  }
+}
 
 function createKakaoMapSdkUrl(appKey: string) {
   const searchParams = new URLSearchParams({
@@ -16,11 +27,11 @@ function loadKakaoMapSdk(): Promise<KakaoMapsNamespace> {
   const appKey = kakaoMapConfig.appKey;
 
   if (!kakaoMapConfig.isEnabled || appKey == null) {
-    return Promise.reject(new Error('Kakao Map SDK is not enabled.'));
+    return Promise.reject(new KakaoMapSdkLoadError('disabled', 'Kakao Map SDK is not enabled.'));
   }
 
   if (typeof window === 'undefined' || typeof document === 'undefined') {
-    return Promise.reject(new Error('Kakao Map SDK requires a browser environment.'));
+    return Promise.reject(new KakaoMapSdkLoadError('non-browser', 'Kakao Map SDK requires a browser environment.'));
   }
 
   if (kakaoMapSdkPromise) {
@@ -28,16 +39,16 @@ function loadKakaoMapSdk(): Promise<KakaoMapsNamespace> {
   }
 
   kakaoMapSdkPromise = new Promise((resolve, reject) => {
-    const rejectWithReset = (message: string) => {
+    const rejectWithReset = (code: KakaoMapSdkLoadErrorCode, message: string) => {
       kakaoMapSdkPromise = null;
-      reject(new Error(message));
+      reject(new KakaoMapSdkLoadError(code, message));
     };
 
     const resolveWithKakaoMaps = () => {
       const kakaoMaps = window.kakao?.maps;
 
       if (kakaoMaps == null || typeof kakaoMaps.load !== 'function') {
-        rejectWithReset('Kakao Map SDK did not become available.');
+        rejectWithReset('sdk-not-available', 'Kakao Map SDK did not become available.');
 
         return;
       }
@@ -79,7 +90,7 @@ function loadKakaoMapSdk(): Promise<KakaoMapsNamespace> {
         script.remove();
       }
 
-      rejectWithReset('Failed to load Kakao Map SDK script.');
+      rejectWithReset('script-load-failed', 'Failed to load Kakao Map SDK script.');
     };
 
     script.addEventListener('load', handleLoad, {once: true});
@@ -93,4 +104,5 @@ function loadKakaoMapSdk(): Promise<KakaoMapsNamespace> {
   return kakaoMapSdkPromise;
 }
 
-export {KAKAO_MAP_SDK_SCRIPT_ID, loadKakaoMapSdk};
+export {KAKAO_MAP_SDK_SCRIPT_ID, KakaoMapSdkLoadError, loadKakaoMapSdk};
+export type {KakaoMapSdkLoadErrorCode};

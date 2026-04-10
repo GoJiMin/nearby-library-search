@@ -94,24 +94,44 @@ describe('loadKakaoMapSdk', () => {
 
   it('설정이 비활성화돼 있으면 script를 추가하지 않고 즉시 실패한다', async () => {
     const appendChildSpy = vi.spyOn(document.head, 'appendChild');
-    const {loadKakaoMapSdk} = await importLoadKakaoMapSdk({
+    const {KakaoMapSdkLoadError, loadKakaoMapSdk} = await importLoadKakaoMapSdk({
       appKey: undefined,
       isEnabled: false,
     });
 
-    await expect(loadKakaoMapSdk()).rejects.toThrow('Kakao Map SDK is not enabled.');
+    await expect(loadKakaoMapSdk()).rejects.toEqual(
+      new KakaoMapSdkLoadError('disabled', 'Kakao Map SDK is not enabled.'),
+    );
     expect(appendChildSpy).not.toHaveBeenCalled();
   });
 
   it('script load 실패 시 reject하고 다음 재시도를 위해 script를 제거한다', async () => {
-    const {KAKAO_MAP_SDK_SCRIPT_ID, loadKakaoMapSdk} = await importLoadKakaoMapSdk();
+    const {KAKAO_MAP_SDK_SCRIPT_ID, KakaoMapSdkLoadError, loadKakaoMapSdk} = await importLoadKakaoMapSdk();
 
     const promise = loadKakaoMapSdk();
     const script = document.getElementById(KAKAO_MAP_SDK_SCRIPT_ID);
 
     script?.dispatchEvent(new Event('error'));
 
-    await expect(promise).rejects.toThrow('Failed to load Kakao Map SDK script.');
+    await expect(promise).rejects.toEqual(
+      new KakaoMapSdkLoadError('script-load-failed', 'Failed to load Kakao Map SDK script.'),
+    );
     expect(document.getElementById(KAKAO_MAP_SDK_SCRIPT_ID)).toBeNull();
+  });
+
+  it('script는 로드됐지만 kakao.maps.load가 없으면 sdk-not-available로 실패한다', async () => {
+    const {KAKAO_MAP_SDK_SCRIPT_ID, KakaoMapSdkLoadError, loadKakaoMapSdk} = await importLoadKakaoMapSdk();
+
+    const promise = loadKakaoMapSdk();
+    const script = document.getElementById(KAKAO_MAP_SDK_SCRIPT_ID);
+
+    window.kakao = {
+      maps: {} as KakaoMapsNamespace,
+    };
+    script?.dispatchEvent(new Event('load'));
+
+    await expect(promise).rejects.toEqual(
+      new KakaoMapSdkLoadError('sdk-not-available', 'Kakao Map SDK did not become available.'),
+    );
   });
 });
