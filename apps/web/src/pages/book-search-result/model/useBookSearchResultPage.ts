@@ -2,6 +2,7 @@ import {useState} from 'react';
 import type {NavigateFunction} from 'react-router-dom';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import type {BookSearchParams} from '@/entities/book';
+import {parseSearchLibrariesParams} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import type {BookSelectionActionPayload} from '@/features/book';
 import type {RegionSelectionState} from './bookSearchResultPage.contract';
@@ -88,6 +89,20 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     setSelectedLibraryCode(code);
   }
 
+  function handleChangeLibraryResultPage(page: number) {
+    if (currentLibrarySearchParams == null) {
+      return;
+    }
+
+    setCurrentLibrarySearchParams(
+      parseSearchLibrariesParams({
+        ...currentLibrarySearchParams,
+        page,
+      }),
+    );
+    setSelectedLibraryCode(null);
+  }
+
   function handleConfirmRegion(nextParams: LibrarySearchParams) {
     setLastRegionSelection({
       detailRegion: nextParams.detailRegion,
@@ -107,6 +122,7 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     createPageHref,
     currentLibrarySearchParams,
     handleBackToRegionSelect,
+    handleChangeLibraryResultPage,
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
