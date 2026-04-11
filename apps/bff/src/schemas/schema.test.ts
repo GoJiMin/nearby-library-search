@@ -1,6 +1,11 @@
 import {describe, expect, it} from 'vitest';
 import {bookDetailParamsSchema, bookSearchQuerySchema, DEFAULT_PAGE, DEFAULT_PAGE_SIZE} from './book.js';
-import {DEFAULT_LIBRARY_SEARCH_PAGE, DEFAULT_LIBRARY_SEARCH_PAGE_SIZE, librarySearchQuerySchema} from './library.js';
+import {
+  DEFAULT_LIBRARY_SEARCH_PAGE,
+  DEFAULT_LIBRARY_SEARCH_PAGE_SIZE,
+  libraryAvailabilityParamsSchema,
+  librarySearchQuerySchema,
+} from './library.js';
 
 describe('bff schemas', () => {
   it('도서 검색은 검색 조건 중 하나가 있어야 하고 기본 페이지 값을 채운다', () => {
@@ -64,6 +69,36 @@ describe('bff schemas', () => {
         isbn: '9791190157551',
         pageSize: '30',
         region: '33',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('도서관 대출 가능 여부 params는 공백 없는 libraryCode와 13자리 isbn13만 허용한다', () => {
+    const validResult = libraryAvailabilityParamsSchema.safeParse({
+      isbn13: '9791190157551',
+      libraryCode: ' LIB0001 ',
+    });
+
+    expect(validResult.success).toBe(true);
+
+    if (validResult.success) {
+      expect(validResult.data).toEqual({
+        isbn13: '9791190157551',
+        libraryCode: 'LIB0001',
+      });
+    }
+
+    expect(
+      libraryAvailabilityParamsSchema.safeParse({
+        isbn13: '9791190157551',
+        libraryCode: '   ',
+      }).success,
+    ).toBe(false);
+
+    expect(
+      libraryAvailabilityParamsSchema.safeParse({
+        isbn13: '1234',
+        libraryCode: 'LIB0001',
       }).success,
     ).toBe(false);
   });
