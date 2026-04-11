@@ -4,6 +4,7 @@ import type {ReactElement} from 'react';
 import {MemoryRouter} from 'react-router-dom';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {BookSearchResult} from '@/features/book';
+import {useFindLibraryStore} from '@/features/find-library';
 import {RequestGetError} from '@/shared/request';
 
 const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
@@ -56,6 +57,7 @@ vi.mock('@/entities/book', async importOriginal => {
 
 beforeEach(() => {
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
+  useFindLibraryStore.getState().resetFindLibraryFlow();
 });
 
 function createPageHref(page: number) {
@@ -182,16 +184,14 @@ describe('BookSearchResult', () => {
     expect(within(thirdItem).getByText('총 대출 7건')).toBeInTheDocument();
   });
 
-  it('텍스트 액션 버튼을 메타 정보 아래에 렌더링하고 올바른 handoff payload를 전달한다', async () => {
+  it('텍스트 액션 버튼을 메타 정보 아래에 렌더링하고 상세 보기 및 소장 도서관 찾기 동작을 연결한다', async () => {
     const user = userEvent.setup();
     const onOpenBookDetail = vi.fn();
-    const onSelectBook = vi.fn();
 
     renderBookSearchResult(
       <BookSearchResult
         createPageHref={createPageHref}
         onOpenBookDetail={onOpenBookDetail}
-        onSelectBook={onSelectBook}
         onSubmitSearch={vi.fn()}
         params={{
           page: 1,
@@ -206,7 +206,7 @@ describe('BookSearchResult', () => {
     const selectButton = firstItemQueries.getByRole('button', {name: '소장 도서관 찾기'});
 
     expect(onOpenBookDetail).not.toHaveBeenCalled();
-    expect(onSelectBook).not.toHaveBeenCalled();
+    expect(useFindLibraryStore.getState().regionDialogBook).toBeNull();
 
     await user.click(detailButton);
     await user.click(selectButton);
@@ -215,8 +215,7 @@ describe('BookSearchResult', () => {
     expect(onOpenBookDetail).toHaveBeenCalledWith({
       isbn13: '9788954682155',
     });
-    expect(onSelectBook).toHaveBeenCalledTimes(1);
-    expect(onSelectBook).toHaveBeenCalledWith({
+    expect(useFindLibraryStore.getState().regionDialogBook).toEqual({
       author: '이민진',
       isbn13: '9788954682155',
       title: '파친코',

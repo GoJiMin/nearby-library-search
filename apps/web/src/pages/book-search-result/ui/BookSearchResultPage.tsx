@@ -40,7 +40,6 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
     currentLibrarySearchParams,
     lastRegionSelection,
     libraryResultBook,
-    openRegionDialog,
     resetFindLibraryFlow,
     regionDialogBook,
     selectedLibraryCode,
@@ -55,7 +54,6 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
       currentLibrarySearchParams: state.currentLibrarySearchParams,
       lastRegionSelection: state.lastRegionSelection,
       libraryResultBook: state.libraryResultBook,
-      openRegionDialog: state.openRegionDialog,
       regionDialogBook: state.regionDialogBook,
       resetFindLibraryFlow: state.resetFindLibraryFlow,
       selectedLibraryCode: state.selectedLibraryCode,
@@ -91,7 +89,6 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
       <SecondaryPageHeader />
       <BookSearchResult
         createPageHref={page => createPageHref(params, page)}
-        onSelectBook={openRegionDialog}
         onSubmitSearch={handleSubmitSearch}
         params={params}
       />

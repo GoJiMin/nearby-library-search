@@ -1,9 +1,8 @@
 import {createContext, useContext} from 'react';
-import type {BookDetailActionPayload, BookSelectionActionPayload} from '../model/bookSearchResult.contract';
+import type {BookDetailActionPayload} from '../model/bookSearchResult.contract';
 
 type BookSearchResultActionContextValue = {
   onOpenBookDetail?: (payload: BookDetailActionPayload) => void;
-  onSelectBook?: (payload: BookSelectionActionPayload) => void;
 };
 
 const BookSearchResultActionContext = createContext<BookSearchResultActionContextValue | null>(null);

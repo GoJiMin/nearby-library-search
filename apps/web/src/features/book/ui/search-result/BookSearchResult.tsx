@@ -1,7 +1,7 @@
 import {Suspense} from 'react';
 import type {BookSearchParams} from '@/entities/book';
 import {BookSearchResultActionContext} from '../../lib/bookSearchResultActionContext';
-import type {BookDetailActionPayload, BookSelectionActionPayload} from '../../model/bookSearchResult.contract';
+import type {BookDetailActionPayload} from '../../model/bookSearchResult.contract';
 import {QueryErrorBoundary} from '@/shared/feedback';
 import {BookSearchResultContent} from './BookSearchResultContent';
 import {BookSearchResultSearchBar} from './BookSearchResultSearchBar';
@@ -11,18 +11,11 @@ import {BookSearchResultLoadingContent} from './states/BookSearchResultLoadingCo
 type BookSearchResultProps = {
   createPageHref: (page: number) => string;
   onOpenBookDetail?: (payload: BookDetailActionPayload) => void;
-  onSelectBook?: (payload: BookSelectionActionPayload) => void;
   onSubmitSearch: (params: BookSearchParams) => void;
   params: BookSearchParams;
 };
 
-function BookSearchResult({
-  createPageHref,
-  params,
-  onOpenBookDetail,
-  onSelectBook,
-  onSubmitSearch,
-}: BookSearchResultProps) {
+function BookSearchResult({createPageHref, params, onOpenBookDetail, onSubmitSearch}: BookSearchResultProps) {
   const searchBarKey = `${params.title ? 'title' : 'author'}:${params.title ?? params.author ?? ''}`;
   const queryText = params.title ?? params.author ?? '';
 
@@ -33,7 +26,6 @@ function BookSearchResult({
         <BookSearchResultActionContext.Provider
           value={{
             onOpenBookDetail,
-            onSelectBook,
           }}
         >
           <QueryErrorBoundary
