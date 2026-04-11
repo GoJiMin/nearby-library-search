@@ -1,5 +1,5 @@
 import type {LibrarySearchItem} from '@nearby-library-search/contracts';
-import {CalendarX2, Clock3, MapPin, Phone, Search} from 'lucide-react';
+import {CalendarX2, Clock3, MapPin, Phone, Search, ExternalLink} from 'lucide-react';
 import type {ReactNode} from 'react';
 import {Button, Heading, LucideIcon, Skeleton, Text} from '@/shared/ui';
 import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
@@ -64,37 +64,31 @@ function getLibraryDetailValue(library: LibrarySearchItem, key: (typeof detailFi
 
 function LibrarySearchResultDetailBody({library}: LibrarySearchResultDetailBodyProps) {
   return (
-    <div className="space-y-4">
-      <Heading as="h2" size="lg">
-        {library.name}
-      </Heading>
+    <div className="space-y-5">
+      <div className="flex items-center gap-2">
+        <Heading as="h2" size="md">
+          {library.name}
+        </Heading>
+        {library.homepage ? (
+          <a href={library.homepage} rel="noreferrer" target="_blank">
+            <LucideIcon className="text-text-muted hover:text-accent transition-colors" icon={ExternalLink} size={24} />
+          </a>
+        ) : null}
+      </div>
       <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
         {detailFieldItems.map(item => (
           <div className="flex items-start gap-3" key={item.label}>
-            <span className="bg-accent-soft text-accent inline-flex h-8 w-8 items-center justify-center rounded-full">
-              <LucideIcon className="h-4 w-4" icon={item.icon} strokeWidth={2.1} />
-            </span>
             <div className="min-w-0 flex-1 space-y-1.5">
               <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">
                 {item.label}
               </p>
-              <Text className="break-words" size="sm" tone="default">
+              <Text className="text-sm wrap-break-word" tone="default">
                 {getLibraryDetailValue(library, item.key)}
               </Text>
             </div>
           </div>
         ))}
       </div>
-      {library.homepage ? (
-        <a
-          className="text-accent text-sm leading-6 font-medium underline underline-offset-4"
-          href={library.homepage}
-          rel="noreferrer"
-          target="_blank"
-        >
-          도서관 홈페이지 바로가기
-        </a>
-      ) : null}
     </div>
   );
 }
@@ -104,7 +98,13 @@ function LibrarySearchResultDetailFooterCta({
   onCheckAvailability,
 }: LibrarySearchResultDetailFooterCtaProps) {
   return (
-    <Button className="w-full rounded-2xl" disabled={disabled} onClick={onCheckAvailability} size="lg" variant="default">
+    <Button
+      className="w-full rounded-2xl"
+      disabled={disabled}
+      onClick={onCheckAvailability}
+      size="lg"
+      variant="default"
+    >
       <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
       대출 가능 여부 조회
     </Button>

@@ -70,7 +70,7 @@ function LibrarySearchResultContent({
   }
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[304px_minmax(0,1fr)]">
+    <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[334px_minmax(0,1fr)]">
       <LibrarySearchResultListPanel
         footer={
           <LibrarySearchResultPagination
@@ -87,7 +87,7 @@ function LibrarySearchResultContent({
           selectedLibraryCode={resolvedSelectedLibraryCode}
         />
       </LibrarySearchResultListPanel>
-      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_220px]">
+      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
         <LibrarySearchResultMapPanel>
           {/* Map focus uses explicit list/marker interactions; default selection keeps the full bounds view. */}
           <LibrarySearchResultMap

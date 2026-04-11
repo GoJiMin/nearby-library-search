@@ -18,20 +18,15 @@ const resultCardSkeletonWidths = [
 
 function LibrarySearchResultListPanel({children, footer, summary}: LibrarySearchResultListPanelProps) {
   return (
-    <aside
-      aria-label="검색 결과 목록 패널"
-      className="bg-surface-strong border-line/40 flex min-h-0 flex-col border-r"
-    >
-      <div className="px-6 pt-6 pb-5">
+    <aside aria-label="검색 결과 목록 패널" className="bg-surface-strong border-line/40 flex min-h-0 flex-col border-r">
+      <div className="px-8 pt-8 pb-3">
         <Heading as="h2" className="tracking-[-0.04em]" size="lg">
           검색 결과
         </Heading>
-        <Text className="mt-1" size="sm">
-          {summary}
-        </Text>
+        <Text className="mt-1 text-sm">{summary}</Text>
       </div>
       {children}
-      {footer ? <div className="px-4 pb-6">{footer}</div> : null}
+      {footer ? <div className="px-4 py-4">{footer}</div> : null}
     </aside>
   );
 }
@@ -50,11 +45,7 @@ function LibrarySearchResultListPlaceholderBody({
   itemCount = resultCardSkeletonWidths.length,
 }: LibrarySearchResultListPlaceholderBodyProps) {
   return (
-    <ul
-      aria-label="도서관 검색 결과 목록"
-      className="flex-1 space-y-3 overflow-y-auto px-4 pb-6"
-      role="list"
-    >
+    <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 pb-6" role="list">
       {Array.from({length: itemCount}, (_, index) => {
         const widths = resultCardSkeletonWidths[index % resultCardSkeletonWidths.length];
 
@@ -88,17 +79,9 @@ function getLibraryRowMeta(item: LibrarySearchItem) {
   return item.operatingTime ?? item.closedDays ?? '운영 정보 없음';
 }
 
-function LibrarySearchResultListBody({
-  items,
-  onSelectLibrary,
-  selectedLibraryCode,
-}: LibrarySearchResultListBodyProps) {
+function LibrarySearchResultListBody({items, onSelectLibrary, selectedLibraryCode}: LibrarySearchResultListBodyProps) {
   return (
-    <ul
-      aria-label="도서관 검색 결과 목록"
-      className="flex-1 space-y-3 overflow-y-auto px-4 pb-6"
-      role="list"
-    >
+    <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 py-3" role="list">
       {items.map(item => {
         const isSelected = selectedLibraryCode === item.code;
 
@@ -108,8 +91,8 @@ function LibrarySearchResultListBody({
               aria-pressed={isSelected}
               className={
                 isSelected
-                  ? 'bg-surface shadow-card border-line/70 flex w-full flex-col gap-4 rounded-3xl border px-4 py-4 text-left'
-                  : 'bg-surface-muted/60 hover:bg-surface-muted/80 flex w-full flex-col gap-4 rounded-3xl px-4 py-4 text-left transition-colors'
+                  ? 'bg-surface shadow-card border-line/70 flex w-full flex-col gap-4 rounded-3xl border px-5 py-5 text-left'
+                  : 'bg-surface-muted/60 hover:bg-surface-muted flex w-full flex-col gap-4 rounded-3xl px-5 py-5 text-left transition-colors'
               }
               onClick={() => onSelectLibrary(item.code)}
               type="button"
@@ -118,11 +101,11 @@ function LibrarySearchResultListBody({
                 <Heading as="h3" size="sm">
                   {item.name}
                 </Heading>
-                <Text className="line-clamp-2" size="sm" tone="muted">
+                <Text className="line-clamp-2 text-sm" tone="muted">
                   {item.address ?? '주소 정보 없음'}
                 </Text>
               </div>
-              <Text className="text-sm leading-5" size="sm" tone="muted">
+              <Text className="text-sm leading-3" tone="muted">
                 {getLibraryRowMeta(item)}
               </Text>
             </button>

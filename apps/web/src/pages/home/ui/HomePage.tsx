@@ -27,7 +27,7 @@ function HomePage() {
   }
 
   return (
-    <section className="flex h-full w-full max-w-5xl flex-1 flex-col items-center justify-center">
+    <section className="mx-auto flex h-full w-full max-w-5xl flex-1 flex-col items-center justify-center">
       <div className="mb-5 flex flex-col gap-5 text-center md:mb-6 md:gap-6">
         <BrandMessage />
         <Text className="leading-[1.55] text-balance" size="sm">
