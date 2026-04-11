@@ -1,69 +1,122 @@
 import {useEffect} from 'react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
+import {useShallow} from 'zustand/react/shallow';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book';
+import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
 import {RegionSelectDialog} from '@/features/region';
 import {Button, Card, Heading, Text} from '@/shared/ui';
-import {useBookSearchResultPage} from '../model/useBookSearchResultPage';
 
 type BookSearchResultPageContentProps = {
   params: BookSearchParams;
 };
 
+function createPageHref(params: BookSearchParams, page: number) {
+  const nextSearchParams = new URLSearchParams({
+    page: String(page),
+  });
+
+  if (params.title) {
+    nextSearchParams.set('title', params.title);
+  }
+
+  if (params.author) {
+    nextSearchParams.set('author', params.author);
+  }
+
+  return `/books?${nextSearchParams.toString()}`;
+}
+
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
   const {
+    backToRegionSelect,
+    changeLibraryResultPage,
+    closeLibraryResultDialog,
+    closeRegionDialog,
+    confirmRegion,
     currentLibrarySearchParams,
-    createPageHref,
-    handleBackToRegionSelect,
-    handleChangeLibraryResultPage,
-    handleConfirmRegion,
-    handleLibraryResultDialogOpenChange,
-    handleRegionDialogOpenChange,
-    handleSelectLibrary,
-    handleSelectBook,
-    handleSubmitSearch,
-    isLibraryResultDialogOpen,
-    isRegionDialogOpen,
     lastRegionSelection,
     libraryResultBook,
-    resetBookSearchResultFlow,
-    selectedBook,
+    openRegionDialog,
+    resetFindLibraryFlow,
+    regionDialogBook,
     selectedLibraryCode,
-  } = useBookSearchResultPage({
-    navigate,
-    params,
-  });
+    selectLibrary,
+  } = useFindLibraryStore(
+    useShallow(state => ({
+      backToRegionSelect: state.backToRegionSelect,
+      changeLibraryResultPage: state.changeLibraryResultPage,
+      closeLibraryResultDialog: state.closeLibraryResultDialog,
+      closeRegionDialog: state.closeRegionDialog,
+      confirmRegion: state.confirmRegion,
+      currentLibrarySearchParams: state.currentLibrarySearchParams,
+      lastRegionSelection: state.lastRegionSelection,
+      libraryResultBook: state.libraryResultBook,
+      openRegionDialog: state.openRegionDialog,
+      regionDialogBook: state.regionDialogBook,
+      resetFindLibraryFlow: state.resetFindLibraryFlow,
+      selectedLibraryCode: state.selectedLibraryCode,
+      selectLibrary: state.selectLibrary,
+    })),
+  );
 
   useEffect(() => {
-    resetBookSearchResultFlow();
-  }, [resetBookSearchResultFlow]);
+    resetFindLibraryFlow();
+  }, [resetFindLibraryFlow]);
+
+  function handleSubmitSearch(nextParams: BookSearchParams) {
+    const nextSearchParams = new URLSearchParams({
+      page: String(nextParams.page),
+    });
+
+    if (nextParams.title) {
+      nextSearchParams.set('title', nextParams.title);
+    }
+
+    if (nextParams.author) {
+      nextSearchParams.set('author', nextParams.author);
+    }
+
+    navigate({
+      pathname: '/books',
+      search: `?${nextSearchParams.toString()}`,
+    });
+  }
 
   return (
     <>
       <SecondaryPageHeader />
       <BookSearchResult
-        createPageHref={createPageHref}
-        onSelectBook={handleSelectBook}
+        createPageHref={page => createPageHref(params, page)}
+        onSelectBook={openRegionDialog}
         onSubmitSearch={handleSubmitSearch}
         params={params}
       />
       <RegionSelectDialog
         lastSelection={lastRegionSelection}
-        onConfirm={handleConfirmRegion}
-        onOpenChange={handleRegionDialogOpenChange}
-        open={isRegionDialogOpen}
-        selectedBook={selectedBook}
+        onConfirm={confirmRegion}
+        onOpenChange={open => {
+          if (!open) {
+            closeRegionDialog();
+          }
+        }}
+        open={regionDialogBook != null}
+        selectedBook={regionDialogBook}
       />
       <LibrarySearchResultDialog
-        onBackToRegionSelect={handleBackToRegionSelect}
-        onChangePage={handleChangeLibraryResultPage}
+        onBackToRegionSelect={backToRegionSelect}
+        onChangePage={changeLibraryResultPage}
         onCheckAvailability={() => {}}
-        onOpenChange={handleLibraryResultDialogOpenChange}
-        onSelectLibrary={handleSelectLibrary}
-        open={isLibraryResultDialogOpen}
+        onOpenChange={open => {
+          if (!open) {
+            closeLibraryResultDialog();
+          }
+        }}
+        onSelectLibrary={selectLibrary}
+        open={currentLibrarySearchParams != null && libraryResultBook != null}
         params={currentLibrarySearchParams}
         selectedBook={libraryResultBook}
         selectedLibraryCode={selectedLibraryCode}
