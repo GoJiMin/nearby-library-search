@@ -600,6 +600,34 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('도서관 대출 가능 여부 조회 비정상 응답을 502 표준 에러로 정규화한다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        {
+          response: {},
+        },
+        'https://example.com/bookExist?libCode=LIB0001&isbn13=9791190157551',
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0001/books/9791190157551/availability',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
+    });
+
+    await app.close();
+  });
+
   it('도서 검색 업스트림 실패를 502 표준 에러로 정규화한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
