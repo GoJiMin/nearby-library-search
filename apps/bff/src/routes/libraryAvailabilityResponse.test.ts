@@ -19,10 +19,13 @@ describe('libraryAvailabilityResponse', () => {
         },
       ),
     ).toEqual({
-      hasBook: 'Y',
-      isbn13: '9791190157551',
-      libraryCode: 'LIB0001',
-      loanAvailable: 'N',
+      ok: true,
+      value: {
+        hasBook: 'Y',
+        isbn13: '9791190157551',
+        libraryCode: 'LIB0001',
+        loanAvailable: 'N',
+      },
     });
   });
 
@@ -42,7 +45,14 @@ describe('libraryAvailabilityResponse', () => {
           libraryCode: 'LIB0001',
         },
       ),
-    ).toBeNull();
+    ).toEqual({
+      error: {
+        detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        status: 502,
+        title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
+      },
+      ok: false,
+    });
   });
 
   it('loanAvailable이 Y/N이 아니면 정규화하지 않는다', () => {
@@ -61,6 +71,34 @@ describe('libraryAvailabilityResponse', () => {
           libraryCode: 'LIB0001',
         },
       ),
-    ).toBeNull();
+    ).toEqual({
+      error: {
+        detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        status: 502,
+        title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
+      },
+      ok: false,
+    });
+  });
+
+  it('result record가 없으면 response invalid 에러로 실패한다', () => {
+    expect(
+      normalizeLibraryAvailabilityResponse(
+        {
+          response: {},
+        },
+        {
+          isbn13: '9791190157551',
+          libraryCode: 'LIB0001',
+        },
+      ),
+    ).toEqual({
+      error: {
+        detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        status: 502,
+        title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
+      },
+      ok: false,
+    });
   });
 });
