@@ -1,5 +1,7 @@
 import type {LibraryCode, LibrarySearchItem} from '@nearby-library-search/contracts';
+import {useShallow} from 'zustand/react/shallow';
 import {hasLibraryCoordinates} from '@/entities/library';
+import {useFindLibraryStore} from '@/features/find-library';
 import {appConfig} from '@/shared/env';
 import {LibrarySearchResultMapControls} from './LibrarySearchResultMapControls';
 import {
@@ -16,16 +18,15 @@ import {useLibraryMapViewport} from '../model/useLibraryMapViewport';
 type LibrarySearchResultMapProps = {
   focusRequest: {code: LibraryCode; requestId: number} | null;
   items: LibrarySearchItem[];
-  onSelectLibrary: (code: LibraryCode) => void;
-  selectedLibraryCode: LibraryCode | null;
 };
 
-function LibrarySearchResultMap({
-  focusRequest,
-  items,
-  onSelectLibrary,
-  selectedLibraryCode,
-}: LibrarySearchResultMapProps) {
+function LibrarySearchResultMap({focusRequest, items}: LibrarySearchResultMapProps) {
+  const {selectedLibraryCode, selectLibrary} = useFindLibraryStore(
+    useShallow(state => ({
+      selectedLibraryCode: state.selectedLibraryCode,
+      selectLibrary: state.selectLibrary,
+    })),
+  );
   const {containerRef, errorCode, kakaoMapsRef, mapRef, status} = useKakaoMapInstance();
   const coordinateItems = items.filter(hasLibraryCoordinates) as LibrarySearchCoordinateItem[];
   const currentSelectedCoordinateLibrary = coordinateItems.find(item => item.code === selectedLibraryCode) ?? null;
@@ -38,7 +39,7 @@ function LibrarySearchResultMap({
     currentSelectedCoordinateCode,
     kakaoMapsRef,
     mapRef,
-    onSelectLibrary,
+    onSelectLibrary: selectLibrary,
     status,
   });
   const {handleLocate, handleZoomIn, handleZoomOut, isLocateDisabled} = useLibraryMapViewport({

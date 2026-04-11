@@ -74,12 +74,7 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
         <LibrarySearchResultMapPanel>
           {/* Map focus uses explicit list/marker interactions; default selection keeps the full bounds view. */}
-          <LibrarySearchResultMap
-            focusRequest={mapFocusRequest}
-            items={response.items}
-            onSelectLibrary={selectLibrary}
-            selectedLibraryCode={selectedLibraryCode}
-          />
+          <LibrarySearchResultMap focusRequest={mapFocusRequest} items={response.items} />
         </LibrarySearchResultMapPanel>
         <LibrarySearchResultDetailPanel
           footer={
