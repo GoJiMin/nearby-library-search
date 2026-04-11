@@ -791,7 +791,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
   });
 
-  it('모바일에서 현재 페이지 결과에 좌표가 없으면 상세 영역에 no-coordinate 문구를 렌더하고 빠른 지도 버튼은 숨긴다', async () => {
+  it('모바일에서 선택된 도서관에 좌표가 없으면 상세 영역에 no-coordinate 문구를 렌더하고 빠른 지도 버튼은 숨긴다', async () => {
     mockMatchMedia(true);
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
@@ -814,7 +814,7 @@ describe('LibrarySearchResultDialog', () => {
 
     const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
 
-    expect(within(detailPanel).getByText('지도로 표시할 수 있는 위치 정보가 없어요.')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('위치 정보가 없어요.')).toBeInTheDocument();
     expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
   });
 

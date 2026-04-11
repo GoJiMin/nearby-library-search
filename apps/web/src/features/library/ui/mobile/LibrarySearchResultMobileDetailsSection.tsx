@@ -14,6 +14,28 @@ type LibrarySearchResultMobileDetailsSectionProps = {
   params: LibrarySearchParams;
 };
 
+type QuickMapState = 'hidden' | 'openable' | 'unavailable' | 'without-coordinate';
+
+function resolveQuickMapState({
+  selectedLibrary,
+}: {
+  selectedLibrary: ReturnType<typeof useGetSearchLibraries>['items'][number] | null;
+}): QuickMapState {
+  if (!kakaoMapConfig.isEnabled) {
+    return 'unavailable';
+  }
+
+  if (selectedLibrary == null) {
+    return 'hidden';
+  }
+
+  if (!hasLibraryCoordinates(selectedLibrary)) {
+    return 'without-coordinate';
+  }
+
+  return 'openable';
+}
+
 function LibrarySearchResultMobileDetailsSectionFallback() {
   return (
     <section aria-label="선택된 도서관 정보 패널" className="bg-surface border-line/40 border-b px-6 py-5">
@@ -41,28 +63,27 @@ function LibrarySearchResultMobileDetailsSection({
   const response = useGetSearchLibraries(params);
   const selectedLibraryCode = useFindLibraryStore(state => state.selectedLibraryCode);
   const currentSelectedLibrary = response.items.find(item => item.code === selectedLibraryCode) ?? null;
-  const hasCoordinateItems = response.items.some(hasLibraryCoordinates);
-  const isMapUnavailable = !kakaoMapConfig.isEnabled;
-  const canOpenQuickMap = currentSelectedLibrary != null && !isMapUnavailable && hasCoordinateItems;
+  const quickMapState = resolveQuickMapState({selectedLibrary: currentSelectedLibrary});
+  const openableLibrary = quickMapState === 'openable' ? currentSelectedLibrary : null;
   let quickMapAction: ReactNode = null;
 
-  if (canOpenQuickMap) {
+  if (openableLibrary != null) {
     quickMapAction = (
-      <Button className="w-full rounded-2xl" onClick={() => onOpenQuickMap(currentSelectedLibrary.code)} size="lg" variant="secondary">
+      <Button className="w-full rounded-2xl" onClick={() => onOpenQuickMap(openableLibrary.code)} size="lg" variant="secondary">
         <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
         지도로 보기
       </Button>
     );
-  } else if (isMapUnavailable) {
+  } else if (quickMapState === 'unavailable') {
     quickMapAction = (
       <Text className="px-1 text-sm" size="sm" tone="muted">
         지도를 표시할 수 없어요.
       </Text>
     );
-  } else if (!hasCoordinateItems) {
+  } else if (quickMapState === 'without-coordinate') {
     quickMapAction = (
       <Text className="px-1 text-sm" size="sm" tone="muted">
-        지도로 표시할 수 있는 위치 정보가 없어요.
+        위치 정보가 없어요.
       </Text>
     );
   }
