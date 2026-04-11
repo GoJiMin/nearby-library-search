@@ -1,0 +1,80 @@
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+
+async function importLibraryAvailabilityParamsModule() {
+  process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
+  process.env.LIBRARY_API_BASE_URL = 'https://example.com';
+
+  return import('./libraryAvailabilityParams.js');
+}
+
+describe('libraryAvailabilityParams', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it('유효한 params는 trim된 값으로 통과시킨다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(
+      parseLibraryAvailabilityParams({
+        isbn13: '9791190157551',
+        libraryCode: ' LIB0001 ',
+      }),
+    ).toEqual({
+      ok: true,
+      value: {
+        isbn13: '9791190157551',
+        libraryCode: 'LIB0001',
+      },
+    });
+  });
+
+  it('빈 libraryCode는 availability 전용 error title로 실패한다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(
+      parseLibraryAvailabilityParams({
+        isbn13: '9791190157551',
+        libraryCode: '   ',
+      }),
+    ).toEqual({
+      error: {
+        detail: 'libraryCode는 비어 있지 않은 문자열이어야 합니다.',
+        status: 400,
+        title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
+      },
+      ok: false,
+    });
+  });
+
+  it('잘못된 isbn13은 availability 전용 error title로 실패한다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(
+      parseLibraryAvailabilityParams({
+        isbn13: '1234',
+        libraryCode: 'LIB0001',
+      }),
+    ).toEqual({
+      error: {
+        detail: 'isbn13은 13자리 숫자 문자열이어야 합니다.',
+        status: 400,
+        title: 'LIBRARY_AVAILABILITY_ISBN13_INVALID',
+      },
+      ok: false,
+    });
+  });
+
+  it('경로 객체 자체가 비정상이면 generic params invalid로 실패한다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(parseLibraryAvailabilityParams(null)).toEqual({
+      error: {
+        detail: '대출 가능 여부 요청 경로가 올바르지 않습니다.',
+        status: 400,
+        title: 'LIBRARY_AVAILABILITY_PARAMS_INVALID',
+      },
+      ok: false,
+    });
+  });
+});
