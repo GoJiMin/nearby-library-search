@@ -126,9 +126,16 @@
 - [x] 카카오맵을 연결해 전체 마커 표시와 선택 강조를 구현한다.
 - [x] Phase 5-4 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
-## Phase 5-5. 상태 처리와 통합 사용자 흐름 검증
+## Phase 5-5. 도서관 대출 가능 여부 조회 구현
+
+- [ ] 도서관 결과 dialog의 `대출 가능 여부 조회` CTA를 실제 availability 조회 흐름에 연결한다.
+- [ ] 선택된 도서관 기준 availability loading, success, empty, error 상태 계약을 정리한다.
+- [ ] desktop detail panel과 mobile detail 영역에서 같은 availability 결과를 일관되게 노출한다.
+- [ ] Phase 5-5 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+
+## Phase 5-6. 상태 처리와 통합 사용자 흐름 검증
 
 - [ ] 검색 결과 없음, 지역 결과 없음, 도서관 결과 없음, 요청 오류 흐름을 공통 상태 계약에 맞게 구현한다.
 - [ ] 라이트/다크 토큰 적용, 반응형 마감, 접근성 기준을 전체 흐름에서 점검한다.
 - [ ] MVP 사용자 흐름 전체를 연결하고 통합 테스트와 최종 검증을 수행한다.
-- [ ] Phase 5-5 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [ ] Phase 5-6 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
