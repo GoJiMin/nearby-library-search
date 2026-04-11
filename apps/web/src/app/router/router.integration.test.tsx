@@ -645,7 +645,7 @@ describe('app router integration', () => {
     await user.click(await screen.findByRole('button', {name: '서울'}));
     await user.click(screen.getByRole('button', {name: '선택 완료'}));
 
-    expect(await screen.findByText('선택한 지역에서 소장 도서관을 찾지 못했어요')).toBeInTheDocument();
+    expect(await screen.findByText('소장 중인 도서관을 찾지 못했어요.')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', {name: '지역 다시 선택'}));
 
@@ -725,7 +725,7 @@ describe('app router integration', () => {
     await user.click(await screen.findByRole('button', {name: '서울'}));
     await user.click(screen.getByRole('button', {name: '선택 완료'}));
 
-    expect(await screen.findByText('선택한 지역에서 소장 도서관을 찾지 못했어요')).toBeInTheDocument();
+    expect(await screen.findByText('소장 중인 도서관을 찾지 못했어요.')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', {name: '다른 책 다시 선택'}));
 

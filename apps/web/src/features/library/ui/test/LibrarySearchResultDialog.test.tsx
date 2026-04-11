@@ -964,7 +964,7 @@ describe('LibrarySearchResultDialog', () => {
 
     renderLibrarySearchResultDialog();
 
-    expect(await screen.findByText('선택한 지역에서 소장 도서관을 찾지 못했어요')).toBeInTheDocument();
+    expect(await screen.findByText('소장 중인 도서관을 찾지 못했어요.')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '지역 다시 선택'})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '다른 책 다시 선택'})).toBeInTheDocument();
   });
@@ -1021,7 +1021,7 @@ describe('LibrarySearchResultDialog', () => {
 
     renderLibrarySearchResultDialog();
 
-    expect(await screen.findByText('도서관 검색 결과를 불러오지 못했어요')).toBeInTheDocument();
+    expect(await screen.findByText('검색 결과를 불러오지 못했어요')).toBeInTheDocument();
 
     shouldThrow = false;
 
