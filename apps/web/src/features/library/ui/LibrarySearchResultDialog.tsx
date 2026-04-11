@@ -1,4 +1,3 @@
-import {Suspense} from 'react';
 import {X} from 'lucide-react';
 import {useShallow} from 'zustand/react/shallow';
 import {useFindLibraryStore} from '@/features/find-library';
@@ -6,7 +5,6 @@ import {QueryErrorBoundary} from '@/shared/feedback';
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, LucideIcon} from '@/shared/ui';
 import {LibrarySearchResultContent} from './LibrarySearchResultContent';
 import {LibrarySearchResultErrorContent} from './states/LibrarySearchResultErrorContent';
-import {LibrarySearchResultLoadingContent} from './states/LibrarySearchResultLoadingContent';
 
 function LibrarySearchResultDialog() {
   const {closeLibraryResultDialog, params, selectedBook} = useFindLibraryStore(
@@ -51,9 +49,7 @@ function LibrarySearchResultDialog() {
         <QueryErrorBoundary
           fallback={({error, reset}) => <LibrarySearchResultErrorContent error={error} onRetry={reset} />}
         >
-          <Suspense fallback={<LibrarySearchResultLoadingContent />}>
-            <LibrarySearchResultContent />
-          </Suspense>
+          <LibrarySearchResultContent />
         </QueryErrorBoundary>
       </DialogContent>
     </Dialog>

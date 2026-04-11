@@ -1,37 +1,31 @@
-import {useEffect, useState} from 'react';
-import type {LibraryCode} from '@nearby-library-search/contracts';
+import {Suspense, useState} from 'react';
+import type {LibraryCode, LibrarySearchItem} from '@nearby-library-search/contracts';
 import {useShallow} from 'zustand/react/shallow';
-import {isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
-import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
+import {LibrarySearchResultMapPlaceholderBody} from '../map/ui/LibrarySearchResultMapFallback';
 import {LibrarySearchResultDetails} from './LibrarySearchResultDetails';
+import {LibrarySearchResultListSection} from './LibrarySearchResultListSection';
 import {LibrarySearchResultSidebar} from './LibrarySearchResultSidebar';
+import {LibrarySearchResultDetailsPlaceholder} from './loading/LibrarySearchResultDetailsPlaceholder';
+import {LibrarySearchResultListPlaceholder} from './loading/LibrarySearchResultListPlaceholder';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
 
-type LibrarySearchResultResolvedContentProps = {
-  params: LibrarySearchParams;
-};
-
-function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolvedContentProps) {
-  const {selectedLibraryCode, selectLibrary} = useFindLibraryStore(
+function LibrarySearchResultContent() {
+  const {params, selectedLibraryCode, selectLibrary} = useFindLibraryStore(
     useShallow(state => ({
+      params: state.currentLibrarySearchParams,
       selectedLibraryCode: state.selectedLibraryCode,
       selectLibrary: state.selectLibrary,
     })),
   );
   const [mapFocusRequest, setMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
+  const [resolvedItems, setResolvedItems] = useState<LibrarySearchItem[] | null>(null);
+  const [resolvedPage, setResolvedPage] = useState<number | null>(null);
 
-  const response = useGetSearchLibraries(params);
-  const currentSelectedLibrary = response.items.find(item => item.code === selectedLibraryCode) ?? null;
-
-  useEffect(() => {
-    if (selectedLibraryCode != null || response.items.length === 0) {
-      return;
-    }
-
-    selectLibrary(response.items[0].code);
-  }, [response.items, selectLibrary, selectedLibraryCode]);
+  if (params == null) {
+    return null;
+  }
 
   function handleSelectLibraryFromList(code: LibraryCode) {
     selectLibrary(code);
@@ -41,39 +35,43 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
     }));
   }
 
-  if (isEmptyLibrarySearchResult(response)) {
+  const currentPageItems = resolvedPage === params.page ? resolvedItems : null;
+
+  if (currentPageItems?.length === 0) {
     return <LibrarySearchResultEmptyContent />;
   }
 
+  const currentSelectedLibrary = currentPageItems?.find(item => item.code === selectedLibraryCode) ?? null;
+
   return (
     <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[334px_minmax(0,1fr)]">
-      <LibrarySearchResultSidebar
-          items={response.items}
-          onSelectLibrary={handleSelectLibraryFromList}
-          page={response.page ?? undefined}
-          pageSize={response.pageSize ?? undefined}
-          selectedLibraryCode={selectedLibraryCode}
-          totalCount={response.totalCount}
-      />
+      <LibrarySearchResultSidebar>
+        <Suspense fallback={<LibrarySearchResultListPlaceholder />}>
+          <LibrarySearchResultListSection
+            onSelectLibrary={handleSelectLibraryFromList}
+            params={params}
+            setResolvedPage={setResolvedPage}
+            selectedLibraryCode={selectedLibraryCode}
+            setResolvedItems={setResolvedItems}
+          />
+        </Suspense>
+      </LibrarySearchResultSidebar>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
         <section aria-label="도서관 지도 패널" className="bg-surface-muted relative min-h-90 overflow-hidden">
-          {/* Map focus uses explicit list/marker interactions; default selection keeps the full bounds view. */}
-          <LibrarySearchResultMap focusRequest={mapFocusRequest} items={response.items} />
+          {currentPageItems == null ? (
+            <LibrarySearchResultMapPlaceholderBody />
+          ) : (
+            <LibrarySearchResultMap focusRequest={mapFocusRequest} items={currentPageItems} />
+          )}
         </section>
-        <LibrarySearchResultDetails library={currentSelectedLibrary} />
+        {currentPageItems == null ? (
+          <LibrarySearchResultDetailsPlaceholder />
+        ) : (
+          <LibrarySearchResultDetails library={currentSelectedLibrary} />
+        )}
       </div>
     </div>
   );
-}
-
-function LibrarySearchResultContent() {
-  const params = useFindLibraryStore(state => state.currentLibrarySearchParams);
-
-  if (params == null) {
-    return null;
-  }
-
-  return <LibrarySearchResultResolvedContent params={params} />;
 }
 
 export {LibrarySearchResultContent};

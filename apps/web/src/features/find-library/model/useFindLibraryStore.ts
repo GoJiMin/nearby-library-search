@@ -14,6 +14,7 @@ type FindLibraryState = {
   lastRegionSelection: RegionSelectionState | null;
   libraryResultBook: BookSelectionActionPayload | null;
   regionDialogBook: BookSelectionActionPayload | null;
+  resolvedLibraryTotalCount: number | null;
   selectedLibraryCode: LibraryCode | null;
 };
 
@@ -26,6 +27,7 @@ type FindLibraryActions = {
   openRegionDialog: (payload: BookSelectionActionPayload) => void;
   resetFindLibraryFlow: () => void;
   selectLibrary: (code: LibraryCode) => void;
+  setResolvedLibraryTotalCount: (totalCount: number) => void;
 };
 
 type FindLibraryStore = FindLibraryState & FindLibraryActions;
@@ -36,6 +38,7 @@ function createInitialState(): FindLibraryState {
     lastRegionSelection: null,
     libraryResultBook: null,
     regionDialogBook: null,
+    resolvedLibraryTotalCount: null,
     selectedLibraryCode: null,
   };
 }
@@ -53,6 +56,7 @@ const useFindLibraryStore = create<FindLibraryStore>((set, get) => ({
       currentLibrarySearchParams: null,
       libraryResultBook: null,
       regionDialogBook: libraryResultBook,
+      resolvedLibraryTotalCount: null,
       selectedLibraryCode: null,
     });
   },
@@ -75,6 +79,7 @@ const useFindLibraryStore = create<FindLibraryStore>((set, get) => ({
     set({
       currentLibrarySearchParams: null,
       libraryResultBook: null,
+      resolvedLibraryTotalCount: null,
       selectedLibraryCode: null,
     });
   },
@@ -97,6 +102,7 @@ const useFindLibraryStore = create<FindLibraryStore>((set, get) => ({
       },
       libraryResultBook: regionDialogBook,
       regionDialogBook: null,
+      resolvedLibraryTotalCount: null,
       selectedLibraryCode: null,
     });
   },
@@ -111,6 +117,15 @@ const useFindLibraryStore = create<FindLibraryStore>((set, get) => ({
   selectLibrary: code => {
     set({
       selectedLibraryCode: code,
+    });
+  },
+  setResolvedLibraryTotalCount: totalCount => {
+    if (get().resolvedLibraryTotalCount === totalCount) {
+      return;
+    }
+
+    set({
+      resolvedLibraryTotalCount: totalCount,
     });
   },
 }));

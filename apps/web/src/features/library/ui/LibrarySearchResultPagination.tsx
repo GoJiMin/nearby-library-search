@@ -14,12 +14,6 @@ type LibrarySearchResultPaginationItem =
       type: 'ellipsis';
     };
 
-type LibrarySearchResultPaginationProps = {
-  page?: number;
-  pageSize?: number;
-  totalCount: number;
-};
-
 function createPageItems(startPage: number, endPage: number): LibrarySearchResultPaginationItem[] {
   return Array.from({length: endPage - startPage + 1}, (_, index) => ({
     page: startPage + index,
@@ -100,16 +94,20 @@ function createPageItemClassName(isCurrentPage: boolean) {
     : 'text-text-muted font-medium hover:bg-surface-muted';
 }
 
-function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySearchResultPaginationProps) {
-  const {changeLibraryResultPage, fallbackPage} = useFindLibraryStore(
+function LibrarySearchResultPagination() {
+  const {changeLibraryResultPage, currentPage, totalCount} = useFindLibraryStore(
     useShallow(state => ({
       changeLibraryResultPage: state.changeLibraryResultPage,
-      fallbackPage: state.currentLibrarySearchParams?.page,
+      currentPage: state.currentLibrarySearchParams?.page ?? 1,
+      totalCount: state.resolvedLibraryTotalCount,
     })),
   );
-  const currentPage = page ?? fallbackPage ?? 1;
-  const resolvedPageSize = pageSize ?? LIBRARY_SEARCH_PAGE_SIZE;
-  const totalPages = Math.ceil(totalCount / resolvedPageSize);
+
+  if (totalCount == null) {
+    return null;
+  }
+
+  const totalPages = Math.ceil(totalCount / LIBRARY_SEARCH_PAGE_SIZE);
   const paginationItems = getLibrarySearchResultPaginationItems(currentPage, totalPages);
   const isFirstPage = currentPage <= 1;
   const isLastPage = currentPage >= totalPages;
@@ -185,4 +183,3 @@ function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySear
 }
 
 export {LibrarySearchResultPagination};
-export type {LibrarySearchResultPaginationProps};

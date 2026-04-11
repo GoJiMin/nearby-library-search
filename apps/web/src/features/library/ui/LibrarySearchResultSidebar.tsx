@@ -1,27 +1,15 @@
-import type {LibrarySearchItem} from '@nearby-library-search/contracts';
+import type {ReactNode} from 'react';
 import {useFindLibraryStore} from '@/features/find-library';
 import {Button, Heading, Text} from '@/shared/ui';
-import {LibrarySearchResultList} from './LibrarySearchResultList';
 import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
 
 type LibrarySearchResultSidebarProps = {
-  items: LibrarySearchItem[];
-  page?: number;
-  pageSize?: number;
-  selectedLibraryCode: LibrarySearchItem['code'] | null;
-  totalCount: number;
-  onSelectLibrary: (code: LibrarySearchItem['code']) => void;
+  children: ReactNode;
 };
 
-function LibrarySearchResultSidebar({
-  items,
-  onSelectLibrary,
-  page,
-  pageSize,
-  selectedLibraryCode,
-  totalCount,
-}: LibrarySearchResultSidebarProps) {
+function LibrarySearchResultSidebar({children}: LibrarySearchResultSidebarProps) {
   const backToRegionSelect = useFindLibraryStore(state => state.backToRegionSelect);
+  const totalCount = useFindLibraryStore(state => state.resolvedLibraryTotalCount);
 
   return (
     <aside aria-label="검색 결과 목록 패널" className="bg-surface-strong border-line/40 flex min-h-0 flex-col border-r">
@@ -30,25 +18,25 @@ function LibrarySearchResultSidebar({
           <Heading as="h2" className="tracking-[-0.04em]" size="lg">
             검색 결과
           </Heading>
-          <Button
-            className="rounded-full px-3 text-text-muted hover:text-text"
-            onClick={backToRegionSelect}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            지역 변경
-          </Button>
+          {totalCount != null ? (
+            <Button
+              className="rounded-full px-3 text-text-muted hover:text-text"
+              onClick={backToRegionSelect}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              지역 변경
+            </Button>
+          ) : null}
         </div>
-        <Text className="mt-1 text-sm">{`총 ${totalCount}개의 도서관을 검색했어요.`}</Text>
+        <Text className="mt-1 text-sm">
+          {totalCount == null ? '도서관 검색 결과를 불러오고 있어요.' : `총 ${totalCount}개의 도서관을 검색했어요.`}
+        </Text>
       </div>
-      <LibrarySearchResultList
-        items={items}
-        onSelectLibrary={onSelectLibrary}
-        selectedLibraryCode={selectedLibraryCode}
-      />
+      {children}
       <div className="px-4 py-4">
-        <LibrarySearchResultPagination page={page} pageSize={pageSize} totalCount={totalCount} />
+        <LibrarySearchResultPagination />
       </div>
     </aside>
   );
