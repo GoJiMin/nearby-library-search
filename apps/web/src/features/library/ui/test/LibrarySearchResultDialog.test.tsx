@@ -5,7 +5,35 @@ import {AppProvider} from '@/app/providers';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
 import {KakaoMapSdkLoadError} from '@/shared/kakao-map';
-import {LibrarySearchResultDetails} from '../LibrarySearchResultDetails';
+import {LibrarySearchResultDetails} from '../common/LibrarySearchResultDetails';
+
+async function tabUntilFocused(user: ReturnType<typeof userEvent.setup>, target: HTMLElement, maxSteps = 32) {
+  for (let step = 0; step < maxSteps; step += 1) {
+    if (target === document.activeElement) {
+      return;
+    }
+
+    await user.tab();
+  }
+
+  throw new Error(`Failed to focus target element within ${maxSteps} tab steps.`);
+}
+
+function mockMatchMedia(matches: boolean) {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      addEventListener: vi.fn(),
+      addListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      matches,
+      media: query,
+      onchange: null,
+      removeEventListener: vi.fn(),
+      removeListener: vi.fn(),
+    })),
+  });
+}
 
 const DEFAULT_PARAMS = {
   detailRegion: '11140',
@@ -296,6 +324,7 @@ function renderLibrarySearchResultDialog(options?: Parameters<typeof seedLibrary
 
 describe('LibrarySearchResultDialog', () => {
   beforeEach(() => {
+    mockMatchMedia(false);
     useFindLibraryStore.getState().resetFindLibraryFlow();
     mockUseGetSearchLibraries.mockReset();
     mockUseGetSearchLibraries.mockReturnValue(mockLibrarySearchResponse);
@@ -336,6 +365,46 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('둘째 주 월요일')).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
     expect(within(detailPanel).getByText('02-1234-5678')).toBeInTheDocument();
+  });
+
+  it('모바일 branch에서는 상세 정보, 리스트, 페이지네이션, 지도 순서로 조합하고 세로 스크롤을 가진다', async () => {
+    mockMatchMedia(true);
+
+    renderLibrarySearchResultDialog();
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+    const list = screen.getByLabelText('도서관 검색 결과 목록');
+    const pagination = screen.getByRole('navigation', {name: '도서관 검색 결과 페이지네이션'});
+    const mapToggleButton = screen.getByRole('button', {name: '지도 접기'});
+    const mobileLayout = document.querySelector('[data-slot="library-search-mobile-layout"]');
+
+    expect(mobileLayout).toBeInstanceOf(HTMLElement);
+
+    if (!(mobileLayout instanceof HTMLElement)) {
+      throw new Error('mobile layout not found');
+    }
+
+    expect(mobileLayout.className).toContain('overflow-y-auto');
+    expect(detailPanel.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(list.compareDocumentPosition(pagination) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(pagination.compareDocumentPosition(mapToggleButton) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+  });
+
+  it('모바일에서 지도를 사용할 수 있으면 지도 섹션은 기본으로 접혀 있다', async () => {
+    mockMatchMedia(true);
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
+    const {kakaoMaps} = createMockKakaoMaps();
+
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialog();
+
+    const mapToggleButton = await screen.findByRole('button', {name: '지도 보기'});
+
+    expect(mapToggleButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByText('위치 확인이 필요할 때 지도를 펼쳐보세요.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
   });
 
   it('totalPages가 2 이상이면 상태 기반 페이지네이션을 렌더링하고 현재 페이지를 표시한다', async () => {
@@ -881,6 +950,80 @@ describe('LibrarySearchResultDialog', () => {
       expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
     });
     expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
+  });
+
+  it('escape 입력 시 library dialog 상태를 닫는다', async () => {
+    const user = userEvent.setup();
+
+    renderLibrarySearchResultDialog();
+
+    await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+    await user.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
+    });
+    expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
+  });
+
+  it('overlay dismiss 시 library dialog 상태를 닫는다', async () => {
+    const user = userEvent.setup();
+
+    renderLibrarySearchResultDialog();
+
+    await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+
+    const overlay = document.querySelector('[data-slot="dialog-overlay"]');
+
+    expect(overlay).toBeInstanceOf(HTMLElement);
+
+    if (!(overlay instanceof HTMLElement)) {
+      throw new Error('dialog overlay not found');
+    }
+
+    await user.click(overlay);
+
+    await waitFor(() => {
+      expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
+    });
+    expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
+  });
+
+  it('모바일 branch에서도 키보드 탭 이동으로 주요 액션에 접근할 수 있다', async () => {
+    const user = userEvent.setup();
+
+    mockMatchMedia(true);
+    renderLibrarySearchResultDialog();
+
+    const dialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+    const changeRegionButton = screen.getByRole('button', {name: '지역 변경'});
+    const detailCta = screen.getByRole('button', {name: '대출 가능 여부 조회'});
+    const firstLibraryRow = screen.getByRole('button', {name: /마포중앙도서관/});
+    const secondPageButton = screen.getByRole('button', {name: '2페이지'});
+    const mapToggleButton = screen.getByRole('button', {name: '지도 접기'});
+    const closeButton = screen.getByRole('button', {name: '닫기'});
+
+    await waitFor(() => {
+      expect(dialog.contains(document.activeElement)).toBe(true);
+    });
+
+    await tabUntilFocused(user, changeRegionButton);
+    expect(changeRegionButton).toHaveFocus();
+
+    await tabUntilFocused(user, detailCta);
+    expect(detailCta).toHaveFocus();
+
+    await tabUntilFocused(user, firstLibraryRow);
+    expect(firstLibraryRow).toHaveFocus();
+
+    await tabUntilFocused(user, secondPageButton);
+    expect(secondPageButton).toHaveFocus();
+
+    await tabUntilFocused(user, mapToggleButton);
+    expect(mapToggleButton).toHaveFocus();
+
+    await tabUntilFocused(user, closeButton);
+    expect(closeButton).toHaveFocus();
   });
 
   it('params나 selectedBook이 없으면 렌더링하지 않는다', () => {

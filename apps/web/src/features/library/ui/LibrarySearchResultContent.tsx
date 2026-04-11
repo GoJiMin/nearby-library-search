@@ -1,12 +1,10 @@
-import {Suspense, useState} from 'react';
+import {useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {useShallow} from 'zustand/react/shallow';
 import {useFindLibraryStore} from '@/features/find-library';
-import {LibrarySearchResultList} from './LibrarySearchResultList';
-import {LibrarySearchResultRightPanel} from './LibrarySearchResultRightPanel';
-import {LibrarySearchResultSidebar} from './LibrarySearchResultSidebar';
-import {LibrarySearchResultListPlaceholder} from './loading/LibrarySearchResultListPlaceholder';
-import {LibrarySearchResultRightPanelPlaceholder} from './loading/LibrarySearchResultRightPanelPlaceholder';
+import {useMediaQuery} from '@/shared/lib/useMediaQuery';
+import {LibrarySearchResultDesktopLayout} from './desktop/LibrarySearchResultDesktopLayout';
+import {LibrarySearchResultMobileLayout} from './mobile/LibrarySearchResultMobileLayout';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
 
 function LibrarySearchResultContent() {
@@ -19,6 +17,7 @@ function LibrarySearchResultContent() {
     })),
   );
   const [mapFocusRequest, setMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
+  const isMobile = useMediaQuery('(max-width: 767px)');
 
   if (params == null) {
     return null;
@@ -36,21 +35,24 @@ function LibrarySearchResultContent() {
     return <LibrarySearchResultEmptyContent />;
   }
 
+  if (isMobile) {
+    return (
+      <LibrarySearchResultMobileLayout
+        focusRequest={mapFocusRequest}
+        onSelectLibrary={handleSelectLibraryFromList}
+        params={params}
+        selectedLibraryCode={selectedLibraryCode}
+      />
+    );
+  }
+
   return (
-    <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[334px_minmax(0,1fr)]">
-      <LibrarySearchResultSidebar>
-        <Suspense fallback={<LibrarySearchResultListPlaceholder />}>
-          <LibrarySearchResultList
-            onSelectLibrary={handleSelectLibraryFromList}
-            params={params}
-            selectedLibraryCode={selectedLibraryCode}
-          />
-        </Suspense>
-      </LibrarySearchResultSidebar>
-      <Suspense fallback={<LibrarySearchResultRightPanelPlaceholder />}>
-        <LibrarySearchResultRightPanel focusRequest={mapFocusRequest} params={params} />
-      </Suspense>
-    </div>
+    <LibrarySearchResultDesktopLayout
+      focusRequest={mapFocusRequest}
+      onSelectLibrary={handleSelectLibraryFromList}
+      params={params}
+      selectedLibraryCode={selectedLibraryCode}
+    />
   );
 }
 
