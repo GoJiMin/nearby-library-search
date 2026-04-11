@@ -39,7 +39,7 @@
 
 - [x] `createApp().inject()` 기준 success 응답을 검증한다.
 - [x] fixture mode 응답과 외부 호출 미발생을 검증한다.
-- [ ] invalid `isbn13` / empty `libraryCode` 400을 검증한다.
+- [x] invalid `isbn13` / empty `libraryCode` 400을 검증한다.
 - [ ] upstream request failure / invalid payload 502를 검증한다.
 
 ## 7. web `entities/library` request 추가

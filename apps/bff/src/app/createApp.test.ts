@@ -503,6 +503,46 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('잘못된 isbn13이면 외부 호출 없이 400 availability 에러를 반환한다', async () => {
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0001/books/1234/availability',
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toEqual({
+      detail: 'isbn13은 13자리 숫자 문자열이어야 합니다.',
+      status: 400,
+      title: 'LIBRARY_AVAILABILITY_ISBN13_INVALID',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('비어 있는 libraryCode면 외부 호출 없이 400 availability 에러를 반환한다', async () => {
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/%20%20%20/books/9791190157551/availability',
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toEqual({
+      detail: 'libraryCode는 비어 있지 않은 문자열이어야 합니다.',
+      status: 400,
+      title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
   it('도서 검색 업스트림 실패를 502 표준 에러로 정규화한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
