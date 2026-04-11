@@ -437,7 +437,7 @@ describe('createApp integration', () => {
     await app.close();
   });
 
-  it('도서관 대출 가능 여부 조회는 bookExist upstream 호출만 위임하고 정규화된 응답을 반환한다', async () => {
+  it('도서관 대출 가능 여부 조회 success 응답을 정규화하고 bookExist upstream을 한 번만 호출한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
@@ -475,6 +475,7 @@ describe('createApp integration', () => {
       },
       requiredQueryParams: ['libCode', 'isbn13'],
     });
+    expect(requestLibraryApiMock).toHaveBeenCalledTimes(1);
 
     await app.close();
   });
