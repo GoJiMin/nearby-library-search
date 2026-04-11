@@ -1,22 +1,7 @@
 import type {LibrarySearchItem} from '@nearby-library-search/contracts';
-import type {ReactNode} from 'react';
 import {Heading, Text} from '@/shared/ui';
 
-type LibrarySearchResultListPanelProps = {
-  children: ReactNode;
-  footer?: ReactNode;
-};
-
-function LibrarySearchResultListPanel({children, footer}: LibrarySearchResultListPanelProps) {
-  return (
-    <aside aria-label="검색 결과 목록 패널" className="bg-surface-strong border-line/40 flex min-h-0 flex-col border-r">
-      {children}
-      {footer ? <div className="px-4 py-4">{footer}</div> : null}
-    </aside>
-  );
-}
-
-type LibrarySearchResultListBodyProps = {
+type LibrarySearchResultListProps = {
   items: LibrarySearchItem[];
   onSelectLibrary: (code: LibrarySearchItem['code']) => void;
   selectedLibraryCode: LibrarySearchItem['code'] | null;
@@ -30,7 +15,7 @@ function getLibraryRowMeta(item: LibrarySearchItem) {
   return item.operatingTime ?? item.closedDays ?? '운영 정보 없음';
 }
 
-function LibrarySearchResultListBody({items, onSelectLibrary, selectedLibraryCode}: LibrarySearchResultListBodyProps) {
+function LibrarySearchResultList({items, onSelectLibrary, selectedLibraryCode}: LibrarySearchResultListProps) {
   return (
     <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 py-3" role="list">
       {items.map(item => {
@@ -67,5 +52,5 @@ function LibrarySearchResultListBody({items, onSelectLibrary, selectedLibraryCod
   );
 }
 
-export {LibrarySearchResultListBody, LibrarySearchResultListPanel};
-export type {LibrarySearchResultListBodyProps, LibrarySearchResultListPanelProps};
+export {LibrarySearchResultList};
+export type {LibrarySearchResultListProps};
