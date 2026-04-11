@@ -34,7 +34,7 @@
   - 다이얼로그 내부 페이지네이션은 URL이 아니라 page local state로 관리한다.
 - UI primitive 기준
   - 결과 화면은 새 route를 만들지 않고 현재 `@/shared/ui` dialog primitive 위에 구현한다.
-  - 데스크톱 시각 구조는 스크린샷을 최대한 따르되, 모바일은 Phase 4-2의 정보 우선 계약을 따른다.
+  - 데스크톱 시각 구조는 스크린샷을 최대한 따르되, 모바일은 상세 정보 우선 구조와 quick map dialog 계약을 따른다.
 - 데이터/상태 기준
   - 조회 입력은 `LibrarySearchParams`를 그대로 사용한다.
   - `pageSize`는 사용자 조절 없이 항상 `10`으로 고정한다.
@@ -151,8 +151,12 @@
 ### 3. 모바일 구조
 
 - 모바일 기본 구조는 Phase 4-2 계약을 따른다.
-  - 도서관 리스트/선택 정보 우선
-  - 지도는 그 아래 보조 영역
+- 모바일 기본 순서는 아래로 고정한다.
+  - 선택된 도서관 상세
+  - 결과 리스트
+  - 페이지네이션
+- 지도는 문서 흐름의 하단 inline 영역으로 두지 않고, 상세 영역의 `지도로 보기` action으로 여는 full-screen quick map dialog로 제공한다.
+- 모바일에서 리스트 선택과 페이지 변경 후에는 선택된 도서관 상세가 다시 보이도록 상단으로 스크롤한다.
 - 데스크톱의 2열 병렬 구조를 그대로 축소하지 않는다.
 - 모바일 시각 polish는 이번 spec에서 정보 구조와 행동 계약만 고정하고, 세밀한 스타일 보정은 후속 task에서 다룬다.
 
@@ -269,10 +273,11 @@
 ## 접근성 계약
 
 - dialog는 포커스 트랩을 유지해야 한다.
+- main library result dialog와 mobile quick map dialog는 각각 close button, `ESC`, overlay dismiss로 닫을 수 있어야 한다.
 - 리스트, map controls, pagination, CTA는 키보드 탭 순서로 접근 가능해야 한다.
-- active library row는 시각 강조 외에도 접근성 상태로 드러나야 한다.
+- active library row는 시각 강조 외에도 `aria-pressed`로 드러나야 한다.
 - pagination의 현재 페이지는 `aria-current="page"`를 사용한다.
-- map unavailable, empty, error 상태는 가시 텍스트로 이유를 전달해야 한다.
+- mobile quick map unavailable, map unavailable, empty, error 상태는 가시 텍스트로 이유를 전달해야 한다.
 
 ## 테스트 기준
 
@@ -293,6 +298,8 @@
 - 페이지 변경 시 같은 검색 조건으로 `page`만 바뀌고, 새 페이지 첫 항목이 기본 선택된다.
 - dialog를 닫고 다시 열면 pagination은 `page=1`로 다시 시작한다.
 - `대출 가능 여부 조회` 버튼은 렌더되지만 실제 조회는 수행하지 않는다.
+- 모바일에서는 상세 → 리스트 → 페이지네이션 순서를 유지하고, `지도로 보기`로 quick map dialog를 연다.
+- mobile quick map dialog는 close button, `ESC`, overlay dismiss로 닫히고, 닫아도 바깥 library result dialog는 유지된다.
 
 ### 3. focused unit test
 
