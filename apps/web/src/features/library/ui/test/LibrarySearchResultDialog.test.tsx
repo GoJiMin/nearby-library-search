@@ -5,7 +5,7 @@ import {AppProvider} from '@/app/providers';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
 import {KakaoMapSdkLoadError} from '@/shared/kakao-map';
-import {LibrarySearchResultDetailFooterCta} from '../panels/LibrarySearchResultDetailPanel';
+import {LibrarySearchResultDetails} from '../LibrarySearchResultDetails';
 
 const DEFAULT_PARAMS = {
   detailRegion: '11140',
@@ -710,7 +710,7 @@ describe('LibrarySearchResultDialog', () => {
   });
 
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
-    render(<LibrarySearchResultDetailFooterCta disabled onCheckAvailability={vi.fn()} />);
+    render(<LibrarySearchResultDetails library={null} />);
 
     expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
   });
