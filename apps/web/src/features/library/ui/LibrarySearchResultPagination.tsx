@@ -40,45 +40,58 @@ function getLibrarySearchResultPaginationItems(
   }
 
   const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages);
-  let startPage = Math.max(1, safeCurrentPage - 1);
-  const items: LibrarySearchResultPaginationItem[] = [];
-  const endPage = Math.min(totalPages, startPage + 2);
+  const lastPage = totalPages;
 
-  if (endPage === totalPages) {
-    startPage = Math.max(1, endPage - 2);
+  if (safeCurrentPage <= 3) {
+    return [
+      ...createPageItems(1, 3),
+      {
+        id: 'ellipsis-end',
+        type: 'ellipsis',
+      },
+      {
+        page: lastPage,
+        type: 'page',
+      },
+    ];
   }
 
-  if (startPage > 1) {
-    items.push({
+  if (safeCurrentPage >= lastPage - 2) {
+    return [
+      {
+        page: 1,
+        type: 'page',
+      },
+      {
+        id: 'ellipsis-start',
+        type: 'ellipsis',
+      },
+      ...createPageItems(lastPage - 2, lastPage),
+    ];
+  }
+
+  return [
+    {
       page: 1,
       type: 'page',
-    });
-  }
-
-  if (startPage > 2) {
-    items.push({
+    },
+    {
       id: 'ellipsis-start',
       type: 'ellipsis',
-    });
-  }
-
-  items.push(...createPageItems(startPage, endPage));
-
-  if (endPage < totalPages - 1) {
-    items.push({
+    },
+    {
+      page: safeCurrentPage,
+      type: 'page',
+    },
+    {
       id: 'ellipsis-end',
       type: 'ellipsis',
-    });
-  }
-
-  if (endPage < totalPages) {
-    items.push({
-      page: totalPages,
+    },
+    {
+      page: lastPage,
       type: 'page',
-    });
-  }
-
-  return items;
+    },
+  ];
 }
 
 function createPageItemClassName(isCurrentPage: boolean) {
