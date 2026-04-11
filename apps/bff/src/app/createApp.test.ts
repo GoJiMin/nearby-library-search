@@ -277,7 +277,7 @@ describe('createApp integration', () => {
     await app.close();
   });
 
-  it('개발용 fixture 모드에서 서울 전체 선택은 detailRegion 없이도 각 도서 fixture isbn에 대한 결과를 반환한다', async () => {
+  it('개발용 fixture 모드에서 서울 전체 선택은 detailRegion 없이도 다중 페이지 결과를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
     const {createApp} = await import('./createApp.js');
@@ -337,7 +337,74 @@ describe('createApp integration', () => {
       pageSize: 10,
       region: '11',
       resultCount: 10,
-      totalCount: 12,
+      totalCount: 96,
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('개발용 fixture 모드에서 서울 전체 선택은 중간 페이지 확인용 결과를 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/search?isbn=9791192389479&region=11&page=5',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      isbn: '9791192389479',
+      items: [
+        expect.objectContaining({
+          code: 'LIB1119005',
+          name: '영등포 성산서고',
+        }),
+        expect.objectContaining({
+          code: 'LIB1119006',
+          name: '영등포 상암미디어도서관',
+        }),
+        expect.objectContaining({
+          code: 'LIB1119007',
+          name: '영등포 망원책나루',
+        }),
+        expect.objectContaining({
+          code: 'LIB1119008',
+          name: '영등포 연남문고',
+        }),
+        expect.objectContaining({
+          code: 'LIB1119009',
+          name: '영등포 서교정보서재',
+        }),
+        expect.objectContaining({
+          code: 'LIB1119010',
+          name: '영등포 홍대창작자료실',
+        }),
+        expect.objectContaining({
+          code: 'LIB1119011',
+          name: '영등포 공덕자료보관실',
+        }),
+        expect.objectContaining({
+          code: 'LIB1119012',
+          name: '영등포 신촌아카이브',
+        }),
+        expect.objectContaining({
+          code: 'LIB1120001',
+          name: '동작 마포중앙도서관',
+        }),
+        expect.objectContaining({
+          code: 'LIB1120002',
+          name: '동작 합정열람실',
+        }),
+      ],
+      page: 5,
+      pageSize: 10,
+      region: '11',
+      resultCount: 10,
+      totalCount: 96,
     });
     expect(requestLibraryApiMock).not.toHaveBeenCalled();
 
