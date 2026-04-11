@@ -2,10 +2,10 @@
 
 ## 1. `packages/contracts` availability 응답 계약 추가
 
-- [ ] `LibraryAvailabilityResponse` 타입을 추가한다.
-- [ ] 필요하면 `'Y' | 'N'` flag 타입을 함께 정의한다.
-- [ ] `packages/contracts/src/index.ts`에서 새 타입을 export한다.
-- [ ] web과 BFF가 raw Open API 타입이 아니라 내부 계약만 공유하는지 확인한다.
+- [x] `LibraryAvailabilityResponse` 타입을 추가한다.
+- [x] 필요하면 `'Y' | 'N'` flag 타입을 함께 정의한다.
+- [x] `packages/contracts/src/index.ts`에서 새 타입을 export한다.
+- [x] web과 BFF가 raw Open API 타입이 아니라 내부 계약만 공유하는지 확인한다.
 
 ## 2. BFF `/bookExist` endpoint와 param schema 확장
 
