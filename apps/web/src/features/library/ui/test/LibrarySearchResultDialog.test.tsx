@@ -367,7 +367,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('02-1234-5678')).toBeInTheDocument();
   });
 
-  it('모바일 branch에서는 상세 정보, 리스트, 페이지네이션, 지도 순서로 조합하고 세로 스크롤을 가진다', async () => {
+  it('모바일 branch에서는 상세 정보, 리스트, 페이지네이션 순서로 조합하고 세로 스크롤을 가진다', async () => {
     mockMatchMedia(true);
 
     renderLibrarySearchResultDialog();
@@ -375,7 +375,6 @@ describe('LibrarySearchResultDialog', () => {
     const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
     const list = screen.getByLabelText('도서관 검색 결과 목록');
     const pagination = screen.getByRole('navigation', {name: '도서관 검색 결과 페이지네이션'});
-    const mapToggleButton = screen.getByRole('button', {name: '지도 접기'});
     const mobileLayout = document.querySelector('[data-slot="library-search-mobile-layout"]');
 
     expect(mobileLayout).toBeInstanceOf(HTMLElement);
@@ -387,10 +386,11 @@ describe('LibrarySearchResultDialog', () => {
     expect(mobileLayout.className).toContain('overflow-y-auto');
     expect(detailPanel.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
     expect(list.compareDocumentPosition(pagination) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
-    expect(pagination.compareDocumentPosition(mapToggleButton) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
   });
 
-  it('모바일에서 지도를 사용할 수 있으면 지도 섹션은 기본으로 접혀 있다', async () => {
+  it('모바일에서 지도를 사용할 수 있으면 상세 영역의 지도로 보기로 빠른 지도 dialog를 연다', async () => {
+    const user = userEvent.setup();
+
     mockMatchMedia(true);
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
@@ -400,11 +400,39 @@ describe('LibrarySearchResultDialog', () => {
 
     renderLibrarySearchResultDialog();
 
-    const mapToggleButton = await screen.findByRole('button', {name: '지도 보기'});
+    const quickMapButton = await screen.findByRole('button', {name: '지도로 보기'});
 
-    expect(mapToggleButton).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.getByText('위치 확인이 필요할 때 지도를 펼쳐보세요.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', {name: '도서관 위치 지도'})).not.toBeInTheDocument();
     expect(screen.queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
+
+    await user.click(quickMapButton);
+
+    expect(await screen.findByRole('heading', {name: '도서관 위치 지도'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '지도 닫기'})).toBeInTheDocument();
+  });
+
+  it('모바일 빠른 지도 dialog를 닫아도 바깥 결과 dialog는 유지된다', async () => {
+    const user = userEvent.setup();
+
+    mockMatchMedia(true);
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
+    const {kakaoMaps} = createMockKakaoMaps();
+
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialog();
+
+    await user.click(await screen.findByRole('button', {name: '지도로 보기'}));
+
+    expect(await screen.findByRole('dialog', {name: '도서관 위치 지도'})).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서관 위치 지도'})).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('dialog', {name: '도서관 검색 결과'})).toBeInTheDocument();
   });
 
   it('totalPages가 2 이상이면 상태 기반 페이지네이션을 렌더링하고 현재 페이지를 표시한다', async () => {
@@ -747,6 +775,44 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
   });
 
+  it('모바일에서 지도를 사용할 수 없으면 상세 영역에 unavailable 문구를 렌더하고 빠른 지도 버튼은 숨긴다', async () => {
+    mockMatchMedia(true);
+
+    renderLibrarySearchResultDialog();
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+
+    expect(within(detailPanel).getByText('지도를 표시할 수 없어요.')).toBeInTheDocument();
+    expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
+  });
+
+  it('모바일에서 현재 페이지 결과에 좌표가 없으면 상세 영역에 no-coordinate 문구를 렌더하고 빠른 지도 버튼은 숨긴다', async () => {
+    mockMatchMedia(true);
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockUseGetSearchLibraries.mockReturnValue({
+      ...mockLibrarySearchResponse,
+      items: [
+        {
+          ...mockLibrarySearchResponse.items[0],
+          latitude: null,
+          longitude: null,
+        },
+        {
+          ...mockLibrarySearchResponse.items[1],
+          code: 'LIB0003',
+        },
+      ],
+    });
+
+    renderLibrarySearchResultDialog();
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+
+    expect(within(detailPanel).getByText('지도로 표시할 수 있는 위치 정보가 없어요.')).toBeInTheDocument();
+    expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
+  });
+
   it('selectedLibraryCode가 없으면 첫 번째 도서관을 기본 선택하고 store에 동기화한다', async () => {
     renderLibrarySearchResultDialog();
 
@@ -993,14 +1059,19 @@ describe('LibrarySearchResultDialog', () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
+    const {kakaoMaps} = createMockKakaoMaps();
+
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
     renderLibrarySearchResultDialog();
 
     const dialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
     const changeRegionButton = screen.getByRole('button', {name: '지역 변경'});
+    const quickMapButton = screen.getByRole('button', {name: '지도로 보기'});
     const detailCta = screen.getByRole('button', {name: '대출 가능 여부 조회'});
     const firstLibraryRow = screen.getByRole('button', {name: /마포중앙도서관/});
     const secondPageButton = screen.getByRole('button', {name: '2페이지'});
-    const mapToggleButton = screen.getByRole('button', {name: '지도 접기'});
     const closeButton = screen.getByRole('button', {name: '닫기'});
 
     await waitFor(() => {
@@ -1010,6 +1081,9 @@ describe('LibrarySearchResultDialog', () => {
     await tabUntilFocused(user, changeRegionButton);
     expect(changeRegionButton).toHaveFocus();
 
+    await tabUntilFocused(user, quickMapButton);
+    expect(quickMapButton).toHaveFocus();
+
     await tabUntilFocused(user, detailCta);
     expect(detailCta).toHaveFocus();
 
@@ -1018,9 +1092,6 @@ describe('LibrarySearchResultDialog', () => {
 
     await tabUntilFocused(user, secondPageButton);
     expect(secondPageButton).toHaveFocus();
-
-    await tabUntilFocused(user, mapToggleButton);
-    expect(mapToggleButton).toHaveFocus();
 
     await tabUntilFocused(user, closeButton);
     expect(closeButton).toHaveFocus();
