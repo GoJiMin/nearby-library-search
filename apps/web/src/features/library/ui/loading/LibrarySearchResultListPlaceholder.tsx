@@ -8,13 +8,13 @@ const resultCardSkeletonWidths = [
   {address: 'w-40', meta: 'w-20', title: 'w-28'},
 ] as const;
 
-type LibrarySearchResultListPlaceholderBodyProps = {
+type LibrarySearchResultListPlaceholderProps = {
   itemCount?: number;
 };
 
-function LibrarySearchResultListPlaceholderBody({
+function LibrarySearchResultListPlaceholder({
   itemCount = resultCardSkeletonWidths.length,
-}: LibrarySearchResultListPlaceholderBodyProps) {
+}: LibrarySearchResultListPlaceholderProps) {
   return (
     <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 py-3" role="list">
       {Array.from({length: itemCount}, (_, index) => {
@@ -45,5 +45,5 @@ function LibrarySearchResultListPlaceholderBody({
   );
 }
 
-export {LibrarySearchResultListPlaceholderBody};
-export type {LibrarySearchResultListPlaceholderBodyProps};
+export {LibrarySearchResultListPlaceholder};
+export type {LibrarySearchResultListPlaceholderProps};

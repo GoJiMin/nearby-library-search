@@ -1,7 +1,7 @@
 import {LibrarySearchResultMapPlaceholderBody} from '../../map/ui/LibrarySearchResultMapFallback';
 import {Heading, Text} from '@/shared/ui';
-import {LibrarySearchResultDetailPlaceholder} from '../panels/loading/LibrarySearchResultDetailPlaceholder';
-import {LibrarySearchResultListPlaceholderBody} from '../panels/loading/LibrarySearchResultListPlaceholderBody';
+import {LibrarySearchResultDetailsPlaceholder} from '../loading/LibrarySearchResultDetailsPlaceholder';
+import {LibrarySearchResultListPlaceholder} from '../loading/LibrarySearchResultListPlaceholder';
 
 function LibrarySearchResultLoadingContent() {
   return (
@@ -13,13 +13,13 @@ function LibrarySearchResultLoadingContent() {
           </Heading>
           <Text className="mt-1 text-sm">도서관 검색 결과를 불러오고 있어요.</Text>
         </div>
-        <LibrarySearchResultListPlaceholderBody />
+        <LibrarySearchResultListPlaceholder />
       </aside>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
         <section aria-label="도서관 지도 패널" className="bg-surface-muted relative min-h-90 overflow-hidden">
           <LibrarySearchResultMapPlaceholderBody />
         </section>
-        <LibrarySearchResultDetailPlaceholder />
+        <LibrarySearchResultDetailsPlaceholder />
       </div>
     </div>
   );
