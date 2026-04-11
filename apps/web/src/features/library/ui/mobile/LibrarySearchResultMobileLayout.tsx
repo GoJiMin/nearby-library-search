@@ -1,4 +1,4 @@
-import {Suspense, useState} from 'react';
+import {Suspense, useEffect, useRef, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {Map, Search, X} from 'lucide-react';
 import {hasLibraryCoordinates, LIBRARY_SEARCH_PAGE_SIZE, useGetSearchLibraries} from '@/entities/library';
@@ -151,11 +151,40 @@ function LibrarySearchResultMobileLayout({
   selectedLibraryCode,
 }: LibrarySearchResultMobileLayoutProps) {
   const backToRegionSelect = useFindLibraryStore(state => state.backToRegionSelect);
+  const currentPage = useFindLibraryStore(state => state.currentLibrarySearchParams?.page ?? 1);
   const totalCount = useFindLibraryStore(state => state.resolvedLibraryTotalCount);
+  const layoutRef = useRef<HTMLDivElement | null>(null);
+  const detailsAnchorRef = useRef<HTMLDivElement | null>(null);
+  const previousPageRef = useRef(currentPage);
   const shouldRenderPagination = totalCount != null && totalCount > LIBRARY_SEARCH_PAGE_SIZE;
 
+  function scrollToDetails() {
+    if (layoutRef.current == null || detailsAnchorRef.current == null) {
+      return;
+    }
+
+    layoutRef.current.scrollTo({
+      behavior: 'smooth',
+      top: detailsAnchorRef.current.offsetTop,
+    });
+  }
+
+  function handleSelectLibraryFromList(code: LibraryCode) {
+    onSelectLibrary(code);
+    scrollToDetails();
+  }
+
+  useEffect(() => {
+    if (previousPageRef.current === currentPage) {
+      return;
+    }
+
+    previousPageRef.current = currentPage;
+    scrollToDetails();
+  }, [currentPage]);
+
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto" data-slot="library-search-mobile-layout">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto" data-slot="library-search-mobile-layout" ref={layoutRef}>
       <header className="bg-surface-strong border-line/40 border-b px-6 pt-6 pb-4">
         <div className="flex items-center justify-between gap-3">
           <Heading as="h2" className="tracking-[-0.04em]" size="lg">
@@ -178,15 +207,17 @@ function LibrarySearchResultMobileLayout({
         </Text>
       </header>
 
-      <Suspense fallback={<MobileSelectedDetailsSectionFallback />}>
-        <MobileSelectedDetailsSection focusRequest={focusRequest} params={params} />
-      </Suspense>
+      <div ref={detailsAnchorRef}>
+        <Suspense fallback={<MobileSelectedDetailsSectionFallback />}>
+          <MobileSelectedDetailsSection focusRequest={focusRequest} params={params} />
+        </Suspense>
+      </div>
 
       <div className="bg-surface-strong">
         <Suspense fallback={<LibrarySearchResultListPlaceholder layout="mobile" />}>
           <LibrarySearchResultList
             layout="mobile"
-            onSelectLibrary={onSelectLibrary}
+            onSelectLibrary={handleSelectLibraryFromList}
             params={params}
             selectedLibraryCode={selectedLibraryCode}
           />

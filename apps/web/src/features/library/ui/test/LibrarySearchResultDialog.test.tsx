@@ -1102,6 +1102,50 @@ describe('LibrarySearchResultDialog', () => {
     expect(closeButton).toHaveFocus();
   });
 
+  it('모바일에서 리스트 row를 선택하면 상세 영역 시작 지점으로 스크롤한다', async () => {
+    const user = userEvent.setup();
+    const scrollToMock = vi.fn();
+
+    mockMatchMedia(true);
+    Object.defineProperty(HTMLElement.prototype, 'scrollTo', {
+      configurable: true,
+      value: scrollToMock,
+    });
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: /합정열람실/}));
+
+    expect(scrollToMock).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      top: 0,
+    });
+  });
+
+  it('모바일에서 페이지를 변경하면 상세 영역 시작 지점으로 스크롤한다', async () => {
+    const user = userEvent.setup();
+    const scrollToMock = vi.fn();
+
+    mockMatchMedia(true);
+    Object.defineProperty(HTMLElement.prototype, 'scrollTo', {
+      configurable: true,
+      value: scrollToMock,
+    });
+
+    renderLibrarySearchResultDialog();
+
+    await user.click(await screen.findByRole('button', {name: '2페이지'}));
+
+    await waitFor(() => {
+      expect(scrollToMock).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        top: 0,
+      });
+    });
+  });
+
   it('params나 selectedBook이 없으면 렌더링하지 않는다', () => {
     renderLibrarySearchResultDialog({
       params: null,
