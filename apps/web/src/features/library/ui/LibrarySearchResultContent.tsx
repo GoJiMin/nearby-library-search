@@ -3,7 +3,7 @@ import type {LibraryCode} from '@nearby-library-search/contracts';
 import {useShallow} from 'zustand/react/shallow';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultMapPlaceholderBody} from '../map/ui/LibrarySearchResultMapFallback';
-import {LibrarySearchResultResolvedList} from './LibrarySearchResultResolvedList';
+import {LibrarySearchResultList} from './LibrarySearchResultList';
 import {LibrarySearchResultResolvedRightPane} from './LibrarySearchResultResolvedRightPane';
 import {LibrarySearchResultSidebar} from './LibrarySearchResultSidebar';
 import {LibrarySearchResultDetailsPlaceholder} from './loading/LibrarySearchResultDetailsPlaceholder';
@@ -41,7 +41,7 @@ function LibrarySearchResultContent() {
     <div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[334px_minmax(0,1fr)]">
       <LibrarySearchResultSidebar>
         <Suspense fallback={<LibrarySearchResultListPlaceholder />}>
-          <LibrarySearchResultResolvedList
+          <LibrarySearchResultList
             onSelectLibrary={handleSelectLibraryFromList}
             params={params}
             selectedLibraryCode={selectedLibraryCode}
