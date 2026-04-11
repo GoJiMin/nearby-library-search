@@ -8,7 +8,15 @@ type LibrarySearchFixtureItem = LibrarySearchItem & {
   region: RegionCode;
 };
 
-const baseLibrarySearchFixtureItems: ReadonlyArray<LibrarySearchItem> = [
+type SeoulLibrarySearchFixtureDistrict = {
+  detailRegion: DetailRegionCode;
+  districtLabel: string;
+  homepageSlug: string;
+  latitudeOffset: number;
+  longitudeOffset: number;
+};
+
+const mapoLibrarySearchFixtureItems: ReadonlyArray<LibrarySearchItem> = [
   {
     address: '서울특별시 마포구 월드컵북로 1',
     closedDays: '둘째 주 월요일',
@@ -155,15 +163,101 @@ const baseLibrarySearchFixtureItems: ReadonlyArray<LibrarySearchItem> = [
   },
 ];
 
+const seoulLibrarySearchFixtureDistricts: ReadonlyArray<SeoulLibrarySearchFixtureDistrict> = [
+  {
+    detailRegion: '11140',
+    districtLabel: '마포구',
+    homepageSlug: 'mapo',
+    latitudeOffset: 0,
+    longitudeOffset: 0,
+  },
+  {
+    detailRegion: '11130',
+    districtLabel: '서대문구',
+    homepageSlug: 'seodaemun',
+    latitudeOffset: 0.018,
+    longitudeOffset: 0.014,
+  },
+  {
+    detailRegion: '11120',
+    districtLabel: '은평구',
+    homepageSlug: 'eunpyeong',
+    latitudeOffset: 0.034,
+    longitudeOffset: -0.008,
+  },
+  {
+    detailRegion: '11190',
+    districtLabel: '영등포구',
+    homepageSlug: 'yeongdeungpo',
+    latitudeOffset: -0.012,
+    longitudeOffset: 0.031,
+  },
+  {
+    detailRegion: '11200',
+    districtLabel: '동작구',
+    homepageSlug: 'dongjak',
+    latitudeOffset: -0.02,
+    longitudeOffset: 0.009,
+  },
+  {
+    detailRegion: '11220',
+    districtLabel: '서초구',
+    homepageSlug: 'seocho',
+    latitudeOffset: -0.048,
+    longitudeOffset: 0.058,
+  },
+  {
+    detailRegion: '11230',
+    districtLabel: '강남구',
+    homepageSlug: 'gangnam',
+    latitudeOffset: -0.038,
+    longitudeOffset: 0.081,
+  },
+  {
+    detailRegion: '11240',
+    districtLabel: '송파구',
+    homepageSlug: 'songpa',
+    latitudeOffset: -0.024,
+    longitudeOffset: 0.112,
+  },
+];
+
 const supportedFixtureIsbns = Array.from(new Set(bookSearchFixtureItems.map(item => item.isbn13)));
 
-const librarySearchFixtureItems: ReadonlyArray<LibrarySearchFixtureItem> = supportedFixtureIsbns.flatMap(isbn =>
-  baseLibrarySearchFixtureItems.map(item => ({
+function formatCoordinate(value: number) {
+  return Number(value.toFixed(4));
+}
+
+function createDistrictScopedLibrarySearchFixtureItems(
+  isbn: Isbn,
+  district: SeoulLibrarySearchFixtureDistrict,
+): ReadonlyArray<LibrarySearchFixtureItem> {
+  if (district.detailRegion === '11140') {
+    return mapoLibrarySearchFixtureItems.map(item => ({
+      ...item,
+      detailRegion: district.detailRegion,
+      isbn,
+      region: '11',
+    }));
+  }
+
+  return mapoLibrarySearchFixtureItems.map((item, index) => ({
     ...item,
-    detailRegion: '11140',
+    address: item.address == null ? null : item.address.replace('마포구', district.districtLabel),
+    code: `LIB${district.detailRegion}${String(index + 1).padStart(2, '0')}`,
+    detailRegion: district.detailRegion,
+    homepage:
+      item.homepage == null ? null : item.homepage.replace('/mapo-', `/${district.homepageSlug}-`),
     isbn,
+    latitude: item.latitude == null ? null : formatCoordinate(item.latitude + district.latitudeOffset),
+    longitude: item.longitude == null ? null : formatCoordinate(item.longitude + district.longitudeOffset),
+    name: `${district.districtLabel.replace(/구$/, '')} ${item.name}`,
     region: '11',
-  })),
+  }));
+}
+
+const librarySearchFixtureItems: ReadonlyArray<LibrarySearchFixtureItem> = supportedFixtureIsbns.flatMap(isbn =>
+  seoulLibrarySearchFixtureDistricts.flatMap(district => createDistrictScopedLibrarySearchFixtureItems(isbn, district)),
 );
 
 export {librarySearchFixtureItems};
