@@ -6,6 +6,7 @@ import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
 import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
+import {LibrarySearchResultChangeRegionButton} from './actions/LibrarySearchResultChangeRegionButton';
 import {
   LibrarySearchResultDetailBody,
   LibrarySearchResultDetailFooterCta,
@@ -63,6 +64,7 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
             totalCount={response.totalCount}
           />
         }
+        headerAction={<LibrarySearchResultChangeRegionButton />}
         summary={`총 ${response.totalCount}개의 도서관을 검색했어요.`}
       >
         <LibrarySearchResultListBody
