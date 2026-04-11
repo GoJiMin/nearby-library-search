@@ -73,7 +73,7 @@
 
 ## 10. region backflow와 reopen reset 규칙 구현
 
-- [x] empty state 또는 결과 dialog 내부에서 `지역 다시 선택` CTA를 누르면 region dialog를 다시 연다.
+- [x] empty state의 `지역 다시 선택` 또는 성공 상태 헤더의 `지역 변경` action으로 region dialog를 다시 연다.
 - [x] library result dialog를 닫고 다시 열면 pagination과 selected library는 항상 초기 상태로 다시 시작한다.
 - [x] region을 다시 confirm하면 새 params 기준으로 `page=1`부터 다시 조회되게 한다.
 - [x] `/books` page orchestration test로 reopen reset 흐름을 검증한다.

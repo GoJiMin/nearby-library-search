@@ -137,6 +137,7 @@
 - 데스크톱 기본 구조는 스크린샷처럼 `좌측 1/3 + 우측 2/3`로 고정한다.
 - 좌측 컬럼
   - `검색 결과` 제목
+  - 헤더 우측 secondary action `지역 변경`
   - `총 N개의 도서관을 검색했어요.`
   - 결과 리스트
   - 페이지네이션
@@ -245,6 +246,7 @@
 
 - 결과가 비어 있으면 리스트/지도/detail 대신 empty state를 보여준다.
 - 주 복구 CTA는 `지역 다시 선택`이다.
+- 결과가 있을 때는 좌측 리스트 헤더의 `지역 변경` action으로 같은 backflow를 시작할 수 있다.
 - 보조 복구 CTA는 `다른 책 다시 선택`이다.
 - empty state에서도 dialog close는 계속 가능해야 한다.
 
@@ -279,6 +281,7 @@
 - region confirm 후 region dialog는 닫히고 library result dialog가 열린다.
 - dialog close 후 `/books` 화면은 그대로 유지된다.
 - `지역 다시 선택` CTA가 region dialog reopen 흐름과 연결된다.
+- 성공 상태 헤더의 `지역 변경` action도 같은 region dialog reopen 흐름과 연결된다.
 
 ### 2. feature integration test
 
