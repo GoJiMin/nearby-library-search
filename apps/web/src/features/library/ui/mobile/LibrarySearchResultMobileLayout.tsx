@@ -10,7 +10,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   Heading,
   LucideIcon,
@@ -57,24 +56,20 @@ function MobileQuickMapDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent
         aria-describedby={undefined}
-        className="bg-surface-strong top-0 left-0 h-dvh w-dvw max-w-none translate-x-0 translate-y-0 gap-0 rounded-none border-0 p-0 sm:p-0"
+        className="bg-surface-strong top-0 left-0 block h-dvh w-dvw max-w-none translate-x-0 translate-y-0 rounded-none border-0 p-0 sm:p-0"
         showCloseButton={false}
       >
-        <DialogHeader className="border-line/40 border-b px-4 pt-4 pb-3">
-          <div className="flex items-center justify-between gap-3">
-            <DialogTitle className="text-base font-semibold">도서관 위치 지도</DialogTitle>
-            <DialogClose asChild>
-              <button
-                aria-label="지도 닫기"
-                className="text-text-muted hover:text-text hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
-                type="button"
-              >
-                <LucideIcon className="h-5 w-5" icon={X} strokeWidth={2.2} />
-              </button>
-            </DialogClose>
-          </div>
-        </DialogHeader>
-        <div aria-label="도서관 지도 패널" className="bg-surface-muted relative min-h-0 flex-1 overflow-hidden">
+        <DialogTitle className="sr-only">도서관 위치 지도</DialogTitle>
+        <DialogClose asChild>
+          <button
+            aria-label="지도 닫기"
+            className="bg-surface-strong/92 border-line/60 text-text-muted hover:text-text hover:bg-surface-strong focus-visible:ring-accent-soft absolute top-[max(env(safe-area-inset-top),1rem)] right-[max(env(safe-area-inset-right),1rem)] z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition-colors focus-visible:ring-4 focus-visible:outline-none"
+            type="button"
+          >
+            <LucideIcon className="h-5 w-5" icon={X} strokeWidth={2.2} />
+          </button>
+        </DialogClose>
+        <div aria-label="도서관 지도 패널" className="bg-surface-muted relative h-full overflow-hidden">
           <LibrarySearchResultSelectedMap focusRequest={focusRequest} params={params} />
         </div>
       </DialogContent>
@@ -93,11 +88,16 @@ function MobileSelectedDetailsSection({
   const isMapUnavailable = !kakaoMapConfig.isEnabled;
   const canOpenQuickMap = currentSelectedLibrary != null && !isMapUnavailable && hasCoordinateItems;
   const [isQuickMapOpen, setIsQuickMapOpen] = useState(false);
+  const [quickMapRequestId, setQuickMapRequestId] = useState(0);
   const mapSummary = isMapUnavailable
     ? '지도를 표시할 수 없어요.'
     : !hasCoordinateItems
       ? '지도로 표시할 수 있는 위치 정보가 없어요.'
       : null;
+  const quickMapFocusRequest =
+    isQuickMapOpen && currentSelectedLibrary != null && hasLibraryCoordinates(currentSelectedLibrary)
+      ? {code: currentSelectedLibrary.code, requestId: quickMapRequestId}
+      : focusRequest;
 
   return (
     <>
@@ -108,7 +108,15 @@ function MobileSelectedDetailsSection({
           </div>
           <div className="grid gap-3">
             {canOpenQuickMap ? (
-              <Button className="w-full rounded-2xl" onClick={() => setIsQuickMapOpen(true)} size="lg" variant="secondary">
+              <Button
+                className="w-full rounded-2xl"
+                onClick={() => {
+                  setQuickMapRequestId(currentRequestId => currentRequestId + 1);
+                  setIsQuickMapOpen(true);
+                }}
+                size="lg"
+                variant="secondary"
+              >
                 <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
                 지도로 보기
               </Button>
@@ -126,7 +134,7 @@ function MobileSelectedDetailsSection({
       </section>
       {canOpenQuickMap ? (
         <MobileQuickMapDialog
-          focusRequest={focusRequest}
+          focusRequest={quickMapFocusRequest}
           onOpenChange={setIsQuickMapOpen}
           open={isQuickMapOpen}
           params={params}

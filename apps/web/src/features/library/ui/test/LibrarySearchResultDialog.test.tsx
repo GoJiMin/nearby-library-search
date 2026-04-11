@@ -394,7 +394,7 @@ describe('LibrarySearchResultDialog', () => {
     mockMatchMedia(true);
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
-    const {kakaoMaps} = createMockKakaoMaps();
+    const {kakaoMaps, panTo, setLevel} = createMockKakaoMaps();
 
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
@@ -402,13 +402,18 @@ describe('LibrarySearchResultDialog', () => {
 
     const quickMapButton = await screen.findByRole('button', {name: '지도로 보기'});
 
-    expect(screen.queryByRole('heading', {name: '도서관 위치 지도'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', {name: '도서관 위치 지도'})).not.toBeInTheDocument();
     expect(screen.queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
 
     await user.click(quickMapButton);
 
-    expect(await screen.findByRole('heading', {name: '도서관 위치 지도'})).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', {name: '도서관 위치 지도'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {name: '도서관 위치 지도'})).toHaveClass('sr-only');
     expect(screen.getByRole('button', {name: '지도 닫기'})).toBeInTheDocument();
+    await waitFor(() => {
+      expect(panTo).toHaveBeenCalledTimes(1);
+    });
+    expect(setLevel).toHaveBeenLastCalledWith(3);
   });
 
   it('모바일 빠른 지도 dialog를 닫아도 바깥 결과 dialog는 유지된다', async () => {
