@@ -1,4 +1,4 @@
-import type {DetailRegionCode, Isbn, RegionCode} from '@nearby-library-search/contracts';
+import type {DetailRegionCode, Isbn, Isbn13, LibraryCode, RegionCode} from '@nearby-library-search/contracts';
 import {z} from 'zod';
 import {createPositiveIntegerQuerySchema, normalizeOptionalQueryString} from './query.js';
 
@@ -25,16 +25,26 @@ const librarySearchQuerySchema = z
     path: ['detailRegion'],
   });
 
+const libraryAvailabilityParamsSchema = z.object({
+  isbn13: z.preprocess(normalizeOptionalQueryString, z.string().regex(/^\d{13}$/)),
+  libraryCode: z.preprocess(normalizeOptionalQueryString, z.string().min(1)),
+});
+
 type LibrarySearchQuery = z.infer<typeof librarySearchQuerySchema> & {
   detailRegion?: DetailRegionCode;
   isbn: Isbn;
   region: RegionCode;
 };
+type LibraryAvailabilityParams = z.infer<typeof libraryAvailabilityParamsSchema> & {
+  isbn13: Isbn13;
+  libraryCode: LibraryCode;
+};
 
 export {
   DEFAULT_LIBRARY_SEARCH_PAGE,
   DEFAULT_LIBRARY_SEARCH_PAGE_SIZE,
+  libraryAvailabilityParamsSchema,
   librarySearchQuerySchema,
   MAX_LIBRARY_SEARCH_PAGE_SIZE,
 };
-export type {LibrarySearchQuery};
+export type {LibraryAvailabilityParams, LibrarySearchQuery};
