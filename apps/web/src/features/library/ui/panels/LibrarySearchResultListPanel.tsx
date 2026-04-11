@@ -45,7 +45,7 @@ function LibrarySearchResultListPlaceholderBody({
   itemCount = resultCardSkeletonWidths.length,
 }: LibrarySearchResultListPlaceholderBodyProps) {
   return (
-    <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 pb-6" role="list">
+    <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 py-3" role="list">
       {Array.from({length: itemCount}, (_, index) => {
         const widths = resultCardSkeletonWidths[index % resultCardSkeletonWidths.length];
 
@@ -54,13 +54,16 @@ function LibrarySearchResultListPlaceholderBody({
             <div
               className={
                 index === 0
-                  ? 'bg-surface shadow-card border-line/70 space-y-4 rounded-3xl border px-4 py-4'
-                  : 'bg-surface-muted/60 space-y-4 rounded-3xl px-4 py-4'
+                  ? 'bg-surface shadow-card border-line/70 flex flex-col gap-4 rounded-3xl border px-5 py-5'
+                  : 'bg-surface-muted/60 flex flex-col gap-4 rounded-3xl px-5 py-5'
               }
             >
               <div className="space-y-2.5">
-                <Skeleton className={`h-6 rounded-full ${widths.title}`} />
-                <Skeleton className={`h-4 rounded-full ${widths.address}`} />
+                <Skeleton className={`h-5 rounded-full ${widths.title}`} />
+                <div className="space-y-1.5">
+                  <Skeleton className={`h-4 rounded-full ${widths.address}`} />
+                  <Skeleton className="h-4 w-24 rounded-full" />
+                </div>
               </div>
               <Skeleton className={`h-3 rounded-full ${widths.meta}`} />
             </div>
