@@ -109,6 +109,36 @@ describe('useFindLibraryStore', () => {
     });
   });
 
+  it('지역 다시 선택 후 새 confirm은 항상 page 1과 초기 선택 상태로 다시 시작한다', () => {
+    useFindLibraryStore.getState().openRegionDialog(MOCK_BOOK);
+    useFindLibraryStore.getState().confirmRegion({
+      detailRegion: '11140',
+      isbn: MOCK_BOOK.isbn13,
+      page: 1,
+      region: '11',
+    });
+    useFindLibraryStore.getState().selectLibrary('LIB0002');
+    useFindLibraryStore.getState().changeLibraryResultPage(2);
+
+    useFindLibraryStore.getState().backToRegionSelect();
+    useFindLibraryStore.getState().confirmRegion({
+      isbn: MOCK_BOOK.isbn13,
+      page: 9,
+      region: '26',
+    });
+
+    expect(useFindLibraryStore.getState().currentLibrarySearchParams).toEqual({
+      isbn: MOCK_BOOK.isbn13,
+      page: 1,
+      region: '26',
+    });
+    expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
+    expect(useFindLibraryStore.getState().lastRegionSelection).toEqual({
+      detailRegion: undefined,
+      region: '26',
+    });
+  });
+
   it('resetFindLibraryFlow는 전체 흐름 상태를 초기화한다', () => {
     useFindLibraryStore.getState().openRegionDialog(MOCK_BOOK);
     useFindLibraryStore.getState().confirmRegion({
