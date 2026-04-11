@@ -31,7 +31,7 @@
 ## 5. 개발용 availability fixture 추가
 
 - [x] `libraryAvailabilityFixture.data.ts`를 추가한다.
-- [ ] `libraryAvailabilityFixture.ts`를 추가한다.
+- [x] `libraryAvailabilityFixture.ts`를 추가한다.
 - [ ] fixture mode에서 외부 호출 없이 normalized response를 반환하게 한다.
 - [ ] `Y`, `N`, `hasBook='N'` 케이스를 모두 제공한다.
 
