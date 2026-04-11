@@ -5,27 +5,16 @@ import {LibrarySearchResultMapControls} from './LibrarySearchResultMapControls';
 function LibrarySearchResultMapPlaceholderBody() {
   return (
     <>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.46)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.46)_1px,transparent_1px)] bg-[size:44px_44px]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_62%)]" />
-      <Skeleton className="absolute top-[28%] left-[42%] h-8 w-8 rounded-full bg-white/75" />
-      <Skeleton className="absolute top-[57%] left-[73%] h-8 w-8 rounded-full bg-white/75" />
-      <div className="absolute top-1/2 left-[58%] flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2">
-        <Skeleton className="bg-accent h-12 w-12 rounded-full" />
-        <Skeleton className="h-7 w-24 rounded-full bg-white/90" />
-      </div>
+      <Skeleton className="h-full w-full rounded-none" />
       <LibrarySearchResultMapControls />
     </>
   );
 }
 
-function LibrarySearchResultMapUnavailableBody({
-  diagnosticCode,
-}: {
-  diagnosticCode?: KakaoMapSdkLoadErrorCode | null;
-}) {
+function LibrarySearchResultMapUnavailableBody({diagnosticCode}: {diagnosticCode?: KakaoMapSdkLoadErrorCode | null}) {
   return (
     <>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.38)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.38)_1px,transparent_1px)] bg-[size:44px_44px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.38)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.38)_1px,transparent_1px)] bg-size-[44px_44px]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.14),transparent_64%)]" />
       <div className="absolute inset-0 flex items-center justify-center px-6">
         <div className="shadow-card bg-surface-strong/92 max-w-76 rounded-3xl px-6 py-5 text-center backdrop-blur-sm">
@@ -50,7 +39,7 @@ function LibrarySearchResultMapUnavailableBody({
 function LibrarySearchResultMapNoCoordinateBody() {
   return (
     <>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.38)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.38)_1px,transparent_1px)] bg-[size:44px_44px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.38)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.38)_1px,transparent_1px)] bg-size-[44px_44px]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_64%)]" />
       <div className="absolute inset-0 flex items-center justify-center px-6">
         <div className="shadow-card bg-surface-strong/92 max-w-76 rounded-3xl px-6 py-5 text-center backdrop-blur-sm">
