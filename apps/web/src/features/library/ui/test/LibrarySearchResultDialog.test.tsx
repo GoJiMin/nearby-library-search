@@ -361,6 +361,30 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
+  it('중간 페이지에서는 dialog 전용 압축 페이지네이션으로 첫 페이지 현재 페이지 마지막 페이지를 표시한다', async () => {
+    mockUseGetSearchLibraries.mockReturnValue({
+      ...mockLibrarySearchResponse,
+      page: 5,
+      totalCount: 100,
+    });
+
+    renderLibrarySearchResultDialog({
+      params: {
+        ...DEFAULT_PARAMS,
+        page: 5,
+      },
+    });
+
+    const pagination = await screen.findByRole('navigation', {name: '도서관 검색 결과 페이지네이션'});
+
+    expect(within(pagination).getByRole('button', {name: '1페이지'})).toBeInTheDocument();
+    expect(within(pagination).getByText('5')).toHaveAttribute('aria-current', 'page');
+    expect(within(pagination).getByRole('button', {name: '10페이지'})).toBeInTheDocument();
+    expect(within(pagination).getAllByLabelText('페이지 생략')).toHaveLength(2);
+    expect(within(pagination).queryByRole('button', {name: '4페이지'})).not.toBeInTheDocument();
+    expect(within(pagination).queryByRole('button', {name: '6페이지'})).not.toBeInTheDocument();
+  });
+
   it('totalPages가 1이면 페이지네이션을 렌더링하지 않는다', async () => {
     mockUseGetSearchLibraries.mockReturnValue({
       ...mockLibrarySearchResponse,
