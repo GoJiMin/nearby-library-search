@@ -4,9 +4,9 @@ import {useShallow} from 'zustand/react/shallow';
 import {isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
+import {Button, Heading, Text} from '@/shared/ui';
 import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
 import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
-import {LibrarySearchResultChangeRegionButton} from './actions/LibrarySearchResultChangeRegionButton';
 import {
   LibrarySearchResultDetailBody,
   LibrarySearchResultDetailFooterCta,
@@ -23,8 +23,9 @@ type LibrarySearchResultResolvedContentProps = {
 };
 
 function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolvedContentProps) {
-  const {selectedLibraryCode, selectLibrary} = useFindLibraryStore(
+  const {backToRegionSelect, selectedLibraryCode, selectLibrary} = useFindLibraryStore(
     useShallow(state => ({
+      backToRegionSelect: state.backToRegionSelect,
       selectedLibraryCode: state.selectedLibraryCode,
       selectLibrary: state.selectLibrary,
     })),
@@ -64,9 +65,24 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
             totalCount={response.totalCount}
           />
         }
-        headerAction={<LibrarySearchResultChangeRegionButton />}
-        summary={`총 ${response.totalCount}개의 도서관을 검색했어요.`}
       >
+        <div className="px-8 pt-8 pb-3">
+          <div className="flex items-center justify-between gap-3">
+            <Heading as="h2" className="tracking-[-0.04em]" size="lg">
+              검색 결과
+            </Heading>
+            <Button
+              className="rounded-full px-3 text-text-muted hover:text-text"
+              onClick={backToRegionSelect}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              지역 변경
+            </Button>
+          </div>
+          <Text className="mt-1 text-sm">{`총 ${response.totalCount}개의 도서관을 검색했어요.`}</Text>
+        </div>
         <LibrarySearchResultListBody
           items={response.items}
           onSelectLibrary={handleSelectLibraryFromList}

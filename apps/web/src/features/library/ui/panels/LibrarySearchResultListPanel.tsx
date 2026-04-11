@@ -5,22 +5,11 @@ import {Heading, Text} from '@/shared/ui';
 type LibrarySearchResultListPanelProps = {
   children: ReactNode;
   footer?: ReactNode;
-  headerAction?: ReactNode;
-  summary: string;
 };
 
-function LibrarySearchResultListPanel({children, footer, headerAction, summary}: LibrarySearchResultListPanelProps) {
+function LibrarySearchResultListPanel({children, footer}: LibrarySearchResultListPanelProps) {
   return (
     <aside aria-label="검색 결과 목록 패널" className="bg-surface-strong border-line/40 flex min-h-0 flex-col border-r">
-      <div className="px-8 pt-8 pb-3">
-        <div className="flex items-center justify-between gap-3">
-          <Heading as="h2" className="tracking-[-0.04em]" size="lg">
-            검색 결과
-          </Heading>
-          {headerAction}
-        </div>
-        <Text className="mt-1 text-sm">{summary}</Text>
-      </div>
       {children}
       {footer ? <div className="px-4 py-4">{footer}</div> : null}
     </aside>
