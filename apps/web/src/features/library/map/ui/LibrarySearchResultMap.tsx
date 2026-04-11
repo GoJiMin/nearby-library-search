@@ -42,6 +42,7 @@ function LibrarySearchResultMap({
     kakaoMapsRef,
     mapRef,
     onSelectLibrary,
+    status,
   });
   const {handleLocate, handleZoomIn, handleZoomOut, isLocateDisabled} = useLibraryMapViewport({
     coordinateItems,

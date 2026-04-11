@@ -504,6 +504,21 @@ describe('LibrarySearchResultDialog', () => {
     expect(panTo).not.toHaveBeenCalled();
   });
 
+  it('최초 진입에서 기본 선택된 첫 번째 도서관 marker를 바로 강조한다', async () => {
+    const {kakaoMaps, markerRecords} = createMockKakaoMaps();
+
+    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialog();
+
+    await waitFor(() => {
+      expect(markerRecords).toHaveLength(1);
+      expect(markerRecords[0].setImage).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('현재 페이지에 좌표가 여러 건이면 setBounds로 전체 marker 범위를 먼저 맞춘다', async () => {
     const {kakaoMaps, setBounds, setCenter} = createMockKakaoMaps();
 

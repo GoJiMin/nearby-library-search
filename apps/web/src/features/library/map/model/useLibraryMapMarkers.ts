@@ -9,6 +9,7 @@ import {
   type MarkerRegistryEntry,
 } from '../lib/librarySearchResultMap.marker';
 import {focusMapOnLibrary} from '../lib/librarySearchResultMap.viewport';
+import type {LibrarySearchResultMapStatus} from './useKakaoMapInstance';
 
 function useLibraryMapMarkers({
   coordinateItems,
@@ -17,6 +18,7 @@ function useLibraryMapMarkers({
   kakaoMapsRef,
   mapRef,
   onSelectLibrary,
+  status,
 }: {
   coordinateItems: LibrarySearchCoordinateItem[];
   coordinateItemsKey: string;
@@ -24,6 +26,7 @@ function useLibraryMapMarkers({
   kakaoMapsRef: {current: KakaoMapsNamespace | null};
   mapRef: {current: KakaoMapsMap | null};
   onSelectLibrary: (code: LibraryCode) => void;
+  status: LibrarySearchResultMapStatus;
 }) {
   const markerImageCacheRef = useRef<MarkerImageCache>({
     default: null,
@@ -49,6 +52,10 @@ function useLibraryMapMarkers({
   });
 
   useEffect(() => {
+    if (status !== 'ready') {
+      return;
+    }
+
     const kakaoMaps = kakaoMapsRef.current;
     const map = mapRef.current;
 
@@ -64,9 +71,13 @@ function useLibraryMapMarkers({
       markerRegistry: markerRegistryRef.current,
       onMarkerClick: handleMarkerClick,
     });
-  }, [coordinateItems, coordinateItemsKey, kakaoMapsRef, mapRef]);
+  }, [coordinateItems, coordinateItemsKey, kakaoMapsRef, mapRef, status]);
 
   useEffect(() => {
+    if (status !== 'ready') {
+      return;
+    }
+
     syncSelectedMarker({
       kakaoMaps: kakaoMapsRef.current,
       markerImageCache: markerImageCacheRef.current,
@@ -74,7 +85,7 @@ function useLibraryMapMarkers({
       nextSelectedCode: currentSelectedCoordinateCode,
       selectedMarkerCodeRef,
     });
-  }, [coordinateItemsKey, currentSelectedCoordinateCode, kakaoMapsRef]);
+  }, [coordinateItemsKey, currentSelectedCoordinateCode, kakaoMapsRef, status]);
 
   useEffect(() => {
     const markerRegistry = markerRegistryRef.current;
