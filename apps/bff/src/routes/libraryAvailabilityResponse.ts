@@ -3,6 +3,12 @@ import type {LibraryAvailabilityParams} from '../schemas/library.js';
 import {getLibraryApiResponseRoot, isLibraryApiRecord} from '../utils/libraryApiResponse.js';
 import {normalizeNullableString} from '../utils/normalize.js';
 
+function normalizeLibraryAvailabilityFlag(value: unknown): LibraryAvailabilityResponse['hasBook'] | null {
+  const normalizedValue = normalizeNullableString(value);
+
+  return normalizedValue === 'Y' || normalizedValue === 'N' ? normalizedValue : null;
+}
+
 function normalizeLibraryAvailabilityResponse(
   payload: unknown,
   params: LibraryAvailabilityParams,
@@ -14,8 +20,8 @@ function normalizeLibraryAvailabilityResponse(
     return null;
   }
 
-  const hasBook = normalizeNullableString(result.hasBook);
-  const loanAvailable = normalizeNullableString(result.loanAvailable);
+  const hasBook = normalizeLibraryAvailabilityFlag(result.hasBook);
+  const loanAvailable = normalizeLibraryAvailabilityFlag(result.loanAvailable);
 
   if (hasBook === null || loanAvailable === null) {
     return null;

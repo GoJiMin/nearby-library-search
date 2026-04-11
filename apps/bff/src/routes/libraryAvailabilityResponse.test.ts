@@ -25,4 +25,42 @@ describe('libraryAvailabilityResponse', () => {
       loanAvailable: 'N',
     });
   });
+
+  it('hasBook가 Y/N이 아니면 정규화하지 않는다', () => {
+    expect(
+      normalizeLibraryAvailabilityResponse(
+        {
+          response: {
+            result: {
+              hasBook: 'M',
+              loanAvailable: 'Y',
+            },
+          },
+        },
+        {
+          isbn13: '9791190157551',
+          libraryCode: 'LIB0001',
+        },
+      ),
+    ).toBeNull();
+  });
+
+  it('loanAvailable이 Y/N이 아니면 정규화하지 않는다', () => {
+    expect(
+      normalizeLibraryAvailabilityResponse(
+        {
+          response: {
+            result: {
+              hasBook: 'Y',
+              loanAvailable: 'maybe',
+            },
+          },
+        },
+        {
+          isbn13: '9791190157551',
+          libraryCode: 'LIB0001',
+        },
+      ),
+    ).toBeNull();
+  });
 });
