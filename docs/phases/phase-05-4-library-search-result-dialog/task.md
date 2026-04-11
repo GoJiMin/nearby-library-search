@@ -80,16 +80,16 @@
 
 ## 11. 모바일 정보 우선 구조와 접근성 마감
 
-- [ ] 모바일에서 `리스트/선택 정보 우선, 지도는 아래` 순서를 구현한다.
-- [ ] dialog 내부 tab order, active row semantics, pagination `aria-current`, map unavailable 가시 문구를 점검한다.
-- [ ] close button, `ESC`, overlay dismiss, keyboard navigation을 library result dialog 기준으로 검증한다.
-- [ ] 이번 task에서는 구조/순서와 접근성만 마감하고, 과한 시각 polish는 별도 후속으로 남긴다.
+- [x] 모바일에서 `선택 정보 -> 결과 리스트 -> 페이지네이션` 순서를 구현하고, 지도는 상세 영역의 `지도로 보기` quick map dialog로 연다.
+- [x] dialog 내부 tab order, active row semantics, pagination `aria-current`, mobile quick map unavailable 가시 문구를 점검한다.
+- [x] close button, `ESC`, overlay dismiss, keyboard navigation을 library result dialog와 mobile quick map dialog 기준으로 검증한다.
+- [x] 이번 task에서는 구조/순서와 접근성만 마감하고, 과한 시각 polish는 별도 후속으로 남긴다.
 
 ## 12. 최종 검증과 문서 동기화
 
-- [ ] `LibrarySearchResultDialog` integration test와 필요한 focused unit test만 남아 있는지 점검한다.
-- [ ] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 5-4 상태를 현재 구현 결과와 동기화한다.
+- [x] `LibrarySearchResultDialog` integration test와 필요한 focused unit test만 남아 있는지 점검한다.
+- [x] `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`를 통과시킨다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 5-4 상태를 현재 구현 결과와 동기화한다.
 
 ## Important Changes
 
