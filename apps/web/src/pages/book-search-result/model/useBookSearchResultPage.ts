@@ -1,11 +1,10 @@
-import {useState} from 'react';
 import type {NavigateFunction} from 'react-router-dom';
+import {useShallow} from 'zustand/react/shallow';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import type {BookSearchParams} from '@/entities/book';
-import {parseSearchLibrariesParams} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import type {BookSelectionActionPayload} from '@/features/book';
-import type {RegionSelectionState} from './bookSearchResultPage.contract';
+import {useBookSearchResultFlowStore} from './useBookSearchResultFlowStore';
 
 type UseBookSearchResultPageArgs = {
   navigate: NavigateFunction;
@@ -13,13 +12,35 @@ type UseBookSearchResultPageArgs = {
 };
 
 function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs) {
-  const [regionDialogBook, setRegionDialogBook] = useState<BookSelectionActionPayload | null>(null);
-  const [libraryResultBook, setLibraryResultBook] = useState<BookSelectionActionPayload | null>(null);
-  const [lastRegionSelection, setLastRegionSelection] = useState<RegionSelectionState | null>(null);
-  const [currentLibrarySearchParams, setCurrentLibrarySearchParams] = useState<LibrarySearchParams | null>(
-    null,
+  const {
+    backToRegionSelect,
+    changeLibraryResultPage,
+    closeLibraryResultDialog,
+    closeRegionDialog,
+    confirmRegion,
+    currentLibrarySearchParams,
+    lastRegionSelection,
+    libraryResultBook,
+    openRegionDialog,
+    regionDialogBook,
+    selectedLibraryCode,
+    selectLibrary,
+  } = useBookSearchResultFlowStore(
+    useShallow(state => ({
+      backToRegionSelect: state.backToRegionSelect,
+      changeLibraryResultPage: state.changeLibraryResultPage,
+      closeLibraryResultDialog: state.closeLibraryResultDialog,
+      closeRegionDialog: state.closeRegionDialog,
+      confirmRegion: state.confirmRegion,
+      currentLibrarySearchParams: state.currentLibrarySearchParams,
+      lastRegionSelection: state.lastRegionSelection,
+      libraryResultBook: state.libraryResultBook,
+      openRegionDialog: state.openRegionDialog,
+      regionDialogBook: state.regionDialogBook,
+      selectedLibraryCode: state.selectedLibraryCode,
+      selectLibrary: state.selectLibrary,
+    })),
   );
-  const [selectedLibraryCode, setSelectedLibraryCode] = useState<LibraryCode | null>(null);
 
   function createPageHref(page: number) {
     const nextSearchParams = new URLSearchParams({
@@ -58,64 +79,34 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
 
   function handleRegionDialogOpenChange(open: boolean) {
     if (!open) {
-      setRegionDialogBook(null);
+      closeRegionDialog();
     }
   }
 
   function handleLibraryResultDialogOpenChange(open: boolean) {
     if (!open) {
-      setCurrentLibrarySearchParams(null);
-      setLibraryResultBook(null);
-      setSelectedLibraryCode(null);
+      closeLibraryResultDialog();
     }
   }
 
   function handleBackToRegionSelect() {
-    if (libraryResultBook == null) {
-      return;
-    }
-
-    setRegionDialogBook(libraryResultBook);
-    setCurrentLibrarySearchParams(null);
-    setLibraryResultBook(null);
-    setSelectedLibraryCode(null);
+    backToRegionSelect();
   }
 
   function handleSelectBook(payload: BookSelectionActionPayload) {
-    setRegionDialogBook(payload);
+    openRegionDialog(payload);
   }
 
   function handleSelectLibrary(code: LibraryCode) {
-    setSelectedLibraryCode(code);
+    selectLibrary(code);
   }
 
   function handleChangeLibraryResultPage(page: number) {
-    if (currentLibrarySearchParams == null) {
-      return;
-    }
-
-    setCurrentLibrarySearchParams(
-      parseSearchLibrariesParams({
-        ...currentLibrarySearchParams,
-        page,
-      }),
-    );
-    setSelectedLibraryCode(null);
+    changeLibraryResultPage(page);
   }
 
   function handleConfirmRegion(nextParams: LibrarySearchParams) {
-    setLastRegionSelection({
-      detailRegion: nextParams.detailRegion,
-      region: nextParams.region,
-    });
-
-    setLibraryResultBook(regionDialogBook);
-    setCurrentLibrarySearchParams({
-      ...nextParams,
-      page: 1,
-    });
-    setSelectedLibraryCode(null);
-    setRegionDialogBook(null);
+    confirmRegion(nextParams);
   }
 
   return {

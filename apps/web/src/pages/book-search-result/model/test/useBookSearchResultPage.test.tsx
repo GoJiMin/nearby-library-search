@@ -1,8 +1,13 @@
 import {act, renderHook} from '@testing-library/react';
-import {describe, expect, it, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {useBookSearchResultPage} from '../useBookSearchResultPage';
+import {useBookSearchResultFlowStore} from '../useBookSearchResultFlowStore';
 
 describe('useBookSearchResultPage', () => {
+  beforeEach(() => {
+    useBookSearchResultFlowStore.getState().resetBookSearchResultFlow();
+  });
+
   it('현재 검색 모드를 유지한 채 page href를 만든다', () => {
     const navigate = vi.fn();
     const {result} = renderHook(() =>
