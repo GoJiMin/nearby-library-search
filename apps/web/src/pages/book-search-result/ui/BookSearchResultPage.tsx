@@ -22,7 +22,6 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
-    handleResetBookSearchResultFlow,
     handleSelectLibrary,
     handleSelectBook,
     handleSubmitSearch,
@@ -30,6 +29,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
     isRegionDialogOpen,
     lastRegionSelection,
     libraryResultBook,
+    resetBookSearchResultFlow,
     selectedBook,
     selectedLibraryCode,
   } = useBookSearchResultPage({
@@ -38,8 +38,8 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
   });
 
   useEffect(() => {
-    handleResetBookSearchResultFlow();
-  }, [handleResetBookSearchResultFlow]);
+    resetBookSearchResultFlow();
+  }, [resetBookSearchResultFlow]);
 
   return (
     <>

@@ -103,10 +103,6 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     selectLibrary(code);
   }
 
-  function handleResetBookSearchResultFlow() {
-    resetBookSearchResultFlow();
-  }
-
   function handleChangeLibraryResultPage(page: number) {
     changeLibraryResultPage(page);
   }
@@ -123,7 +119,6 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
-    handleResetBookSearchResultFlow,
     handleSelectLibrary,
     handleSelectBook,
     handleSubmitSearch,
@@ -131,6 +126,7 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     isRegionDialogOpen: regionDialogBook != null,
     lastRegionSelection,
     libraryResultBook,
+    resetBookSearchResultFlow,
     selectedLibraryCode,
     selectedBook: regionDialogBook,
   };
