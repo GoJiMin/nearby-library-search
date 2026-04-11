@@ -1,6 +1,7 @@
 import {LibrarySearchResultMapPlaceholderBody} from '../../map/ui/LibrarySearchResultMapFallback';
+import {LibrarySearchResultListPlaceholderBody} from '../panels/loading/LibrarySearchResultListPlaceholderBody';
 import {LibrarySearchResultDetailPlaceholder} from '../panels/LibrarySearchResultDetailPanel';
-import {LibrarySearchResultListPanel, LibrarySearchResultListPlaceholderBody} from '../panels/LibrarySearchResultListPanel';
+import {LibrarySearchResultListPanel} from '../panels/LibrarySearchResultListPanel';
 import {LibrarySearchResultMapPanel} from '../panels/LibrarySearchResultMapPanel';
 
 function LibrarySearchResultLoadingContent() {
