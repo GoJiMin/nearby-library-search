@@ -634,6 +634,38 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
+  it('/books route에 다시 진입하면 이전 library search flow 상태를 초기화한다', async () => {
+    const user = userEvent.setup();
+    const {router} = renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '마포구'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    expect(await screen.findByRole('dialog', {name: '도서관 검색 결과'})).toBeInTheDocument();
+
+    await act(async () => {
+      await router.navigate('/');
+    });
+
+    expect(await screen.findByRole('heading', {level: 1, name: /이 책,/})).toBeInTheDocument();
+
+    await act(async () => {
+      await router.navigate('/books?title=파친코&page=1');
+    });
+
+    expect(await screen.findByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '소장 도서관 찾기'}));
+
+    expect(await screen.findByRole('dialog', {name: '검색 지역 선택'})).toBeInTheDocument();
+    expect(screen.getByText('지역을 선택해주세요')).toBeInTheDocument();
+    expect(screen.queryByText('서울 > 마포구')).not.toBeInTheDocument();
+  });
+
   it('redirects the empty book result route to the home page', async () => {
     renderRouter(['/books']);
 
