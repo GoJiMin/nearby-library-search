@@ -2,7 +2,8 @@ import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
 import {parseLibraryAvailabilityParams} from './libraryAvailabilityParams.js';
 import {normalizeLibraryAvailabilityResponse} from './libraryAvailabilityResponse.js';
-import {createRetryableUpstreamRequestError} from '../utils/error.js';
+import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
+import {createRetryableUpstreamRequestError, toLibraryApiErrorResponse} from '../utils/error.js';
 
 type Result<T> =
   | {
@@ -14,11 +15,36 @@ type Result<T> =
       error: ErrorResponse;
     };
 
-async function fetchLibraryAvailabilityPayload(): Promise<Result<unknown>> {
-  return {
-    ok: false,
-    error: createRetryableUpstreamRequestError('LIBRARY_AVAILABILITY_UPSTREAM_ERROR', '대출 가능 여부 조회'),
-  };
+async function fetchLibraryAvailabilityPayload(libraryCode: string, isbn13: string): Promise<Result<unknown>> {
+  const upstreamError = createRetryableUpstreamRequestError('LIBRARY_AVAILABILITY_UPSTREAM_ERROR', '대출 가능 여부 조회');
+
+  try {
+    const response = await requestLibraryApi({
+      endpoint: '/bookExist',
+      queryParams: {
+        isbn13,
+        libCode: libraryCode,
+      },
+      requiredQueryParams: ['libCode', 'isbn13'],
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: upstreamError,
+      };
+    }
+
+    return {
+      ok: true,
+      value: await response.json(),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: toLibraryApiErrorResponse(error, upstreamError),
+    };
+  }
 }
 
 export const libraryAvailabilityRoute: FastifyPluginAsync = async app => {
@@ -31,7 +57,10 @@ export const libraryAvailabilityRoute: FastifyPluginAsync = async app => {
       return parsedParams.error;
     }
 
-    const libraryAvailabilityPayload = await fetchLibraryAvailabilityPayload();
+    const libraryAvailabilityPayload = await fetchLibraryAvailabilityPayload(
+      parsedParams.value.libraryCode,
+      parsedParams.value.isbn13,
+    );
 
     if (!libraryAvailabilityPayload.ok) {
       app.log.warn({errorTitle: libraryAvailabilityPayload.error.title}, 'Library availability upstream request failed');
