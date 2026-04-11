@@ -361,6 +361,33 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
+  it('페이지 전환 중에는 pagination을 유지하고 리스트와 우측 영역만 pending 상태로 바꾼다', async () => {
+    const user = userEvent.setup();
+    const pendingPromise = new Promise<never>(() => {});
+
+    mockUseGetSearchLibraries.mockImplementation(params => {
+      if (params.page === 2) {
+        throw pendingPromise;
+      }
+
+      return mockLibrarySearchResponse;
+    });
+
+    renderLibrarySearchResultDialog();
+
+    const firstPagination = await screen.findByRole('navigation', {name: '도서관 검색 결과 페이지네이션'});
+
+    await user.click(within(firstPagination).getByRole('button', {name: '2페이지'}));
+
+    const pendingPagination = await screen.findByRole('navigation', {name: '도서관 검색 결과 페이지네이션'});
+
+    expect(screen.getByRole('button', {name: '지역 변경'})).toBeInTheDocument();
+    expect(within(pendingPagination).getByText('2')).toHaveAttribute('aria-current', 'page');
+    expect(screen.queryByRole('button', {name: /마포중앙도서관/})).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', {name: '마포중앙도서관'})).not.toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
+  });
+
   it('중간 페이지에서는 dialog 전용 압축 페이지네이션으로 첫 페이지 현재 페이지 마지막 페이지를 표시한다', async () => {
     mockUseGetSearchLibraries.mockReturnValue({
       ...mockLibrarySearchResponse,
