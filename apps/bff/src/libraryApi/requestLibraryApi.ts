@@ -1,6 +1,6 @@
 import {libraryApiConfig} from '../config/env.js';
 
-type LibraryApiEndpoint = '/srchBooks' | '/srchDtlList' | '/libSrchByBook';
+type LibraryApiEndpoint = '/srchBooks' | '/srchDtlList' | '/libSrchByBook' | '/bookExist';
 
 type LibraryApiQueryValue = string | number | boolean | null | undefined;
 

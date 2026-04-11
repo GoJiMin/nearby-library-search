@@ -9,7 +9,7 @@
 
 ## 2. BFF `/bookExist` endpoint와 param schema 확장
 
-- [ ] `requestLibraryApi` endpoint union에 `/bookExist`를 추가한다.
+- [x] `requestLibraryApi` endpoint union에 `/bookExist`를 추가한다.
 - [ ] `libraryCode`, `isbn13` path param 검증 schema를 추가한다.
 - [ ] `libraryCode`는 non-empty string, `isbn13`은 13자리 숫자 문자열로 검증한다.
 - [ ] availability param validation error title을 고정한다.

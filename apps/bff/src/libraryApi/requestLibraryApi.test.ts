@@ -44,6 +44,30 @@ describe('requestLibraryApi', () => {
     expect(requestInit.redirect).toBe('error');
   });
 
+  it('bookExist endpoint도 같은 공통 인증 파라미터 규칙으로 요청한다', async () => {
+    fetchMock.mockResolvedValue(new Response('{}', {status: 200}));
+
+    await requestLibraryApi({
+      endpoint: '/bookExist',
+      queryParams: {
+        isbn13: '9791190157551',
+        libCode: 'LIB0001',
+      },
+      requiredQueryParams: ['libCode', 'isbn13'],
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const [requestUrl, requestInit] = fetchMock.mock.calls[0] as [URL, RequestInit];
+
+    expect(requestUrl.toString()).toBe(
+      'https://example.com/openapi/bookExist?authKey=test-auth-key&format=json&isbn13=9791190157551&libCode=LIB0001',
+    );
+    expect(requestInit.method).toBe('GET');
+    expect(requestInit.headers).toBeUndefined();
+    expect(requestInit.redirect).toBe('error');
+  });
+
   it('빈 문자열 파라미터는 제외하고 필수 파라미터 누락은 설정 오류로 막는다', async () => {
     await expect(() =>
       requestLibraryApi({
