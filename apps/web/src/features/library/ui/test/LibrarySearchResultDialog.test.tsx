@@ -922,6 +922,26 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
   });
 
+  it('모바일에서 조회가 suspend되면 실제 모바일 순서와 같은 details loading shell을 유지한다', async () => {
+    const pendingPromise = new Promise(() => {});
+
+    mockMatchMedia(true);
+    mockUseGetSearchLibraries.mockImplementation(() => {
+      throw pendingPromise;
+    });
+
+    renderLibrarySearchResultDialog();
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+    const quickMapButton = within(detailPanel).getByRole('button', {name: '지도로 보기'});
+    const availabilityButton = within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'});
+
+    expect(quickMapButton).toBeDisabled();
+    expect(availabilityButton).toBeDisabled();
+    expect(quickMapButton.compareDocumentPosition(availabilityButton) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(within(detailPanel).queryAllByRole('button', {name: '대출 가능 여부 조회'})).toHaveLength(1);
+  });
+
   it('성공 상태의 지역 변경 action은 region dialog로 되돌린다', async () => {
     const user = userEvent.setup();
 

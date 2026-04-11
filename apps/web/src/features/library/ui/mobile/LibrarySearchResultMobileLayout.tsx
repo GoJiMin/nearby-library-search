@@ -19,7 +19,7 @@ import {LibrarySearchResultDetailsFields} from '../common/LibrarySearchResultDet
 import {LibrarySearchResultList} from '../common/LibrarySearchResultList';
 import {LibrarySearchResultPagination} from '../common/LibrarySearchResultPagination';
 import {LibrarySearchResultSelectedMap} from '../common/LibrarySearchResultSelectedMap';
-import {LibrarySearchResultDetailsPlaceholder} from '../common/loading/LibrarySearchResultDetailsPlaceholder';
+import {LibrarySearchResultDetailsFieldsPlaceholder} from '../common/loading/LibrarySearchResultDetailsPlaceholder';
 import {LibrarySearchResultListPlaceholder} from '../common/loading/LibrarySearchResultListPlaceholder';
 
 type LibrarySearchResultMobileLayoutProps = {
@@ -31,15 +31,21 @@ type LibrarySearchResultMobileLayoutProps = {
 
 function MobileSelectedDetailsSectionFallback() {
   return (
-    <div className="bg-surface border-line/40 border-b px-6 py-5">
-      <LibrarySearchResultDetailsPlaceholder layout="mobile" />
-      <div className="mt-3">
-        <Button className="w-full rounded-2xl" disabled size="lg" variant="secondary">
-          <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
-          지도로 보기
-        </Button>
+    <section aria-label="선택된 도서관 정보 패널" className="bg-surface border-line/40 border-b px-6 py-5">
+      <div className="flex flex-col gap-6">
+        <LibrarySearchResultDetailsFieldsPlaceholder />
+        <div className="grid gap-3">
+          <Button className="w-full rounded-2xl" disabled size="lg" variant="secondary">
+            <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
+            지도로 보기
+          </Button>
+          <Button className="w-full rounded-2xl" disabled size="lg" variant="default">
+            <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
+            대출 가능 여부 조회
+          </Button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
