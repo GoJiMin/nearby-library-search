@@ -1,5 +1,6 @@
 import {Suspense, useEffect, useRef, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
+import {useShallow} from 'zustand/react/shallow';
 import {LIBRARY_SEARCH_PAGE_SIZE} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
@@ -24,9 +25,13 @@ function LibrarySearchResultMobileLayout({
   params,
   selectedLibraryCode,
 }: LibrarySearchResultMobileLayoutProps) {
-  const backToRegionSelect = useFindLibraryStore(state => state.backToRegionSelect);
-  const currentPage = useFindLibraryStore(state => state.currentLibrarySearchParams?.page ?? 1);
-  const totalCount = useFindLibraryStore(state => state.resolvedLibraryTotalCount);
+  const {backToRegionSelect, currentPage, totalCount} = useFindLibraryStore(
+    useShallow(state => ({
+      backToRegionSelect: state.backToRegionSelect,
+      currentPage: state.currentLibrarySearchParams?.page ?? 1,
+      totalCount: state.resolvedLibraryTotalCount,
+    })),
+  );
   const layoutRef = useRef<HTMLDivElement | null>(null);
   const detailsAnchorRef = useRef<HTMLDivElement | null>(null);
   const previousPageRef = useRef(currentPage);
