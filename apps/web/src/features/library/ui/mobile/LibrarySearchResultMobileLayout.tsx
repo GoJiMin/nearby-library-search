@@ -5,16 +5,7 @@ import {hasLibraryCoordinates, LIBRARY_SEARCH_PAGE_SIZE, useGetSearchLibraries} 
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
 import {kakaoMapConfig} from '@/shared/env';
-import {
-  Button,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  Heading,
-  LucideIcon,
-  Text,
-} from '@/shared/ui';
+import {Button, Dialog, DialogClose, DialogContent, DialogTitle, Heading, LucideIcon, Text} from '@/shared/ui';
 import {LibrarySearchResultDetailsFields} from '../common/LibrarySearchResultDetails';
 import {LibrarySearchResultList} from '../common/LibrarySearchResultList';
 import {LibrarySearchResultPagination} from '../common/LibrarySearchResultPagination';
@@ -131,7 +122,12 @@ function MobileSelectedDetailsSection({
                 {mapSummary}
               </Text>
             ) : null}
-            <Button className="w-full rounded-2xl" disabled={currentSelectedLibrary == null} size="lg" variant="default">
+            <Button
+              className="w-full rounded-2xl"
+              disabled={currentSelectedLibrary == null}
+              size="lg"
+              variant="default"
+            >
               <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
               대출 가능 여부 조회
             </Button>
@@ -190,9 +186,13 @@ function LibrarySearchResultMobileLayout({
   }, [currentPage]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto" data-slot="library-search-mobile-layout" ref={layoutRef}>
+    <div
+      className="flex h-full min-h-0 flex-col overflow-y-auto"
+      data-slot="library-search-mobile-layout"
+      ref={layoutRef}
+    >
       <header className="bg-surface-strong border-line/40 border-b px-6 pt-6 pb-4">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-1">
           <Heading as="h2" className="tracking-[-0.04em]" size="lg">
             검색 결과
           </Heading>
