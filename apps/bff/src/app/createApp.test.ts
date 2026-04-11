@@ -480,6 +480,29 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('개발용 fixture 모드가 켜져 있으면 도서관 대출 가능 여부를 외부 호출 없이 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0001/books/9791192389479/availability',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      hasBook: 'Y',
+      isbn13: '9791192389479',
+      libraryCode: 'LIB0001',
+      loanAvailable: 'Y',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
   it('도서 검색 업스트림 실패를 502 표준 에러로 정규화한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
