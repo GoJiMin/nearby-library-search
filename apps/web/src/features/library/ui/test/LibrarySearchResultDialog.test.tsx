@@ -324,6 +324,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(dialog).toBeInTheDocument();
     expect(screen.getByRole('heading', {name: '검색 결과'})).toBeInTheDocument();
     expect(screen.getByText('총 12개의 도서관을 검색했어요.')).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '지역 변경'})).toBeInTheDocument();
     expect(screen.getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
@@ -724,9 +725,22 @@ describe('LibrarySearchResultDialog', () => {
     renderLibrarySearchResultDialog();
 
     expect(await screen.findByRole('heading', {name: '검색 결과'})).toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: '지역 변경'})).not.toBeInTheDocument();
     expect(screen.getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
+  });
+
+  it('성공 상태의 지역 변경 action은 region dialog로 되돌린다', async () => {
+    const user = userEvent.setup();
+
+    renderLibrarySearchResultDialog();
+
+    await user.click(await screen.findByRole('button', {name: '지역 변경'}));
+
+    expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
+    expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
+    expect(useFindLibraryStore.getState().regionDialogBook).toEqual(DEFAULT_SELECTED_BOOK);
   });
 
   it('빈 응답이면 empty state와 복구 CTA를 렌더링한다', async () => {

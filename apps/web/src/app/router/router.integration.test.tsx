@@ -655,6 +655,57 @@ describe('app router integration', () => {
     });
   });
 
+  it('성공 상태의 지역 변경 action은 region dialog로 되돌리고 재확정 시 page 1부터 다시 시작한다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '소장 도서관 찾기'}));
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '마포구'}));
+    await user.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    const libraryDialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+    const pagination = within(libraryDialog).getByRole('navigation', {
+      name: '도서관 검색 결과 페이지네이션',
+    });
+
+    await user.click(within(pagination).getByRole('button', {name: '2페이지'}));
+
+    await waitFor(() => {
+      expect(within(pagination).getByText('2')).toHaveAttribute('aria-current', 'page');
+    });
+
+    await user.click(within(libraryDialog).getByRole('button', {name: /성산열람실/}));
+    await user.click(within(libraryDialog).getByRole('button', {name: '지역 변경'}));
+
+    const regionDialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
+    });
+
+    expect(within(regionDialog).getByText('서울 > 마포구')).toBeInTheDocument();
+    expect(within(regionDialog).getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
+    expect(within(regionDialog).getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
+
+    await user.click(within(regionDialog).getByRole('button', {name: '선택 완료'}));
+
+    const reopenedLibraryDialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+    const reopenedPagination = within(reopenedLibraryDialog).getByRole('navigation', {
+      name: '도서관 검색 결과 페이지네이션',
+    });
+    const detailPanel = within(reopenedLibraryDialog).getByLabelText('선택된 도서관 정보 패널');
+    const firstLibraryRow = within(reopenedLibraryDialog).getByRole('button', {name: /마포중앙도서관/});
+    const secondLibraryRow = within(reopenedLibraryDialog).getByRole('button', {name: /합정열람실/});
+
+    expect(within(reopenedPagination).getByText('1')).toHaveAttribute('aria-current', 'page');
+    expect(firstLibraryRow).toHaveAttribute('aria-pressed', 'true');
+    expect(secondLibraryRow).toHaveAttribute('aria-pressed', 'false');
+    expect(within(detailPanel).getByRole('heading', {name: '마포중앙도서관'})).toBeInTheDocument();
+    expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
+  });
+
   it('library search가 비어 있으면 다른 책 다시 선택 CTA로 dialog만 닫는다', async () => {
     const user = userEvent.setup();
 
