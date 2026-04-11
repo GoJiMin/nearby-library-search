@@ -1,33 +1,21 @@
 import {MapPin, X} from 'lucide-react';
-import type {LibrarySearchParams} from '@/entities/library';
-import type {BookSelectionActionPayload} from '@/features/book';
+import {useShallow} from 'zustand/react/shallow';
+import {useFindLibraryStore} from '@/features/find-library';
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, LucideIcon} from '@/shared/ui';
 import {createRegionSelectConfirmParams} from '../model/createRegionSelectConfirmParams';
-import type {RegionSelectionState} from '../model/regionSelectDialog.contract';
 import {useRegionSelectDialogDraft} from '../model/useRegionSelectDialogDraft';
 import {RegionSelectDetailRegionPanel} from './RegionSelectDetailRegionPanel';
 import {RegionSelectDialogFooter} from './RegionSelectDialogFooter';
 import {RegionSelectRegionList} from './RegionSelectRegionList';
 
-type RegionSelectDialogProps = {
-  lastSelection?: RegionSelectionState | null;
-  onConfirm: (params: LibrarySearchParams) => void;
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
-  selectedBook: BookSelectionActionPayload | null;
-};
-
-type RegionSelectDialogContentProps = {
-  lastSelection?: RegionSelectionState | null;
-  onConfirm: (params: LibrarySearchParams) => void;
-  selectedBook: BookSelectionActionPayload;
-};
-
-function RegionSelectDialogContent({
-  lastSelection,
-  onConfirm,
-  selectedBook,
-}: RegionSelectDialogContentProps) {
+function RegionSelectDialogContent() {
+  const {confirmRegion, lastRegionSelection, selectedBook} = useFindLibraryStore(
+    useShallow(state => ({
+      confirmRegion: state.confirmRegion,
+      lastRegionSelection: state.lastRegionSelection,
+      selectedBook: state.regionDialogBook,
+    })),
+  );
   const {
     draftSelection,
     detailRegionHelperMessage,
@@ -42,7 +30,11 @@ function RegionSelectDialogContent({
     selectedRegion,
     selectionSummaryText,
     visibleDetailRegionOptions,
-  } = useRegionSelectDialogDraft({lastSelection});
+  } = useRegionSelectDialogDraft({lastSelection: lastRegionSelection});
+
+  if (selectedBook == null) {
+    return null;
+  }
 
   const isConfirmDisabled = !isSelectionComplete;
 
@@ -51,7 +43,7 @@ function RegionSelectDialogContent({
       return;
     }
 
-    onConfirm(
+    confirmRegion(
       createRegionSelectConfirmParams({
         draftSelection,
         selectedBook,
@@ -110,19 +102,26 @@ function RegionSelectDialogContent({
   );
 }
 
-function RegionSelectDialog({lastSelection, onConfirm, onOpenChange, open, selectedBook}: RegionSelectDialogProps) {
+function RegionSelectDialog() {
+  const {closeRegionDialog, open} = useFindLibraryStore(
+    useShallow(state => ({
+      closeRegionDialog: state.closeRegionDialog,
+      open: state.regionDialogBook != null,
+    })),
+  );
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {open && selectedBook ? (
-        <RegionSelectDialogContent
-          lastSelection={lastSelection}
-          onConfirm={onConfirm}
-          selectedBook={selectedBook}
-        />
-      ) : null}
+    <Dialog
+      open={open}
+      onOpenChange={nextOpen => {
+        if (!nextOpen) {
+          closeRegionDialog();
+        }
+      }}
+    >
+      {open ? <RegionSelectDialogContent /> : null}
     </Dialog>
   );
 }
 
 export {RegionSelectDialog};
-export type {RegionSelectDialogProps};

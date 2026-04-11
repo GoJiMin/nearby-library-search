@@ -35,13 +35,9 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
     backToRegionSelect,
     changeLibraryResultPage,
     closeLibraryResultDialog,
-    closeRegionDialog,
-    confirmRegion,
     currentLibrarySearchParams,
-    lastRegionSelection,
     libraryResultBook,
     resetFindLibraryFlow,
-    regionDialogBook,
     selectedLibraryCode,
     selectLibrary,
   } = useFindLibraryStore(
@@ -49,12 +45,8 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
       backToRegionSelect: state.backToRegionSelect,
       changeLibraryResultPage: state.changeLibraryResultPage,
       closeLibraryResultDialog: state.closeLibraryResultDialog,
-      closeRegionDialog: state.closeRegionDialog,
-      confirmRegion: state.confirmRegion,
       currentLibrarySearchParams: state.currentLibrarySearchParams,
-      lastRegionSelection: state.lastRegionSelection,
       libraryResultBook: state.libraryResultBook,
-      regionDialogBook: state.regionDialogBook,
       resetFindLibraryFlow: state.resetFindLibraryFlow,
       selectedLibraryCode: state.selectedLibraryCode,
       selectLibrary: state.selectLibrary,
@@ -92,17 +84,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         onSubmitSearch={handleSubmitSearch}
         params={params}
       />
-      <RegionSelectDialog
-        lastSelection={lastRegionSelection}
-        onConfirm={confirmRegion}
-        onOpenChange={open => {
-          if (!open) {
-            closeRegionDialog();
-          }
-        }}
-        open={regionDialogBook != null}
-        selectedBook={regionDialogBook}
-      />
+      <RegionSelectDialog />
       <LibrarySearchResultDialog
         onBackToRegionSelect={backToRegionSelect}
         onChangePage={changeLibraryResultPage}
