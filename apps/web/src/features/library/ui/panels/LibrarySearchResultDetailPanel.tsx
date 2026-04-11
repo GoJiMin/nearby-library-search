@@ -2,7 +2,6 @@ import type {LibrarySearchItem} from '@nearby-library-search/contracts';
 import {Clock3, MapPin, Phone, Search, ExternalLink, CalendarX2} from 'lucide-react';
 import type {ReactNode} from 'react';
 import {Button, Heading, LucideIcon, Skeleton, Text} from '@/shared/ui';
-import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
 
 const detailPlaceholderItems = [
   {label: '운영 시간', valueClassName: 'w-40'},
@@ -20,8 +19,9 @@ type LibrarySearchResultDetailBodyProps = {
   library: LibrarySearchItem;
 };
 
-type LibrarySearchResultDetailFooterCtaProps = Pick<LibrarySearchResultDialogProps, 'onCheckAvailability'> & {
+type LibrarySearchResultDetailFooterCtaProps = {
   disabled?: boolean;
+  onCheckAvailability: () => void;
 };
 
 function LibrarySearchResultDetailPanel({children, footer}: LibrarySearchResultDetailPanelProps) {
@@ -111,12 +111,15 @@ function LibrarySearchResultDetailFooterCta({
   );
 }
 
-function LibrarySearchResultDetailPlaceholder({
-  onCheckAvailability,
-}: Pick<LibrarySearchResultDialogProps, 'onCheckAvailability'>) {
+function LibrarySearchResultDetailPlaceholder() {
   return (
     <LibrarySearchResultDetailPanel
-      footer={<LibrarySearchResultDetailFooterCta disabled onCheckAvailability={onCheckAvailability} />}
+      footer={
+        <Button className="w-full rounded-2xl" disabled size="lg" variant="default">
+          <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
+          대출 가능 여부 조회
+        </Button>
+      }
     >
       <div className="space-y-5">
         <div className="flex items-center gap-2">

@@ -46,7 +46,7 @@ function LibrarySearchResultDialog({
             <LibrarySearchResultErrorContent error={error} onClose={() => onOpenChange(false)} onRetry={reset} />
           )}
         >
-          <Suspense fallback={<LibrarySearchResultLoadingContent onCheckAvailability={onCheckAvailability} />}>
+          <Suspense fallback={<LibrarySearchResultLoadingContent />}>
             <LibrarySearchResultContent
               onBackToRegionSelect={onBackToRegionSelect}
               onChangePage={onChangePage}
