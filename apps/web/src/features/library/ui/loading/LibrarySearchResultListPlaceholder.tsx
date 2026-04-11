@@ -33,7 +33,6 @@ function LibrarySearchResultListPlaceholder({
                 <Skeleton className={`h-5 rounded-full ${widths.title}`} />
                 <div className="space-y-1.5">
                   <Skeleton className={`h-4 rounded-full ${widths.address}`} />
-                  <Skeleton className="h-4 w-24 rounded-full" />
                 </div>
               </div>
               <Skeleton className={`h-3 rounded-full ${widths.meta}`} />

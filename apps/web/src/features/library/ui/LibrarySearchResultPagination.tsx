@@ -133,7 +133,7 @@ function LibrarySearchResultPagination() {
           return (
             <span
               aria-label="페이지 생략"
-              className="text-text-muted inline-flex shrink-0 items-center justify-center px-1 text-xs font-semibold tracking-[-0.18em]"
+              className="text-text-muted inline-flex shrink-0 items-center justify-center px-1 text-xs font-semibold -tracking-widest"
               key={item.id}
               role="img"
             >

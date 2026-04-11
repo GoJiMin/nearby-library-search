@@ -13,14 +13,14 @@ function LibrarySearchResultSidebar({children}: LibrarySearchResultSidebarProps)
 
   return (
     <aside aria-label="검색 결과 목록 패널" className="bg-surface-strong border-line/40 flex min-h-0 flex-col border-r">
-      <div className="px-8 pt-8 pb-3">
-        <div className="flex items-center justify-between gap-3">
+      <div className="px-8 pt-7 pb-3">
+        <div className="flex items-center justify-between gap-1">
           <Heading as="h2" className="tracking-[-0.04em]" size="lg">
             검색 결과
           </Heading>
           {totalCount != null ? (
             <Button
-              className="rounded-full px-3 text-text-muted hover:text-text"
+              className="text-text-muted hover:text-text rounded-full px-3 hover:bg-transparent"
               onClick={backToRegionSelect}
               size="sm"
               type="button"
