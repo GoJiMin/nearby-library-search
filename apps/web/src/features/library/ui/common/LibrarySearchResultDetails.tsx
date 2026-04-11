@@ -7,6 +7,10 @@ type LibrarySearchResultDetailsProps = {
   layout?: 'desktop' | 'mobile';
 };
 
+type LibrarySearchResultDetailsFieldsProps = {
+  library: LibrarySearchItem | null;
+};
+
 const detailFieldItems = [
   {icon: Clock3, key: 'operatingTime', label: '운영 시간'},
   {icon: CalendarX2, key: 'closedDays', label: '휴관일'},
@@ -33,6 +37,41 @@ function getLibraryDetailValue(library: LibrarySearchItem, key: (typeof detailFi
 
 function handleCheckAvailability() {}
 
+function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsFieldsProps) {
+  if (library == null) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-2">
+        <Heading as="h2" size="md">
+          {library.name}
+        </Heading>
+        {library.homepage ? (
+          <a href={library.homepage} rel="noreferrer" target="_blank">
+            <LucideIcon className="text-text-muted hover:text-accent transition-colors" icon={ExternalLink} size={24} />
+          </a>
+        ) : null}
+      </div>
+      <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
+        {detailFieldItems.map(item => (
+          <div className="flex items-start gap-3" key={item.label}>
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">
+                {item.label}
+              </p>
+              <Text className="text-sm wrap-break-word" tone="default">
+                {getLibraryDetailValue(library, item.key)}
+              </Text>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function LibrarySearchResultDetails({
   layout = 'desktop',
   library,
@@ -50,38 +89,7 @@ function LibrarySearchResultDetails({
     <section aria-label="선택된 도서관 정보 패널" className={sectionClassName}>
       <div className={bodyClassName}>
         <div>
-          {library ? (
-            <div className="space-y-5">
-              <div className="flex items-center gap-2">
-                <Heading as="h2" size="md">
-                  {library.name}
-                </Heading>
-                {library.homepage ? (
-                  <a href={library.homepage} rel="noreferrer" target="_blank">
-                    <LucideIcon
-                      className="text-text-muted hover:text-accent transition-colors"
-                      icon={ExternalLink}
-                      size={24}
-                    />
-                  </a>
-                ) : null}
-              </div>
-              <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
-                {detailFieldItems.map(item => (
-                  <div className="flex items-start gap-3" key={item.label}>
-                    <div className="min-w-0 flex-1 space-y-1.5">
-                      <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">
-                        {item.label}
-                      </p>
-                      <Text className="text-sm wrap-break-word" tone="default">
-                        {getLibraryDetailValue(library, item.key)}
-                      </Text>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          <LibrarySearchResultDetailsFields library={library} />
         </div>
         <Button
           className="w-full rounded-2xl"
@@ -98,5 +106,5 @@ function LibrarySearchResultDetails({
   );
 }
 
-export {LibrarySearchResultDetails};
-export type {LibrarySearchResultDetailsProps};
+export {LibrarySearchResultDetails, LibrarySearchResultDetailsFields};
+export type {LibrarySearchResultDetailsFieldsProps, LibrarySearchResultDetailsProps};
