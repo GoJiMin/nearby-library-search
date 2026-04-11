@@ -8,12 +8,14 @@ import {Heading, Text} from '@/shared/ui';
 
 type LibrarySearchResultListProps = {
   onSelectLibrary: (code: LibraryCode) => void;
+  layout?: 'desktop' | 'mobile';
   params: LibrarySearchParams;
   selectedLibraryCode: LibraryCode | null;
 };
 
 type LibrarySearchResultListBodyProps = {
   items: LibrarySearchItem[];
+  layout?: 'desktop' | 'mobile';
   onSelectLibrary: (code: LibrarySearchItem['code']) => void;
   selectedLibraryCode: LibrarySearchItem['code'] | null;
 };
@@ -28,11 +30,17 @@ function getLibraryRowMeta(item: LibrarySearchItem) {
 
 function LibrarySearchResultListBody({
   items,
+  layout = 'desktop',
   onSelectLibrary,
   selectedLibraryCode,
 }: LibrarySearchResultListBodyProps) {
+  const listClassName =
+    layout === 'mobile'
+      ? 'space-y-3 px-6 py-4'
+      : 'flex-1 space-y-3 overflow-y-auto px-4 py-3';
+
   return (
-    <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 py-3" role="list">
+    <ul aria-label="도서관 검색 결과 목록" className={listClassName} role="list">
       {items.map(item => {
         const isSelected = selectedLibraryCode === item.code;
 
@@ -68,6 +76,7 @@ function LibrarySearchResultListBody({
 }
 
 function LibrarySearchResultList({
+  layout = 'desktop',
   onSelectLibrary,
   params,
   selectedLibraryCode,
@@ -93,6 +102,7 @@ function LibrarySearchResultList({
   return (
     <LibrarySearchResultListBody
       items={response.items}
+      layout={layout}
       onSelectLibrary={onSelectLibrary}
       selectedLibraryCode={selectedLibraryCode}
     />

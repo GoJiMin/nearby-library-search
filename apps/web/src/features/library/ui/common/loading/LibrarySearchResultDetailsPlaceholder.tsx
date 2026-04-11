@@ -8,13 +8,25 @@ const detailPlaceholderItems = [
   {label: '전화번호', valueClassName: 'w-28'},
 ] as const;
 
-function LibrarySearchResultDetailsPlaceholder() {
+type LibrarySearchResultDetailsPlaceholderProps = {
+  layout?: 'desktop' | 'mobile';
+};
+
+function LibrarySearchResultDetailsPlaceholder({
+  layout = 'desktop',
+}: LibrarySearchResultDetailsPlaceholderProps) {
+  const sectionClassName =
+    layout === 'mobile'
+      ? 'bg-surface border-line/40 border-b px-6 py-5'
+      : 'bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5';
+  const bodyClassName =
+    layout === 'mobile'
+      ? 'flex flex-col gap-6'
+      : 'flex min-h-0 flex-1 flex-col justify-between gap-6';
+
   return (
-    <section
-      aria-label="선택된 도서관 정보 패널"
-      className="bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5"
-    >
-      <div className="flex min-h-0 flex-1 flex-col justify-between gap-6">
+    <section aria-label="선택된 도서관 정보 패널" className={sectionClassName}>
+      <div className={bodyClassName}>
         <div className="space-y-5">
           <div className="flex items-center gap-2">
             <Skeleton className="h-8 w-36 rounded-full" />
@@ -41,3 +53,4 @@ function LibrarySearchResultDetailsPlaceholder() {
 }
 
 export {LibrarySearchResultDetailsPlaceholder};
+export type {LibrarySearchResultDetailsPlaceholderProps};

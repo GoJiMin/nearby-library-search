@@ -10,13 +10,20 @@ const resultCardSkeletonWidths = [
 
 type LibrarySearchResultListPlaceholderProps = {
   itemCount?: number;
+  layout?: 'desktop' | 'mobile';
 };
 
 function LibrarySearchResultListPlaceholder({
   itemCount = resultCardSkeletonWidths.length,
+  layout = 'desktop',
 }: LibrarySearchResultListPlaceholderProps) {
+  const listClassName =
+    layout === 'mobile'
+      ? 'space-y-3 px-6 py-4'
+      : 'flex-1 space-y-3 overflow-y-auto px-4 py-3';
+
   return (
-    <ul aria-label="도서관 검색 결과 목록" className="flex-1 space-y-3 overflow-y-auto px-4 py-3" role="list">
+    <ul aria-label="도서관 검색 결과 목록" className={listClassName} role="list">
       {Array.from({length: itemCount}, (_, index) => {
         const widths = resultCardSkeletonWidths[index % resultCardSkeletonWidths.length];
 

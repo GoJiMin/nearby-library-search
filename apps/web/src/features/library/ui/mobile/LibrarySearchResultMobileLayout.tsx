@@ -119,13 +119,14 @@ function LibrarySearchResultMobileLayout({
         </Text>
       </header>
 
-      <Suspense fallback={<LibrarySearchResultDetailsPlaceholder />}>
-        <LibrarySearchResultSelectedDetails params={params} />
+      <Suspense fallback={<LibrarySearchResultDetailsPlaceholder layout="mobile" />}>
+        <LibrarySearchResultSelectedDetails layout="mobile" params={params} />
       </Suspense>
 
-      <div className="bg-surface-strong min-h-0">
-        <Suspense fallback={<LibrarySearchResultListPlaceholder />}>
+      <div className="bg-surface-strong">
+        <Suspense fallback={<LibrarySearchResultListPlaceholder layout="mobile" />}>
           <LibrarySearchResultList
+            layout="mobile"
             onSelectLibrary={onSelectLibrary}
             params={params}
             selectedLibraryCode={selectedLibraryCode}

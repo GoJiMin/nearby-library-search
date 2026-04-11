@@ -4,6 +4,7 @@ import {Button, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type LibrarySearchResultDetailsProps = {
   library: LibrarySearchItem | null;
+  layout?: 'desktop' | 'mobile';
 };
 
 const detailFieldItems = [
@@ -32,13 +33,22 @@ function getLibraryDetailValue(library: LibrarySearchItem, key: (typeof detailFi
 
 function handleCheckAvailability() {}
 
-function LibrarySearchResultDetails({library}: LibrarySearchResultDetailsProps) {
+function LibrarySearchResultDetails({
+  layout = 'desktop',
+  library,
+}: LibrarySearchResultDetailsProps) {
+  const sectionClassName =
+    layout === 'mobile'
+      ? 'bg-surface border-line/40 border-b px-6 py-5'
+      : 'bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5';
+  const bodyClassName =
+    layout === 'mobile'
+      ? 'flex flex-col gap-6'
+      : 'flex min-h-0 flex-1 flex-col justify-between gap-6';
+
   return (
-    <section
-      aria-label="선택된 도서관 정보 패널"
-      className="bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5"
-    >
-      <div className="flex min-h-0 flex-1 flex-col justify-between gap-6">
+    <section aria-label="선택된 도서관 정보 패널" className={sectionClassName}>
+      <div className={bodyClassName}>
         <div>
           {library ? (
             <div className="space-y-5">
