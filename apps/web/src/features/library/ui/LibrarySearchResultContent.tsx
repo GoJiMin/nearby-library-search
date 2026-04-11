@@ -13,7 +13,6 @@ import {
   LibrarySearchResultDetailPanel,
 } from './panels/LibrarySearchResultDetailPanel';
 import {LibrarySearchResultList} from './panels/LibrarySearchResultList';
-import {LibrarySearchResultMapPanel} from './panels/LibrarySearchResultMapPanel';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
 
 function handleCheckAvailability() {}
@@ -89,10 +88,10 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
         </div>
       </aside>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
-        <LibrarySearchResultMapPanel>
+        <section aria-label="도서관 지도 패널" className="bg-surface-muted relative min-h-90 overflow-hidden">
           {/* Map focus uses explicit list/marker interactions; default selection keeps the full bounds view. */}
           <LibrarySearchResultMap focusRequest={mapFocusRequest} items={response.items} />
-        </LibrarySearchResultMapPanel>
+        </section>
         <LibrarySearchResultDetailPanel
           footer={
             <LibrarySearchResultDetailFooterCta

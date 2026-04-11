@@ -2,7 +2,6 @@ import {LibrarySearchResultMapPlaceholderBody} from '../../map/ui/LibrarySearchR
 import {Heading, Text} from '@/shared/ui';
 import {LibrarySearchResultDetailPlaceholder} from '../panels/loading/LibrarySearchResultDetailPlaceholder';
 import {LibrarySearchResultListPlaceholderBody} from '../panels/loading/LibrarySearchResultListPlaceholderBody';
-import {LibrarySearchResultMapPanel} from '../panels/LibrarySearchResultMapPanel';
 
 function LibrarySearchResultLoadingContent() {
   return (
@@ -17,9 +16,9 @@ function LibrarySearchResultLoadingContent() {
         <LibrarySearchResultListPlaceholderBody />
       </aside>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
-        <LibrarySearchResultMapPanel>
+        <section aria-label="도서관 지도 패널" className="bg-surface-muted relative min-h-90 overflow-hidden">
           <LibrarySearchResultMapPlaceholderBody />
-        </LibrarySearchResultMapPanel>
+        </section>
         <LibrarySearchResultDetailPlaceholder />
       </div>
     </div>
