@@ -27,11 +27,8 @@ function LibrarySearchResultMap({
   selectedLibraryCode,
 }: LibrarySearchResultMapProps) {
   const {containerRef, errorCode, kakaoMapsRef, mapRef, status} = useKakaoMapInstance();
-  const fallbackSelectedLibrary = items[0] ?? null;
-  const currentSelectedLibrary = items.find(item => item.code === selectedLibraryCode) ?? fallbackSelectedLibrary;
   const coordinateItems = items.filter(hasLibraryCoordinates) as LibrarySearchCoordinateItem[];
-  const currentSelectedCoordinateLibrary =
-    currentSelectedLibrary && hasLibraryCoordinates(currentSelectedLibrary) ? currentSelectedLibrary : null;
+  const currentSelectedCoordinateLibrary = coordinateItems.find(item => item.code === selectedLibraryCode) ?? null;
   const currentSelectedCoordinateCode = currentSelectedCoordinateLibrary?.code ?? null;
   const coordinateItemsKey = createCoordinateItemsKey(coordinateItems);
 
