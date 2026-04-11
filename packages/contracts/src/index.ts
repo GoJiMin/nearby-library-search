@@ -3,4 +3,5 @@ export type {BookDetail, BookDetailLoanInfo, BookDetailLoanStat, BookDetailRespo
 export type {BookSearchItem, BookSearchResponse} from './bookSearch.js';
 export type {CommonErrorTitle, ErrorResponse, ErrorTitle} from './error.js';
 export type {DetailRegionCode, RegionCode, RegionIdentifier} from './region.js';
+export type {LibraryAvailabilityFlag, LibraryAvailabilityResponse} from './libraryAvailability.js';
 export type {LibrarySearchItem, LibrarySearchResponse} from './librarySearch.js';
