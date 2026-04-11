@@ -48,11 +48,9 @@ function RegionSelectDetailRegionPanel({
                 onClick={() => {
                   onSelectDetailRegion(undefined);
                 }}
-                trailing={
-                  !selectedDetailRegion ? (
-                    <LucideIcon className="text-accent h-4.5 w-4.5 shrink-0" icon={CheckCircle2} strokeWidth={2.1} />
-                  ) : null
-                }
+                trailing={!selectedDetailRegion && (
+                  <LucideIcon className="text-accent h-4.5 w-4.5 shrink-0" icon={CheckCircle2} strokeWidth={2.1} />
+                )}
               >
                 전체
               </RegionSelectRowButton>
@@ -61,11 +59,9 @@ function RegionSelectDetailRegionPanel({
               <li key={detailRegionOption.code}>
                 <RegionSelectRowButton
                   isSelected={selectedDetailRegion === detailRegionOption.code}
-                  trailing={
-                    selectedDetailRegion === detailRegionOption.code ? (
-                      <LucideIcon className="text-accent h-4.5 w-4.5 shrink-0" icon={CheckCircle2} strokeWidth={2.1} />
-                    ) : null
-                  }
+                  trailing={selectedDetailRegion === detailRegionOption.code && (
+                    <LucideIcon className="text-accent h-4.5 w-4.5 shrink-0" icon={CheckCircle2} strokeWidth={2.1} />
+                  )}
                   onClick={() => {
                     onSelectDetailRegion(detailRegionOption.code);
                   }}
@@ -75,9 +71,9 @@ function RegionSelectDetailRegionPanel({
               </li>
             ))}
           </ul>
-          {isDetailRegionFallback && detailRegionHelperMessage ? (
+          {isDetailRegionFallback && detailRegionHelperMessage && (
             <p className="text-text-muted px-4 pt-2 pb-4 text-sm leading-6">{detailRegionHelperMessage}</p>
-          ) : null}
+          )}
         </div>
       ) : (
         <div className="flex-1 px-2 py-2">

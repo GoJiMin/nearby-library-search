@@ -25,11 +25,9 @@ function RegionSelectRegionList({onSelectRegion, selectedRegion}: RegionSelectRe
             <RegionSelectRowButton
               isSelected={regionOption.code === selectedRegion}
               selectionTone="accent"
-              trailing={
-                regionOption.code === selectedRegion ? (
-                  <LucideIcon className="h-4 w-4 shrink-0" icon={ChevronRight} strokeWidth={2.1} />
-                ) : null
-              }
+              trailing={regionOption.code === selectedRegion && (
+                <LucideIcon className="h-4 w-4 shrink-0" icon={ChevronRight} strokeWidth={2.1} />
+              )}
               onClick={() => {
                 onSelectRegion(regionOption.code);
               }}

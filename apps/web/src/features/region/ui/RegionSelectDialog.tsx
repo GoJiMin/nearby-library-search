@@ -120,7 +120,7 @@ function RegionSelectDialog() {
         }
       }}
     >
-      {open ? <RegionSelectDialogContent /> : null}
+      {open && <RegionSelectDialogContent />}
     </Dialog>
   );
 }

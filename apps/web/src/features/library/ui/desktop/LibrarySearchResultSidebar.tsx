@@ -18,7 +18,7 @@ function LibrarySearchResultSidebar({children}: LibrarySearchResultSidebarProps)
           <Heading as="h2" className="tracking-[-0.04em]" size="lg">
             검색 결과
           </Heading>
-          {totalCount != null ? (
+          {totalCount != null && (
             <Button
               className="text-text-muted hover:text-text rounded-full px-3 hover:bg-transparent"
               onClick={backToRegionSelect}
@@ -28,7 +28,7 @@ function LibrarySearchResultSidebar({children}: LibrarySearchResultSidebarProps)
             >
               지역 변경
             </Button>
-          ) : null}
+          )}
         </div>
         <Text className="mt-1 text-sm">
           {totalCount == null ? '도서관 검색 결과를 불러오고 있어요.' : `총 ${totalCount}개의 도서관을 검색했어요.`}

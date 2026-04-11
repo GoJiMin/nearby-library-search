@@ -48,11 +48,11 @@ function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsF
         <Heading as="h2" size="md">
           {library.name}
         </Heading>
-        {library.homepage ? (
+        {library.homepage && (
           <a href={library.homepage} rel="noreferrer" target="_blank">
             <LucideIcon className="text-text-muted hover:text-accent transition-colors" icon={ExternalLink} size={24} />
           </a>
-        ) : null}
+        )}
       </div>
       <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
         {detailFieldItems.map(item => (

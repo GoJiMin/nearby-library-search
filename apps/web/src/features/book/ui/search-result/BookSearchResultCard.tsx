@@ -71,7 +71,7 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
               </div>
 
               <div className="flex flex-wrap gap-x-4 gap-y-2">
-                {publisherPublicationLabel ? (
+                {publisherPublicationLabel && (
                   <Text
                     as="span"
                     className="inline-flex items-center gap-1.5 text-xs sm:text-sm"
@@ -81,14 +81,14 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
                     <LucideIcon className="h-3.5 w-3.5 shrink-0" icon={BookOpen} strokeWidth={1.75} />
                     {publisherPublicationLabel}
                   </Text>
-                ) : null}
+                )}
 
                 <Text as="span" className="inline-flex items-center gap-1.5 text-xs sm:text-sm" size="sm" tone="muted">
                   <LucideIcon className="h-3.5 w-3.5 shrink-0" icon={Fingerprint} strokeWidth={1.75} />
                   {`ISBN: ${item.isbn13}`}
                 </Text>
 
-                {item.loanCount != null ? (
+                {item.loanCount != null && (
                   <Text
                     as="span"
                     className="inline-flex items-center gap-1.5 text-xs sm:text-sm"
@@ -98,7 +98,7 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
                     <LucideIcon className="h-3.5 w-3.5 shrink-0" icon={BarChart3} strokeWidth={1.75} />
                     {`총 대출 ${item.loanCount}건`}
                   </Text>
-                ) : null}
+                )}
               </div>
             </div>
 

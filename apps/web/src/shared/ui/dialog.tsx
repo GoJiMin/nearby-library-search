@@ -48,14 +48,14 @@ const DialogContent = forwardRef<
         {...props}
       >
         {children}
-        {showCloseButton ? (
+        {showCloseButton && (
           <DialogPrimitive.Close
             aria-label="닫기"
             className="text-text-muted hover:text-text hover:bg-surface-muted focus-visible:ring-accent-soft absolute top-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
           >
             <X className="h-5 w-5" />
           </DialogPrimitive.Close>
-        ) : null}
+        )}
       </DialogPrimitive.Content>
     </DialogPortal>
   );
