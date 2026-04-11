@@ -36,6 +36,7 @@ function RegionSelectDialogContent() {
     return null;
   }
 
+  const selectedBookForConfirm = selectedBook;
   const isConfirmDisabled = !isSelectionComplete;
 
   function handleConfirm() {
@@ -46,7 +47,7 @@ function RegionSelectDialogContent() {
     confirmRegion(
       createRegionSelectConfirmParams({
         draftSelection,
-        selectedBook,
+        selectedBook: selectedBookForConfirm,
       }),
     );
   }

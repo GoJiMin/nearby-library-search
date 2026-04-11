@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {useShallow} from 'zustand/react/shallow';
 import {LIBRARY_SEARCH_PAGE_SIZE, isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
+import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
 import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
@@ -16,12 +17,15 @@ import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmpty
 
 function handleCheckAvailability() {}
 
-function LibrarySearchResultContent() {
+type LibrarySearchResultResolvedContentProps = {
+  params: LibrarySearchParams;
+};
+
+function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolvedContentProps) {
   const {
     backToRegionSelect,
     changeLibraryResultPage,
     closeLibraryResultDialog,
-    params,
     selectedLibraryCode,
     selectLibrary,
   } = useFindLibraryStore(
@@ -29,16 +33,11 @@ function LibrarySearchResultContent() {
       backToRegionSelect: state.backToRegionSelect,
       changeLibraryResultPage: state.changeLibraryResultPage,
       closeLibraryResultDialog: state.closeLibraryResultDialog,
-      params: state.currentLibrarySearchParams,
       selectedLibraryCode: state.selectedLibraryCode,
       selectLibrary: state.selectLibrary,
     })),
   );
   const [mapFocusRequest, setMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
-
-  if (params == null) {
-    return null;
-  }
 
   const response = useGetSearchLibraries(params);
   const currentPage = response.page ?? params.page;
@@ -115,6 +114,16 @@ function LibrarySearchResultContent() {
       </div>
     </div>
   );
+}
+
+function LibrarySearchResultContent() {
+  const params = useFindLibraryStore(state => state.currentLibrarySearchParams);
+
+  if (params == null) {
+    return null;
+  }
+
+  return <LibrarySearchResultResolvedContent params={params} />;
 }
 
 export {LibrarySearchResultContent};
