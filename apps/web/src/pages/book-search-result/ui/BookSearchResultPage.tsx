@@ -1,6 +1,5 @@
 import {useEffect} from 'react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
-import {useShallow} from 'zustand/react/shallow';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book';
@@ -31,27 +30,7 @@ function createPageHref(params: BookSearchParams, page: number) {
 
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
-  const {
-    backToRegionSelect,
-    changeLibraryResultPage,
-    closeLibraryResultDialog,
-    currentLibrarySearchParams,
-    libraryResultBook,
-    resetFindLibraryFlow,
-    selectedLibraryCode,
-    selectLibrary,
-  } = useFindLibraryStore(
-    useShallow(state => ({
-      backToRegionSelect: state.backToRegionSelect,
-      changeLibraryResultPage: state.changeLibraryResultPage,
-      closeLibraryResultDialog: state.closeLibraryResultDialog,
-      currentLibrarySearchParams: state.currentLibrarySearchParams,
-      libraryResultBook: state.libraryResultBook,
-      resetFindLibraryFlow: state.resetFindLibraryFlow,
-      selectedLibraryCode: state.selectedLibraryCode,
-      selectLibrary: state.selectLibrary,
-    })),
-  );
+  const resetFindLibraryFlow = useFindLibraryStore(state => state.resetFindLibraryFlow);
 
   useEffect(() => {
     resetFindLibraryFlow();
@@ -85,21 +64,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         params={params}
       />
       <RegionSelectDialog />
-      <LibrarySearchResultDialog
-        onBackToRegionSelect={backToRegionSelect}
-        onChangePage={changeLibraryResultPage}
-        onCheckAvailability={() => {}}
-        onOpenChange={open => {
-          if (!open) {
-            closeLibraryResultDialog();
-          }
-        }}
-        onSelectLibrary={selectLibrary}
-        open={currentLibrarySearchParams != null && libraryResultBook != null}
-        params={currentLibrarySearchParams}
-        selectedBook={libraryResultBook}
-        selectedLibraryCode={selectedLibraryCode}
-      />
+      <LibrarySearchResultDialog />
     </>
   );
 }

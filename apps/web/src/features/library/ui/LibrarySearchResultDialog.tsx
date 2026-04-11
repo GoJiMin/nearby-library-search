@@ -1,29 +1,36 @@
 import {Suspense} from 'react';
 import {X} from 'lucide-react';
+import {useShallow} from 'zustand/react/shallow';
+import {useFindLibraryStore} from '@/features/find-library';
 import {QueryErrorBoundary} from '@/shared/feedback';
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, LucideIcon} from '@/shared/ui';
-import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
 import {LibrarySearchResultContent} from './LibrarySearchResultContent';
 import {LibrarySearchResultErrorContent} from './states/LibrarySearchResultErrorContent';
 import {LibrarySearchResultLoadingContent} from './states/LibrarySearchResultLoadingContent';
 
-function LibrarySearchResultDialog({
-  onBackToRegionSelect,
-  onChangePage,
-  onCheckAvailability,
-  onOpenChange,
-  onSelectLibrary,
-  open,
-  params,
-  selectedBook,
-  selectedLibraryCode,
-}: LibrarySearchResultDialogProps) {
+function LibrarySearchResultDialog() {
+  const {closeLibraryResultDialog, params, selectedBook} = useFindLibraryStore(
+    useShallow(state => ({
+      closeLibraryResultDialog: state.closeLibraryResultDialog,
+      params: state.currentLibrarySearchParams,
+      selectedBook: state.libraryResultBook,
+    })),
+  );
+  const open = params != null && selectedBook != null;
+
   if (!open || params == null || selectedBook == null) {
     return null;
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={nextOpen => {
+        if (!nextOpen) {
+          closeLibraryResultDialog();
+        }
+      }}
+    >
       <DialogContent
         aria-describedby={undefined}
         className="h-[min(calc(100vh-32px),800px)] w-[min(calc(100vw-32px),1080px)] gap-0 overflow-hidden p-0 sm:p-0"
@@ -43,19 +50,11 @@ function LibrarySearchResultDialog({
         </DialogClose>
         <QueryErrorBoundary
           fallback={({error, reset}) => (
-            <LibrarySearchResultErrorContent error={error} onClose={() => onOpenChange(false)} onRetry={reset} />
+            <LibrarySearchResultErrorContent error={error} onClose={closeLibraryResultDialog} onRetry={reset} />
           )}
         >
           <Suspense fallback={<LibrarySearchResultLoadingContent />}>
-            <LibrarySearchResultContent
-              onBackToRegionSelect={onBackToRegionSelect}
-              onChangePage={onChangePage}
-              onCheckAvailability={onCheckAvailability}
-              onOpenChange={onOpenChange}
-              onSelectLibrary={onSelectLibrary}
-              params={params}
-              selectedLibraryCode={selectedLibraryCode}
-            />
+            <LibrarySearchResultContent />
           </Suspense>
         </QueryErrorBoundary>
       </DialogContent>

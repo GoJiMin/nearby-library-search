@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
+import {useShallow} from 'zustand/react/shallow';
 import {LIBRARY_SEARCH_PAGE_SIZE, isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
-import type {LibrarySearchResultDialogProps} from '../model/librarySearchResultDialog.contract';
+import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
 import {LibrarySearchResultPagination} from './LibrarySearchResultPagination';
 import {
@@ -13,28 +14,32 @@ import {LibrarySearchResultListBody, LibrarySearchResultListPanel} from './panel
 import {LibrarySearchResultMapPanel} from './panels/LibrarySearchResultMapPanel';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
 
-type LibrarySearchResultContentProps = Pick<
-  LibrarySearchResultDialogProps,
-  | 'onBackToRegionSelect'
-  | 'onChangePage'
-  | 'onCheckAvailability'
-  | 'onOpenChange'
-  | 'onSelectLibrary'
-  | 'selectedLibraryCode'
-> & {
-  params: NonNullable<LibrarySearchResultDialogProps['params']>;
-};
+function handleCheckAvailability() {}
 
-function LibrarySearchResultContent({
-  onBackToRegionSelect,
-  onChangePage,
-  onCheckAvailability,
-  onOpenChange,
-  onSelectLibrary,
-  params,
-  selectedLibraryCode,
-}: LibrarySearchResultContentProps) {
+function LibrarySearchResultContent() {
+  const {
+    backToRegionSelect,
+    changeLibraryResultPage,
+    closeLibraryResultDialog,
+    params,
+    selectedLibraryCode,
+    selectLibrary,
+  } = useFindLibraryStore(
+    useShallow(state => ({
+      backToRegionSelect: state.backToRegionSelect,
+      changeLibraryResultPage: state.changeLibraryResultPage,
+      closeLibraryResultDialog: state.closeLibraryResultDialog,
+      params: state.currentLibrarySearchParams,
+      selectedLibraryCode: state.selectedLibraryCode,
+      selectLibrary: state.selectLibrary,
+    })),
+  );
   const [mapFocusRequest, setMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
+
+  if (params == null) {
+    return null;
+  }
+
   const response = useGetSearchLibraries(params);
   const currentPage = response.page ?? params.page;
   const pageSize = response.pageSize ?? LIBRARY_SEARCH_PAGE_SIZE;
@@ -49,11 +54,11 @@ function LibrarySearchResultContent({
       return;
     }
 
-    onSelectLibrary(resolvedSelectedLibraryCode);
-  }, [onSelectLibrary, resolvedSelectedLibraryCode, selectedLibraryCode]);
+    selectLibrary(resolvedSelectedLibraryCode);
+  }, [resolvedSelectedLibraryCode, selectLibrary, selectedLibraryCode]);
 
   function handleSelectLibraryFromList(code: LibraryCode) {
-    onSelectLibrary(code);
+    selectLibrary(code);
     setMapFocusRequest(previous => ({
       code,
       requestId: (previous?.requestId ?? 0) + 1,
@@ -63,8 +68,8 @@ function LibrarySearchResultContent({
   if (isEmptyLibrarySearchResult(response)) {
     return (
       <LibrarySearchResultEmptyContent
-        onBackToRegionSelect={onBackToRegionSelect}
-        onClose={() => onOpenChange(false)}
+        onBackToRegionSelect={backToRegionSelect}
+        onClose={closeLibraryResultDialog}
       />
     );
   }
@@ -75,7 +80,7 @@ function LibrarySearchResultContent({
         footer={
           <LibrarySearchResultPagination
             currentPage={currentPage}
-            onChangePage={onChangePage}
+            onChangePage={changeLibraryResultPage}
             totalPages={totalPages}
           />
         }
@@ -93,7 +98,7 @@ function LibrarySearchResultContent({
           <LibrarySearchResultMap
             focusRequest={mapFocusRequest}
             items={response.items}
-            onSelectLibrary={onSelectLibrary}
+            onSelectLibrary={selectLibrary}
             selectedLibraryCode={selectedLibraryCode}
           />
         </LibrarySearchResultMapPanel>
@@ -101,7 +106,7 @@ function LibrarySearchResultContent({
           footer={
             <LibrarySearchResultDetailFooterCta
               disabled={currentSelectedLibrary == null}
-              onCheckAvailability={onCheckAvailability}
+              onCheckAvailability={handleCheckAvailability}
             />
           }
         >
@@ -113,4 +118,3 @@ function LibrarySearchResultContent({
 }
 
 export {LibrarySearchResultContent};
-export type {LibrarySearchResultContentProps};
