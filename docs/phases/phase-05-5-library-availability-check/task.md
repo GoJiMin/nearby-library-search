@@ -23,7 +23,7 @@
 
 ## 4. BFF availability route 추가
 
-- [ ] `GET /api/libraries/:libraryCode/books/:isbn13/availability` route를 추가한다.
+- [x] `GET /api/libraries/:libraryCode/books/:isbn13/availability` route를 추가한다.
 - [ ] `/bookExist` upstream 호출을 route에 연결한다.
 - [ ] route를 `routes/index.ts`에 등록한다.
 - [ ] auth key가 계속 BFF env에서만 사용되는지 유지한다.
