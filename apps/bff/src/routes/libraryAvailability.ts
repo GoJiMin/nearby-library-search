@@ -1,7 +1,9 @@
 import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
+import {developmentConfig} from '../config/env.js';
 import {parseLibraryAvailabilityParams} from './libraryAvailabilityParams.js';
 import {normalizeLibraryAvailabilityResponse} from './libraryAvailabilityResponse.js';
+import {createLibraryAvailabilityFixtureResponse} from './libraryAvailabilityFixture.js';
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import {createRetryableUpstreamRequestError, toLibraryApiErrorResponse} from '../utils/error.js';
 
@@ -55,6 +57,10 @@ export const libraryAvailabilityRoute: FastifyPluginAsync = async app => {
       reply.status(parsedParams.error.status);
 
       return parsedParams.error;
+    }
+
+    if (developmentConfig.useDevFixtures) {
+      return createLibraryAvailabilityFixtureResponse(parsedParams.value);
     }
 
     const libraryAvailabilityPayload = await fetchLibraryAvailabilityPayload(
