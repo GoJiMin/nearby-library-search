@@ -38,18 +38,15 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
   const [mapFocusRequest, setMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
 
   const response = useGetSearchLibraries(params);
-  const fallbackSelectedLibrary = response.items[0] ?? null;
-  const currentSelectedLibrary =
-    response.items.find(item => item.code === selectedLibraryCode) ?? fallbackSelectedLibrary;
-  const resolvedSelectedLibraryCode = currentSelectedLibrary?.code ?? null;
+  const currentSelectedLibrary = response.items.find(item => item.code === selectedLibraryCode) ?? null;
 
   useEffect(() => {
-    if (resolvedSelectedLibraryCode == null || selectedLibraryCode === resolvedSelectedLibraryCode) {
+    if (selectedLibraryCode != null || response.items.length === 0) {
       return;
     }
 
-    selectLibrary(resolvedSelectedLibraryCode);
-  }, [resolvedSelectedLibraryCode, selectLibrary, selectedLibraryCode]);
+    selectLibrary(response.items[0].code);
+  }, [response.items, selectLibrary, selectedLibraryCode]);
 
   function handleSelectLibraryFromList(code: LibraryCode) {
     selectLibrary(code);
@@ -83,7 +80,7 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
         <LibrarySearchResultListBody
           items={response.items}
           onSelectLibrary={handleSelectLibraryFromList}
-          selectedLibraryCode={resolvedSelectedLibraryCode}
+          selectedLibraryCode={selectedLibraryCode}
         />
       </LibrarySearchResultListPanel>
       <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">

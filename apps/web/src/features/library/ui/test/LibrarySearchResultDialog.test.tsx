@@ -632,16 +632,12 @@ describe('LibrarySearchResultDialog', () => {
     await waitFor(() => {
       expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0001');
     });
-  });
+    expect(screen.getByRole('button', {name: /마포중앙도서관/})).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', {name: /합정열람실/})).toHaveAttribute('aria-pressed', 'false');
 
-  it('현재 페이지에 없는 selectedLibraryCode가 들어오면 첫 번째 도서관으로 fallback한다', async () => {
-    renderLibrarySearchResultDialog({
-      selectedLibraryCode: 'LIB9999',
-    });
+    const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
 
-    await waitFor(() => {
-      expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0001');
-    });
+    expect(within(detailPanel).getByRole('heading', {name: '마포중앙도서관'})).toBeInTheDocument();
   });
 
   it('유효한 selectedLibraryCode가 있으면 해당 도서관을 active row로 유지한다', async () => {
