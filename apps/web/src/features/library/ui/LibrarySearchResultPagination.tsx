@@ -1,4 +1,4 @@
-import {ChevronLeft, ChevronRight, MoreHorizontal} from 'lucide-react';
+import {ChevronLeft, ChevronRight} from 'lucide-react';
 import {useShallow} from 'zustand/react/shallow';
 import {LIBRARY_SEARCH_PAGE_SIZE} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
@@ -119,15 +119,15 @@ function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySear
   }
 
   return (
-    <nav aria-label="도서관 검색 결과 페이지네이션" className="flex items-center justify-center gap-2">
+    <nav aria-label="도서관 검색 결과 페이지네이션" className="flex items-center justify-center gap-1">
       <button
         aria-label="이전 페이지"
-        className="border-line text-text-muted hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors outline-none focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
+        className="border-line text-text-muted hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors outline-none focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
         disabled={isFirstPage}
         onClick={() => changeLibraryResultPage(currentPage - 1)}
         type="button"
       >
-        <LucideIcon className="h-4 w-4" icon={ChevronLeft} strokeWidth={2} />
+        <LucideIcon className="h-3.5 w-3.5" icon={ChevronLeft} strokeWidth={2} />
       </button>
 
       {paginationItems.map(item => {
@@ -135,11 +135,11 @@ function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySear
           return (
             <span
               aria-label="페이지 생략"
-              className="text-text-muted inline-flex h-10 w-10 items-center justify-center"
+              className="text-text-muted inline-flex shrink-0 items-center justify-center px-1 text-xs font-semibold tracking-[-0.18em]"
               key={item.id}
               role="img"
             >
-              <LucideIcon className="h-4 w-4" icon={MoreHorizontal} strokeWidth={2} />
+              ...
             </span>
           );
         }
@@ -149,7 +149,7 @@ function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySear
             <Text
               aria-current="page"
               as="span"
-              className={`inline-flex h-10 w-10 items-center justify-center rounded-full text-sm ${createPageItemClassName(true)}`}
+              className={`inline-flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full px-2 text-xs ${createPageItemClassName(true)}`}
               key={item.page}
               size="sm"
             >
@@ -161,7 +161,7 @@ function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySear
         return (
           <button
             aria-label={`${item.page}페이지`}
-            className={`focus-visible:ring-accent-soft inline-flex h-10 w-10 items-center justify-center rounded-full text-sm transition-colors outline-none focus-visible:ring-4 ${createPageItemClassName(false)}`}
+            className={`focus-visible:ring-accent-soft inline-flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full px-2 text-xs transition-colors outline-none focus-visible:ring-4 ${createPageItemClassName(false)}`}
             key={item.page}
             onClick={() => changeLibraryResultPage(item.page)}
             type="button"
@@ -173,12 +173,12 @@ function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySear
 
       <button
         aria-label="다음 페이지"
-        className="border-line text-text-muted hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors outline-none focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
+        className="border-line text-text-muted hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors outline-none focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
         disabled={isLastPage}
         onClick={() => changeLibraryResultPage(currentPage + 1)}
         type="button"
       >
-        <LucideIcon className="h-4 w-4" icon={ChevronRight} strokeWidth={2} />
+        <LucideIcon className="h-3.5 w-3.5" icon={ChevronRight} strokeWidth={2} />
       </button>
     </nav>
   );
