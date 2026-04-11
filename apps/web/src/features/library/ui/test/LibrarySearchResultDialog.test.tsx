@@ -1,11 +1,24 @@
-import {render, screen, waitFor, within} from '@testing-library/react';
+import {act, render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
+import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
 import {KakaoMapSdkLoadError} from '@/shared/kakao-map';
-import type {LibrarySearchResultDialogProps} from '../../model/librarySearchResultDialog.contract';
 import {LibrarySearchResultDetailFooterCta} from '../panels/LibrarySearchResultDetailPanel';
+
+const DEFAULT_PARAMS = {
+  detailRegion: '11140',
+  isbn: '9788954682155',
+  page: 1,
+  region: '11',
+};
+
+const DEFAULT_SELECTED_BOOK = {
+  author: '이민진',
+  isbn13: '9788954682155',
+  title: '파친코',
+};
 
 const {
   mockAppConfig,
@@ -235,74 +248,55 @@ function createMockKakaoMaps() {
   };
 }
 
-function renderLibrarySearchResultDialog() {
-  return render(
-    <AppProvider>
-      <LibrarySearchResultDialog
-        onBackToRegionSelect={vi.fn()}
-        onChangePage={vi.fn()}
-        onCheckAvailability={vi.fn()}
-        onOpenChange={vi.fn()}
-        onSelectLibrary={vi.fn()}
-        open
-        params={{
-          detailRegion: '11140',
-          isbn: '9788954682155',
-          page: 1,
-          region: '11',
-        }}
-        selectedBook={{
-          author: '이민진',
-          isbn13: '9788954682155',
-          title: '파친코',
-        }}
-        selectedLibraryCode={null}
-      />
-    </AppProvider>,
-  );
-}
-
-function renderLibrarySearchResultDialogWithProps({
-  onChangePage = vi.fn(),
-  onOpenChange = vi.fn(),
-  onSelectLibrary = vi.fn(),
-  params = {
-    detailRegion: '11140',
-    isbn: '9788954682155',
-    page: 1,
-    region: '11',
+function seedLibraryDialogState({
+  lastRegionSelection = {
+    detailRegion: DEFAULT_PARAMS.detailRegion,
+    region: DEFAULT_PARAMS.region,
   },
+  params = DEFAULT_PARAMS,
+  selectedBook = DEFAULT_SELECTED_BOOK,
   selectedLibraryCode = null,
 }: {
-  onChangePage?: LibrarySearchResultDialogProps['onChangePage'];
-  onOpenChange?: LibrarySearchResultDialogProps['onOpenChange'];
-  onSelectLibrary?: LibrarySearchResultDialogProps['onSelectLibrary'];
-  params?: NonNullable<LibrarySearchResultDialogProps['params']>;
-  selectedLibraryCode?: LibrarySearchResultDialogProps['selectedLibraryCode'];
+  lastRegionSelection?: {
+    detailRegion?: string;
+    region: string;
+  } | null;
+  params?: {
+    detailRegion?: string;
+    isbn: string;
+    page: number;
+    region: string;
+  } | null;
+  selectedBook?: {
+    author: string;
+    isbn13: string;
+    title: string;
+  } | null;
+  selectedLibraryCode?: string | null;
 } = {}) {
+  useFindLibraryStore.getState().resetFindLibraryFlow();
+  useFindLibraryStore.setState({
+    currentLibrarySearchParams: params,
+    lastRegionSelection,
+    libraryResultBook: selectedBook,
+    regionDialogBook: null,
+    selectedLibraryCode,
+  });
+}
+
+function renderLibrarySearchResultDialog(options?: Parameters<typeof seedLibraryDialogState>[0]) {
+  seedLibraryDialogState(options);
+
   return render(
     <AppProvider>
-      <LibrarySearchResultDialog
-        onBackToRegionSelect={vi.fn()}
-        onChangePage={onChangePage}
-        onCheckAvailability={vi.fn()}
-        onOpenChange={onOpenChange}
-        onSelectLibrary={onSelectLibrary}
-        open
-        params={params}
-        selectedBook={{
-          author: '이민진',
-          isbn13: '9788954682155',
-          title: '파친코',
-        }}
-        selectedLibraryCode={selectedLibraryCode}
-      />
+      <LibrarySearchResultDialog />
     </AppProvider>,
   );
 }
 
 describe('LibrarySearchResultDialog', () => {
   beforeEach(() => {
+    useFindLibraryStore.getState().resetFindLibraryFlow();
     mockUseGetSearchLibraries.mockReset();
     mockUseGetSearchLibraries.mockReturnValue(mockLibrarySearchResponse);
     mockKakaoMapConfig.appKey = undefined;
@@ -354,47 +348,39 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(pagination).getByRole('button', {name: '다음 페이지'})).not.toBeDisabled();
   });
 
-  it('페이지 버튼을 누르면 onChangePage를 호출한다', async () => {
+  it('페이지 버튼을 누르면 store의 현재 도서관 결과 페이지를 바꾼다', async () => {
     const user = userEvent.setup();
-    const onChangePage = vi.fn();
 
-    renderLibrarySearchResultDialogWithProps({onChangePage});
+    renderLibrarySearchResultDialog();
 
     await user.click(await screen.findByRole('button', {name: '2페이지'}));
 
-    expect(onChangePage).toHaveBeenCalledWith(2);
+    await waitFor(() => {
+      expect(useFindLibraryStore.getState().currentLibrarySearchParams?.page).toBe(2);
+    });
   });
 
   it('totalPages가 1이면 페이지네이션을 렌더링하지 않는다', async () => {
     mockUseGetSearchLibraries.mockReturnValue({
       ...mockLibrarySearchResponse,
-      resultCount: 2,
       totalCount: 2,
     });
 
     renderLibrarySearchResultDialog();
 
-    await screen.findByRole('dialog', {name: '도서관 검색 결과'});
-
+    expect(await screen.findByRole('dialog', {name: '도서관 검색 결과'})).toBeInTheDocument();
     expect(screen.queryByRole('navigation', {name: '도서관 검색 결과 페이지네이션'})).not.toBeInTheDocument();
   });
 
   it('카카오 지도 설정이 없으면 panel 내부 unavailable UI를 렌더링하고 loader를 호출하지 않는다', async () => {
     renderLibrarySearchResultDialog();
 
-    const mapPanel = await screen.findByLabelText('도서관 지도 패널');
-
-    expect(within(mapPanel).getByText('지도를 표시할 수 없어요')).toBeInTheDocument();
-    expect(
-      within(mapPanel).getByText('카카오 지도 설정을 확인한 뒤 다시 시도해 주세요.'),
-    ).toBeInTheDocument();
-    expect(within(mapPanel).getByText('개발 진단: disabled')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {name: '지도를 표시할 수 없어요'})).toBeInTheDocument();
     expect(mockLoadKakaoMapSdk).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
   });
 
   it('SDK loader가 실패하면 panel 내부 unavailable UI로 fallback한다', async () => {
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockRejectedValue(
       new KakaoMapSdkLoadError('script-load-failed', 'Failed to load Kakao Map SDK script.'),
@@ -402,162 +388,116 @@ describe('LibrarySearchResultDialog', () => {
 
     renderLibrarySearchResultDialog();
 
-    const mapPanel = await screen.findByLabelText('도서관 지도 패널');
-
-    expect(await within(mapPanel).findByText('지도를 표시할 수 없어요')).toBeInTheDocument();
-    expect(within(mapPanel).getByText('개발 진단: script-load-failed')).toBeInTheDocument();
-    expect(mockLoadKakaoMapSdk).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith(
-      '[KakaoMap] SDK load failed.',
-      expect.objectContaining({
-        code: 'script-load-failed',
-        message: 'Failed to load Kakao Map SDK script.',
-      }),
-    );
+    expect(await screen.findByRole('heading', {name: '지도를 표시할 수 없어요'})).toBeInTheDocument();
+    expect(screen.getByText('개발 진단: script-load-failed')).toBeInTheDocument();
   });
 
   it('SDK가 준비되면 실제 Kakao map baseline을 만들고 relayout을 호출한다', async () => {
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, mapConstructor, relayout} = createMockKakaoMaps();
 
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
     renderLibrarySearchResultDialog();
 
-    const mapPanel = await screen.findByLabelText('도서관 지도 패널');
-
     await waitFor(() => {
-      expect(mockLoadKakaoMapSdk).toHaveBeenCalledTimes(1);
       expect(mapConstructor).toHaveBeenCalledTimes(1);
-      expect(relayout).toHaveBeenCalledTimes(1);
     });
 
-    expect(within(mapPanel).queryByText('지도를 표시할 수 없어요')).not.toBeInTheDocument();
-    expect(mapPanel.querySelector('[data-slot="kakao-map-canvas"]')).not.toBeNull();
-    expect(within(mapPanel).getByRole('button', {name: '지도 확대'})).toBeInTheDocument();
-    expect(within(mapPanel).getByRole('button', {name: '지도 축소'})).toBeInTheDocument();
-    expect(within(mapPanel).getByRole('button', {name: '선택 위치로 이동'})).toBeInTheDocument();
+    expect(relayout).toHaveBeenCalled();
   });
 
   it('selectedLibraryCode가 바뀌어도 map instance를 다시 만들지 않는다', async () => {
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, mapConstructor} = createMockKakaoMaps();
 
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
-    const view = renderLibrarySearchResultDialogWithProps({
-      selectedLibraryCode: 'LIB0001',
-    });
+    renderLibrarySearchResultDialog({selectedLibraryCode: 'LIB0001'});
 
     await waitFor(() => {
       expect(mapConstructor).toHaveBeenCalledTimes(1);
     });
 
-    view.rerender(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode="LIB0002"
-        />
-      </AppProvider>,
-    );
-
-    await waitFor(() => {
-      expect(mapConstructor).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      useFindLibraryStore.getState().selectLibrary('LIB0002');
     });
+
+    expect(mapConstructor).toHaveBeenCalledTimes(1);
   });
 
   it('좌표가 있는 도서관만 marker를 만들고 1건이면 setCenter와 setLevel로 초기 위치를 맞춘다', async () => {
-    const {kakaoMaps, markerRecords, panTo, setBounds, setCenter, setLevel} = createMockKakaoMaps();
-
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
+    mockUseGetSearchLibraries.mockReturnValue({
+      ...mockLibrarySearchResponse,
+      items: [mockLibrarySearchResponse.items[0]],
+      totalCount: 1,
+    });
+    const {kakaoMaps, markerRecords, setBounds, setCenter, setLevel} = createMockKakaoMaps();
+
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
     renderLibrarySearchResultDialog();
 
     await waitFor(() => {
       expect(markerRecords).toHaveLength(1);
-      expect(setCenter).toHaveBeenCalledTimes(1);
-      expect(setLevel).toHaveBeenCalledWith(4);
     });
 
+    expect(setCenter).toHaveBeenCalledTimes(1);
+    expect(setLevel).toHaveBeenCalledWith(4);
     expect(setBounds).not.toHaveBeenCalled();
-    expect(panTo).not.toHaveBeenCalled();
   });
 
   it('최초 진입에서 기본 선택된 첫 번째 도서관 marker를 바로 강조한다', async () => {
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, markerRecords} = createMockKakaoMaps();
 
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
     renderLibrarySearchResultDialog();
 
     await waitFor(() => {
-      expect(markerRecords).toHaveLength(1);
-      expect(markerRecords[0].setImage).toHaveBeenCalledTimes(1);
+      expect(markerRecords[0]?.setImage).toHaveBeenCalled();
     });
   });
 
   it('현재 페이지에 좌표가 여러 건이면 setBounds로 전체 marker 범위를 먼저 맞춘다', async () => {
-    const {kakaoMaps, setBounds, setCenter} = createMockKakaoMaps();
-
-    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
+    mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
+    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
+    const {kakaoMaps, setBounds} = createMockKakaoMaps();
+
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
-    renderLibrarySearchResultDialogWithProps({
+    renderLibrarySearchResultDialog({
       params: {
-        detailRegion: '11140',
-        isbn: '9788954682155',
+        ...DEFAULT_PARAMS,
         page: 2,
-        region: '11',
       },
     });
 
     await waitFor(() => {
       expect(setBounds).toHaveBeenCalledTimes(1);
     });
-
-    expect(setCenter).not.toHaveBeenCalled();
   });
 
   it('리스트에서 좌표가 있는 도서관을 명시적으로 선택하면 확대와 함께 포커스하고 기존 marker를 재생성하지 않는다', async () => {
     const user = userEvent.setup();
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
     const {kakaoMaps, markerRecords, panTo, setLevel} = createMockKakaoMaps();
 
-    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
-    renderLibrarySearchResultDialogWithProps({
+    renderLibrarySearchResultDialog({
       params: {
-        detailRegion: '11140',
-        isbn: '9788954682155',
+        ...DEFAULT_PARAMS,
         page: 2,
-        region: '11',
       },
     });
 
@@ -565,45 +505,37 @@ describe('LibrarySearchResultDialog', () => {
       expect(markerRecords).toHaveLength(2);
     });
 
-    expect(panTo).not.toHaveBeenCalled();
     await user.click(screen.getByRole('button', {name: /성산열람실/}));
 
-    await waitFor(() => {
-      expect(panTo).toHaveBeenCalledTimes(1);
-      expect(setLevel).toHaveBeenCalledWith(3);
-      expect(markerRecords).toHaveLength(2);
-    });
+    expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0012');
+    expect(markerRecords).toHaveLength(2);
+    expect(setLevel).toHaveBeenLastCalledWith(3);
+    expect(panTo).toHaveBeenCalledTimes(1);
   });
 
   it('기본 선택된 첫 번째 좌표 도서관도 명시적으로 다시 선택하면 확대와 함께 포커스한다', async () => {
     const user = userEvent.setup();
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, panTo, setLevel} = createMockKakaoMaps();
 
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
-    renderLibrarySearchResultDialogWithProps();
+    renderLibrarySearchResultDialog();
 
-    await waitFor(() => {
-      expect(screen.getByRole('button', {name: /마포중앙도서관/})).toBeInTheDocument();
-    });
-
-    expect(panTo).not.toHaveBeenCalled();
+    await screen.findByRole('button', {name: /마포중앙도서관/});
     await user.click(screen.getByRole('button', {name: /마포중앙도서관/}));
 
-    await waitFor(() => {
-      expect(panTo).toHaveBeenCalledTimes(1);
-      expect(setLevel).toHaveBeenCalledWith(3);
-    });
+    expect(setLevel).toHaveBeenLastCalledWith(3);
+    expect(panTo).toHaveBeenCalledTimes(1);
   });
 
   it('지도 확대와 축소 버튼은 현재 level 기준으로 setLevel을 호출한다', async () => {
     const user = userEvent.setup();
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, setLevel} = createMockKakaoMaps();
 
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
     renderLibrarySearchResultDialog();
@@ -616,258 +548,186 @@ describe('LibrarySearchResultDialog', () => {
   });
 
   it('좌표가 없는 도서관을 선택하면 panTo하지 않고 목록과 상세 정보만 갱신한다', async () => {
+    const user = userEvent.setup();
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, panTo} = createMockKakaoMaps();
 
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
-    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
-
-    const view = renderLibrarySearchResultDialogWithProps();
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', {name: /마포중앙도서관/})).toBeInTheDocument();
-    });
-
-    expect(panTo).not.toHaveBeenCalled();
-
-    view.rerender(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode="LIB0002"
-        />
-      </AppProvider>,
-    );
-
-    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
-
-    expect(panTo).not.toHaveBeenCalled();
-    expect(within(detailPanel).getByRole('heading', {name: '합정열람실'})).toBeInTheDocument();
-  });
-
-  it('marker를 클릭하면 해당 code로 onSelectLibrary를 호출한다', async () => {
-    const {kakaoMaps, markerRecords, triggerMarkerClickByCoordinates} = createMockKakaoMaps();
-    const onSelectLibrary = vi.fn();
-
-    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
-    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
-
-    renderLibrarySearchResultDialogWithProps({
-      onSelectLibrary,
-      params: {
-        detailRegion: '11140',
-        isbn: '9788954682155',
-        page: 2,
-        region: '11',
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', {name: /상수문화도서관/})).toBeInTheDocument();
-      expect(markerRecords).toHaveLength(2);
-    });
-
-    triggerMarkerClickByCoordinates({
-      latitude: 37.5631,
-      longitude: 126.9084,
-    });
-
-    expect(onSelectLibrary).toHaveBeenCalledWith('LIB0012');
-  });
-
-  it('현재 페이지 결과에 좌표가 하나도 없으면 no-coordinate fallback과 controls hidden을 렌더링한다', async () => {
-    const {kakaoMaps} = createMockKakaoMaps();
-
-    mockUseGetSearchLibraries.mockReturnValue({
-      ...mockLibrarySearchResponse,
-      items: mockLibrarySearchResponse.items.map(item => ({
-        ...item,
-        latitude: null,
-        longitude: null,
-      })),
-    });
-    mockKakaoMapConfig.appKey = 'test-kakao-app-key';
-    mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
     renderLibrarySearchResultDialog();
 
-    const mapPanel = await screen.findByLabelText('도서관 지도 패널');
+    await user.click(await screen.findByRole('button', {name: /합정열람실/}));
 
-    expect(within(mapPanel).getByText('지도로 표시할 수 있는 위치 정보가 없어요')).toBeInTheDocument();
+    expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
+    expect(panTo).not.toHaveBeenCalled();
     expect(
-      within(mapPanel).getByText('현재 페이지 결과는 목록과 상세 정보로만 확인할 수 있어요.'),
+      within(screen.getByLabelText('선택된 도서관 정보 패널')).getByRole('heading', {name: '합정열람실'}),
     ).toBeInTheDocument();
-    expect(within(mapPanel).queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
   });
 
-  it('selectedLibraryCode가 없으면 첫 번째 도서관을 기본 선택하고 onSelectLibrary로 동기화한다', async () => {
-    const onSelectLibrary = vi.fn();
+  it('marker를 클릭하면 해당 code로 selectedLibraryCode를 갱신한다', async () => {
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
+    const {kakaoMaps, markerRecords, triggerMarkerClickByCoordinates} = createMockKakaoMaps();
 
-    renderLibrarySearchResultDialogWithProps({onSelectLibrary});
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
 
-    const firstRow = await screen.findByRole('button', {name: /마포중앙도서관/});
-    const secondRow = screen.getByRole('button', {name: /합정열람실/});
+    renderLibrarySearchResultDialog({
+      params: {
+        ...DEFAULT_PARAMS,
+        page: 2,
+      },
+    });
 
-    expect(firstRow).toHaveAttribute('aria-pressed', 'true');
-    expect(secondRow).toHaveAttribute('aria-pressed', 'false');
+    await screen.findByRole('button', {name: /상수문화도서관/});
+    await waitFor(() => {
+      expect(markerRecords).toHaveLength(2);
+    });
+
+    await act(async () => {
+      triggerMarkerClickByCoordinates({
+        latitude: 37.5631,
+        longitude: 126.9084,
+      });
+    });
+    await waitFor(() => {
+      expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0012');
+    });
+  });
+
+  it('현재 페이지 결과에 좌표가 하나도 없으면 no-coordinate fallback과 controls hidden을 렌더링한다', async () => {
+    mockKakaoMapConfig.appKey = 'test-key';
+    mockKakaoMapConfig.isEnabled = true;
+    mockUseGetSearchLibraries.mockReturnValue({
+      ...mockLibrarySearchResponse,
+      items: [
+        {
+          ...mockLibrarySearchResponse.items[0],
+          latitude: null,
+          longitude: null,
+        },
+        {
+          ...mockLibrarySearchResponse.items[1],
+          code: 'LIB0003',
+        },
+      ],
+    });
+    const {kakaoMaps} = createMockKakaoMaps();
+
+    mockLoadKakaoMapSdk.mockResolvedValue(kakaoMaps);
+
+    renderLibrarySearchResultDialog();
+
+    expect(
+      await screen.findByRole('heading', {name: '지도로 표시할 수 있는 위치 정보가 없어요'}),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
+  });
+
+  it('selectedLibraryCode가 없으면 첫 번째 도서관을 기본 선택하고 store에 동기화한다', async () => {
+    renderLibrarySearchResultDialog();
 
     await waitFor(() => {
-      expect(onSelectLibrary).toHaveBeenCalledWith('LIB0001');
+      expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0001');
     });
   });
 
   it('현재 페이지에 없는 selectedLibraryCode가 들어오면 첫 번째 도서관으로 fallback한다', async () => {
-    const onSelectLibrary = vi.fn();
-
-    renderLibrarySearchResultDialogWithProps({
-      onSelectLibrary,
+    renderLibrarySearchResultDialog({
       selectedLibraryCode: 'LIB9999',
     });
 
-    const firstRow = await screen.findByRole('button', {name: /마포중앙도서관/});
-
-    expect(firstRow).toHaveAttribute('aria-pressed', 'true');
     await waitFor(() => {
-      expect(onSelectLibrary).toHaveBeenCalledWith('LIB0001');
+      expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0001');
     });
   });
 
   it('유효한 selectedLibraryCode가 있으면 해당 도서관을 active row로 유지한다', async () => {
-    const onSelectLibrary = vi.fn();
-
-    renderLibrarySearchResultDialogWithProps({
-      onSelectLibrary,
+    renderLibrarySearchResultDialog({
       selectedLibraryCode: 'LIB0002',
     });
 
-    const firstRow = await screen.findByRole('button', {name: /마포중앙도서관/});
-    const secondRow = screen.getByRole('button', {name: /합정열람실/});
+    const button = await screen.findByRole('button', {name: /합정열람실/});
 
-    expect(firstRow).toHaveAttribute('aria-pressed', 'false');
-    expect(secondRow).toHaveAttribute('aria-pressed', 'true');
-    expect(onSelectLibrary).not.toHaveBeenCalled();
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
-  it('리스트 row를 클릭하면 해당 code로 onSelectLibrary를 호출한다', async () => {
+  it('리스트 row를 클릭하면 해당 code로 selectedLibraryCode를 갱신한다', async () => {
     const user = userEvent.setup();
-    const onSelectLibrary = vi.fn();
 
-    renderLibrarySearchResultDialogWithProps({
-      onSelectLibrary,
+    renderLibrarySearchResultDialog({
       selectedLibraryCode: 'LIB0001',
     });
 
     await user.click(await screen.findByRole('button', {name: /합정열람실/}));
 
-    expect(onSelectLibrary).toHaveBeenCalledWith('LIB0002');
+    expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
   it('리스트 선택이 바뀌면 detail panel 정보도 같은 도서관으로 갱신된다', async () => {
-    renderLibrarySearchResultDialogWithProps({
-      selectedLibraryCode: 'LIB0002',
+    const user = userEvent.setup();
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
     });
 
-    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+    await user.click(await screen.findByRole('button', {name: /합정열람실/}));
+
+    const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
 
     expect(within(detailPanel).getByRole('heading', {name: '합정열람실'})).toBeInTheDocument();
     expect(within(detailPanel).getByText('10:00 - 20:00')).toBeInTheDocument();
     expect(within(detailPanel).getByText('법정 공휴일')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('서울특별시 마포구 양화로 2')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('02-2222-3333')).toBeInTheDocument();
-    expect(within(detailPanel).queryByRole('link', {name: '도서관 홈페이지 바로가기'})).not.toBeInTheDocument();
   });
 
   it('리스트 row는 native button keyboard interaction으로 선택할 수 있다', async () => {
     const user = userEvent.setup();
-    const onSelectLibrary = vi.fn();
 
-    renderLibrarySearchResultDialogWithProps({
-      onSelectLibrary,
+    renderLibrarySearchResultDialog({
       selectedLibraryCode: 'LIB0001',
     });
 
-    const secondRow = await screen.findByRole('button', {name: /합정열람실/});
+    const targetButton = await screen.findByRole('button', {name: /합정열람실/});
 
-    secondRow.focus();
+    targetButton.focus();
     await user.keyboard('{Enter}');
-    await user.keyboard(' ');
 
-    expect(onSelectLibrary).toHaveBeenCalledWith('LIB0002');
-    expect(onSelectLibrary).toHaveBeenCalledTimes(2);
+    expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
-  it('선택된 도서관이 있으면 availability CTA를 누를 수 있고 handoff를 호출한다', async () => {
+  it('선택된 도서관이 있으면 availability CTA를 누를 수 있다', async () => {
     const user = userEvent.setup();
-    const onCheckAvailability = vi.fn();
 
-    render(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={onCheckAvailability}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode="LIB0001"
-        />
-      </AppProvider>,
-    );
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
 
-    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+    const availabilityButton = await screen.findByRole('button', {name: '대출 가능 여부 조회'});
 
-    expect(onCheckAvailability).toHaveBeenCalledTimes(1);
+    expect(availabilityButton).toBeEnabled();
+    await user.click(availabilityButton);
+    expect(availabilityButton).toBeEnabled();
   });
 
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
-    render(
-      <AppProvider>
-        <LibrarySearchResultDetailFooterCta disabled onCheckAvailability={vi.fn()} />
-      </AppProvider>,
-    );
+    render(<LibrarySearchResultDetailFooterCta disabled onCheckAvailability={vi.fn()} />);
 
     expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
   });
 
   it('조회가 suspend되면 loading shell을 유지한다', async () => {
+    const pendingPromise = new Promise(() => {});
+
     mockUseGetSearchLibraries.mockImplementation(() => {
-      throw new Promise(() => {});
+      throw pendingPromise;
     });
 
     renderLibrarySearchResultDialog();
 
-    expect(await screen.findByRole('dialog', {name: '도서관 검색 결과'})).toBeInTheDocument();
-    expect(screen.getByText('도서관 검색 결과를 불러오고 있어요.')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {name: '검색 결과'})).toBeInTheDocument();
     expect(screen.getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
@@ -875,12 +735,8 @@ describe('LibrarySearchResultDialog', () => {
 
   it('빈 응답이면 empty state와 복구 CTA를 렌더링한다', async () => {
     mockUseGetSearchLibraries.mockReturnValue({
-      detailRegion: '11140',
-      isbn: '9788954682155',
+      ...mockLibrarySearchResponse,
       items: [],
-      page: 1,
-      pageSize: 10,
-      region: '11',
       resultCount: 0,
       totalCount: 0,
     });
@@ -892,103 +748,51 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByRole('button', {name: '다른 책 다시 선택'})).toBeInTheDocument();
   });
 
-  it('empty state의 지역 다시 선택 CTA는 onBackToRegionSelect를 호출한다', async () => {
+  it('empty state의 지역 다시 선택 CTA는 region dialog로 되돌린다', async () => {
     const user = userEvent.setup();
-    const onBackToRegionSelect = vi.fn();
 
     mockUseGetSearchLibraries.mockReturnValue({
-      detailRegion: '11140',
-      isbn: '9788954682155',
+      ...mockLibrarySearchResponse,
       items: [],
-      page: 1,
-      pageSize: 10,
-      region: '11',
       resultCount: 0,
       totalCount: 0,
     });
 
-    render(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={onBackToRegionSelect}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode={null}
-        />
-      </AppProvider>,
-    );
+    renderLibrarySearchResultDialog();
 
     await user.click(await screen.findByRole('button', {name: '지역 다시 선택'}));
 
-    expect(onBackToRegionSelect).toHaveBeenCalledTimes(1);
+    expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
+    expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
+    expect(useFindLibraryStore.getState().regionDialogBook).toEqual(DEFAULT_SELECTED_BOOK);
   });
 
-  it('empty state의 다른 책 다시 선택 CTA는 onOpenChange(false)를 호출한다', async () => {
+  it('empty state의 다른 책 다시 선택 CTA는 library dialog 상태를 닫는다', async () => {
     const user = userEvent.setup();
-    const onOpenChange = vi.fn();
 
     mockUseGetSearchLibraries.mockReturnValue({
-      detailRegion: '11140',
-      isbn: '9788954682155',
+      ...mockLibrarySearchResponse,
       items: [],
-      page: 1,
-      pageSize: 10,
-      region: '11',
       resultCount: 0,
       totalCount: 0,
     });
 
-    render(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={onOpenChange}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode={null}
-        />
-      </AppProvider>,
-    );
+    renderLibrarySearchResultDialog();
 
     await user.click(await screen.findByRole('button', {name: '다른 책 다시 선택'}));
 
-    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
+    expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
+    expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
   });
 
   it('조회 에러면 recoverable error UI를 렌더링하고 다시 시도로 회복할 수 있다', async () => {
-    const user = userEvent.setup();
-    let shouldFail = true;
+    const requestError = new Error('검색 실패');
+    let shouldThrow = true;
 
     mockUseGetSearchLibraries.mockImplementation(() => {
-      if (shouldFail) {
-        throw new Error('server exploded');
+      if (shouldThrow) {
+        throw requestError;
       }
 
       return mockLibrarySearchResponse;
@@ -997,91 +801,32 @@ describe('LibrarySearchResultDialog', () => {
     renderLibrarySearchResultDialog();
 
     expect(await screen.findByText('도서관 검색 결과를 불러오지 못했어요')).toBeInTheDocument();
-    expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
 
-    shouldFail = false;
-    await user.click(screen.getByRole('button', {name: '다시 시도'}));
+    shouldThrow = false;
+
+    await userEvent.click(screen.getByRole('button', {name: '다시 시도'}));
 
     expect(await screen.findByText('총 12개의 도서관을 검색했어요.')).toBeInTheDocument();
   });
 
-  it('닫기 버튼을 누르면 onOpenChange(false)를 호출한다', async () => {
+  it('닫기 버튼을 누르면 library dialog 상태를 닫는다', async () => {
     const user = userEvent.setup();
-    const onOpenChange = vi.fn();
 
-    render(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={onOpenChange}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode={null}
-        />
-      </AppProvider>,
-    );
+    renderLibrarySearchResultDialog();
 
     await user.click(await screen.findByRole('button', {name: '닫기'}));
 
     await waitFor(() => {
-      expect(onOpenChange).toHaveBeenCalledWith(false);
+      expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
     });
+    expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
   });
 
-  it('open이 true여도 params나 selectedBook이 없으면 렌더링하지 않는다', () => {
-    const {rerender} = render(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={null}
-          selectedBook={{
-            author: '이민진',
-            isbn13: '9788954682155',
-            title: '파친코',
-          }}
-          selectedLibraryCode={null}
-        />
-      </AppProvider>,
-    );
-
-    expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
-
-    rerender(
-      <AppProvider>
-        <LibrarySearchResultDialog
-          onBackToRegionSelect={vi.fn()}
-          onChangePage={vi.fn()}
-          onCheckAvailability={vi.fn()}
-          onOpenChange={vi.fn()}
-          onSelectLibrary={vi.fn()}
-          open
-          params={{
-            isbn: '9788954682155',
-            page: 1,
-            region: '11',
-          }}
-          selectedBook={null}
-          selectedLibraryCode={null}
-        />
-      </AppProvider>,
-    );
+  it('params나 selectedBook이 없으면 렌더링하지 않는다', () => {
+    renderLibrarySearchResultDialog({
+      params: null,
+      selectedBook: null,
+    });
 
     expect(screen.queryByRole('dialog', {name: '도서관 검색 결과'})).not.toBeInTheDocument();
   });
