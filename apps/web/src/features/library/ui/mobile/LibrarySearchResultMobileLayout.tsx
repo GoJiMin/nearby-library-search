@@ -1,4 +1,4 @@
-import {Suspense, useEffect, useRef} from 'react';
+import {Suspense, useEffect, useRef, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {LIBRARY_SEARCH_PAGE_SIZE} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
@@ -11,16 +11,15 @@ import {
   LibrarySearchResultMobileDetailsSection,
   LibrarySearchResultMobileDetailsSectionFallback,
 } from './LibrarySearchResultMobileDetailsSection';
+import {LibrarySearchResultMobileQuickMapDialog} from './LibrarySearchResultMobileQuickMapDialog';
 
 type LibrarySearchResultMobileLayoutProps = {
-  focusRequest: {code: LibraryCode; requestId: number} | null;
   onSelectLibrary: (code: LibraryCode) => void;
   params: LibrarySearchParams;
   selectedLibraryCode: LibraryCode | null;
 };
 
 function LibrarySearchResultMobileLayout({
-  focusRequest,
   onSelectLibrary,
   params,
   selectedLibraryCode,
@@ -31,6 +30,7 @@ function LibrarySearchResultMobileLayout({
   const layoutRef = useRef<HTMLDivElement | null>(null);
   const detailsAnchorRef = useRef<HTMLDivElement | null>(null);
   const previousPageRef = useRef(currentPage);
+  const [quickMapFocusRequest, setQuickMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
   const shouldRenderPagination = totalCount != null && totalCount > LIBRARY_SEARCH_PAGE_SIZE;
 
   function scrollToDetails() {
@@ -47,6 +47,13 @@ function LibrarySearchResultMobileLayout({
   function handleSelectLibraryFromList(code: LibraryCode) {
     onSelectLibrary(code);
     scrollToDetails();
+  }
+
+  function handleOpenQuickMap(code: LibraryCode) {
+    setQuickMapFocusRequest(previous => ({
+      code,
+      requestId: (previous?.requestId ?? 0) + 1,
+    }));
   }
 
   useEffect(() => {
@@ -88,7 +95,7 @@ function LibrarySearchResultMobileLayout({
 
       <div ref={detailsAnchorRef}>
         <Suspense fallback={<LibrarySearchResultMobileDetailsSectionFallback />}>
-          <LibrarySearchResultMobileDetailsSection focusRequest={focusRequest} params={params} />
+          <LibrarySearchResultMobileDetailsSection onOpenQuickMap={handleOpenQuickMap} params={params} />
         </Suspense>
       </div>
 
@@ -107,6 +114,19 @@ function LibrarySearchResultMobileLayout({
         <div className="border-line/40 bg-surface-strong border-t px-4 py-4">
           <LibrarySearchResultPagination />
         </div>
+      ) : null}
+
+      {quickMapFocusRequest != null ? (
+        <LibrarySearchResultMobileQuickMapDialog
+          focusRequest={quickMapFocusRequest}
+          onOpenChange={open => {
+            if (!open) {
+              setQuickMapFocusRequest(null);
+            }
+          }}
+          open={quickMapFocusRequest != null}
+          params={params}
+        />
       ) : null}
     </div>
   );

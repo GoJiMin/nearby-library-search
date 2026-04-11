@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {Map, Search} from 'lucide-react';
 import {hasLibraryCoordinates, useGetSearchLibraries} from '@/entities/library';
@@ -8,10 +7,9 @@ import {kakaoMapConfig} from '@/shared/env';
 import {Button, LucideIcon, Text} from '@/shared/ui';
 import {LibrarySearchResultDetailsFields} from '../common/LibrarySearchResultDetails';
 import {LibrarySearchResultDetailsFieldsPlaceholder} from '../common/loading/LibrarySearchResultDetailsPlaceholder';
-import {LibrarySearchResultMobileQuickMapDialog} from './LibrarySearchResultMobileQuickMapDialog';
 
 type LibrarySearchResultMobileDetailsSectionProps = {
-  focusRequest: {code: LibraryCode; requestId: number} | null;
+  onOpenQuickMap: (code: LibraryCode) => void;
   params: LibrarySearchParams;
 };
 
@@ -36,7 +34,7 @@ function LibrarySearchResultMobileDetailsSectionFallback() {
 }
 
 function LibrarySearchResultMobileDetailsSection({
-  focusRequest,
+  onOpenQuickMap,
   params,
 }: LibrarySearchResultMobileDetailsSectionProps) {
   const response = useGetSearchLibraries(params);
@@ -45,60 +43,41 @@ function LibrarySearchResultMobileDetailsSection({
   const hasCoordinateItems = response.items.some(hasLibraryCoordinates);
   const isMapUnavailable = !kakaoMapConfig.isEnabled;
   const canOpenQuickMap = currentSelectedLibrary != null && !isMapUnavailable && hasCoordinateItems;
-  const [isQuickMapOpen, setIsQuickMapOpen] = useState(false);
-  const [quickMapRequestId, setQuickMapRequestId] = useState(0);
   const mapSummary = isMapUnavailable
     ? '지도를 표시할 수 없어요.'
     : !hasCoordinateItems
       ? '지도로 표시할 수 있는 위치 정보가 없어요.'
       : null;
-  const quickMapFocusRequest =
-    isQuickMapOpen && currentSelectedLibrary != null && hasLibraryCoordinates(currentSelectedLibrary)
-      ? {code: currentSelectedLibrary.code, requestId: quickMapRequestId}
-      : focusRequest;
 
   return (
-    <>
-      <section aria-label="선택된 도서관 정보 패널" className="bg-surface border-line/40 border-b px-6 py-5">
-        <div className="flex flex-col gap-6">
-          <div>
-            <LibrarySearchResultDetailsFields library={currentSelectedLibrary} />
-          </div>
-          <div className="grid gap-3">
-            {canOpenQuickMap ? (
-              <Button
-                className="w-full rounded-2xl"
-                onClick={() => {
-                  setQuickMapRequestId(currentRequestId => currentRequestId + 1);
-                  setIsQuickMapOpen(true);
-                }}
-                size="lg"
-                variant="secondary"
-              >
-                <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
-                지도로 보기
-              </Button>
-            ) : mapSummary ? (
-              <Text className="px-1 text-sm" size="sm" tone="muted">
-                {mapSummary}
-              </Text>
-            ) : null}
-            <Button className="w-full rounded-2xl" disabled={currentSelectedLibrary == null} size="lg" variant="default">
-              <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
-              대출 가능 여부 조회
-            </Button>
-          </div>
+    <section aria-label="선택된 도서관 정보 패널" className="bg-surface border-line/40 border-b px-6 py-5">
+      <div className="flex flex-col gap-6">
+        <div>
+          <LibrarySearchResultDetailsFields library={currentSelectedLibrary} />
         </div>
-      </section>
-      {canOpenQuickMap ? (
-        <LibrarySearchResultMobileQuickMapDialog
-          focusRequest={quickMapFocusRequest}
-          onOpenChange={setIsQuickMapOpen}
-          open={isQuickMapOpen}
-          params={params}
-        />
-      ) : null}
-    </>
+        <div className="grid gap-3">
+          {canOpenQuickMap ? (
+            <Button
+              className="w-full rounded-2xl"
+              onClick={() => onOpenQuickMap(currentSelectedLibrary.code)}
+              size="lg"
+              variant="secondary"
+            >
+              <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
+              지도로 보기
+            </Button>
+          ) : mapSummary ? (
+            <Text className="px-1 text-sm" size="sm" tone="muted">
+              {mapSummary}
+            </Text>
+          ) : null}
+          <Button className="w-full rounded-2xl" disabled={currentSelectedLibrary == null} size="lg" variant="default">
+            <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
+            대출 가능 여부 조회
+          </Button>
+        </div>
+      </div>
+    </section>
   );
 }
 

@@ -38,7 +38,6 @@ function LibrarySearchResultContent() {
   if (isMobile) {
     return (
       <LibrarySearchResultMobileLayout
-        focusRequest={mapFocusRequest}
         onSelectLibrary={handleSelectLibraryFromList}
         params={params}
         selectedLibraryCode={selectedLibraryCode}
