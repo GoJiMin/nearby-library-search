@@ -22,6 +22,7 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     lastRegionSelection,
     libraryResultBook,
     openRegionDialog,
+    resetBookSearchResultFlow,
     regionDialogBook,
     selectedLibraryCode,
     selectLibrary,
@@ -36,6 +37,7 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
       lastRegionSelection: state.lastRegionSelection,
       libraryResultBook: state.libraryResultBook,
       openRegionDialog: state.openRegionDialog,
+      resetBookSearchResultFlow: state.resetBookSearchResultFlow,
       regionDialogBook: state.regionDialogBook,
       selectedLibraryCode: state.selectedLibraryCode,
       selectLibrary: state.selectLibrary,
@@ -101,6 +103,10 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     selectLibrary(code);
   }
 
+  function handleResetBookSearchResultFlow() {
+    resetBookSearchResultFlow();
+  }
+
   function handleChangeLibraryResultPage(page: number) {
     changeLibraryResultPage(page);
   }
@@ -117,6 +123,7 @@ function useBookSearchResultPage({navigate, params}: UseBookSearchResultPageArgs
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
+    handleResetBookSearchResultFlow,
     handleSelectLibrary,
     handleSelectBook,
     handleSubmitSearch,

@@ -1,3 +1,4 @@
+import {useEffect} from 'react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
@@ -21,6 +22,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
     handleConfirmRegion,
     handleLibraryResultDialogOpenChange,
     handleRegionDialogOpenChange,
+    handleResetBookSearchResultFlow,
     handleSelectLibrary,
     handleSelectBook,
     handleSubmitSearch,
@@ -34,6 +36,10 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
     navigate,
     params,
   });
+
+  useEffect(() => {
+    handleResetBookSearchResultFlow();
+  }, [handleResetBookSearchResultFlow]);
 
   return (
     <>
