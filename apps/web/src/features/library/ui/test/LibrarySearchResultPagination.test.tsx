@@ -3,13 +3,37 @@ import {beforeEach, describe, expect, it} from 'vitest';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultPagination} from '../LibrarySearchResultPagination';
 
-function renderPagination({page, pageSize = 10, totalCount}: {page: number; pageSize?: number; totalCount: number}) {
-  return render(<LibrarySearchResultPagination page={page} pageSize={pageSize} totalCount={totalCount} />);
+const DEFAULT_PARAMS = {
+  detailRegion: '11140',
+  isbn: '9788954682155',
+  page: 1,
+  region: '11',
+} as const;
+
+function renderPagination({page, totalCount}: {page: number; totalCount: number | null}) {
+  useFindLibraryStore.setState({
+    currentLibrarySearchParams: {
+      ...DEFAULT_PARAMS,
+      page,
+    },
+    resolvedLibraryTotalCount: totalCount,
+  });
+
+  return render(<LibrarySearchResultPagination />);
 }
 
 describe('LibrarySearchResultPagination', () => {
   beforeEach(() => {
     useFindLibraryStore.getState().resetFindLibraryFlow();
+  });
+
+  it('totalCount가 없으면 렌더링하지 않는다', () => {
+    renderPagination({
+      page: 1,
+      totalCount: null,
+    });
+
+    expect(screen.queryByRole('navigation', {name: '도서관 검색 결과 페이지네이션'})).not.toBeInTheDocument();
   });
 
   it('총 페이지가 5 이하면 모든 페이지를 표시한다', () => {

@@ -48,6 +48,7 @@ describe('useFindLibraryStore', () => {
       page: 1,
       region: '11',
     });
+    expect(useFindLibraryStore.getState().resolvedLibraryTotalCount).toBeNull();
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
   });
 
@@ -59,16 +60,18 @@ describe('useFindLibraryStore', () => {
       page: 1,
       region: '11',
     });
+    useFindLibraryStore.getState().setResolvedLibraryTotalCount(24);
 
     useFindLibraryStore.getState().backToRegionSelect();
 
     expect(useFindLibraryStore.getState().regionDialogBook).toEqual(MOCK_BOOK);
     expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
     expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
+    expect(useFindLibraryStore.getState().resolvedLibraryTotalCount).toBeNull();
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
   });
 
-  it('도서관 결과 페이지를 바꾸면 page만 갱신하고 선택을 초기화한다', () => {
+  it('도서관 결과 페이지를 바꾸면 page만 갱신하고 totalCount를 유지한 채 선택을 초기화한다', () => {
     useFindLibraryStore.getState().openRegionDialog(MOCK_BOOK);
     useFindLibraryStore.getState().confirmRegion({
       detailRegion: '11140',
@@ -76,6 +79,7 @@ describe('useFindLibraryStore', () => {
       page: 1,
       region: '11',
     });
+    useFindLibraryStore.getState().setResolvedLibraryTotalCount(24);
     useFindLibraryStore.getState().selectLibrary('LIB0002');
 
     useFindLibraryStore.getState().changeLibraryResultPage(2);
@@ -86,6 +90,7 @@ describe('useFindLibraryStore', () => {
       page: 2,
       region: '11',
     });
+    expect(useFindLibraryStore.getState().resolvedLibraryTotalCount).toBe(24);
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
   });
 
@@ -97,11 +102,13 @@ describe('useFindLibraryStore', () => {
       page: 1,
       region: '11',
     });
+    useFindLibraryStore.getState().setResolvedLibraryTotalCount(24);
 
     useFindLibraryStore.getState().closeLibraryResultDialog();
 
     expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
     expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
+    expect(useFindLibraryStore.getState().resolvedLibraryTotalCount).toBeNull();
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
     expect(useFindLibraryStore.getState().lastRegionSelection).toEqual({
       detailRegion: '11140',
@@ -117,6 +124,7 @@ describe('useFindLibraryStore', () => {
       page: 1,
       region: '11',
     });
+    useFindLibraryStore.getState().setResolvedLibraryTotalCount(24);
     useFindLibraryStore.getState().selectLibrary('LIB0002');
     useFindLibraryStore.getState().changeLibraryResultPage(2);
 
@@ -132,6 +140,7 @@ describe('useFindLibraryStore', () => {
       page: 1,
       region: '26',
     });
+    expect(useFindLibraryStore.getState().resolvedLibraryTotalCount).toBeNull();
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
     expect(useFindLibraryStore.getState().lastRegionSelection).toEqual({
       detailRegion: undefined,
@@ -147,6 +156,7 @@ describe('useFindLibraryStore', () => {
       page: 1,
       region: '11',
     });
+    useFindLibraryStore.getState().setResolvedLibraryTotalCount(24);
     useFindLibraryStore.getState().selectLibrary('LIB0002');
 
     useFindLibraryStore.getState().resetFindLibraryFlow();
@@ -155,6 +165,7 @@ describe('useFindLibraryStore', () => {
     expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
     expect(useFindLibraryStore.getState().lastRegionSelection).toBeNull();
     expect(useFindLibraryStore.getState().currentLibrarySearchParams).toBeNull();
+    expect(useFindLibraryStore.getState().resolvedLibraryTotalCount).toBeNull();
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
   });
 });
