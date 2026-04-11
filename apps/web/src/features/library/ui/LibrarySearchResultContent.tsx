@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {useShallow} from 'zustand/react/shallow';
-import {LIBRARY_SEARCH_PAGE_SIZE, isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
+import {isEmptyLibrarySearchResult, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
@@ -24,14 +24,12 @@ type LibrarySearchResultResolvedContentProps = {
 function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolvedContentProps) {
   const {
     backToRegionSelect,
-    changeLibraryResultPage,
     closeLibraryResultDialog,
     selectedLibraryCode,
     selectLibrary,
   } = useFindLibraryStore(
     useShallow(state => ({
       backToRegionSelect: state.backToRegionSelect,
-      changeLibraryResultPage: state.changeLibraryResultPage,
       closeLibraryResultDialog: state.closeLibraryResultDialog,
       selectedLibraryCode: state.selectedLibraryCode,
       selectLibrary: state.selectLibrary,
@@ -40,9 +38,6 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
   const [mapFocusRequest, setMapFocusRequest] = useState<{code: LibraryCode; requestId: number} | null>(null);
 
   const response = useGetSearchLibraries(params);
-  const currentPage = response.page ?? params.page;
-  const pageSize = response.pageSize ?? LIBRARY_SEARCH_PAGE_SIZE;
-  const totalPages = Math.ceil(response.totalCount / pageSize);
   const fallbackSelectedLibrary = response.items[0] ?? null;
   const currentSelectedLibrary =
     response.items.find(item => item.code === selectedLibraryCode) ?? fallbackSelectedLibrary;
@@ -78,9 +73,9 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
       <LibrarySearchResultListPanel
         footer={
           <LibrarySearchResultPagination
-            currentPage={currentPage}
-            onChangePage={changeLibraryResultPage}
-            totalPages={totalPages}
+            page={response.page ?? undefined}
+            pageSize={response.pageSize ?? undefined}
+            totalCount={response.totalCount}
           />
         }
         summary={`총 ${response.totalCount}개의 도서관을 검색했어요.`}

@@ -1,4 +1,7 @@
 import {ChevronLeft, ChevronRight, MoreHorizontal} from 'lucide-react';
+import {useShallow} from 'zustand/react/shallow';
+import {LIBRARY_SEARCH_PAGE_SIZE} from '@/entities/library';
+import {useFindLibraryStore} from '@/features/find-library';
 import {LucideIcon, Text} from '@/shared/ui';
 
 type LibrarySearchResultPaginationItem =
@@ -12,9 +15,9 @@ type LibrarySearchResultPaginationItem =
     };
 
 type LibrarySearchResultPaginationProps = {
-  currentPage: number;
-  onChangePage: (page: number) => void;
-  totalPages: number;
+  page?: number;
+  pageSize?: number;
+  totalCount: number;
 };
 
 function createPageItems(startPage: number, endPage: number): LibrarySearchResultPaginationItem[] {
@@ -84,11 +87,16 @@ function createPageItemClassName(isCurrentPage: boolean) {
     : 'text-text-muted font-medium hover:bg-surface-muted';
 }
 
-function LibrarySearchResultPagination({
-  currentPage,
-  onChangePage,
-  totalPages,
-}: LibrarySearchResultPaginationProps) {
+function LibrarySearchResultPagination({page, pageSize, totalCount}: LibrarySearchResultPaginationProps) {
+  const {changeLibraryResultPage, fallbackPage} = useFindLibraryStore(
+    useShallow(state => ({
+      changeLibraryResultPage: state.changeLibraryResultPage,
+      fallbackPage: state.currentLibrarySearchParams?.page,
+    })),
+  );
+  const currentPage = page ?? fallbackPage ?? 1;
+  const resolvedPageSize = pageSize ?? LIBRARY_SEARCH_PAGE_SIZE;
+  const totalPages = Math.ceil(totalCount / resolvedPageSize);
   const paginationItems = getLibrarySearchResultPaginationItems(currentPage, totalPages);
   const isFirstPage = currentPage <= 1;
   const isLastPage = currentPage >= totalPages;
@@ -103,7 +111,7 @@ function LibrarySearchResultPagination({
         aria-label="이전 페이지"
         className="border-line text-text-muted hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors outline-none focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
         disabled={isFirstPage}
-        onClick={() => onChangePage(currentPage - 1)}
+        onClick={() => changeLibraryResultPage(currentPage - 1)}
         type="button"
       >
         <LucideIcon className="h-4 w-4" icon={ChevronLeft} strokeWidth={2} />
@@ -142,7 +150,7 @@ function LibrarySearchResultPagination({
             aria-label={`${item.page}페이지`}
             className={`focus-visible:ring-accent-soft inline-flex h-10 w-10 items-center justify-center rounded-full text-sm transition-colors outline-none focus-visible:ring-4 ${createPageItemClassName(false)}`}
             key={item.page}
-            onClick={() => onChangePage(item.page)}
+            onClick={() => changeLibraryResultPage(item.page)}
             type="button"
           >
             {item.page}
@@ -154,7 +162,7 @@ function LibrarySearchResultPagination({
         aria-label="다음 페이지"
         className="border-line text-text-muted hover:bg-surface-muted focus-visible:ring-accent-soft inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors outline-none focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
         disabled={isLastPage}
-        onClick={() => onChangePage(currentPage + 1)}
+        onClick={() => changeLibraryResultPage(currentPage + 1)}
         type="button"
       >
         <LucideIcon className="h-4 w-4" icon={ChevronRight} strokeWidth={2} />
