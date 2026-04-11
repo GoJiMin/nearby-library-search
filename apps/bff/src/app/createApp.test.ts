@@ -4,9 +4,14 @@ const {requestLibraryApiMock} = vi.hoisted(() => ({
   requestLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../libraryApi/requestLibraryApi.js', () => ({
-  requestLibraryApi: requestLibraryApiMock,
-}));
+vi.mock('../libraryApi/requestLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../libraryApi/requestLibraryApi.js')>();
+
+  return {
+    ...actual,
+    requestLibraryApi: requestLibraryApiMock,
+  };
+});
 
 function createJsonResponse(body: unknown, url: string, status = 200) {
   const response = new Response(JSON.stringify(body), {
@@ -539,6 +544,58 @@ describe('createApp integration', () => {
       title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
     });
     expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('도서관 대출 가능 여부 조회에서 upstream이 non-ok 응답을 반환하면 502 표준 에러로 정규화한다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        {
+          detail: 'upstream failed',
+          status: 503,
+          title: 'UPSTREAM_FAILURE',
+        },
+        'https://example.com/bookExist?libCode=LIB0001&isbn13=9791190157551',
+        503,
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0001/books/9791190157551/availability',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+    });
+
+    await app.close();
+  });
+
+  it('도서관 대출 가능 여부 조회에서 upstream 호출이 throw되면 502 표준 에러로 정규화한다', async () => {
+    requestLibraryApiMock.mockRejectedValue(new Error('network down'));
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0001/books/9791190157551/availability',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+    });
 
     await app.close();
   });
