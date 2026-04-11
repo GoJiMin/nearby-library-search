@@ -2,12 +2,11 @@ import {Suspense, useState} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {useShallow} from 'zustand/react/shallow';
 import {useFindLibraryStore} from '@/features/find-library';
-import {LibrarySearchResultMapPlaceholderBody} from '../map/ui/LibrarySearchResultMapFallback';
 import {LibrarySearchResultList} from './LibrarySearchResultList';
-import {LibrarySearchResultResolvedRightPane} from './LibrarySearchResultResolvedRightPane';
+import {LibrarySearchResultRightPanel} from './LibrarySearchResultRightPanel';
 import {LibrarySearchResultSidebar} from './LibrarySearchResultSidebar';
-import {LibrarySearchResultDetailsPlaceholder} from './loading/LibrarySearchResultDetailsPlaceholder';
 import {LibrarySearchResultListPlaceholder} from './loading/LibrarySearchResultListPlaceholder';
+import {LibrarySearchResultRightPanelPlaceholder} from './loading/LibrarySearchResultRightPanelPlaceholder';
 import {LibrarySearchResultEmptyContent} from './states/LibrarySearchResultEmptyContent';
 
 function LibrarySearchResultContent() {
@@ -48,17 +47,8 @@ function LibrarySearchResultContent() {
           />
         </Suspense>
       </LibrarySearchResultSidebar>
-      <Suspense
-        fallback={
-          <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
-            <section aria-label="도서관 지도 패널" className="bg-surface-muted relative min-h-90 overflow-hidden">
-              <LibrarySearchResultMapPlaceholderBody />
-            </section>
-            <LibrarySearchResultDetailsPlaceholder />
-          </div>
-        }
-      >
-        <LibrarySearchResultResolvedRightPane focusRequest={mapFocusRequest} params={params} />
+      <Suspense fallback={<LibrarySearchResultRightPanelPlaceholder />}>
+        <LibrarySearchResultRightPanel focusRequest={mapFocusRequest} params={params} />
       </Suspense>
     </div>
   );

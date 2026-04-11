@@ -5,12 +5,12 @@ import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultMap} from '../map/ui/LibrarySearchResultMap';
 import {LibrarySearchResultDetails} from './LibrarySearchResultDetails';
 
-type LibrarySearchResultResolvedRightPaneProps = {
+type LibrarySearchResultRightPanelProps = {
   focusRequest: {code: LibraryCode; requestId: number} | null;
   params: LibrarySearchParams;
 };
 
-function LibrarySearchResultResolvedRightPane({focusRequest, params}: LibrarySearchResultResolvedRightPaneProps) {
+function LibrarySearchResultRightPanel({focusRequest, params}: LibrarySearchResultRightPanelProps) {
   const selectedLibraryCode = useFindLibraryStore(state => state.selectedLibraryCode);
   const response = useGetSearchLibraries(params);
   const currentSelectedLibrary = response.items.find(item => item.code === selectedLibraryCode) ?? null;
@@ -25,5 +25,5 @@ function LibrarySearchResultResolvedRightPane({focusRequest, params}: LibrarySea
   );
 }
 
-export {LibrarySearchResultResolvedRightPane};
-export type {LibrarySearchResultResolvedRightPaneProps};
+export {LibrarySearchResultRightPanel};
+export type {LibrarySearchResultRightPanelProps};
