@@ -22,15 +22,8 @@ type LibrarySearchResultResolvedContentProps = {
 };
 
 function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolvedContentProps) {
-  const {
-    backToRegionSelect,
-    closeLibraryResultDialog,
-    selectedLibraryCode,
-    selectLibrary,
-  } = useFindLibraryStore(
+  const {selectedLibraryCode, selectLibrary} = useFindLibraryStore(
     useShallow(state => ({
-      backToRegionSelect: state.backToRegionSelect,
-      closeLibraryResultDialog: state.closeLibraryResultDialog,
       selectedLibraryCode: state.selectedLibraryCode,
       selectLibrary: state.selectLibrary,
     })),
@@ -57,12 +50,7 @@ function LibrarySearchResultResolvedContent({params}: LibrarySearchResultResolve
   }
 
   if (isEmptyLibrarySearchResult(response)) {
-    return (
-      <LibrarySearchResultEmptyContent
-        onBackToRegionSelect={backToRegionSelect}
-        onClose={closeLibraryResultDialog}
-      />
-    );
+    return <LibrarySearchResultEmptyContent />;
   }
 
   return (

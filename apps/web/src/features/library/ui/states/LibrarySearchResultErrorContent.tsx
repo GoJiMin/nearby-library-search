@@ -1,17 +1,15 @@
+import {useFindLibraryStore} from '@/features/find-library';
 import {getServerErrorDisplayMessage} from '@/shared/request';
 import {Button, Card, Heading, Text} from '@/shared/ui';
 
 type LibrarySearchResultErrorContentProps = {
   error: Error;
-  onClose: () => void;
   onRetry: () => void;
 };
 
-function LibrarySearchResultErrorContent({
-  error,
-  onClose,
-  onRetry,
-}: LibrarySearchResultErrorContentProps) {
+function LibrarySearchResultErrorContent({error, onRetry}: LibrarySearchResultErrorContentProps) {
+  const closeLibraryResultDialog = useFindLibraryStore(state => state.closeLibraryResultDialog);
+
   return (
     <section className="flex h-full items-center justify-center px-6 py-10 sm:px-10">
       <Card className="w-full max-w-2xl px-6 py-8 text-left sm:px-8 sm:py-10">
@@ -26,7 +24,7 @@ function LibrarySearchResultErrorContent({
             <Button onClick={onRetry} size="sm" type="button">
               다시 시도
             </Button>
-            <Button onClick={onClose} size="sm" type="button" variant="secondary">
+            <Button onClick={closeLibraryResultDialog} size="sm" type="button" variant="secondary">
               닫기
             </Button>
           </div>

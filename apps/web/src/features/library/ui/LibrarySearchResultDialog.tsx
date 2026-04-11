@@ -49,9 +49,7 @@ function LibrarySearchResultDialog() {
           </button>
         </DialogClose>
         <QueryErrorBoundary
-          fallback={({error, reset}) => (
-            <LibrarySearchResultErrorContent error={error} onClose={closeLibraryResultDialog} onRetry={reset} />
-          )}
+          fallback={({error, reset}) => <LibrarySearchResultErrorContent error={error} onRetry={reset} />}
         >
           <Suspense fallback={<LibrarySearchResultLoadingContent />}>
             <LibrarySearchResultContent />
