@@ -437,6 +437,48 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('도서관 대출 가능 여부 조회는 bookExist upstream 호출만 위임하고 정규화된 응답을 반환한다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        {
+          response: {
+            result: {
+              hasBook: 'Y',
+              loanAvailable: 'N',
+            },
+          },
+        },
+        'https://example.com/bookExist?libCode=LIB0001&isbn13=9791190157551',
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0001/books/9791190157551/availability',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      hasBook: 'Y',
+      isbn13: '9791190157551',
+      libraryCode: 'LIB0001',
+      loanAvailable: 'N',
+    });
+    expect(requestLibraryApiMock).toHaveBeenCalledWith({
+      endpoint: '/bookExist',
+      queryParams: {
+        isbn13: '9791190157551',
+        libCode: 'LIB0001',
+      },
+      requiredQueryParams: ['libCode', 'isbn13'],
+    });
+
+    await app.close();
+  });
+
   it('도서 검색 업스트림 실패를 502 표준 에러로 정규화한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(

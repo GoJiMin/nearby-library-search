@@ -26,7 +26,7 @@
 - [x] `GET /api/libraries/:libraryCode/books/:isbn13/availability` route를 추가한다.
 - [x] `/bookExist` upstream 호출을 route에 연결한다.
 - [x] route를 `routes/index.ts`에 등록한다.
-- [ ] auth key가 계속 BFF env에서만 사용되는지 유지한다.
+- [x] auth key가 계속 BFF env에서만 사용되는지 유지한다.
 
 ## 5. 개발용 availability fixture 추가
 
