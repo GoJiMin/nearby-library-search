@@ -19,7 +19,7 @@
 - [x] `/bookExist` raw envelope를 `LibraryAvailabilityResponse`로 정규화하는 helper를 구현한다.
 - [x] `hasBook`, `loanAvailable`의 `'Y' | 'N'`만 허용하는 규칙을 잠근다.
 - [x] invalid upstream payload를 `LIBRARY_AVAILABILITY_RESPONSE_INVALID`로 처리한다.
-- [ ] 기존 error helper를 그대로 재사용한다.
+- [x] 기존 error helper를 그대로 재사용한다.
 
 ## 4. BFF availability route 추가
 

@@ -1,8 +1,20 @@
-import {describe, expect, it} from 'vitest';
-import {normalizeLibraryAvailabilityResponse} from './libraryAvailabilityResponse.js';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+
+async function importLibraryAvailabilityResponseModule() {
+  process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
+  process.env.LIBRARY_API_BASE_URL = 'https://example.com';
+
+  return import('./libraryAvailabilityResponse.js');
+}
 
 describe('libraryAvailabilityResponse', () => {
-  it('bookExist 정상 응답을 내부 availability 계약으로 정규화한다', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it('bookExist 정상 응답을 내부 availability 계약으로 정규화한다', async () => {
+    const {normalizeLibraryAvailabilityResponse} = await importLibraryAvailabilityResponseModule();
+
     expect(
       normalizeLibraryAvailabilityResponse(
         {
@@ -29,7 +41,9 @@ describe('libraryAvailabilityResponse', () => {
     });
   });
 
-  it('hasBook가 Y/N이 아니면 정규화하지 않는다', () => {
+  it('hasBook가 Y/N이 아니면 정규화하지 않는다', async () => {
+    const {normalizeLibraryAvailabilityResponse} = await importLibraryAvailabilityResponseModule();
+
     expect(
       normalizeLibraryAvailabilityResponse(
         {
@@ -55,7 +69,9 @@ describe('libraryAvailabilityResponse', () => {
     });
   });
 
-  it('loanAvailable이 Y/N이 아니면 정규화하지 않는다', () => {
+  it('loanAvailable이 Y/N이 아니면 정규화하지 않는다', async () => {
+    const {normalizeLibraryAvailabilityResponse} = await importLibraryAvailabilityResponseModule();
+
     expect(
       normalizeLibraryAvailabilityResponse(
         {
@@ -81,7 +97,9 @@ describe('libraryAvailabilityResponse', () => {
     });
   });
 
-  it('result record가 없으면 response invalid 에러로 실패한다', () => {
+  it('result record가 없으면 response invalid 에러로 실패한다', async () => {
+    const {normalizeLibraryAvailabilityResponse} = await importLibraryAvailabilityResponseModule();
+
     expect(
       normalizeLibraryAvailabilityResponse(
         {

@@ -2,6 +2,7 @@ import type {ErrorResponse, LibraryAvailabilityResponse} from '@nearby-library-s
 import type {LibraryAvailabilityParams} from '../schemas/library.js';
 import {getLibraryApiResponseRoot, isLibraryApiRecord} from '../utils/libraryApiResponse.js';
 import {normalizeNullableString} from '../utils/normalize.js';
+import {createRetryableUpstreamResponseError} from '../utils/error.js';
 
 type Result<T> =
   | {
@@ -23,11 +24,10 @@ function normalizeLibraryAvailabilityResponse(
   payload: unknown,
   params: LibraryAvailabilityParams,
 ): Result<LibraryAvailabilityResponse> {
-  const invalidResponseError: ErrorResponse = {
-    detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-    status: 502,
-    title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
-  };
+  const invalidResponseError: ErrorResponse = createRetryableUpstreamResponseError(
+    'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
+    '대출 가능 여부 조회',
+  );
   const responseRoot = getLibraryApiResponseRoot(payload);
   const result = isLibraryApiRecord(responseRoot.result) ? responseRoot.result : null;
 
