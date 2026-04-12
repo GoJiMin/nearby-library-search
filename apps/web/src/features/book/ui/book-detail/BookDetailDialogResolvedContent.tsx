@@ -34,11 +34,6 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
   }
 
   const publicationLabel = createPublicationLabel(book);
-  const detailItems = [
-    publicationLabel ? {label: '출판 정보', value: publicationLabel} : null,
-    {label: 'ISBN13', value: book.isbn13},
-    book.isbn ? {label: 'ISBN', value: book.isbn} : null,
-  ].filter((item): item is {label: string; value: string} => item != null);
 
   return (
     <DialogContent
@@ -85,16 +80,34 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
 
             <section className="border-line py-6 sm:py-8">
               <dl className="grid gap-4 sm:grid-cols-2">
-                {detailItems.map(item => (
-                  <div className="space-y-1" key={item.label}>
+                {publicationLabel && (
+                  <div className="space-y-1">
                     <Text as="dt" size="sm">
-                      {item.label}
+                      출판 정보
                     </Text>
                     <Text as="dd" size="sm" tone="default">
-                      {item.value}
+                      {publicationLabel}
                     </Text>
                   </div>
-                ))}
+                )}
+                <div className="space-y-1">
+                  <Text as="dt" size="sm">
+                    ISBN13
+                  </Text>
+                  <Text as="dd" size="sm" tone="default">
+                    {book.isbn13}
+                  </Text>
+                </div>
+                {book.isbn && (
+                  <div className="space-y-1">
+                    <Text as="dt" size="sm">
+                      ISBN
+                    </Text>
+                    <Text as="dd" size="sm" tone="default">
+                      {book.isbn}
+                    </Text>
+                  </div>
+                )}
               </dl>
             </section>
           </div>
