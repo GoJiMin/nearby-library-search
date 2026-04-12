@@ -88,7 +88,7 @@
 
 ## Phase 5. Features 레이어 MVP 구현
 
-- [ ] Phase 4-2 handoff 기준으로 MVP feature 구현을 단계별로 진행한다.
+- [x] Phase 4-2 handoff 기준으로 MVP feature 구현을 단계별로 진행한다.
 
 ## Phase 5-1. 홈 검색 시작 화면 구현
 
