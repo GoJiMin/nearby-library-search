@@ -53,7 +53,7 @@
 
 - [x] `librariesQueryKeys.availability`를 추가한다.
 - [x] `librariesQueryOptions.availability`를 추가한다.
-- [ ] `useGetLibraryAvailability`를 추가한다.
+- [x] `useGetLibraryAvailability`를 추가한다.
 - [ ] `useQuery` + `enabled: false` + button-triggered `refetch` 규칙을 잠근다.
 
 ## 9. 공용 availability CTA 상태 모델 구현
