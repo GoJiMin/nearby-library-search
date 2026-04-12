@@ -51,7 +51,7 @@
 
 ## 8. web availability query 공개 API 추가
 
-- [ ] `librariesQueryKeys.availability`를 추가한다.
+- [x] `librariesQueryKeys.availability`를 추가한다.
 - [ ] `librariesQueryOptions.availability`를 추가한다.
 - [ ] `useGetLibraryAvailability`를 추가한다.
 - [ ] `useQuery` + `enabled: false` + button-triggered `refetch` 규칙을 잠근다.
