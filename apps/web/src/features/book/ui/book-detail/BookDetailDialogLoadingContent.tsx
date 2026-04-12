@@ -8,7 +8,7 @@ function BookDetailDialogLoadingContent() {
     <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
       <aside className="border-line/60 bg-surface-muted/35 border-b px-6 py-8 lg:border-r lg:border-b-0 lg:px-6 lg:py-10">
         <div aria-hidden="true" className="flex h-full items-center justify-center lg:items-start">
-          <Skeleton className="aspect-[3/4] w-full max-w-64 rounded-3xl sm:max-w-xs lg:max-w-full" />
+          <Skeleton className="aspect-3/4 w-full max-w-64 rounded-3xl sm:max-w-xs lg:max-w-full" />
         </div>
       </aside>
       <div className="bg-surface min-h-0 overflow-y-auto">

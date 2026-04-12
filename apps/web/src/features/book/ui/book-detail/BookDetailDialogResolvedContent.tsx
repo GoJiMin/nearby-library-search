@@ -67,11 +67,11 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
           {book.imageUrl ? (
             <img
               alt={`${book.title} 표지 이미지`}
-              className="aspect-[3/4] w-full max-w-64 rounded-3xl object-cover sm:max-w-xs lg:max-w-full"
+              className="aspect-3/4 w-full max-w-64 rounded-3xl object-cover sm:max-w-xs lg:max-w-full"
               src={book.imageUrl}
             />
           ) : (
-            <div className="bg-surface border-line flex aspect-[3/4] w-full max-w-64 items-center justify-center rounded-3xl border sm:max-w-xs lg:max-w-full">
+            <div className="bg-surface border-line flex aspect-3/4 w-full max-w-64 items-center justify-center rounded-3xl border sm:max-w-xs lg:max-w-full">
               <LucideIcon className="text-text-muted h-10 w-10" icon={BookOpen} strokeWidth={1.8} />
             </div>
           )}
