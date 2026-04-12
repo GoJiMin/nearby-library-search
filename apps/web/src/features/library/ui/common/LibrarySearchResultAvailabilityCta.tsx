@@ -1,7 +1,7 @@
 import type {Isbn13, LibraryCode} from '@nearby-library-search/contracts';
 import {LoaderCircle, Search} from 'lucide-react';
 import {useGetLibraryAvailability} from '@/entities/library';
-import {useLibraryAvailabilityCtaState} from '@/features/library/model/useLibraryAvailabilityCtaState';
+import {type LibraryAvailabilityCtaStatus, useLibraryAvailabilityCtaState} from '@/features/library/model/useLibraryAvailabilityCtaState';
 import {Button, LucideIcon, Text} from '@/shared/ui';
 
 type LibrarySearchResultAvailabilityActionProps = {
@@ -9,6 +9,7 @@ type LibrarySearchResultAvailabilityActionProps = {
   disabled?: boolean;
   onClick?: () => void;
   showSpinner?: boolean;
+  status?: LibraryAvailabilityCtaStatus;
 };
 
 type LibrarySearchResultAvailabilityCtaProps = {
@@ -21,12 +22,19 @@ function LibrarySearchResultAvailabilityAction({
   disabled = false,
   onClick,
   showSpinner = false,
+  status = 'idle',
 }: LibrarySearchResultAvailabilityActionProps) {
+  const isResultStatus =
+    status === 'success-available' || status === 'success-unavailable' || status === 'success-not-owned';
+  const buttonClassName = isResultStatus
+    ? 'w-full rounded-2xl border border-accent/30 bg-transparent text-accent hover:bg-transparent hover:text-accent'
+    : 'w-full rounded-2xl';
+
   return (
     <div className="grid gap-2">
       <Button
         aria-busy={showSpinner || undefined}
-        className="w-full rounded-2xl"
+        className={buttonClassName}
         disabled={disabled}
         onClick={onClick}
         size="lg"
@@ -51,7 +59,7 @@ function LibrarySearchResultAvailabilityCta({isbn13, libraryCode}: LibrarySearch
     isbn13,
     libraryCode,
   });
-  const {buttonLabel, disabled, markRequested, showSpinner} = useLibraryAvailabilityCtaState({
+  const {buttonLabel, disabled, markRequested, showSpinner, status} = useLibraryAvailabilityCtaState({
     data: availabilityQuery.data,
     hasSelectedLibrary: true,
     isError: availabilityQuery.isError,
@@ -74,6 +82,7 @@ function LibrarySearchResultAvailabilityCta({isbn13, libraryCode}: LibrarySearch
       disabled={disabled}
       onClick={handleCheckAvailability}
       showSpinner={showSpinner}
+      status={status}
     />
   );
 }

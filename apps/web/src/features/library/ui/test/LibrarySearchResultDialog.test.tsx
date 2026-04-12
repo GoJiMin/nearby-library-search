@@ -396,7 +396,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('둘째 주 월요일')).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
     expect(within(detailPanel).getByText('02-1234-5678')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('대출 가능 여부는 전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
   it('모바일 branch에서는 상세 정보, 리스트, 페이지네이션 순서로 조합하고 세로 스크롤을 가진다', async () => {
@@ -958,7 +958,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(availabilityButton.querySelector('svg.animate-spin')).not.toBeNull();
   });
 
-  it('desktop availability CTA는 대출 가능 응답이면 성공 문구를 표시하고 비활성화한다', async () => {
+  it('desktop availability CTA는 대출 가능 응답이면 결과 스타일 문구를 표시한다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockResolvedValueOnce(
@@ -976,10 +976,11 @@ describe('LibrarySearchResultDialog', () => {
 
     const successButton = await screen.findByRole('button', {name: '대출이 가능해요'});
 
-    expect(successButton).toBeDisabled();
+    expect(successButton).toBeEnabled();
+    expect(successButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('desktop availability CTA는 대출 불가 응답이면 성공 문구를 표시하고 비활성화한다', async () => {
+  it('desktop availability CTA는 대출 불가 응답이면 결과 스타일 문구를 표시한다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockResolvedValueOnce(
@@ -997,10 +998,11 @@ describe('LibrarySearchResultDialog', () => {
 
     const successButton = await screen.findByRole('button', {name: '대출이 불가능해요'});
 
-    expect(successButton).toBeDisabled();
+    expect(successButton).toBeEnabled();
+    expect(successButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('desktop availability CTA는 미소장 응답이면 성공 문구를 표시하고 비활성화한다', async () => {
+  it('desktop availability CTA는 미소장 응답이면 결과 스타일 문구를 표시한다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockResolvedValueOnce(
@@ -1018,7 +1020,8 @@ describe('LibrarySearchResultDialog', () => {
 
     const successButton = await screen.findByRole('button', {name: '소장하지 않아요'});
 
-    expect(successButton).toBeDisabled();
+    expect(successButton).toBeEnabled();
+    expect(successButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
   it('desktop availability CTA는 실패 시 재시도 문구와 toast 안내를 표시한다', async () => {
@@ -1047,7 +1050,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(retryButton).toBeEnabled();
     expect(await screen.findByText('요청을 완료하지 못했어요')).toBeInTheDocument();
     expect(screen.getByText('대출 가능 여부를 다시 확인해주세요.')).toBeInTheDocument();
-    expect(screen.getByText('대출 가능 여부는 전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
+    expect(screen.getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
@@ -1070,7 +1073,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
-    expect(screen.getByText('대출 가능 여부는 전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
+    expect(screen.getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
   it('모바일에서 조회가 suspend되면 실제 모바일 순서와 같은 details loading shell을 유지한다', async () => {

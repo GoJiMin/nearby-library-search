@@ -44,9 +44,6 @@ function shouldDisableLibraryAvailabilityButton({
 
   switch (status) {
     case 'pending':
-    case 'success-available':
-    case 'success-unavailable':
-    case 'success-not-owned':
       return true;
     default:
       return false;

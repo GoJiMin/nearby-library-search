@@ -96,7 +96,7 @@ describe('useLibraryAvailabilityCtaState', () => {
 
     expect(result.current.status).toBe('success-available');
     expect(result.current.buttonLabel).toBe('대출이 가능해요');
-    expect(result.current.disabled).toBe(true);
+    expect(result.current.disabled).toBe(false);
   });
 
   it('요청 후 대출 불가 응답이면 success-unavailable 상태다', () => {
@@ -124,7 +124,7 @@ describe('useLibraryAvailabilityCtaState', () => {
 
     expect(result.current.status).toBe('success-unavailable');
     expect(result.current.buttonLabel).toBe('대출이 불가능해요');
-    expect(result.current.disabled).toBe(true);
+    expect(result.current.disabled).toBe(false);
   });
 
   it('요청 후 미소장 응답이면 success-not-owned 상태다', () => {
@@ -152,7 +152,7 @@ describe('useLibraryAvailabilityCtaState', () => {
 
     expect(result.current.status).toBe('success-not-owned');
     expect(result.current.buttonLabel).toBe('소장하지 않아요');
-    expect(result.current.disabled).toBe(true);
+    expect(result.current.disabled).toBe(false);
   });
 
   it('요청 후 에러가 나면 error 상태다', () => {
