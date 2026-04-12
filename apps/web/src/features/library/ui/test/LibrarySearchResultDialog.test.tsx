@@ -54,6 +54,7 @@ const {
   mockLoadKakaoMapSdk,
   mockLibrarySearchResponse,
   mockSecondPageLibrarySearchResponse,
+  mockRequestGet,
   mockUseGetSearchLibraries,
 } = vi.hoisted(() => ({
   mockAppConfig: {
@@ -136,8 +137,18 @@ const {
     resultCount: 2,
     totalCount: 12,
   },
+  mockRequestGet: vi.fn(),
   mockUseGetSearchLibraries: vi.fn(),
 }));
+
+vi.mock('@/shared/request', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/shared/request')>();
+
+  return {
+    ...actual,
+    requestGet: mockRequestGet,
+  };
+});
 
 vi.mock('@/entities/library', async importOriginal => {
   const actual = await importOriginal<typeof import('@/entities/library')>();
@@ -326,6 +337,13 @@ describe('LibrarySearchResultDialog', () => {
   beforeEach(() => {
     mockMatchMedia(false);
     useFindLibraryStore.getState().resetFindLibraryFlow();
+    mockRequestGet.mockReset();
+    mockRequestGet.mockResolvedValue({
+      hasBook: 'Y',
+      isbn13: DEFAULT_PARAMS.isbn,
+      libraryCode: 'LIB0001',
+      loanAvailable: 'Y',
+    });
     mockUseGetSearchLibraries.mockReset();
     mockUseGetSearchLibraries.mockReturnValue(mockLibrarySearchResponse);
     mockKakaoMapConfig.appKey = undefined;
@@ -886,7 +904,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
-  it('선택된 도서관이 있으면 availability CTA를 누를 수 있다', async () => {
+  it('선택된 도서관이 있으면 availability CTA 클릭으로 availability query를 요청한다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog({
@@ -897,7 +915,13 @@ describe('LibrarySearchResultDialog', () => {
 
     expect(availabilityButton).toBeEnabled();
     await user.click(availabilityButton);
-    expect(availabilityButton).toBeEnabled();
+
+    await waitFor(() => {
+      expect(mockRequestGet).toHaveBeenCalledWith({
+        endpoint: '/api/libraries/LIB0001/books/9788954682155/availability',
+        errorHandlingType: 'toast',
+      });
+    });
   });
 
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {

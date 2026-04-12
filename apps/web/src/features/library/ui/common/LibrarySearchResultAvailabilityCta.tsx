@@ -1,4 +1,7 @@
+import type {Isbn13, LibraryCode} from '@nearby-library-search/contracts';
 import {LoaderCircle, Search} from 'lucide-react';
+import {useGetLibraryAvailability} from '@/entities/library';
+import {useLibraryAvailabilityCtaState} from '@/features/library/model/useLibraryAvailabilityCtaState';
 import {Button, LucideIcon, Text} from '@/shared/ui';
 
 type LibrarySearchResultAvailabilityActionProps = {
@@ -6,6 +9,11 @@ type LibrarySearchResultAvailabilityActionProps = {
   disabled?: boolean;
   onClick?: () => void;
   showSpinner?: boolean;
+};
+
+type LibrarySearchResultAvailabilityCtaProps = {
+  isbn13: Isbn13;
+  libraryCode: LibraryCode;
 };
 
 function LibrarySearchResultAvailabilityAction({
@@ -38,5 +46,40 @@ function LibrarySearchResultAvailabilityAction({
   );
 }
 
-export {LibrarySearchResultAvailabilityAction};
-export type {LibrarySearchResultAvailabilityActionProps};
+function LibrarySearchResultAvailabilityCta({
+  isbn13,
+  libraryCode,
+}: LibrarySearchResultAvailabilityCtaProps) {
+  const availabilityQuery = useGetLibraryAvailability({
+    isbn13,
+    libraryCode,
+  });
+  const {buttonLabel, disabled, markRequested, showSpinner} = useLibraryAvailabilityCtaState({
+    data: availabilityQuery.data,
+    hasSelectedLibrary: true,
+    isError: availabilityQuery.isError,
+    isFetching: availabilityQuery.isFetching,
+  });
+
+  const handleCheckAvailability = async () => {
+    markRequested();
+
+    if (availabilityQuery.data != null) {
+      return;
+    }
+
+    await availabilityQuery.refetch();
+  };
+
+  return (
+    <LibrarySearchResultAvailabilityAction
+      buttonLabel={buttonLabel}
+      disabled={disabled}
+      onClick={handleCheckAvailability}
+      showSpinner={showSpinner}
+    />
+  );
+}
+
+export {LibrarySearchResultAvailabilityAction, LibrarySearchResultAvailabilityCta};
+export type {LibrarySearchResultAvailabilityActionProps, LibrarySearchResultAvailabilityCtaProps};

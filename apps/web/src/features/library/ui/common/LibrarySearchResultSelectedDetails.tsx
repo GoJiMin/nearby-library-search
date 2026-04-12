@@ -16,7 +16,7 @@ function LibrarySearchResultSelectedDetails({
   const response = useGetSearchLibraries(params);
   const currentSelectedLibrary = response.items.find(item => item.code === selectedLibraryCode) ?? null;
 
-  return <LibrarySearchResultDetails layout={layout} library={currentSelectedLibrary} />;
+  return <LibrarySearchResultDetails isbn13={params.isbn} layout={layout} library={currentSelectedLibrary} />;
 }
 
 export {LibrarySearchResultSelectedDetails};

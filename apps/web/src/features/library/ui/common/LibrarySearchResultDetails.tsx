@@ -1,9 +1,10 @@
-import type {LibrarySearchItem} from '@nearby-library-search/contracts';
+import type {Isbn13, LibrarySearchItem} from '@nearby-library-search/contracts';
 import {Clock3, MapPin, Phone, ExternalLink, CalendarX2} from 'lucide-react';
 import {Heading, LucideIcon, Text} from '@/shared/ui';
-import {LibrarySearchResultAvailabilityAction} from './LibrarySearchResultAvailabilityCta';
+import {LibrarySearchResultAvailabilityAction, LibrarySearchResultAvailabilityCta} from './LibrarySearchResultAvailabilityCta';
 
 type LibrarySearchResultDetailsProps = {
+  isbn13?: Isbn13;
   library: LibrarySearchItem | null;
   layout?: 'desktop' | 'mobile';
 };
@@ -72,6 +73,7 @@ function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsF
 }
 
 function LibrarySearchResultDetails({
+  isbn13,
   layout = 'desktop',
   library,
 }: LibrarySearchResultDetailsProps) {
@@ -83,6 +85,12 @@ function LibrarySearchResultDetails({
     layout === 'mobile'
       ? 'flex flex-col gap-6'
       : 'flex min-h-0 flex-1 flex-col justify-between gap-6';
+  const availabilityCta =
+    library != null && isbn13 != null ? (
+      <LibrarySearchResultAvailabilityCta isbn13={isbn13} key={library.code} libraryCode={library.code} />
+    ) : (
+      <LibrarySearchResultAvailabilityAction disabled />
+    );
 
   return (
     <section aria-label="선택된 도서관 정보 패널" className={sectionClassName}>
@@ -90,7 +98,7 @@ function LibrarySearchResultDetails({
         <div>
           <LibrarySearchResultDetailsFields library={library} />
         </div>
-        <LibrarySearchResultAvailabilityAction disabled={library == null} />
+        {availabilityCta}
       </div>
     </section>
   );

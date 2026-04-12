@@ -72,7 +72,7 @@
 
 ## 10. desktop detail CTA 연결
 
-- [ ] desktop detail panel의 `대출 가능 여부 조회` 버튼을 실제 query에 연결한다.
+- [x] desktop detail panel의 `대출 가능 여부 조회` 버튼을 실제 query에 연결한다.
 - [ ] pending 시 버튼 내부 spinner와 disabled를 적용한다.
 - [ ] success 시 `대출이 가능해요` / `대출이 불가능해요` / `소장하지 않아요`를 표시한다.
 - [ ] error 시 버튼 문구를 `재시도`로 바꾸고, toast로 실패를 안내한다.
