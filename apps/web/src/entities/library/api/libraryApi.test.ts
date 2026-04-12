@@ -34,6 +34,7 @@ describe('entities/library api', () => {
 
     expect(requestGetMock).toHaveBeenCalledTimes(1);
     expect(requestGetMock).toHaveBeenCalledWith({
+      errorHandlingType: 'toast',
       endpoint: '/api/libraries/LIB0001/books/9791190157551/availability',
     });
   });

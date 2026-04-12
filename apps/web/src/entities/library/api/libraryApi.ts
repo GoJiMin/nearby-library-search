@@ -17,6 +17,7 @@ async function getLibraries({detailRegion, isbn, page, region}: LibrarySearchPar
 
 async function getLibraryAvailability({libraryCode, isbn13}: LibraryAvailabilityParams) {
   return requestGet<LibraryAvailabilityResponse>({
+    errorHandlingType: 'toast',
     endpoint: `/api/libraries/${libraryCode}/books/${isbn13}/availability`,
   });
 }

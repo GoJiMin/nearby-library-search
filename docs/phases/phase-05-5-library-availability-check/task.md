@@ -47,7 +47,7 @@
 - [x] `getLibraryAvailability` request 함수를 추가한다.
 - [x] endpoint를 `/api/libraries/:libraryCode/books/:isbn13/availability`로 고정한다.
 - [x] `shared/request`의 `requestGet`만 사용한다.
-- [ ] CTA 로컬 처리에 맞는 request error handling 방식을 고정한다.
+- [x] CTA 로컬 처리에 맞는 request error handling 방식을 고정한다.
 
 ## 8. web availability query 공개 API 추가
 
