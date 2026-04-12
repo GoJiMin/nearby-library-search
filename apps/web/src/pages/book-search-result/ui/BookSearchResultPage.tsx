@@ -2,7 +2,7 @@ import {useEffect} from 'react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
-import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book';
+import {BookDetailDialog, BookSearchResult, readBookSearchResultUrlState, useBookDetailDialogStore} from '@/features/book';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
 import {RegionSelectDialog} from '@/features/region';
@@ -30,11 +30,20 @@ function createPageHref(params: BookSearchParams, page: number) {
 
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
+  const resetBookDetailDialog = useBookDetailDialogStore(state => state.resetBookDetailDialog);
   const resetFindLibraryFlow = useFindLibraryStore(state => state.resetFindLibraryFlow);
 
   useEffect(() => {
     resetFindLibraryFlow();
   }, [resetFindLibraryFlow]);
+
+  useEffect(() => {
+    resetBookDetailDialog();
+
+    return () => {
+      resetBookDetailDialog();
+    };
+  }, [params.author, params.page, params.title, resetBookDetailDialog]);
 
   function handleSubmitSearch(nextParams: BookSearchParams) {
     const nextSearchParams = new URLSearchParams({
@@ -63,6 +72,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         onSubmitSearch={handleSubmitSearch}
         params={params}
       />
+      <BookDetailDialog />
       <RegionSelectDialog />
       <LibrarySearchResultDialog />
     </>
