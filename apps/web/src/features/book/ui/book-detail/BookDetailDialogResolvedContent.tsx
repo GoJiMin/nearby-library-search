@@ -8,24 +8,6 @@ type BookDetailDialogResolvedContentProps = {
   isbn13: Isbn13;
 };
 
-function createPublicationLabel({
-  publicationDate,
-  publicationYear,
-  publisher,
-}: {
-  publicationDate: string | null;
-  publicationYear: string | null;
-  publisher: string | null;
-}) {
-  const publicationLabel = publicationDate ?? publicationYear;
-
-  if (publisher && publicationLabel) {
-    return `${publisher} · ${publicationLabel}`;
-  }
-
-  return publisher ?? publicationLabel;
-}
-
 function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedContentProps) {
   const {book} = useGetBookDetail(isbn13);
 
@@ -33,7 +15,11 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
     return <BookDetailDialogEmptyContent />;
   }
 
-  const publicationLabel = createPublicationLabel(book);
+  const publicationValue = book.publicationDate ?? book.publicationYear;
+  const publicationLabel =
+    book.publisher && publicationValue ? `${book.publisher} · ${publicationValue}` : book.publisher ?? publicationValue;
+  const classificationLabel =
+    book.className && book.classNumber ? `${book.className} · ${book.classNumber}` : book.className ?? book.classNumber;
 
   return (
     <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
@@ -61,7 +47,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             </Text>
           </section>
 
-          <section className="border-line py-6 sm:py-8">
+          <section className={book.description ? 'border-line border-b py-6 sm:py-8' : 'py-6 sm:py-8'}>
             <dl className="grid gap-4 sm:grid-cols-2">
               {publicationLabel && (
                 <div className="space-y-1">
@@ -91,8 +77,27 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
                   </Text>
                 </div>
               )}
+              {classificationLabel && (
+                <div className="space-y-1">
+                  <Text as="dt" size="sm">
+                    분류 정보
+                  </Text>
+                  <Text as="dd" size="sm" tone="default">
+                    {classificationLabel}
+                  </Text>
+                </div>
+              )}
             </dl>
           </section>
+
+          {book.description && (
+            <section className="space-y-2 py-6 sm:py-8">
+              <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">책 소개</p>
+              <Text size="sm" tone="default">
+                {book.description}
+              </Text>
+            </section>
+          )}
         </div>
       </div>
     </div>
