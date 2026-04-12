@@ -1,6 +1,7 @@
 import type {LibrarySearchItem} from '@nearby-library-search/contracts';
-import {Clock3, MapPin, Phone, Search, ExternalLink, CalendarX2} from 'lucide-react';
-import {Button, Heading, LucideIcon, Text} from '@/shared/ui';
+import {Clock3, MapPin, Phone, ExternalLink, CalendarX2} from 'lucide-react';
+import {Heading, LucideIcon, Text} from '@/shared/ui';
+import {LibrarySearchResultAvailabilityAction} from './LibrarySearchResultAvailabilityCta';
 
 type LibrarySearchResultDetailsProps = {
   library: LibrarySearchItem | null;
@@ -34,8 +35,6 @@ function getLibraryDetailValue(library: LibrarySearchItem, key: (typeof detailFi
       return library.phone ?? '전화번호 정보 없음';
   }
 }
-
-function handleCheckAvailability() {}
 
 function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsFieldsProps) {
   if (library == null) {
@@ -91,16 +90,7 @@ function LibrarySearchResultDetails({
         <div>
           <LibrarySearchResultDetailsFields library={library} />
         </div>
-        <Button
-          className="w-full rounded-2xl"
-          disabled={library == null}
-          onClick={handleCheckAvailability}
-          size="lg"
-          variant="default"
-        >
-          <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
-          대출 가능 여부 조회
-        </Button>
+        <LibrarySearchResultAvailabilityAction disabled={library == null} />
       </div>
     </section>
   );

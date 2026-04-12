@@ -1,5 +1,5 @@
-import {Search} from 'lucide-react';
-import {Button, LucideIcon, Skeleton} from '@/shared/ui';
+import {Skeleton} from '@/shared/ui';
+import {LibrarySearchResultAvailabilityAction} from '../LibrarySearchResultAvailabilityCta';
 
 const detailPlaceholderItems = [
   {label: '운영 시간', valueClassName: 'w-40'},
@@ -49,10 +49,7 @@ function LibrarySearchResultDetailsPlaceholder({
     <section aria-label="선택된 도서관 정보 패널" className={sectionClassName}>
       <div className={bodyClassName}>
         <LibrarySearchResultDetailsFieldsPlaceholder />
-        <Button className="w-full rounded-2xl" disabled size="lg" variant="default">
-          <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
-          대출 가능 여부 조회
-        </Button>
+        <LibrarySearchResultAvailabilityAction disabled />
       </div>
     </section>
   );
