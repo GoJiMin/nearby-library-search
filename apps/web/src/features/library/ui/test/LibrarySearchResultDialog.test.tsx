@@ -1232,8 +1232,13 @@ describe('LibrarySearchResultDialog', () => {
 
     renderLibrarySearchResultDialog();
 
+    const desktopHeaderRow = document.querySelector('[data-slot="library-search-desktop-header-title-row"]');
+
     expect(await screen.findByRole('heading', {name: '검색 결과'})).toBeInTheDocument();
     expect(screen.queryByRole('button', {name: '지역 변경'})).not.toBeInTheDocument();
+    expect(document.querySelector('[data-slot="library-search-desktop-change-region-placeholder"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-slot="library-search-desktop-summary-placeholder"]')).toBeInTheDocument();
+    expect(desktopHeaderRow).toHaveClass('min-h-10');
     expect(screen.getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
