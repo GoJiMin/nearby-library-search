@@ -58,10 +58,10 @@
 
 ## 9. 상세 dialog loading 상태 구현
 
-- [ ] dialog는 즉시 열리고 본문 안에서 loading skeleton을 렌더한다.
-- [ ] loading 중에도 닫을 수 있게 유지한다.
-- [ ] loading shell이 실제 dialog 구조와 같은 cover, heading, content rhythm을 따르도록 구현한다.
-- [ ] 기존 `useGetBookDetail`의 suspense 흐름과 충돌하지 않게 연결한다.
+- [x] dialog는 즉시 열리고 본문 안에서 loading skeleton을 렌더한다.
+- [x] loading 중에도 닫을 수 있게 유지한다.
+- [x] loading shell이 실제 dialog 구조와 같은 cover, heading, content rhythm을 따르도록 구현한다.
+- [x] 기존 `useGetBookDetail`의 suspense 흐름과 충돌하지 않게 연결한다.
 
 ## 10. 상세 dialog success 기본 정보 구현
 

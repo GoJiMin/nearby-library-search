@@ -6,7 +6,26 @@ import {AppProvider} from '@/app/providers';
 import {useBookDetailDialogStore} from '@/features/book';
 import {routes} from './router';
 
-const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
+const {mockBookDetailResponse, mockBookSearchResponse, mockUseGetBookDetail, mockUseGetSearchBooks} = vi.hoisted(() => ({
+  mockBookDetailResponse: {
+    book: {
+      author: '이민진',
+      className: null,
+      classNumber: null,
+      description: null,
+      imageUrl: 'https://image.example.com/pachinko.jpg',
+      isbn: '8954682150',
+      isbn13: '9788954682155',
+      publicationDate: null,
+      publicationYear: '2018',
+      publisher: '문학사상',
+      title: '파친코',
+    },
+    loanInfo: {
+      byAge: [],
+      total: null,
+    },
+  },
   mockBookSearchResponse: {
     items: [
       {
@@ -22,6 +41,7 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
     ],
     totalCount: 12,
   },
+  mockUseGetBookDetail: vi.fn(),
   mockUseGetSearchBooks: vi.fn(),
 }));
 
@@ -135,6 +155,7 @@ vi.mock('@/entities/book', async importOriginal => {
 
   return {
     ...actual,
+    useGetBookDetail: mockUseGetBookDetail,
     useGetSearchBooks: mockUseGetSearchBooks,
   };
 });
@@ -176,6 +197,8 @@ vi.mock('@/shared/request', async importOriginal => {
 });
 
 beforeEach(() => {
+  mockUseGetBookDetail.mockReset();
+  mockUseGetBookDetail.mockReturnValue(mockBookDetailResponse);
   mockUseGetSearchBooks.mockReset();
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
   mockUseGetSearchLibraries.mockReset();
@@ -406,8 +429,13 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
-  it('검색 결과에서 상세 보기를 누르면 도서 상세 창을 열고 닫을 수 있다', async () => {
+  it('상세 보기를 누르면 도서 상세 정보를 불러오는 동안 loading 상태를 보고 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
+    const pendingPromise = new Promise<never>(() => {});
+
+    mockUseGetBookDetail.mockImplementation(() => {
+      throw pendingPromise;
+    });
 
     renderRouter(['/books?title=파친코&page=1']);
 
@@ -416,6 +444,7 @@ describe('app router integration', () => {
     const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
 
     expect(detailDialog).toBeInTheDocument();
+    expect(within(detailDialog).getByRole('status', {name: '도서 상세 정보를 불러오는 중'})).toBeInTheDocument();
     expect(within(detailDialog).getByRole('button', {name: '닫기'})).toBeInTheDocument();
 
     await user.click(within(detailDialog).getByRole('button', {name: '닫기'}));
@@ -425,6 +454,21 @@ describe('app router integration', () => {
     });
 
     expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
+  });
+
+  it('상세 보기를 누르면 제목, 저자, 출판 정보와 ISBN을 확인할 수 있다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+
+    const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
+
+    expect(within(detailDialog).getByRole('heading', {name: '파친코'})).toBeInTheDocument();
+    expect(within(detailDialog).getByText('이민진')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('문학사상 · 2018')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('9788954682155')).toBeInTheDocument();
   });
 
   it('다른 검색어로 다시 검색하면 열려 있던 도서 상세 창이 닫힌다', async () => {
