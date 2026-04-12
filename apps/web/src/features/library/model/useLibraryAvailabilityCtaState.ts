@@ -14,6 +14,7 @@ type UseLibraryAvailabilityCtaStateParams = {
   hasSelectedLibrary: boolean;
   isError: boolean;
   isFetching: boolean;
+  requestIdentity: string;
 };
 
 function resolveLibraryAvailabilityButtonLabel(status: LibraryAvailabilityCtaStatus) {
@@ -56,7 +57,7 @@ function resolveLibraryAvailabilityCtaStatus({
   hasSelectedLibrary,
   isError,
   isFetching,
-}: UseLibraryAvailabilityCtaStateParams & {
+}: Pick<UseLibraryAvailabilityCtaStateParams, 'data' | 'hasSelectedLibrary' | 'isError' | 'isFetching'> & {
   hasRequested: boolean;
 }): LibraryAvailabilityCtaStatus {
   if (!hasSelectedLibrary || !hasRequested) {
@@ -91,8 +92,10 @@ function useLibraryAvailabilityCtaState({
   hasSelectedLibrary,
   isError,
   isFetching,
+  requestIdentity,
 }: UseLibraryAvailabilityCtaStateParams) {
-  const [hasRequested, setHasRequested] = useState(false);
+  const [requestedIdentity, setRequestedIdentity] = useState<string | null>(null);
+  const hasRequested = requestedIdentity === requestIdentity;
   const status = resolveLibraryAvailabilityCtaStatus({
     data,
     hasRequested,
@@ -108,11 +111,11 @@ function useLibraryAvailabilityCtaState({
   const showSpinner = status === 'pending';
 
   const markRequested = () => {
-    setHasRequested(true);
+    setRequestedIdentity(requestIdentity);
   };
 
   const resetRequested = () => {
-    setHasRequested(false);
+    setRequestedIdentity(null);
   };
 
   return {

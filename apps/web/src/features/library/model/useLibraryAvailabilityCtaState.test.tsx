@@ -8,6 +8,7 @@ function createParams(overrides?: Partial<Parameters<typeof useLibraryAvailabili
     hasSelectedLibrary: true,
     isError: false,
     isFetching: false,
+    requestIdentity: 'LIB0001:9791190157551',
     ...overrides,
   };
 }
@@ -200,5 +201,34 @@ describe('useLibraryAvailabilityCtaState', () => {
 
     expect(result.current.hasRequested).toBe(false);
     expect(result.current.status).toBe('idle');
+  });
+
+  it('request identity가 바뀌면 이전 요청 상태를 재사용하지 않고 idle로 돌아간다', () => {
+    const {result, rerender} = renderHook(
+      params => useLibraryAvailabilityCtaState(params),
+      {
+        initialProps: createParams(),
+      },
+    );
+
+    act(() => {
+      result.current.markRequested();
+    });
+
+    rerender(
+      createParams({
+        data: {
+          hasBook: 'Y',
+          isbn13: '9791190157551',
+          libraryCode: 'LIB0002',
+          loanAvailable: 'Y',
+        },
+        requestIdentity: 'LIB0002:9791190157551',
+      }),
+    );
+
+    expect(result.current.hasRequested).toBe(false);
+    expect(result.current.status).toBe('idle');
+    expect(result.current.buttonLabel).toBe('대출 가능 여부 조회');
   });
 });

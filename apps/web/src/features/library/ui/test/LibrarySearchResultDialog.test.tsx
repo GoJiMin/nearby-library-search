@@ -1187,6 +1187,34 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByText('대출 가능 여부를 다시 확인해주세요.')).toBeInTheDocument();
   });
 
+  it('모바일에서 다른 도서관을 선택하면 이전 availability 요청 상태를 재사용하지 않는다', async () => {
+    const user = userEvent.setup();
+    const scrollToMock = vi.fn();
+
+    mockMatchMedia(true);
+    Object.defineProperty(HTMLElement.prototype, 'scrollTo', {
+      configurable: true,
+      value: scrollToMock,
+    });
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    expect(await screen.findByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
+    expect(mockRequestGet).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole('button', {name: /합정열람실/}));
+
+    const resetButton = await screen.findByRole('button', {name: '대출 가능 여부 조회'});
+
+    expect(resetButton).toBeEnabled();
+    expect(screen.queryByRole('button', {name: '대출이 가능해요'})).not.toBeInTheDocument();
+    expect(mockRequestGet).toHaveBeenCalledTimes(1);
+  });
+
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
     render(<LibrarySearchResultDetails library={null} />);
 

@@ -58,6 +58,7 @@ function LibrarySearchResultAvailabilityAction({
 }
 
 function LibrarySearchResultAvailabilityCta({isbn13, libraryCode}: LibrarySearchResultAvailabilityCtaProps) {
+  const requestIdentity = `${libraryCode}:${isbn13}`;
   const availabilityQuery = useGetLibraryAvailability({
     isbn13,
     libraryCode,
@@ -67,6 +68,7 @@ function LibrarySearchResultAvailabilityCta({isbn13, libraryCode}: LibrarySearch
     hasSelectedLibrary: true,
     isError: availabilityQuery.isError,
     isFetching: availabilityQuery.isFetching,
+    requestIdentity,
   });
 
   const handleCheckAvailability = async () => {
