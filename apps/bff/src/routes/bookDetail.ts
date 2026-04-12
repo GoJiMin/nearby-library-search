@@ -8,6 +8,7 @@ import type {
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
+import {developmentConfig} from '../config/env.js';
 import {bookDetailParamsSchema} from '../schemas/book.js';
 import {
   createErrorResponse,
@@ -17,6 +18,7 @@ import {
 } from '../utils/error.js';
 import {getBookRecords, getLibraryApiResponseRoot, isLibraryApiRecord} from '../utils/libraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../utils/normalize.js';
+import {resolveBookDetailFixtureResult} from './bookDetailFixture.js';
 
 type Result<T> =
   | {
@@ -194,6 +196,18 @@ export const bookDetailRoute: FastifyPluginAsync = async app => {
       reply.status(parsedParams.error.status);
 
       return parsedParams.error;
+    }
+
+    if (developmentConfig.useDevFixtures) {
+      const fixtureResult = resolveBookDetailFixtureResult(parsedParams.value);
+
+      if (!fixtureResult.ok) {
+        reply.status(fixtureResult.error.status);
+
+        return fixtureResult.error;
+      }
+
+      return fixtureResult.value;
     }
 
     const bookDetailPayload = await fetchBookDetailPayload(parsedParams.value.isbn13);
