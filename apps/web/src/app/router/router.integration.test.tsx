@@ -406,7 +406,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
-  it('검색 결과에서 상세 보기를 누르면 도서 상세 창을 열고 닫을 수 있다', async () => {
+  it('검색 결과에서 상세 보기를 누르면 도서 상세 창에서 표지와 핵심 정보 영역을 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -416,7 +416,9 @@ describe('app router integration', () => {
     const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
 
     expect(detailDialog).toBeInTheDocument();
-    expect(within(detailDialog).getByText('도서 상세 정보를 불러올 준비 중이에요.')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('도서 표지')).toBeInTheDocument();
+    expect(within(detailDialog).getByRole('heading', {name: '기본 정보'})).toBeInTheDocument();
+    expect(within(detailDialog).getByRole('heading', {name: '대출 정보'})).toBeInTheDocument();
 
     await user.click(within(detailDialog).getByRole('button', {name: '닫기'}));
 

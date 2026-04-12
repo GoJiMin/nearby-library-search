@@ -51,10 +51,10 @@
 
 ## 8. `BookDetailDialog` 기본 골격 구현
 
-- [ ] shared `Dialog` primitive를 사용해 상세 dialog shell을 구현한다.
-- [ ] 현재 region/library dialog와 같은 close affordance, overlay, surface 톤을 따른다.
-- [ ] desktop/mobile 모두 현재 app typography와 spacing rhythm을 그대로 사용한다.
-- [ ] 새 시각 언어를 만들지 않는다는 구현 경계를 유지한다.
+- [x] shared `Dialog` primitive를 사용해 상세 dialog shell을 구현한다.
+- [x] 현재 region/library dialog와 같은 close affordance, overlay, surface 톤을 따른다.
+- [x] desktop/mobile 모두 현재 app typography와 spacing rhythm을 그대로 사용한다.
+- [x] 새 시각 언어를 만들지 않는다는 구현 경계를 유지한다.
 
 ## 9. 상세 dialog loading 상태 구현
 
