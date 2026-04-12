@@ -70,9 +70,9 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
       : null;
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
+    <div className="grid min-h-full grid-cols-1 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
       <aside className="border-line/60 bg-surface-muted/35 border-b px-6 py-8 lg:border-r lg:border-b-0 lg:px-6 lg:py-10">
-        <div className="flex h-full items-center justify-center lg:items-start">
+        <div className="flex items-center justify-center lg:h-full lg:items-start">
           {book.imageUrl ? (
             <img
               alt={`${book.title} 표지 이미지`}
@@ -86,8 +86,8 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
           )}
         </div>
       </aside>
-      <div className="bg-surface min-h-0 overflow-y-auto">
-        <div className="flex min-h-full flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10">
+      <div className="bg-surface lg:min-h-0 lg:overflow-y-auto">
+        <div className="flex flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10 lg:min-h-full">
           <section className="border-line/60 space-y-1.5 border-b pb-6">
             <Heading as="h2" className="text-balance" size="lg">
               {book.title}

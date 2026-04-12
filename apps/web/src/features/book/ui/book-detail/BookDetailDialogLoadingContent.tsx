@@ -5,17 +5,17 @@ const bookDetailLoanBadgeWidths = ['w-24', 'w-28', 'w-24'] as const;
 
 function BookDetailDialogLoadingContent() {
   return (
-    <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
+    <div className="grid min-h-full grid-cols-1 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
       <aside className="border-line/60 bg-surface-muted/35 border-b px-6 py-7 lg:border-r lg:border-b-0 lg:px-6 lg:py-8">
-        <div aria-hidden="true" className="flex h-full items-center justify-center lg:items-start">
+        <div aria-hidden="true" className="flex items-center justify-center lg:h-full lg:items-start">
           <Skeleton className="aspect-3/4 w-full max-w-64 rounded-3xl sm:max-w-xs lg:max-w-full" />
         </div>
       </aside>
-      <div className="bg-surface min-h-0 overflow-y-auto">
+      <div className="bg-surface lg:min-h-0 lg:overflow-y-auto">
         <div
           aria-label="도서 상세 정보를 불러오는 중"
           aria-live="polite"
-          className="flex min-h-full flex-col gap-6 px-6 py-7 sm:px-8 sm:py-8"
+          className="flex flex-col gap-6 px-6 py-7 sm:px-8 sm:py-8 lg:min-h-full"
           role="status"
         >
           <section aria-hidden="true" className="border-line/60 space-y-2.5 border-b pb-5">
