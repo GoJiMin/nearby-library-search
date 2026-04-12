@@ -2,8 +2,8 @@
 
 ## 1. `packages/contracts`의 도서 상세 대출 정보 계약 축소
 
-- [ ] `BookDetailLoanInfo`에서 `byGender`, `byRegion`를 제거한다.
-- [ ] `BookDetailResponse`가 `loanInfo.total + loanInfo.byAge`만 가지도록 고정한다.
+- [x] `BookDetailLoanInfo`에서 `byGender`, `byRegion`를 제거한다.
+- [x] `BookDetailResponse`가 `loanInfo.total + loanInfo.byAge`만 가지도록 고정한다.
 - [ ] `packages/contracts/src/index.ts` export가 새 계약과 일치하는지 확인한다.
 - [ ] web과 BFF가 축소된 내부 계약만 공유하는지 확인한다.
 

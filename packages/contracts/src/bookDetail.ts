@@ -8,9 +8,7 @@ export type BookDetailLoanStat = {
 
 export type BookDetailLoanInfo = {
   total: BookDetailLoanStat | null;
-  byRegion: BookDetailLoanStat[];
   byAge: BookDetailLoanStat[];
-  byGender: BookDetailLoanStat[];
 };
 
 export type BookDetail = {
