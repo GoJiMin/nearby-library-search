@@ -6,7 +6,7 @@ const bookDetailLoanBadgeWidths = ['w-24', 'w-28', 'w-24'] as const;
 function BookDetailDialogLoadingContent() {
   return (
     <div className="grid min-h-full grid-cols-1 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
-      <aside className="border-line/60 bg-surface-muted/35 border-b px-5 py-5 lg:border-r lg:border-b-0 lg:px-6 lg:py-8">
+      <aside className="border-line/60 bg-surface-muted/35 border-b px-5 py-5 lg:border-r lg:border-b-0 lg:px-6 lg:py-10">
         <div aria-hidden="true" className="flex items-center justify-center lg:h-full lg:items-start">
           <Skeleton className="aspect-3/4 w-full rounded-3xl" />
         </div>
@@ -15,15 +15,15 @@ function BookDetailDialogLoadingContent() {
         <div
           aria-label="도서 상세 정보를 불러오는 중"
           aria-live="polite"
-          className="flex flex-col gap-5 px-5 py-5 lg:min-h-full lg:gap-6 lg:px-8 lg:py-8"
+          className="flex flex-col gap-4 px-5 py-5 lg:min-h-full lg:gap-8 lg:px-8 lg:py-10"
           role="status"
         >
-          <section aria-hidden="true" className="border-line/60 space-y-2.5 border-b pb-5">
+          <section aria-hidden="true" className="border-line/60 space-y-2.5 border-b pb-4 lg:pb-6">
             <Skeleton className="h-10 w-4/5 rounded-full" />
             <Skeleton className="h-6 w-1/2 rounded-full" />
           </section>
 
-          <div aria-hidden="true" className="space-y-5 lg:space-y-6">
+          <div aria-hidden="true" className="space-y-6 lg:space-y-8">
             <section className="flex flex-col gap-2">
               <Skeleton className="h-5 w-16 rounded-full" />
               <Skeleton className="h-5 w-full rounded-full" />
@@ -43,7 +43,7 @@ function BookDetailDialogLoadingContent() {
             </section>
           </div>
 
-          <section aria-hidden="true" className="border-line/60 flex flex-col gap-3 border-t pt-5">
+          <section aria-hidden="true" className="border-line/60 flex flex-col gap-3 border-t pt-5 lg:gap-4 lg:pt-6">
             <Skeleton className="h-5 w-20 rounded-full" />
             <div className="space-y-2">
               <Skeleton className="h-7 w-36 rounded-full" />
