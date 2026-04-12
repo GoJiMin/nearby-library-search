@@ -23,6 +23,9 @@ describe('useLibraryAvailabilityCtaState', () => {
     );
 
     expect(result.current.status).toBe('idle');
+    expect(result.current.buttonLabel).toBe('대출 가능 여부 조회');
+    expect(result.current.disabled).toBe(true);
+    expect(result.current.showSpinner).toBe(false);
   });
 
   it('요청 전에는 성공 캐시가 있어도 idle 상태다', () => {
@@ -40,6 +43,8 @@ describe('useLibraryAvailabilityCtaState', () => {
     );
 
     expect(result.current.status).toBe('idle');
+    expect(result.current.buttonLabel).toBe('대출 가능 여부 조회');
+    expect(result.current.disabled).toBe(false);
   });
 
   it('요청 후 fetch 중이면 pending 상태다', () => {
@@ -61,6 +66,9 @@ describe('useLibraryAvailabilityCtaState', () => {
     );
 
     expect(result.current.status).toBe('pending');
+    expect(result.current.buttonLabel).toBe('대출 가능 여부 조회');
+    expect(result.current.disabled).toBe(true);
+    expect(result.current.showSpinner).toBe(true);
   });
 
   it('요청 후 대출 가능 응답이면 success-available 상태다', () => {
@@ -87,6 +95,8 @@ describe('useLibraryAvailabilityCtaState', () => {
     );
 
     expect(result.current.status).toBe('success-available');
+    expect(result.current.buttonLabel).toBe('대출이 가능해요');
+    expect(result.current.disabled).toBe(true);
   });
 
   it('요청 후 대출 불가 응답이면 success-unavailable 상태다', () => {
@@ -113,6 +123,8 @@ describe('useLibraryAvailabilityCtaState', () => {
     );
 
     expect(result.current.status).toBe('success-unavailable');
+    expect(result.current.buttonLabel).toBe('대출이 불가능해요');
+    expect(result.current.disabled).toBe(true);
   });
 
   it('요청 후 미소장 응답이면 success-not-owned 상태다', () => {
@@ -139,6 +151,8 @@ describe('useLibraryAvailabilityCtaState', () => {
     );
 
     expect(result.current.status).toBe('success-not-owned');
+    expect(result.current.buttonLabel).toBe('소장하지 않아요');
+    expect(result.current.disabled).toBe(true);
   });
 
   it('요청 후 에러가 나면 error 상태다', () => {
@@ -160,5 +174,8 @@ describe('useLibraryAvailabilityCtaState', () => {
     );
 
     expect(result.current.status).toBe('error');
+    expect(result.current.buttonLabel).toBe('재시도');
+    expect(result.current.disabled).toBe(false);
+    expect(result.current.showSpinner).toBe(false);
   });
 });

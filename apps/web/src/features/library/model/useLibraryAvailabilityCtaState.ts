@@ -16,6 +16,43 @@ type UseLibraryAvailabilityCtaStateParams = {
   isFetching: boolean;
 };
 
+function resolveLibraryAvailabilityButtonLabel(status: LibraryAvailabilityCtaStatus) {
+  switch (status) {
+    case 'success-available':
+      return '대출이 가능해요';
+    case 'success-unavailable':
+      return '대출이 불가능해요';
+    case 'success-not-owned':
+      return '소장하지 않아요';
+    case 'error':
+      return '재시도';
+    default:
+      return '대출 가능 여부 조회';
+  }
+}
+
+function shouldDisableLibraryAvailabilityButton({
+  hasSelectedLibrary,
+  status,
+}: {
+  hasSelectedLibrary: boolean;
+  status: LibraryAvailabilityCtaStatus;
+}) {
+  if (!hasSelectedLibrary) {
+    return true;
+  }
+
+  switch (status) {
+    case 'pending':
+    case 'success-available':
+    case 'success-unavailable':
+    case 'success-not-owned':
+      return true;
+    default:
+      return false;
+  }
+}
+
 function resolveLibraryAvailabilityCtaStatus({
   data,
   hasRequested,
@@ -66,6 +103,12 @@ function useLibraryAvailabilityCtaState({
     isError,
     isFetching,
   });
+  const buttonLabel = resolveLibraryAvailabilityButtonLabel(status);
+  const disabled = shouldDisableLibraryAvailabilityButton({
+    hasSelectedLibrary,
+    status,
+  });
+  const showSpinner = status === 'pending';
 
   const markRequested = () => {
     setHasRequested(true);
@@ -76,12 +119,12 @@ function useLibraryAvailabilityCtaState({
   };
 
   return {
-    buttonLabel: '대출 가능 여부 조회',
-    disabled: !hasSelectedLibrary,
+    buttonLabel,
+    disabled,
     hasRequested,
     markRequested,
     resetRequested,
-    showSpinner: false,
+    showSpinner,
     status,
   };
 }

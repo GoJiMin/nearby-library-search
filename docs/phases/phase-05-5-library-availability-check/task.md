@@ -67,7 +67,7 @@
 
 - [x] feature/library 내부 공용 CTA 상태 모델을 추가한다.
 - [x] 기본 / pending / success(Y) / success(N) / success(hasBook=N) / error 상태를 분리한다.
-- [ ] 버튼 텍스트, disabled 여부, 하단 문구를 한 곳에서 결정하게 한다.
+- [x] 버튼 텍스트, disabled 여부, spinner 표시를 한 곳에서 결정하게 한다.
 - [ ] availability 상태를 zustand에 올리지 않는 규칙을 유지한다.
 
 ## 10. desktop detail CTA 연결
