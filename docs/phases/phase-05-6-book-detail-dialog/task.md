@@ -37,9 +37,9 @@
 
 ## 6. `BookSearchResultActionContext` 제거
 
-- [ ] `BookSearchResultActionContext`와 관련 helper를 제거한다.
-- [ ] `BookSearchResultProps`의 `onOpenBookDetail`를 제거한다.
-- [ ] `BookSearchResult`가 더 이상 detail handoff orchestration을 소유하지 않게 정리한다.
+- [x] `BookSearchResultActionContext`와 관련 helper를 제거한다.
+- [x] `BookSearchResultProps`의 `onOpenBookDetail`를 제거한다.
+- [x] `BookSearchResult`가 더 이상 detail handoff orchestration을 소유하지 않게 정리한다.
 - [ ] 결과 카드가 store action을 직접 사용하도록 연결한다.
 
 ## 7. `/books` route shell에 `BookDetailDialog` mount
