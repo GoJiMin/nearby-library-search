@@ -513,15 +513,19 @@ describe('app router integration', () => {
 
     const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
 
-    expect(within(detailDialog).getByText('가장 많이 읽는 연령대는 20대예요.')).toBeInTheDocument();
-    expect(within(detailDialog).getByText('연령별 대출 430건으로 가장 높아요.')).toBeInTheDocument();
-    expect(within(detailDialog).getByText('총 대출 1,240건')).toBeInTheDocument();
+    const totalLoanHeading = within(detailDialog).getByText('총 대출 1,240건');
+    const ageInsightHeading = within(detailDialog).getByText('가장 많이 읽는 연령대는 20대예요.');
+
+    expect(totalLoanHeading).toBeInTheDocument();
     expect(within(detailDialog).getByText('대출 순위 1위')).toBeInTheDocument();
+    expect(ageInsightHeading).toBeInTheDocument();
+    expect(within(detailDialog).getByText('연령별 대출 430건으로 가장 높아요.')).toBeInTheDocument();
     expect(within(detailDialog).getByText('20대 · 430건')).toBeInTheDocument();
     expect(within(detailDialog).getByText('30대 · 315건')).toBeInTheDocument();
     expect(within(detailDialog).getByText('40대 · 188건')).toBeInTheDocument();
     expect(within(detailDialog).queryByText('성별')).not.toBeInTheDocument();
     expect(within(detailDialog).queryByText('지역별')).not.toBeInTheDocument();
+    expect(totalLoanHeading.compareDocumentPosition(ageInsightHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('상세 정보에 없는 항목은 보이지 않는다', async () => {

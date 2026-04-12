@@ -63,33 +63,31 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
   return (
     <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
       <aside className="border-line/60 bg-surface-muted/35 border-b px-6 py-8 lg:border-r lg:border-b-0 lg:px-6 lg:py-10">
-        <div className="flex h-full flex-col gap-6 lg:gap-8">
-          <div className="space-y-3 lg:pr-6">
+        <div className="flex h-full items-center justify-center lg:items-start">
+          {book.imageUrl ? (
+            <img
+              alt={`${book.title} 표지 이미지`}
+              className="aspect-[3/4] w-full max-w-64 rounded-3xl object-cover sm:max-w-xs lg:max-w-full"
+              src={book.imageUrl}
+            />
+          ) : (
+            <div className="bg-surface border-line flex aspect-[3/4] w-full max-w-64 items-center justify-center rounded-3xl border sm:max-w-xs lg:max-w-full">
+              <LucideIcon className="text-text-muted h-10 w-10" icon={BookOpen} strokeWidth={1.8} />
+            </div>
+          )}
+        </div>
+      </aside>
+      <div className="bg-surface min-h-0 overflow-y-auto">
+        <div className="flex min-h-full flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10">
+          <section className="space-y-3">
             <Heading as="h2" className="text-balance" size="lg">
               {book.title}
             </Heading>
             <Text className="text-accent font-semibold" size="sm" tone="default">
               {book.author}
             </Text>
-          </div>
+          </section>
 
-          <div className="flex flex-1 items-center justify-center lg:items-start">
-            {book.imageUrl ? (
-              <img
-                alt={`${book.title} 표지 이미지`}
-                className="aspect-[3/4] w-full max-w-64 rounded-3xl object-cover sm:max-w-xs lg:max-w-full"
-                src={book.imageUrl}
-              />
-            ) : (
-              <div className="bg-surface border-line flex aspect-[3/4] w-full max-w-64 items-center justify-center rounded-3xl border sm:max-w-xs lg:max-w-full">
-                <LucideIcon className="text-text-muted h-10 w-10" icon={BookOpen} strokeWidth={1.8} />
-              </div>
-            )}
-          </div>
-        </div>
-      </aside>
-      <div className="bg-surface min-h-0 overflow-y-auto">
-        <div className="flex min-h-full flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10">
           {book.description && (
             <section className="space-y-2">
               <p className={detailSectionLabelClassName}>책 소개</p>
@@ -138,15 +136,6 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             <p className={detailSectionLabelClassName}>대출 정보</p>
             {hasLoanTotal || hasLoanAgeStats ? (
               <div className="space-y-4">
-                {mostPopularAgeGroup && (
-                  <div className="space-y-1">
-                    <Heading as="h3" size="sm">
-                      {`가장 많이 읽는 연령대는 ${mostPopularAgeGroup.name}예요.`}
-                    </Heading>
-                    {mostPopularAgeLoanCountLabel && <Text size="sm">{mostPopularAgeLoanCountLabel}</Text>}
-                  </div>
-                )}
-
                 {hasLoanTotal && (
                   <div className="space-y-1">
                     <Heading as="h3" size="sm">
@@ -157,6 +146,15 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
                         {totalLoanRankLabel}
                       </Text>
                     )}
+                  </div>
+                )}
+
+                {mostPopularAgeGroup && (
+                  <div className="space-y-1">
+                    <Heading as="h3" size="sm">
+                      {`가장 많이 읽는 연령대는 ${mostPopularAgeGroup.name}예요.`}
+                    </Heading>
+                    {mostPopularAgeLoanCountLabel && <Text size="sm">{mostPopularAgeLoanCountLabel}</Text>}
                   </div>
                 )}
 
