@@ -50,16 +50,17 @@
 - 상세 dialog의 북마크, 공유, 추천 등 추가 행동
 - BFF 상세 endpoint path 변경
 
-## 현재 기반 상태
+## 현재 구현 상태
 
 - `entities/book`는 이미 아래 공개 API를 가진다.
   - `useGetBookDetail`
   - `booksQueryOptions.detail`
   - `getBookDetail`
 - BFF는 이미 `/api/books/:isbn13` route를 제공한다.
-- `packages/contracts`의 `BookDetailResponse`는 현재 `loanInfo.total`, `byAge`, `byGender`, `byRegion`을 가진다.
-- `BookSearchResultCard`는 현재 `useBookSearchResultActions()` context에서 `onOpenBookDetail`을 꺼내 `isbn13` handoff만 수행한다.
-- `/books` route shell은 현재 `RegionSelectDialog`, `LibrarySearchResultDialog`만 mount하고 있고, 도서 상세 dialog는 아직 없다.
+- `packages/contracts`의 `BookDetailResponse`는 현재 `loanInfo.total`, `loanInfo.byAge`만 가진다.
+- `BookSearchResultCard`는 현재 `useBookDetailDialogStore(state => state.openBookDetailDialog)`를 직접 사용해 `isbn13`만 handoff한다.
+- `/books` route shell은 현재 `BookDetailDialog`, `RegionSelectDialog`, `LibrarySearchResultDialog`를 함께 mount한다.
+- `BookDetailDialog`는 현재 loading, success, empty, error, close 흐름과 route 문맥 변경 시 reset 규칙까지 구현돼 있다.
 
 ## 아키텍처와 책임 분리
 

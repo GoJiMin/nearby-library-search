@@ -102,11 +102,11 @@
 
 ## 15. 최종 검증과 문서 동기화
 
-- [ ] `pnpm test:run`을 통과시킨다.
-- [ ] `pnpm lint:web`를 통과시킨다.
-- [ ] `pnpm typecheck:web`와 `pnpm --filter @nearby-library-search/bff build`를 통과시킨다.
-- [ ] `pnpm build:web`를 통과시킨다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 5-6 상태를 실제 구현과 동기화한다.
+- [x] `pnpm test:run`을 통과시킨다.
+- [x] `pnpm lint:web`를 통과시킨다.
+- [x] `pnpm typecheck:web`와 `pnpm --filter @nearby-library-search/bff build`를 통과시킨다.
+- [x] `pnpm build:web`를 통과시킨다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 5-6 상태를 실제 구현과 동기화한다.
 
 ## Important Changes
 
