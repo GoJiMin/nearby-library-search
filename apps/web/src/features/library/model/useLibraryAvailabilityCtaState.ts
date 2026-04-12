@@ -16,13 +16,56 @@ type UseLibraryAvailabilityCtaStateParams = {
   isFetching: boolean;
 };
 
-function useLibraryAvailabilityCtaState({
-  data: _data,
+function resolveLibraryAvailabilityCtaStatus({
+  data,
+  hasRequested,
   hasSelectedLibrary,
-  isError: _isError,
-  isFetching: _isFetching,
+  isError,
+  isFetching,
+}: UseLibraryAvailabilityCtaStateParams & {
+  hasRequested: boolean;
+}): LibraryAvailabilityCtaStatus {
+  if (!hasSelectedLibrary || !hasRequested) {
+    return 'idle';
+  }
+
+  if (isFetching) {
+    return 'pending';
+  }
+
+  if (isError) {
+    return 'error';
+  }
+
+  if (data?.hasBook === 'N') {
+    return 'success-not-owned';
+  }
+
+  if (data?.loanAvailable === 'Y') {
+    return 'success-available';
+  }
+
+  if (data?.loanAvailable === 'N') {
+    return 'success-unavailable';
+  }
+
+  return 'pending';
+}
+
+function useLibraryAvailabilityCtaState({
+  data,
+  hasSelectedLibrary,
+  isError,
+  isFetching,
 }: UseLibraryAvailabilityCtaStateParams) {
   const [hasRequested, setHasRequested] = useState(false);
+  const status = resolveLibraryAvailabilityCtaStatus({
+    data,
+    hasRequested,
+    hasSelectedLibrary,
+    isError,
+    isFetching,
+  });
 
   const markRequested = () => {
     setHasRequested(true);
@@ -39,7 +82,7 @@ function useLibraryAvailabilityCtaState({
     markRequested,
     resetRequested,
     showSpinner: false,
-    status: 'idle' as LibraryAvailabilityCtaStatus,
+    status,
   };
 }
 
