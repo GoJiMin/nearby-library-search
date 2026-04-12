@@ -56,6 +56,13 @@
 - [x] `useGetLibraryAvailability`를 추가한다.
 - [x] `useQuery` + `enabled: false` + button-triggered `refetch` 규칙을 잠근다.
 
+## 8-1. web 전역 request error와 toast 인프라 선행 도입
+
+- [ ] `sonner` 기반 toast wrapper와 `AppToaster`를 추가한다.
+- [ ] `shared/request`에 전역 request error queue를 추가한다.
+- [ ] `ReactQueryProvider`가 `errorBoundary`와 `toast` 요청 에러를 다르게 라우팅하도록 정리한다.
+- [ ] `GlobalErrorDetector`와 global unexpected error boundary를 `AppProvider`에 연결한다.
+
 ## 9. 공용 availability CTA 상태 모델 구현
 
 - [ ] feature/library 내부 공용 CTA 상태 모델을 추가한다.
@@ -68,7 +75,7 @@
 - [ ] desktop detail panel의 `대출 가능 여부 조회` 버튼을 실제 query에 연결한다.
 - [ ] pending 시 버튼 내부 spinner와 disabled를 적용한다.
 - [ ] success 시 `대출이 가능해요` / `대출이 불가능해요` / `소장하지 않아요`를 표시한다.
-- [ ] error 시 버튼 재활성 + `다시 한 번 시도해주세요.` 문구를 표시한다.
+- [ ] error 시 버튼 문구를 `재시도`로 바꾸고, toast로 실패를 안내한다.
 
 ## 11. mobile detail CTA 연결
 
@@ -90,7 +97,7 @@
 - [ ] 기본 CTA와 disclaimer 렌더를 검증한다.
 - [ ] pending spinner + disabled를 검증한다.
 - [ ] `대출이 가능해요` / `대출이 불가능해요` / `소장하지 않아요`를 검증한다.
-- [ ] error 시 버튼 재활성 + `다시 한 번 시도해주세요.` 문구를 검증한다.
+- [ ] error 시 버튼 문구 `재시도`와 toast 안내를 검증한다.
 - [ ] 선택 변경 / 페이지 변경 / dialog close / backflow 후 reset을 검증한다.
 - [ ] 같은 dialog 세션의 cache reuse를 검증한다.
 
@@ -108,7 +115,7 @@
 - web availability 조회는 예외적으로 `useQuery` 기반 on-demand 요청으로 구현한다.
 - availability 결과는 zustand가 아니라 query cache와 CTA local state로만 관리한다.
 - 성공 결과는 버튼 텍스트로 직접 보여주고, 성공 후에는 버튼을 비활성화한다.
-- 실패 시에는 버튼을 다시 누를 수 있게 유지하고, 하단 문구만 재시도 안내로 바꾼다.
+- 실패 시에는 전역 toast로 안내하고, 버튼 문구를 `재시도`로 바꾼다.
 
 ## Test Plan
 

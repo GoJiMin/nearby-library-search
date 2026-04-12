@@ -32,11 +32,12 @@
   - availability 결과는 zustand에 저장하지 않고 query cache와 CTA local state로만 관리한다.
   - 같은 library result dialog 세션 안에서는 성공 결과를 캐시 재사용한다.
   - dialog를 닫거나 region backflow로 빠지면 availability cache는 제거한다.
+  - request error는 React Query provider에서 중앙 수집하고, `errorHandlingType: 'toast'`인 요청은 전역 toast로 안내한다.
 - UI 기준
   - CTA는 계속 detail 영역 안에 남긴다.
   - pending은 버튼 내부 spinner로만 표현한다.
   - 성공 결과는 버튼 텍스트로 직접 보여주고, 성공 후 버튼은 비활성화한다.
-  - 실패는 재시도 가능한 상태로 남기고, 버튼 아래 문구만 에러 문구로 바꾼다.
+  - 실패는 전역 toast로 안내하고, 버튼은 `재시도` 상태로 되돌린다.
 
 ## 구현 범위
 
@@ -50,7 +51,6 @@
 
 - availability 결과를 별도 카드, 배지, 패널로 확장하는 작업
 - URL 동기화
-- toast 시스템 추가
 - `open_api_spec.md` 원문 수정
 - `대출 가능 여부 조회` 이후 추가 행동 흐름
   - 예: 예약, 알림 신청, 희망도서 신청
@@ -217,10 +217,10 @@ type LibraryAvailabilityResponse = {
 
 ### 4. 에러 상태
 
-- 버튼 텍스트는 다시 기본값 `대출 가능 여부 조회`로 돌아간다.
+- 버튼 텍스트는 `재시도`로 바뀐다.
 - 버튼은 다시 활성화된다.
-- 보조 문구는 disclaimer 대신 아래 문구로 교체한다.
-  - `다시 한 번 시도해주세요.`
+- 보조 문구는 기본 disclaimer를 그대로 유지한다.
+- 실패 안내는 request error toast로 처리한다.
 - 에러 상태는 최종 상태가 아니라 재시도 가능한 상태다.
 
 ### 5. reset 상태
