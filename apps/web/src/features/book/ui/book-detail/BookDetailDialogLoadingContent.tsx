@@ -54,8 +54,8 @@ function BookDetailDialogLoadingContent() {
               <Skeleton className="h-5 w-44 rounded-full" />
             </div>
             <div className="flex flex-wrap gap-2">
-              {bookDetailLoanBadgeWidths.map(widthClassName => (
-                <Skeleton className={`h-10 rounded-full ${widthClassName}`} key={widthClassName} />
+              {bookDetailLoanBadgeWidths.map((widthClassName, index) => (
+                <Skeleton className={`h-10 rounded-full ${widthClassName}`} key={`${widthClassName}-${index}`} />
               ))}
             </div>
           </section>
