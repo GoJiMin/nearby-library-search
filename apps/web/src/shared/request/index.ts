@@ -2,7 +2,13 @@ export {requestGet, requestPost} from './lib/requestCore';
 export {RequestError, RequestGetError} from './lib/requestError';
 export {COMMON_REQUEST_ERROR_MESSAGE, DEFAULT_SERVER_ERROR_MESSAGE, SERVER_ERROR_MESSAGE_MAP} from './lib/errorMessage';
 export {getServerErrorDisplayMessage, isRequestError, isServerRequestError} from './lib/errorUtils';
-export {consumeRequestError, enqueueRequestError, resetRequestErrorQueue, useNextRequestError} from './model/requestErrorQueue';
+export {
+  clearGlobalRequestError,
+  resetGlobalRequestError,
+  updateGlobalRequestError,
+  useGlobalRequestError,
+  useUpdateGlobalRequestError,
+} from './model/globalRequestErrorStore';
 export type {
   CreateRequestErrorProps,
   CreateRequestInitProps,
@@ -20,4 +26,3 @@ export type {
   RequestResponseOption,
   WithErrorHandling,
 } from './lib/requestType';
-export type {QueuedRequestError} from './model/requestErrorQueue';

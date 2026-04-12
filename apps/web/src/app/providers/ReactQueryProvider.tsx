@@ -1,7 +1,7 @@
 import type {PropsWithChildren} from 'react';
 import {useState} from 'react';
 import {MutationCache, QueryCache, QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {enqueueRequestError, RequestGetError} from '@/shared/request';
+import {RequestGetError, updateGlobalRequestError} from '@/shared/request';
 
 function shouldThrowToErrorBoundary(error: unknown) {
   return error instanceof RequestGetError && error.errorHandlingType === 'errorBoundary';
@@ -29,7 +29,7 @@ function ReactQueryProvider({children}: PropsWithChildren) {
         },
         mutationCache: new MutationCache({
           onError: error => {
-            enqueueRequestError(normalizeError(error));
+            updateGlobalRequestError(normalizeError(error));
           },
         }),
         queryCache: new QueryCache({
@@ -38,7 +38,7 @@ function ReactQueryProvider({children}: PropsWithChildren) {
               return;
             }
 
-            enqueueRequestError(normalizeError(error));
+            updateGlobalRequestError(normalizeError(error));
           },
         }),
       }),

@@ -4,18 +4,18 @@ import {useEffect, type ReactNode} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {ReactQueryProvider} from './ReactQueryProvider';
-import {RequestError, RequestGetError, resetRequestErrorQueue, useNextRequestError} from '@/shared/request';
+import {RequestError, RequestGetError, resetGlobalRequestError, useGlobalRequestError} from '@/shared/request';
 
-function QueueObserver() {
-  const queuedError = useNextRequestError();
+function ErrorObserver() {
+  const error = useGlobalRequestError();
 
-  return <div>{queuedError ? queuedError.error.message : 'empty'}</div>;
+  return <div>{error ? error.message : 'empty'}</div>;
 }
 
 function renderWithProvider(children: ReactNode) {
   return render(
     <ReactQueryProvider>
-      <QueueObserver />
+      <ErrorObserver />
       {children}
     </ReactQueryProvider>,
   );
@@ -89,10 +89,10 @@ describe('ReactQueryProvider', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    resetRequestErrorQueue();
+    resetGlobalRequestError();
   });
 
-  it('errorBoundary GET 에러는 queue에 넣지 않고 boundary로 throw한다', async () => {
+  it('errorBoundary GET 에러는 global error를 건드리지 않고 boundary로 throw한다', async () => {
     renderWithProvider(
       <ErrorBoundary fallbackRender={() => <div>boundary fallback</div>}>
         <BoundaryQueryHarness />
@@ -103,7 +103,7 @@ describe('ReactQueryProvider', () => {
     expect(screen.getByText('empty')).toBeInTheDocument();
   });
 
-  it('toast GET 에러는 boundary로 throw하지 않고 queue에 넣는다', async () => {
+  it('toast GET 에러는 boundary로 throw하지 않고 마지막 global error로 기록한다', async () => {
     renderWithProvider(<ToastQueryHarness />);
 
     expect(await screen.findByText('toast query error')).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe('ReactQueryProvider', () => {
     });
   });
 
-  it('mutation 에러를 queue에 넣는다', async () => {
+  it('mutation 에러를 마지막 global error로 기록한다', async () => {
     renderWithProvider(<MutationHarness />);
 
     await waitFor(() => {

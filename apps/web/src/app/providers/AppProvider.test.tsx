@@ -1,12 +1,12 @@
 import {act, render, screen} from '@testing-library/react';
 import {afterEach, describe, expect, it} from 'vitest';
 import {AppProvider} from './AppProvider';
-import {enqueueRequestError, RequestError, resetRequestErrorQueue} from '@/shared/request';
+import {RequestError, resetGlobalRequestError, updateGlobalRequestError} from '@/shared/request';
 import {toast} from '@/shared/ui';
 
 describe('AppProvider', () => {
   afterEach(() => {
-    resetRequestErrorQueue();
+    resetGlobalRequestError();
     toast.dismiss();
   });
 
@@ -18,7 +18,7 @@ describe('AppProvider', () => {
     );
 
     act(() => {
-      enqueueRequestError(
+      updateGlobalRequestError(
         new RequestError({
           endpoint: '/api/libraries',
           message: '대출 가능 여부를 다시 확인해주세요.',
@@ -43,7 +43,7 @@ describe('AppProvider', () => {
     );
 
     act(() => {
-      enqueueRequestError(new Error('unexpected'));
+      updateGlobalRequestError(new Error('unexpected'));
     });
 
     expect(await screen.findByRole('heading', {name: '화면을 불러오지 못했어요'})).toBeInTheDocument();
