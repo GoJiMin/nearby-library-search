@@ -1,16 +1,16 @@
 import {act, render, screen} from '@testing-library/react';
 import {afterEach, describe, expect, it} from 'vitest';
 import {AppProvider} from './AppProvider';
-import {RequestError, resetGlobalRequestError, updateGlobalRequestError} from '@/shared/request';
+import {RequestError, useGlobalRequestErrorStore} from '@/shared/request';
 import {toast} from '@/shared/ui';
 
 describe('AppProvider', () => {
   afterEach(() => {
-    resetGlobalRequestError();
+    useGlobalRequestErrorStore.getState().reset();
     toast.dismiss();
   });
 
-  it('request error queue의 에러를 toast로 표시한다', async () => {
+  it('전역 request error를 toast로 표시한다', async () => {
     render(
       <AppProvider>
         <div>app content</div>
@@ -18,7 +18,7 @@ describe('AppProvider', () => {
     );
 
     act(() => {
-      updateGlobalRequestError(
+      useGlobalRequestErrorStore.getState().updateError(
         new RequestError({
           endpoint: '/api/libraries',
           message: '대출 가능 여부를 다시 확인해주세요.',
@@ -35,7 +35,7 @@ describe('AppProvider', () => {
     expect(screen.getByText('app content')).toBeInTheDocument();
   });
 
-  it('unknown error queue를 global unexpected boundary로 보낸다', async () => {
+  it('unknown error를 global unexpected boundary로 보낸다', async () => {
     render(
       <AppProvider>
         <div>app content</div>
@@ -43,7 +43,7 @@ describe('AppProvider', () => {
     );
 
     act(() => {
-      updateGlobalRequestError(new Error('unexpected'));
+      useGlobalRequestErrorStore.getState().updateError(new Error('unexpected'));
     });
 
     expect(await screen.findByRole('heading', {name: '화면을 불러오지 못했어요'})).toBeInTheDocument();

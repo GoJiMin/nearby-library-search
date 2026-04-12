@@ -4,7 +4,7 @@ import {useEffect, type ReactNode} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {ReactQueryProvider} from './ReactQueryProvider';
-import {RequestError, RequestGetError, resetGlobalRequestError, useGlobalRequestError} from '@/shared/request';
+import {RequestError, RequestGetError, useGlobalRequestError, useGlobalRequestErrorStore} from '@/shared/request';
 
 function ErrorObserver() {
   const error = useGlobalRequestError();
@@ -89,7 +89,7 @@ describe('ReactQueryProvider', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    resetGlobalRequestError();
+    useGlobalRequestErrorStore.getState().reset();
   });
 
   it('errorBoundary GET 에러는 global error를 건드리지 않고 boundary로 throw한다', async () => {

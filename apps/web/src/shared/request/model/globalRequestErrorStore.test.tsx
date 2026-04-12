@@ -1,12 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {afterEach, describe, expect, it} from 'vitest';
-import {
-  clearGlobalRequestError,
-  resetGlobalRequestError,
-  updateGlobalRequestError,
-  useGlobalRequestError,
-  useUpdateGlobalRequestError,
-} from '../index';
+import {useGlobalRequestError, useGlobalRequestErrorStore, useResetGlobalRequestError, useUpdateGlobalRequestError} from '../index';
 
 function ErrorHarness() {
   const error = useGlobalRequestError();
@@ -24,25 +18,41 @@ function UpdateHarness({error}: {error: Error | null}) {
   );
 }
 
+function ResetHarness() {
+  const reset = useResetGlobalRequestError();
+
+  return (
+    <button onClick={() => reset()} type="button">
+      reset
+    </button>
+  );
+}
+
 describe('globalRequestErrorStore', () => {
   afterEach(() => {
-    resetGlobalRequestError();
+    useGlobalRequestErrorStore.getState().reset();
   });
 
   it('마지막으로 업데이트된 에러를 노출한다', () => {
-    updateGlobalRequestError(new Error('first'));
-    updateGlobalRequestError(new Error('second'));
+    useGlobalRequestErrorStore.getState().updateError(new Error('first'));
+    useGlobalRequestErrorStore.getState().updateError(new Error('second'));
 
     render(<ErrorHarness />);
 
     expect(screen.getByText('second')).toBeInTheDocument();
   });
 
-  it('clear 이후 에러를 비운다', () => {
-    updateGlobalRequestError(new Error('first'));
-    clearGlobalRequestError();
+  it('reset action으로 에러를 비운다', () => {
+    render(
+      <>
+        <ErrorHarness />
+        <UpdateHarness error={new Error('first')} />
+        <ResetHarness />
+      </>,
+    );
 
-    render(<ErrorHarness />);
+    screen.getByRole('button', {name: 'update'}).click();
+    screen.getByRole('button', {name: 'reset'}).click();
 
     expect(screen.getByText('empty')).toBeInTheDocument();
   });

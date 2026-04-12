@@ -1,7 +1,7 @@
 import type {PropsWithChildren} from 'react';
 import {useState} from 'react';
 import {MutationCache, QueryCache, QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {RequestGetError, updateGlobalRequestError} from '@/shared/request';
+import {RequestGetError, useUpdateGlobalRequestError} from '@/shared/request';
 
 function shouldThrowToErrorBoundary(error: unknown) {
   return error instanceof RequestGetError && error.errorHandlingType === 'errorBoundary';
@@ -16,6 +16,8 @@ function normalizeError(error: unknown) {
 }
 
 function ReactQueryProvider({children}: PropsWithChildren) {
+  const updateGlobalRequestError = useUpdateGlobalRequestError();
+
   const [queryClient] = useState(
     () =>
       new QueryClient({

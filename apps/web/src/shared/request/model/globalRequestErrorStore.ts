@@ -1,39 +1,28 @@
 import {create} from 'zustand';
 
-type GlobalRequestErrorState = {
+type GlobalRequestErrorStore = {
   error: Error | null;
+  reset: () => void;
   updateError: (error: Error | null) => void;
 };
 
-const globalRequestErrorStore = create<GlobalRequestErrorState>(set => ({
+const useGlobalRequestErrorStore = create<GlobalRequestErrorStore>(set => ({
   error: null,
+  reset: () => set({error: null}),
   updateError: error => set({error}),
 }));
 
-function updateGlobalRequestError(error: Error | null) {
-  globalRequestErrorStore.getState().updateError(error);
-}
-
-function clearGlobalRequestError() {
-  updateGlobalRequestError(null);
-}
-
-function resetGlobalRequestError() {
-  globalRequestErrorStore.setState({error: null});
-}
-
 function useGlobalRequestError() {
-  return globalRequestErrorStore(state => state.error);
+  return useGlobalRequestErrorStore(state => state.error);
 }
 
 function useUpdateGlobalRequestError() {
-  return globalRequestErrorStore(state => state.updateError);
+  return useGlobalRequestErrorStore(state => state.updateError);
 }
 
-export {
-  clearGlobalRequestError,
-  resetGlobalRequestError,
-  updateGlobalRequestError,
-  useGlobalRequestError,
-  useUpdateGlobalRequestError,
-};
+function useResetGlobalRequestError() {
+  return useGlobalRequestErrorStore(state => state.reset);
+}
+
+export {useGlobalRequestError, useGlobalRequestErrorStore, useResetGlobalRequestError, useUpdateGlobalRequestError};
+export type {GlobalRequestErrorStore};

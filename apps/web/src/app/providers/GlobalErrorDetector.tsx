@@ -1,10 +1,11 @@
 import {useEffect} from 'react';
 import {useErrorBoundary} from 'react-error-boundary';
-import {clearGlobalRequestError, RequestError, useGlobalRequestError} from '@/shared/request';
+import {RequestError, useGlobalRequestError, useResetGlobalRequestError} from '@/shared/request';
 import {toast} from '@/shared/ui';
 
 function GlobalErrorDetector() {
   const error = useGlobalRequestError();
+  const resetGlobalRequestError = useResetGlobalRequestError();
   const {showBoundary} = useErrorBoundary();
 
   useEffect(() => {
@@ -17,13 +18,13 @@ function GlobalErrorDetector() {
         description: error.message,
         title: '요청을 완료하지 못했어요',
       });
-      clearGlobalRequestError();
+      resetGlobalRequestError();
       return;
     }
 
     showBoundary(error);
-    clearGlobalRequestError();
-  }, [error, showBoundary]);
+    resetGlobalRequestError();
+  }, [error, resetGlobalRequestError, showBoundary]);
 
   return null;
 }
