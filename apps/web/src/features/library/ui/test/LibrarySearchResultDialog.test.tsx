@@ -5,6 +5,7 @@ import {AppProvider} from '@/app/providers';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
 import {KakaoMapSdkLoadError} from '@/shared/kakao-map';
+import {RequestGetError} from '@/shared/request';
 import {LibrarySearchResultDetails} from '../common/LibrarySearchResultDetails';
 
 async function tabUntilFocused(user: ReturnType<typeof userEvent.setup>, target: HTMLElement, maxSteps = 32) {
@@ -395,6 +396,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('둘째 주 월요일')).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
     expect(within(detailPanel).getByText('02-1234-5678')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('대출 가능 여부는 전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
   it('모바일 branch에서는 상세 정보, 리스트, 페이지네이션 순서로 조합하고 세로 스크롤을 가진다', async () => {
@@ -1019,6 +1021,35 @@ describe('LibrarySearchResultDialog', () => {
     expect(successButton).toBeDisabled();
   });
 
+  it('desktop availability CTA는 실패 시 재시도 문구와 toast 안내를 표시한다', async () => {
+    const user = userEvent.setup();
+
+    mockRequestGet.mockRejectedValueOnce(
+      new RequestGetError({
+        endpoint: '/api/libraries/LIB0001/books/9788954682155/availability',
+        errorHandlingType: 'toast',
+        message: '대출 가능 여부를 다시 확인해주세요.',
+        method: 'GET',
+        name: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+        requestBody: null,
+        status: 502,
+      }),
+    );
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    const retryButton = await screen.findByRole('button', {name: '재시도'});
+
+    expect(retryButton).toBeEnabled();
+    expect(await screen.findByText('요청을 완료하지 못했어요')).toBeInTheDocument();
+    expect(screen.getByText('대출 가능 여부를 다시 확인해주세요.')).toBeInTheDocument();
+    expect(screen.getByText('대출 가능 여부는 전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
+  });
+
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
     render(<LibrarySearchResultDetails library={null} />);
 
@@ -1039,6 +1070,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByLabelText('검색 결과 목록 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('도서관 지도 패널')).toBeInTheDocument();
     expect(screen.getByLabelText('선택된 도서관 정보 패널')).toBeInTheDocument();
+    expect(screen.getByText('대출 가능 여부는 전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
   it('모바일에서 조회가 suspend되면 실제 모바일 순서와 같은 details loading shell을 유지한다', async () => {
