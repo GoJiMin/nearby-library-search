@@ -924,6 +924,26 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
+  it('desktop availability CTA는 pending 동안 spinner와 disabled 상태를 표시한다', async () => {
+    const user = userEvent.setup();
+
+    mockRequestGet.mockImplementationOnce(() => new Promise(() => {}));
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    const availabilityButton = await screen.findByRole('button', {name: '대출 가능 여부 조회'});
+
+    await user.click(availabilityButton);
+
+    await waitFor(() => {
+      expect(availabilityButton).toBeDisabled();
+      expect(availabilityButton).toHaveAttribute('aria-busy', 'true');
+    });
+    expect(availabilityButton.querySelector('svg.animate-spin')).not.toBeNull();
+  });
+
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
     render(<LibrarySearchResultDetails library={null} />);
 
