@@ -26,4 +26,3 @@ export {Text} from './text';
 export type {TextProps} from './text';
 export {toast} from './toast';
 export type {ToastContent} from './toast';
-export {AppToaster} from './toaster';
