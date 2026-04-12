@@ -1053,6 +1053,140 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
+  it('mobile availability CTA도 선택된 도서관 기준으로 availability query를 요청한다', async () => {
+    const user = userEvent.setup();
+
+    mockMatchMedia(true);
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+    const availabilityButton = within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'});
+
+    await user.click(availabilityButton);
+
+    await waitFor(() => {
+      expect(mockRequestGet).toHaveBeenCalledWith({
+        endpoint: '/api/libraries/LIB0001/books/9788954682155/availability',
+        errorHandlingType: 'toast',
+      });
+    });
+    expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
+  });
+
+  it('mobile availability CTA는 pending 동안 spinner와 non-interactive 상태를 표시한다', async () => {
+    const user = userEvent.setup();
+
+    mockMatchMedia(true);
+    mockRequestGet.mockImplementationOnce(() => new Promise(() => {}));
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+    const availabilityButton = within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'});
+
+    await user.click(availabilityButton);
+
+    await waitFor(() => {
+      expect(availabilityButton).toBeDisabled();
+      expect(availabilityButton).toHaveAttribute('aria-busy', 'true');
+    });
+    expect(availabilityButton.querySelector('svg.animate-spin')).not.toBeNull();
+  });
+
+  it('mobile availability CTA는 success 결과를 desktop과 같은 문구로 표시한다', async () => {
+    const user = userEvent.setup();
+
+    mockMatchMedia(true);
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    const successButton = await screen.findByRole('button', {name: '대출이 가능해요'});
+
+    expect(successButton).toBeEnabled();
+    expect(successButton).toHaveClass('bg-transparent', 'text-accent');
+  });
+
+  it('mobile availability CTA는 unavailable 결과를 desktop과 같은 문구로 표시한다', async () => {
+    const user = userEvent.setup();
+
+    mockMatchMedia(true);
+    mockRequestGet.mockResolvedValueOnce(
+      createMockLibraryAvailabilityResponse({
+        hasBook: 'Y',
+        libraryCode: 'LIB0002',
+        loanAvailable: 'N',
+      }),
+    );
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0002',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+    const unavailableButton = await screen.findByRole('button', {name: '대출이 불가능해요'});
+
+    expect(unavailableButton).toBeEnabled();
+    expect(unavailableButton).toHaveClass('bg-transparent', 'text-accent');
+  });
+
+  it('mobile availability CTA는 not-owned 결과를 desktop과 같은 문구로 표시한다', async () => {
+    const user = userEvent.setup();
+
+    mockRequestGet.mockResolvedValueOnce(
+      createMockLibraryAvailabilityResponse({
+        hasBook: 'N',
+        libraryCode: 'LIB0001',
+        loanAvailable: 'N',
+      }),
+    );
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+    const notOwnedButton = await screen.findByRole('button', {name: '소장하지 않아요'});
+
+    expect(notOwnedButton).toBeEnabled();
+    expect(notOwnedButton).toHaveClass('bg-transparent', 'text-accent');
+  });
+
+  it('mobile availability CTA는 실패 시 재시도와 toast 안내를 표시한다', async () => {
+    const user = userEvent.setup();
+
+    mockMatchMedia(true);
+    mockRequestGet.mockRejectedValueOnce(
+      new RequestGetError({
+        endpoint: '/api/libraries/LIB0001/books/9788954682155/availability',
+        errorHandlingType: 'toast',
+        message: '대출 가능 여부를 다시 확인해주세요.',
+        method: 'GET',
+        name: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+        requestBody: null,
+        status: 502,
+      }),
+    );
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    const retryButton = await screen.findByRole('button', {name: '재시도'});
+
+    expect(retryButton).toBeEnabled();
+    expect(await screen.findByText('요청을 완료하지 못했어요')).toBeInTheDocument();
+    expect(screen.getByText('대출 가능 여부를 다시 확인해주세요.')).toBeInTheDocument();
+  });
+
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
     render(<LibrarySearchResultDetails library={null} />);
 
