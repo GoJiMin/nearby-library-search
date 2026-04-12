@@ -476,6 +476,11 @@ describe('app router integration', () => {
     expect(
       within(detailDialog).getByText('재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.'),
     ).toBeInTheDocument();
+
+    const introductionHeading = within(detailDialog).getByText('책 소개');
+    const publicationHeading = within(detailDialog).getByText('출판 정보');
+
+    expect(introductionHeading.compareDocumentPosition(publicationHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('상세 정보에 없는 항목은 보이지 않는다', async () => {

@@ -47,7 +47,16 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             </Text>
           </section>
 
-          <section className={book.description ? 'border-line border-b py-6 sm:py-8' : 'py-6 sm:py-8'}>
+          {book.description && (
+            <section className="border-line space-y-2 border-b py-6 sm:py-8">
+              <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">책 소개</p>
+              <Text size="sm" tone="default">
+                {book.description}
+              </Text>
+            </section>
+          )}
+
+          <section className="py-6 sm:py-8">
             <dl className="grid gap-4 sm:grid-cols-2">
               {publicationLabel && (
                 <div className="space-y-1">
@@ -89,15 +98,6 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
               )}
             </dl>
           </section>
-
-          {book.description && (
-            <section className="space-y-2 py-6 sm:py-8">
-              <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">책 소개</p>
-              <Text size="sm" tone="default">
-                {book.description}
-              </Text>
-            </section>
-          )}
         </div>
       </div>
     </div>

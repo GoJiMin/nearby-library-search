@@ -23,6 +23,13 @@ function BookDetailDialogLoadingContent() {
             <Skeleton className="h-5 w-3/5 rounded-full" />
           </section>
 
+          <section aria-hidden="true" className="border-line flex flex-col gap-3 border-b py-6 sm:py-8">
+            <Skeleton className="h-4 w-16 rounded-full" />
+            <Skeleton className="h-5 w-full rounded-full" />
+            <Skeleton className="h-5 w-11/12 rounded-full" />
+            <Skeleton className="h-5 w-4/5 rounded-full" />
+          </section>
+
           <section aria-hidden="true" className="border-line flex flex-col gap-5 border-b py-6 sm:py-8">
             <div className="grid gap-4 sm:grid-cols-2">
               {bookDetailMetaFieldWidths.map(widthClassName => (
