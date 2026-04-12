@@ -30,8 +30,8 @@ function LibrarySearchResultAvailabilityAction({
   const isResultStatus =
     status === 'success-available' || status === 'success-unavailable' || status === 'success-not-owned';
   const buttonClassName = isResultStatus
-    ? 'w-full rounded-2xl border border-accent/30 bg-transparent text-accent hover:bg-transparent hover:text-accent pointer-events-none'
-    : 'w-full rounded-2xl';
+    ? 'w-full rounded-2xl bg-transparent text-accent ring-1 ring-accent/30 ring-inset hover:bg-transparent hover:text-accent pointer-events-none'
+    : 'w-full rounded-2xl ring-1 ring-transparent ring-inset';
 
   return (
     <div className="grid gap-2">
