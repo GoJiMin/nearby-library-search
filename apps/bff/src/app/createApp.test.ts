@@ -508,6 +508,74 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('개발용 fixture 모드에서 대출 불가 시나리오를 외부 호출 없이 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0002/books/9791192389479/availability',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      hasBook: 'Y',
+      isbn13: '9791192389479',
+      libraryCode: 'LIB0002',
+      loanAvailable: 'N',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('개발용 fixture 모드에서 에러 시나리오를 외부 호출 없이 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0003/books/9791192389479/availability',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('개발용 fixture 모드에서 미소장 시나리오를 외부 호출 없이 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0004/books/9791192389479/availability',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      hasBook: 'N',
+      isbn13: '9791192389479',
+      libraryCode: 'LIB0004',
+      loanAvailable: 'N',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
   it('잘못된 isbn13이면 외부 호출 없이 400 availability 에러를 반환한다', async () => {
     const {createApp} = await import('./createApp.js');
     const app = createApp();

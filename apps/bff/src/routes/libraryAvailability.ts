@@ -3,7 +3,7 @@ import type {FastifyPluginAsync} from 'fastify';
 import {developmentConfig} from '../config/env.js';
 import {parseLibraryAvailabilityParams} from './libraryAvailabilityParams.js';
 import {normalizeLibraryAvailabilityResponse} from './libraryAvailabilityResponse.js';
-import {createLibraryAvailabilityFixtureResponse} from './libraryAvailabilityFixture.js';
+import {resolveLibraryAvailabilityFixtureResult} from './libraryAvailabilityFixture.js';
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import {createRetryableUpstreamRequestError, toLibraryApiErrorResponse} from '../utils/error.js';
 
@@ -60,7 +60,15 @@ export const libraryAvailabilityRoute: FastifyPluginAsync = async app => {
     }
 
     if (developmentConfig.useDevFixtures) {
-      return createLibraryAvailabilityFixtureResponse(parsedParams.value);
+      const fixtureResult = resolveLibraryAvailabilityFixtureResult(parsedParams.value);
+
+      if (!fixtureResult.ok) {
+        reply.status(fixtureResult.error.status);
+
+        return fixtureResult.error;
+      }
+
+      return fixtureResult.value;
     }
 
     const libraryAvailabilityPayload = await fetchLibraryAvailabilityPayload(
