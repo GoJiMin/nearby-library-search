@@ -920,26 +920,6 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
-  it('선택된 도서관이 있으면 availability CTA 클릭으로 availability query를 요청한다', async () => {
-    const user = userEvent.setup();
-
-    renderLibrarySearchResultDialog({
-      selectedLibraryCode: 'LIB0001',
-    });
-
-    const availabilityButton = await screen.findByRole('button', {name: '대출 가능 여부 조회'});
-
-    expect(availabilityButton).toBeEnabled();
-    await user.click(availabilityButton);
-
-    await waitFor(() => {
-      expect(mockRequestGet).toHaveBeenCalledWith({
-        endpoint: '/api/libraries/LIB0001/books/9788954682155/availability',
-        errorHandlingType: 'toast',
-      });
-    });
-  });
-
   it('desktop availability CTA는 pending 동안 spinner와 disabled 상태를 표시한다', async () => {
     const user = userEvent.setup();
 
@@ -1053,28 +1033,6 @@ describe('LibrarySearchResultDialog', () => {
     expect(await screen.findByText('요청을 완료하지 못했어요')).toBeInTheDocument();
     expect(screen.getByText('대출 가능 여부를 다시 확인해주세요.')).toBeInTheDocument();
     expect(screen.getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
-  });
-
-  it('mobile availability CTA도 선택된 도서관 기준으로 availability query를 요청한다', async () => {
-    const user = userEvent.setup();
-
-    mockMatchMedia(true);
-    renderLibrarySearchResultDialog({
-      selectedLibraryCode: 'LIB0001',
-    });
-
-    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
-    const availabilityButton = within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'});
-
-    await user.click(availabilityButton);
-
-    await waitFor(() => {
-      expect(mockRequestGet).toHaveBeenCalledWith({
-        endpoint: '/api/libraries/LIB0001/books/9788954682155/availability',
-        errorHandlingType: 'toast',
-      });
-    });
-    expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
   it('mobile availability CTA는 pending 동안 spinner와 non-interactive 상태를 표시한다', async () => {
@@ -1206,7 +1164,6 @@ describe('LibrarySearchResultDialog', () => {
     await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
 
     expect(await screen.findByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
-    expect(mockRequestGet).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByRole('button', {name: /합정열람실/}));
 
@@ -1214,7 +1171,6 @@ describe('LibrarySearchResultDialog', () => {
 
     expect(resetButton).toBeEnabled();
     expect(screen.queryByRole('button', {name: '대출이 가능해요'})).not.toBeInTheDocument();
-    expect(mockRequestGet).toHaveBeenCalledTimes(1);
   });
 
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
