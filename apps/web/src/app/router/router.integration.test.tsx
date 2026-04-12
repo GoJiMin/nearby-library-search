@@ -513,6 +513,8 @@ describe('app router integration', () => {
 
     const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
 
+    expect(within(detailDialog).getByText('가장 많이 읽는 연령대는 20대예요.')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('연령별 대출 430건으로 가장 높아요.')).toBeInTheDocument();
     expect(within(detailDialog).getByText('총 대출 1,240건')).toBeInTheDocument();
     expect(within(detailDialog).getByText('대출 순위 1위')).toBeInTheDocument();
     expect(within(detailDialog).getByText('20대 · 430건')).toBeInTheDocument();
@@ -553,6 +555,7 @@ describe('app router integration', () => {
     expect(within(detailDialog).queryByText('책 소개')).not.toBeInTheDocument();
     expect(within(detailDialog).queryByRole('img', {name: '파친코 표지 이미지'})).not.toBeInTheDocument();
     expect(within(detailDialog).getByText('대출 정보가 없어요.')).toBeInTheDocument();
+    expect(within(detailDialog).queryByText(/가장 많이 읽는 연령대는/)).not.toBeInTheDocument();
     expect(within(detailDialog).queryByText('총 대출')).not.toBeInTheDocument();
     expect(within(detailDialog).queryByText(/대 · \d+건/)).not.toBeInTheDocument();
   });

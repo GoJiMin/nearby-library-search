@@ -10,6 +10,32 @@ type BookDetailDialogResolvedContentProps = {
 
 const detailSectionLabelClassName = 'text-text-muted text-sm leading-5 font-semibold tracking-[0.12em] uppercase';
 
+function resolveMostPopularAgeGroup(
+  byAge: Array<{
+    loanCount: number | null;
+    name: string;
+    rank: number | null;
+  }>,
+) {
+  const highestLoanCountAgeGroup = byAge.reduce<typeof byAge[number] | null>((currentHighest, currentItem) => {
+    if (currentItem.loanCount == null) {
+      return currentHighest;
+    }
+
+    if (currentHighest == null || currentHighest.loanCount == null || currentItem.loanCount > currentHighest.loanCount) {
+      return currentItem;
+    }
+
+    return currentHighest;
+  }, null);
+
+  if (highestLoanCountAgeGroup != null) {
+    return highestLoanCountAgeGroup;
+  }
+
+  return byAge.find(ageStat => ageStat.rank === 1) ?? null;
+}
+
 function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedContentProps) {
   const {book, loanInfo} = useGetBookDetail(isbn13);
 
@@ -28,6 +54,11 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
   const hasLoanAgeStats = loanInfo.byAge.length > 0;
   const totalLoanCountLabel = hasLoanTotal ? `총 대출 ${totalLoanCount.toLocaleString('ko-KR')}건` : null;
   const totalLoanRankLabel = totalLoanInfo?.rank != null ? `대출 순위 ${totalLoanInfo.rank.toLocaleString('ko-KR')}위` : null;
+  const mostPopularAgeGroup = hasLoanAgeStats ? resolveMostPopularAgeGroup(loanInfo.byAge) : null;
+  const mostPopularAgeLoanCountLabel =
+    mostPopularAgeGroup?.loanCount != null
+      ? `연령별 대출 ${mostPopularAgeGroup.loanCount.toLocaleString('ko-KR')}건으로 가장 높아요.`
+      : null;
 
   return (
     <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
@@ -107,6 +138,15 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             <p className={detailSectionLabelClassName}>대출 정보</p>
             {hasLoanTotal || hasLoanAgeStats ? (
               <div className="space-y-4">
+                {mostPopularAgeGroup && (
+                  <div className="space-y-1">
+                    <Heading as="h3" size="sm">
+                      {`가장 많이 읽는 연령대는 ${mostPopularAgeGroup.name}예요.`}
+                    </Heading>
+                    {mostPopularAgeLoanCountLabel && <Text size="sm">{mostPopularAgeLoanCountLabel}</Text>}
+                  </div>
+                )}
+
                 {hasLoanTotal && (
                   <div className="space-y-1">
                     <Heading as="h3" size="sm">

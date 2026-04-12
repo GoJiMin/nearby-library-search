@@ -45,6 +45,10 @@ function BookDetailDialogLoadingContent() {
           <section aria-hidden="true" className="flex flex-col gap-4">
             <Skeleton className="h-5 w-20 rounded-full" />
             <div className="space-y-2">
+              <Skeleton className="h-7 w-52 rounded-full" />
+              <Skeleton className="h-5 w-44 rounded-full" />
+            </div>
+            <div className="space-y-2">
               <Skeleton className="h-7 w-36 rounded-full" />
               <Skeleton className="h-5 w-24 rounded-full" />
             </div>
