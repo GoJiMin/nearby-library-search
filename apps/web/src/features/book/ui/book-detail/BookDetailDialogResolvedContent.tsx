@@ -2,7 +2,6 @@ import type {Isbn13} from '@nearby-library-search/contracts';
 import {BookOpen, X} from 'lucide-react';
 import {useGetBookDetail} from '@/entities/book';
 import {DialogClose, DialogContent, DialogHeader, DialogTitle, Heading, LucideIcon, Text} from '@/shared/ui';
-import {BookDetailDialogLoadingContent} from './BookDetailDialogLoadingContent';
 
 type BookDetailDialogResolvedContentProps = {
   isbn13: Isbn13;
@@ -30,7 +29,31 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
   const {book} = useGetBookDetail(isbn13);
 
   if (book == null) {
-    return <BookDetailDialogLoadingContent />;
+    return (
+      <DialogContent
+        aria-describedby={undefined}
+        className="h-[min(calc(100vh-32px),760px)] w-[min(calc(100vw-32px),980px)] gap-0 overflow-hidden p-0 sm:p-0"
+        showCloseButton={false}
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>도서 상세 정보</DialogTitle>
+        </DialogHeader>
+        <DialogClose asChild>
+          <button
+            aria-label="닫기"
+            className="shadow-card bg-surface-strong text-text-muted hover:text-text focus-visible:ring-accent-soft absolute top-4 right-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
+            type="button"
+          >
+            <LucideIcon icon={X} strokeWidth={2.2} />
+          </button>
+        </DialogClose>
+        <div className="flex h-full items-center px-6 py-8 sm:px-8 sm:py-10">
+          <Heading as="h2" size="md">
+            도서 상세 정보를 찾지 못했어요.
+          </Heading>
+        </div>
+      </DialogContent>
+    );
   }
 
   const publicationLabel = createPublicationLabel(book);

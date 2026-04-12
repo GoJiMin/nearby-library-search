@@ -471,6 +471,26 @@ describe('app router integration', () => {
     expect(within(detailDialog).getByText('9788954682155')).toBeInTheDocument();
   });
 
+  it('상세 정보를 찾지 못하면 빈 상태 안내를 본다', async () => {
+    const user = userEvent.setup();
+
+    mockUseGetBookDetail.mockReturnValue({
+      book: null,
+      loanInfo: {
+        byAge: [],
+        total: null,
+      },
+    });
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+
+    const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
+
+    expect(within(detailDialog).getByRole('heading', {name: '도서 상세 정보를 찾지 못했어요.'})).toBeInTheDocument();
+  });
+
   it('다른 검색어로 다시 검색하면 열려 있던 도서 상세 창이 닫힌다', async () => {
     const {router} = renderRouter(['/books?title=파친코&page=1']);
 
