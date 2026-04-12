@@ -295,7 +295,7 @@ function createMockKakaoMaps() {
 }
 
 describe('app router integration', () => {
-  it('renders the home route with the app shell and search start feature', () => {
+  it('처음 열면 책 검색을 바로 시작할 수 있다', () => {
     renderRouter(['/']);
 
     expect(screen.getByRole('heading', {level: 1, name: /이 책,/})).toBeInTheDocument();
@@ -308,7 +308,7 @@ describe('app router integration', () => {
     expect(screen.queryByRole('link', {name: '메인으로'})).not.toBeInTheDocument();
   });
 
-  it('navigates from the home route to the book result route after search submit', async () => {
+  it('검색을 시작하면 도서 검색 결과 화면으로 이동한다', async () => {
     const user = userEvent.setup();
     const {router} = renderRouter(['/']);
 
@@ -321,7 +321,7 @@ describe('app router integration', () => {
     expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
   });
 
-  it('renders the book result route when the url has valid search params', () => {
+  it('검색 조건이 맞으면 도서 검색 결과 화면을 바로 볼 수 있다', () => {
     renderRouter(['/books?author=한강&page=2']);
 
     expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
@@ -332,7 +332,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('heading', {level: 1, name: '한강에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
   });
 
-  it('updates the result route search params and resets page to 1 when re-searching', async () => {
+  it('다시 검색하면 첫 페이지 결과로 이동한다', async () => {
     const user = userEvent.setup();
     const {router} = renderRouter(['/books?title=파친코&page=2']);
 
@@ -347,7 +347,7 @@ describe('app router integration', () => {
     expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
   });
 
-  it('updates only the page search param when clicking pagination links and supports browser back', async () => {
+  it('페이지를 옮겨도 검색어는 유지되고 뒤로 가기로 돌아올 수 있다', async () => {
     const user = userEvent.setup();
     const {router} = renderRouter(['/books?title=파친코&page=2']);
 
@@ -368,7 +368,7 @@ describe('app router integration', () => {
     ).toHaveAttribute('aria-current', 'page');
   });
 
-  it('moves forward and backward with previous/next pagination links while preserving the query', async () => {
+  it('이전 페이지와 다음 페이지로 이동해도 검색어는 유지된다', async () => {
     const user = userEvent.setup();
     const {router} = renderRouter(['/books?title=파친코&page=1']);
 
@@ -404,7 +404,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
-  it('restores the last confirmed region selection when reopening the dialog, even for a different book', async () => {
+  it('다른 책을 보더라도 마지막으로 고른 지역을 다시 이어서 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     mockUseGetSearchBooks.mockReturnValue({
@@ -486,7 +486,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('opens the library result dialog after confirming a region selection and closes it independently', async () => {
+  it('지역을 고르면 도서관 검색 결과 창을 열고 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -533,7 +533,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
-  it('도서관 결과 페이지네이션을 바꾸면 새 페이지 첫 항목이 기본 선택되고 detail panel도 함께 갱신된다', async () => {
+  it('도서관 결과 페이지를 바꾸면 새 페이지의 첫 도서관 정보가 바로 보인다', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -623,7 +623,7 @@ describe('app router integration', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('marker를 클릭하면 같은 도서관이 list active row와 detail panel에 반영된다', async () => {
+  it('지도에서 도서관을 누르면 목록과 선택한 도서관 정보가 함께 바뀐다', async () => {
     const user = userEvent.setup();
     const {kakaoMaps, triggerMarkerClickByCoordinates} = createMockKakaoMaps();
 
@@ -831,14 +831,14 @@ describe('app router integration', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('redirects the empty book result route to the home page', async () => {
+  it('검색어 없이 결과 화면 주소로 들어오면 홈으로 이동한다', async () => {
     renderRouter(['/books']);
 
     expect(await screen.findByRole('heading', {level: 1, name: /이 책,/})).toBeInTheDocument();
     expect(screen.getByRole('tablist', {name: '검색 기준 선택'})).toBeInTheDocument();
   });
 
-  it('renders an inline recovery state for invalid book result urls', () => {
+  it('잘못된 검색 결과 주소로 들어오면 다시 검색할 수 있는 안내를 보여준다', () => {
     renderRouter(['/books?title=&page=abc']);
 
     expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
@@ -846,7 +846,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('link', {name: '검색 다시 시작'})).toHaveAttribute('href', '/');
   });
 
-  it('renders the not found route for an unknown path', () => {
+  it('없는 주소로 들어오면 찾을 수 없다는 안내를 보여준다', () => {
     renderRouter(['/missing']);
 
     expect(screen.queryByRole('link', {name: '메인으로'})).not.toBeInTheDocument();

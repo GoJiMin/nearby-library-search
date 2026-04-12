@@ -69,7 +69,7 @@ function renderBookSearchResult(ui: ReactElement) {
 }
 
 describe('BookSearchResult', () => {
-  it('로딩 중에는 검색 바를 유지하고 결과 카드 형태의 스켈레톤 5개를 렌더링한다', async () => {
+  it('결과를 불러오는 동안에도 다시 검색할 수 있다', async () => {
     const pendingPromise = new Promise(() => {});
 
     mockUseGetSearchBooks.mockImplementation(() => {
@@ -96,7 +96,7 @@ describe('BookSearchResult', () => {
     expect(within(loadingList).getAllByRole('listitem')).toHaveLength(5);
   });
 
-  it('책 제목 검색 params로 결과 검색 바를 초기화한다', () => {
+  it('책 제목으로 검색한 결과를 다시 확인할 수 있다', () => {
     renderBookSearchResult(
       <BookSearchResult
         createPageHref={createPageHref}
@@ -117,7 +117,7 @@ describe('BookSearchResult', () => {
     expect(screen.queryByRole('heading', {name: '검색 결과'})).not.toBeInTheDocument();
   });
 
-  it('저자명 검색 params로 결과 검색 바를 초기화한다', () => {
+  it('저자명으로 검색한 결과를 다시 확인할 수 있다', () => {
     renderBookSearchResult(
       <BookSearchResult
         createPageHref={page => `/books?author=${encodeURIComponent('한강')}&page=${page}`}
@@ -133,7 +133,7 @@ describe('BookSearchResult', () => {
     expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
   });
 
-  it('결과 요약과 단일 컬럼 결과 리스트를 렌더링한다', () => {
+  it('검색한 책 목록과 요약을 함께 볼 수 있다', () => {
     renderBookSearchResult(
       <BookSearchResult
         createPageHref={createPageHref}
@@ -154,7 +154,7 @@ describe('BookSearchResult', () => {
     expect(screen.getByText('손원평')).toBeInTheDocument();
   });
 
-  it('카드 메타 정보 우선순위와 필드 숨김 규칙을 따른다', () => {
+  it('책마다 준비된 정보만 자연스럽게 보여준다', () => {
     renderBookSearchResult(
       <BookSearchResult
         createPageHref={createPageHref}
@@ -184,7 +184,7 @@ describe('BookSearchResult', () => {
     expect(within(thirdItem).getByText('총 대출 7건')).toBeInTheDocument();
   });
 
-  it('텍스트 액션 버튼을 메타 정보 아래에 렌더링하고 상세 보기 및 소장 도서관 찾기 동작을 연결한다', async () => {
+  it('책 상세 보기와 소장 도서관 찾기를 바로 시작할 수 있다', async () => {
     const user = userEvent.setup();
     const onOpenBookDetail = vi.fn();
 
@@ -222,7 +222,7 @@ describe('BookSearchResult', () => {
     });
   });
 
-  it('탭 전환 시 모드별 마지막 입력값을 따로 기억한다', async () => {
+  it('검색 기준을 바꿔도 입력한 내용을 다시 이어서 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     renderBookSearchResult(
@@ -251,7 +251,7 @@ describe('BookSearchResult', () => {
     expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
   });
 
-  it('재검색 제출 시 page를 1로 리셋한 canonical payload를 전달한다', async () => {
+  it('다시 검색하면 첫 페이지부터 결과를 본다', async () => {
     const user = userEvent.setup();
     const onSubmitSearch = vi.fn();
 
@@ -279,7 +279,7 @@ describe('BookSearchResult', () => {
     });
   });
 
-  it('검색 결과가 비어 있으면 0건 요약과 재검색 유도 텍스트를 표시한다', () => {
+  it('찾는 책이 없으면 다시 검색할 수 있는 안내를 보여준다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       items: [],
       totalCount: 0,
@@ -302,7 +302,7 @@ describe('BookSearchResult', () => {
     expect(screen.queryByRole('navigation', {name: '도서 검색 결과 페이지네이션'})).not.toBeInTheDocument();
   });
 
-  it('조회 에러가 나면 검색 바를 유지한 채 인라인 복구 UI와 다시 시도 버튼을 표시한다', async () => {
+  it('검색 결과를 불러오지 못하면 다시 시도할 수 있는 안내를 보여준다', async () => {
     mockUseGetSearchBooks.mockImplementation(() => {
       throw new RequestGetError({
         endpoint: '/api/books/search?title=파친코&page=1',
@@ -332,7 +332,7 @@ describe('BookSearchResult', () => {
     expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
   });
 
-  it('전체 페이지 수와 현재 페이지에 맞는 페이지네이션을 렌더링한다', () => {
+  it('검색 결과가 많으면 페이지를 이동할 수 있다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       ...mockBookSearchResponse,
       totalCount: 42,
@@ -358,7 +358,7 @@ describe('BookSearchResult', () => {
     expect(screen.getByRole('link', {name: '5페이지'})).toHaveAttribute('href', '/books?title=%ED%8C%8C%EC%B9%9C%EC%BD%94&page=5');
   });
 
-  it('총 페이지가 1개면 페이지네이션을 렌더링하지 않는다', () => {
+  it('검색 결과가 한 페이지면 페이지 이동을 보여주지 않는다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       ...mockBookSearchResponse,
       totalCount: 10,
@@ -378,7 +378,7 @@ describe('BookSearchResult', () => {
     expect(screen.queryByRole('navigation', {name: '도서 검색 결과 페이지네이션'})).not.toBeInTheDocument();
   });
 
-  it('첫 페이지에서는 이전 페이지가 비활성화되고 말줄임 하나와 앞쪽 숫자만 보인다', () => {
+  it('첫 페이지에서는 이전 페이지로 이동할 수 없다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       ...mockBookSearchResponse,
       totalCount: 100,
@@ -409,7 +409,7 @@ describe('BookSearchResult', () => {
     expect(within(pagination).getByRole('link', {name: '10페이지'})).toBeInTheDocument();
   });
 
-  it('마지막 페이지에서는 다음 페이지가 비활성화되고 말줄임 하나와 마지막 숫자만 보인다', () => {
+  it('마지막 페이지에서는 다음 페이지로 이동할 수 없다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       ...mockBookSearchResponse,
       totalCount: 100,
@@ -439,7 +439,7 @@ describe('BookSearchResult', () => {
     expect(within(pagination).getByText('10')).toHaveAttribute('aria-current', 'page');
   });
 
-  it('중간 페이지에서는 양쪽 말줄임과 현재 주변 숫자를 모두 표시한다', () => {
+  it('중간 페이지에서는 앞뒤 페이지를 함께 볼 수 있다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       ...mockBookSearchResponse,
       totalCount: 100,

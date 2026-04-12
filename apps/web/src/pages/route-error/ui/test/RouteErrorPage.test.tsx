@@ -43,7 +43,7 @@ function renderRouteErrorPage() {
 }
 
 describe('RouteErrorPage', () => {
-  it('renders the simple fallback state and navigates back to home', async () => {
+  it('화면을 불러오지 못하면 홈으로 돌아갈 수 있다', async () => {
     const user = userEvent.setup();
     const {router} = renderRouteErrorPage();
 

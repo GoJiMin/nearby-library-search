@@ -375,7 +375,7 @@ describe('LibrarySearchResultDialog', () => {
     vi.restoreAllMocks();
   });
 
-  it('조회 성공 시 실제 결과 개수 summary와 3영역 shell을 렌더링한다', async () => {
+  it('도서관을 찾으면 목록, 지도, 선택한 도서관 정보를 함께 볼 수 있다', async () => {
     renderLibrarySearchResultDialog();
 
     const dialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
@@ -399,7 +399,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
-  it('선택한 도서관에서 책을 확인하기 전 안내 문구를 볼 수 있다', async () => {
+  it('선택한 도서관에서 대출 여부를 확인하기 전 안내 문구를 볼 수 있다', async () => {
     renderLibrarySearchResultDialog();
 
     const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
@@ -408,7 +408,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
-  it('모바일 branch에서는 상세 정보, 리스트, 페이지네이션 순서로 조합하고 세로 스크롤을 가진다', async () => {
+  it('모바일에서는 선택한 도서관 정보부터 차례로 내려보며 확인할 수 있다', async () => {
     mockMatchMedia(true);
 
     renderLibrarySearchResultDialog();
@@ -429,7 +429,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(list.compareDocumentPosition(pagination) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
   });
 
-  it('모바일에서 지도를 사용할 수 있으면 상세 영역의 지도로 보기로 빠른 지도 dialog를 연다', async () => {
+  it('모바일에서는 선택한 도서관 위치를 바로 지도에서 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
@@ -457,7 +457,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(setLevel).toHaveBeenLastCalledWith(3);
   });
 
-  it('모바일 빠른 지도 dialog를 닫아도 바깥 결과 dialog는 유지된다', async () => {
+  it('모바일에서 지도를 닫아도 도서관 검색 결과는 그대로 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
@@ -481,7 +481,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByRole('dialog', {name: '도서관 검색 결과'})).toBeInTheDocument();
   });
 
-  it('totalPages가 2 이상이면 상태 기반 페이지네이션을 렌더링하고 현재 페이지를 표시한다', async () => {
+  it('도서관 결과가 많으면 현재 페이지와 이동할 페이지를 볼 수 있다', async () => {
     renderLibrarySearchResultDialog();
 
     const pagination = await screen.findByRole('navigation', {name: '도서관 검색 결과 페이지네이션'});
@@ -492,7 +492,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(pagination).getByRole('button', {name: '다음 페이지'})).not.toBeDisabled();
   });
 
-  it('페이지 버튼을 누르면 store의 현재 도서관 결과 페이지를 바꾼다', async () => {
+  it('도서관 결과 페이지를 바꿀 수 있다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog();
@@ -504,7 +504,7 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
-  it('페이지 전환 중에는 pagination을 유지하고 리스트와 우측 영역만 pending 상태로 바꾼다', async () => {
+  it('도서관 결과 페이지를 바꾸는 동안에도 페이지 이동은 계속 볼 수 있다', async () => {
     const user = userEvent.setup();
     const pendingPromise = new Promise<never>(() => {});
 
@@ -531,7 +531,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
   });
 
-  it('중간 페이지에서는 dialog 전용 압축 페이지네이션으로 첫 페이지 현재 페이지 마지막 페이지를 표시한다', async () => {
+  it('도서관 결과가 많으면 현재 위치와 처음, 마지막 페이지를 함께 볼 수 있다', async () => {
     mockUseGetSearchLibraries.mockReturnValue({
       ...mockLibrarySearchResponse,
       page: 5,
@@ -555,7 +555,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(pagination).queryByRole('button', {name: '6페이지'})).not.toBeInTheDocument();
   });
 
-  it('totalPages가 1이면 페이지네이션을 렌더링하지 않는다', async () => {
+  it('도서관 결과가 한 페이지면 페이지 이동을 보여주지 않는다', async () => {
     mockUseGetSearchLibraries.mockReturnValue({
       ...mockLibrarySearchResponse,
       totalCount: 2,
@@ -567,14 +567,14 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.queryByRole('navigation', {name: '도서관 검색 결과 페이지네이션'})).not.toBeInTheDocument();
   });
 
-  it('카카오 지도 설정이 없으면 panel 내부 unavailable UI를 렌더링하고 loader를 호출하지 않는다', async () => {
+  it('지도를 사용할 수 없으면 안내 문구를 보여준다', async () => {
     renderLibrarySearchResultDialog();
 
     expect(await screen.findByRole('heading', {name: '지도를 표시할 수 없어요'})).toBeInTheDocument();
     expect(mockLoadKakaoMapSdk).not.toHaveBeenCalled();
   });
 
-  it('SDK loader가 실패하면 panel 내부 unavailable UI로 fallback한다', async () => {
+  it('지도를 불러오지 못하면 안내 문구를 보여준다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     mockLoadKakaoMapSdk.mockRejectedValue(
@@ -587,7 +587,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByText('개발 진단: script-load-failed')).toBeInTheDocument();
   });
 
-  it('SDK가 준비되면 실제 Kakao map baseline을 만들고 relayout을 호출한다', async () => {
+  it('지도를 사용할 수 있으면 도서관 위치 지도를 보여준다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, mapConstructor, relayout} = createMockKakaoMaps();
@@ -603,7 +603,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(relayout).toHaveBeenCalled();
   });
 
-  it('selectedLibraryCode가 바뀌어도 map instance를 다시 만들지 않는다', async () => {
+  it('다른 도서관을 골라도 지도는 끊기지 않고 이어서 볼 수 있다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, mapConstructor} = createMockKakaoMaps();
@@ -623,7 +623,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(mapConstructor).toHaveBeenCalledTimes(1);
   });
 
-  it('좌표가 있는 도서관만 marker를 만들고 1건이면 setCenter와 setLevel로 초기 위치를 맞춘다', async () => {
+  it('지도에 표시할 수 있는 도서관만 위치로 보여준다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     mockUseGetSearchLibraries.mockReturnValue({
@@ -646,7 +646,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(setBounds).not.toHaveBeenCalled();
   });
 
-  it('최초 진입에서 기본 선택된 첫 번째 도서관 marker를 바로 강조한다', async () => {
+  it('처음 열면 기본으로 선택된 도서관 위치를 바로 확인할 수 있다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     const {kakaoMaps, markerRecords} = createMockKakaoMaps();
@@ -660,7 +660,7 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
-  it('현재 페이지에 좌표가 여러 건이면 setBounds로 전체 marker 범위를 먼저 맞춘다', async () => {
+  it('같은 페이지의 도서관 위치를 한눈에 볼 수 있게 지도가 맞춰진다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
@@ -680,7 +680,7 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
-  it('리스트에서 좌표가 있는 도서관을 명시적으로 선택하면 확대와 함께 포커스하고 기존 marker를 재생성하지 않는다', async () => {
+  it('목록에서 위치 정보가 있는 도서관을 고르면 그 위치를 바로 확대해 볼 수 있다', async () => {
     const user = userEvent.setup();
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
@@ -708,7 +708,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(panTo).toHaveBeenCalledTimes(1);
   });
 
-  it('기본 선택된 첫 번째 좌표 도서관도 명시적으로 다시 선택하면 확대와 함께 포커스한다', async () => {
+  it('이미 선택된 도서관을 다시 눌러도 그 위치를 다시 확대해 볼 수 있다', async () => {
     const user = userEvent.setup();
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
@@ -725,7 +725,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(panTo).toHaveBeenCalledTimes(1);
   });
 
-  it('지도 확대와 축소 버튼은 현재 level 기준으로 setLevel을 호출한다', async () => {
+  it('지도에서 확대와 축소를 할 수 있다', async () => {
     const user = userEvent.setup();
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
@@ -742,7 +742,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(setLevel).toHaveBeenNthCalledWith(2, 5);
   });
 
-  it('좌표가 없는 도서관을 선택하면 panTo하지 않고 목록과 상세 정보만 갱신한다', async () => {
+  it('위치 정보가 없는 도서관을 골라도 도서관 정보는 바뀐다', async () => {
     const user = userEvent.setup();
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
@@ -761,7 +761,7 @@ describe('LibrarySearchResultDialog', () => {
     ).toBeInTheDocument();
   });
 
-  it('marker를 클릭하면 해당 code로 selectedLibraryCode를 갱신한다', async () => {
+  it('지도에서 도서관을 누르면 그 도서관 정보가 선택된다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     mockUseGetSearchLibraries.mockReturnValue(mockSecondPageLibrarySearchResponse);
@@ -792,7 +792,7 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
-  it('현재 페이지 결과에 좌표가 하나도 없으면 no-coordinate fallback과 controls hidden을 렌더링한다', async () => {
+  it('현재 페이지에 위치 정보가 없으면 지도를 대신할 안내를 보여준다', async () => {
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
     mockUseGetSearchLibraries.mockReturnValue({
@@ -821,7 +821,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.queryByRole('button', {name: '지도 확대'})).not.toBeInTheDocument();
   });
 
-  it('모바일에서 지도를 사용할 수 없으면 상세 영역에 unavailable 문구를 렌더하고 빠른 지도 버튼은 숨긴다', async () => {
+  it('모바일에서 지도를 사용할 수 없으면 안내 문구만 보여준다', async () => {
     mockMatchMedia(true);
 
     renderLibrarySearchResultDialog();
@@ -833,7 +833,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
   });
 
-  it('모바일에서 선택된 도서관에 좌표가 없으면 상세 영역에 no-coordinate 문구를 렌더하고 빠른 지도 버튼은 숨긴다', async () => {
+  it('모바일에서 위치 정보가 없는 도서관은 지도 대신 안내 문구를 보여준다', async () => {
     mockMatchMedia(true);
     mockKakaoMapConfig.appKey = 'test-key';
     mockKakaoMapConfig.isEnabled = true;
@@ -861,7 +861,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
   });
 
-  it('selectedLibraryCode가 없으면 첫 번째 도서관을 기본 선택하고 store에 동기화한다', async () => {
+  it('처음 열면 첫 번째 도서관이 기본으로 선택된다', async () => {
     renderLibrarySearchResultDialog();
 
     await waitFor(() => {
@@ -875,7 +875,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByRole('heading', {name: '마포중앙도서관'})).toBeInTheDocument();
   });
 
-  it('유효한 selectedLibraryCode가 있으면 해당 도서관을 active row로 유지한다', async () => {
+  it('이미 고른 도서관이 있으면 그 도서관을 계속 보여준다', async () => {
     renderLibrarySearchResultDialog({
       selectedLibraryCode: 'LIB0002',
     });
@@ -886,7 +886,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
-  it('리스트 row를 클릭하면 해당 code로 selectedLibraryCode를 갱신한다', async () => {
+  it('목록에서 도서관을 고르면 그 도서관이 선택된다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog({
@@ -898,7 +898,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
-  it('리스트 선택이 바뀌면 detail panel 정보도 같은 도서관으로 갱신된다', async () => {
+  it('목록에서 도서관을 바꾸면 선택한 도서관 정보도 함께 바뀐다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog({
@@ -914,7 +914,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('법정 공휴일')).toBeInTheDocument();
   });
 
-  it('리스트 row는 native button keyboard interaction으로 선택할 수 있다', async () => {
+  it('키보드로도 목록에서 도서관을 고를 수 있다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog({
@@ -1234,7 +1234,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
   });
 
-  it('조회가 suspend되면 loading shell을 유지한다', async () => {
+  it('도서관을 찾는 동안에도 기본 화면 구조를 유지한다', async () => {
     const pendingPromise = new Promise(() => {});
 
     mockUseGetSearchLibraries.mockImplementation(() => {
@@ -1256,7 +1256,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
-  it('모바일에서 조회가 suspend되면 실제 모바일 순서와 같은 details loading shell을 유지한다', async () => {
+  it('모바일에서 도서관을 찾는 동안에도 기본 화면 순서를 유지한다', async () => {
     const pendingPromise = new Promise(() => {});
 
     mockMatchMedia(true);
@@ -1282,7 +1282,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
-  it('성공 상태의 지역 변경 action은 region dialog로 되돌린다', async () => {
+  it('지역을 다시 선택하면 지역 선택 창으로 돌아간다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog();
@@ -1347,7 +1347,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBeNull();
   });
 
-  it('조회 에러면 recoverable error UI를 렌더링하고 다시 시도로 회복할 수 있다', async () => {
+  it('도서관 정보를 불러오지 못하면 다시 시도할 수 있다', async () => {
     const requestError = new Error('검색 실패');
     let shouldThrow = true;
 
@@ -1370,7 +1370,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(await screen.findByText('총 12개의 도서관을 검색했어요.')).toBeInTheDocument();
   });
 
-  it('닫기 버튼을 누르면 library dialog 상태를 닫는다', async () => {
+  it('닫기 버튼으로 도서관 검색 결과 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog();
@@ -1383,7 +1383,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
   });
 
-  it('escape 입력 시 library dialog 상태를 닫는다', async () => {
+  it('Esc 키로 도서관 검색 결과 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog();
@@ -1397,7 +1397,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
   });
 
-  it('overlay dismiss 시 library dialog 상태를 닫는다', async () => {
+  it('창 바깥을 눌러 도서관 검색 결과 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderLibrarySearchResultDialog();
@@ -1420,7 +1420,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().libraryResultBook).toBeNull();
   });
 
-  it('모바일 branch에서도 키보드 탭 이동으로 주요 액션에 접근할 수 있다', async () => {
+  it('모바일에서도 키보드로 주요 버튼을 이동할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
@@ -1462,7 +1462,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(closeButton).toHaveFocus();
   });
 
-  it('모바일에서 리스트 row를 선택하면 상세 영역 시작 지점으로 스크롤한다', async () => {
+  it('모바일에서 도서관을 고르면 선택한 도서관 정보로 바로 이동한다', async () => {
     const user = userEvent.setup();
     const scrollToMock = vi.fn();
 
@@ -1484,7 +1484,7 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
-  it('모바일에서 페이지를 변경하면 상세 영역 시작 지점으로 스크롤한다', async () => {
+  it('모바일에서 페이지를 바꾸면 선택한 도서관 정보부터 다시 볼 수 있다', async () => {
     const user = userEvent.setup();
     const scrollToMock = vi.fn();
 
@@ -1506,7 +1506,7 @@ describe('LibrarySearchResultDialog', () => {
     });
   });
 
-  it('params나 selectedBook이 없으면 렌더링하지 않는다', () => {
+  it('검색할 책과 지역 정보가 없으면 도서관 결과를 보여주지 않는다', () => {
     renderLibrarySearchResultDialog({
       params: null,
       selectedBook: null,

@@ -44,7 +44,7 @@ describe('RegionSelectDialog', () => {
     useFindLibraryStore.getState().resetFindLibraryFlow();
   });
 
-  it('선택된 책이 있으면 지역 선택 dialog shell을 렌더링한다', async () => {
+  it('소장 도서관을 찾을 책이 정해지면 지역 선택 창이 열린다', async () => {
     renderRegionSelectDialog();
 
     const dialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
@@ -57,7 +57,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByRole('button', {name: '닫기'})).toBeInTheDocument();
   });
 
-  it('처음 열면 상위 지역이 선택되지 않아 세부 지역 영역이 비활성 상태다', async () => {
+  it('처음 열면 시도를 먼저 골라야 세부 지역을 선택할 수 있다', async () => {
     renderRegionSelectDialog();
 
     const detailRegionSection = await screen.findByRole('region', {name: '세부 지역'});
@@ -69,7 +69,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByRole('button', {name: '선택 완료'})).toBeDisabled();
   });
 
-  it('상위 지역을 선택하면 세부 지역 목록이 열리고 전체가 기본 선택된다', async () => {
+  it('시도를 고르면 세부 지역을 바로 선택할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -86,7 +86,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByRole('button', {name: '선택 완료'})).toBeEnabled();
   });
 
-  it('상위 지역을 바꾸면 세부 지역 선택이 전체로 초기화된다', async () => {
+  it('시도를 바꾸면 세부 지역 선택이 다시 전체로 돌아간다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -102,7 +102,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.queryByRole('button', {name: '마포구'})).not.toBeInTheDocument();
   });
 
-  it('세종처럼 실질적인 세부 지역이 없는 경우 전체만 유지하고 fallback 안내 문구를 보여준다', async () => {
+  it('세종처럼 세부 지역 구분이 없는 곳은 전체 지역으로 바로 검색할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -115,7 +115,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByRole('button', {name: '선택 완료'})).toBeEnabled();
   });
 
-  it('세부 지역을 선택하면 현재 선택 요약이 서울 > 마포구로 갱신된다', async () => {
+  it('세부 지역을 고르면 현재 선택한 지역을 바로 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -126,7 +126,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByText('서울 > 마포구')).toBeInTheDocument();
   });
 
-  it('현재 선택 요약은 live region으로 제공된다', async () => {
+  it('현재 고른 지역은 보조기기에도 바로 전달된다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -139,7 +139,7 @@ describe('RegionSelectDialog', () => {
     expect(summaryWrapper).toHaveAttribute('aria-atomic', 'true');
   });
 
-  it('마지막 확정 선택이 있으면 처음부터 해당 region과 detail을 복원한다', async () => {
+  it('다시 열면 마지막으로 고른 지역을 이어서 볼 수 있다', async () => {
     renderRegionSelectDialog({
       lastSelection: {
         detailRegion: '11140',
@@ -154,7 +154,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByText('서울 > 마포구')).toBeInTheDocument();
   });
 
-  it('마지막 확정 선택에 detailRegion이 없으면 전체 선택 상태로 복원한다', async () => {
+  it('다시 열면 마지막으로 고른 전체 지역을 이어서 볼 수 있다', async () => {
     renderRegionSelectDialog({
       lastSelection: {
         region: '11',
@@ -168,7 +168,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByText('서울 전체')).toBeInTheDocument();
   });
 
-  it('초기화를 누르면 draft를 비선택 상태로 되돌린다', async () => {
+  it('초기화를 누르면 지역 선택을 처음부터 다시 할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -181,7 +181,7 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByRole('button', {name: '선택 완료'})).toBeDisabled();
   });
 
-  it('전체 선택 후 선택 완료를 누르면 detailRegion 없는 params로 library dialog 상태를 연다', async () => {
+  it('전체 지역으로 소장 도서관 찾기를 시작할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -198,7 +198,7 @@ describe('RegionSelectDialog', () => {
     expect(useFindLibraryStore.getState().regionDialogBook).toBeNull();
   });
 
-  it('세부 지역 선택 후 선택 완료를 누르면 detailRegion 포함 params로 library dialog 상태를 연다', async () => {
+  it('세부 지역까지 고른 뒤 소장 도서관 찾기를 시작할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -216,7 +216,7 @@ describe('RegionSelectDialog', () => {
     expect(useFindLibraryStore.getState().libraryResultBook).toEqual(MOCK_BOOK);
   });
 
-  it('세종 fallback 상태에서도 선택 완료가 동작한다', async () => {
+  it('세종에서도 바로 소장 도서관 찾기를 시작할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -231,7 +231,7 @@ describe('RegionSelectDialog', () => {
     });
   });
 
-  it('닫기 버튼 클릭 시 region dialog 상태를 닫는다', async () => {
+  it('닫기 버튼으로 지역 선택 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog({
@@ -248,7 +248,7 @@ describe('RegionSelectDialog', () => {
     });
   });
 
-  it('escape 입력 시 region dialog 상태를 닫는다', async () => {
+  it('Esc 키로 지역 선택 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -261,7 +261,7 @@ describe('RegionSelectDialog', () => {
     });
   });
 
-  it('overlay dismiss 시 region dialog 상태를 닫는다', async () => {
+  it('창 바깥을 눌러 지역 선택 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog();
@@ -283,7 +283,7 @@ describe('RegionSelectDialog', () => {
     });
   });
 
-  it('dialog 안에서 키보드 탭 이동으로 region, detail, footer까지 접근하고 포커스를 가둔다', async () => {
+  it('키보드만으로 지역 선택 창의 주요 버튼을 이동할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRegionSelectDialog({

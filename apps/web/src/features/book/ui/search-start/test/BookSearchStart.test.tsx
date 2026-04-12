@@ -5,7 +5,7 @@ import {MAX_BOOK_SEARCH_TERM_LENGTH} from '@/entities/book';
 import {BookSearchStart} from '@/features/book';
 
 describe('BookSearchStart', () => {
-  it('기본 렌더에서 title 탭과 빈 검색 입력을 보여준다', () => {
+  it('처음 열면 책 제목으로 검색할 수 있다', () => {
     const onSubmitSearch = vi.fn();
 
     render(<BookSearchStart onSubmitSearch={onSubmitSearch} />);
@@ -24,7 +24,7 @@ describe('BookSearchStart', () => {
     expect(onSubmitSearch).not.toHaveBeenCalled();
   });
 
-  it('탭 전환 시 모드별 마지막 입력값을 따로 기억한다', async () => {
+  it('검색 기준을 바꿔도 입력한 내용을 다시 이어서 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
@@ -52,7 +52,7 @@ describe('BookSearchStart', () => {
     expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
   });
 
-  it('키보드로 탭을 이동하고 선택 상태를 바꿀 수 있다', async () => {
+  it('키보드로 검색 기준을 바꿀 수 있다', async () => {
     const user = userEvent.setup();
 
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
@@ -77,7 +77,7 @@ describe('BookSearchStart', () => {
     expect(authorTab).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('키보드 탭 순서로 세그먼트 탭, 입력, CTA에 접근할 수 있다', async () => {
+  it('키보드로 검색 기준, 입력창, 검색 버튼까지 차례로 이동할 수 있다', async () => {
     const user = userEvent.setup();
 
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
@@ -94,7 +94,7 @@ describe('BookSearchStart', () => {
     expect(screen.getByRole('button', {name: '검색'})).toHaveFocus();
   });
 
-  it('whitespace-only 입력에서는 CTA를 비활성 상태로 유지한다', async () => {
+  it('공백만 입력하면 검색할 수 없다', async () => {
     const user = userEvent.setup();
 
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
@@ -104,7 +104,7 @@ describe('BookSearchStart', () => {
     expect(screen.getByRole('button', {name: '검색'})).toBeDisabled();
   });
 
-  it('유효 입력이면 CTA가 활성화되고 글자 수가 갱신된다', async () => {
+  it('검색어를 입력하면 검색할 수 있고 글자 수를 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     render(<BookSearchStart onSubmitSearch={vi.fn()} />);
@@ -115,7 +115,7 @@ describe('BookSearchStart', () => {
     expect(screen.getByText(`3 / ${MAX_BOOK_SEARCH_TERM_LENGTH}`)).toBeInTheDocument();
   });
 
-  it('버튼 클릭으로 title canonical payload를 제출한다', async () => {
+  it('책 제목으로 검색을 시작할 수 있다', async () => {
     const user = userEvent.setup();
     const onSubmitSearch = vi.fn();
 
@@ -131,7 +131,7 @@ describe('BookSearchStart', () => {
     });
   });
 
-  it('Enter 입력으로 author canonical payload를 제출한다', async () => {
+  it('저자명으로도 검색을 시작할 수 있다', async () => {
     const user = userEvent.setup();
     const onSubmitSearch = vi.fn();
 

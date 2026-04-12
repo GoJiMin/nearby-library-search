@@ -27,7 +27,7 @@ describe('LibrarySearchResultPagination', () => {
     useFindLibraryStore.getState().resetFindLibraryFlow();
   });
 
-  it('totalCount가 없으면 렌더링하지 않는다', () => {
+  it('전체 결과 수를 모르면 페이지 이동을 보여주지 않는다', () => {
     renderPagination({
       page: 1,
       totalCount: null,
@@ -36,7 +36,7 @@ describe('LibrarySearchResultPagination', () => {
     expect(screen.queryByRole('navigation', {name: '도서관 검색 결과 페이지네이션'})).not.toBeInTheDocument();
   });
 
-  it('총 페이지가 5 이하면 모든 페이지를 표시한다', () => {
+  it('페이지가 많지 않으면 모든 페이지 번호를 한 번에 볼 수 있다', () => {
     renderPagination({
       page: 2,
       totalCount: 50,
@@ -52,7 +52,7 @@ describe('LibrarySearchResultPagination', () => {
     expect(within(pagination).queryByLabelText('페이지 생략')).not.toBeInTheDocument();
   });
 
-  it('첫 구간에서는 1 2 3 ... 마지막 페이지를 표시한다', () => {
+  it('처음 몇 페이지에서는 앞쪽 페이지 번호와 마지막 페이지를 함께 볼 수 있다', () => {
     renderPagination({
       page: 1,
       totalCount: 100,
@@ -67,7 +67,7 @@ describe('LibrarySearchResultPagination', () => {
     expect(within(pagination).getAllByLabelText('페이지 생략')).toHaveLength(1);
   });
 
-  it('중간 구간에서는 1 ... 현재 ... 마지막 페이지를 표시한다', () => {
+  it('가운데 페이지에서는 현재 위치와 처음, 마지막 페이지를 함께 볼 수 있다', () => {
     renderPagination({
       page: 5,
       totalCount: 100,
@@ -83,7 +83,7 @@ describe('LibrarySearchResultPagination', () => {
     expect(within(pagination).queryByRole('button', {name: '6페이지'})).not.toBeInTheDocument();
   });
 
-  it('마지막 구간에서는 1 ... 마지막 3개 페이지를 표시한다', () => {
+  it('마지막 몇 페이지에서는 끝쪽 페이지 번호를 한 번에 볼 수 있다', () => {
     renderPagination({
       page: 10,
       totalCount: 100,
