@@ -48,6 +48,23 @@ const DEFAULT_SELECTED_BOOK = {
   title: '파친코',
 };
 
+function createMockLibraryAvailabilityResponse({
+  hasBook = 'Y',
+  libraryCode = 'LIB0001',
+  loanAvailable = 'Y',
+}: {
+  hasBook?: 'N' | 'Y';
+  libraryCode?: string;
+  loanAvailable?: 'N' | 'Y';
+} = {}) {
+  return {
+    hasBook,
+    isbn13: DEFAULT_PARAMS.isbn,
+    libraryCode,
+    loanAvailable,
+  };
+}
+
 const {
   mockAppConfig,
   mockKakaoMapConfig,
@@ -338,12 +355,7 @@ describe('LibrarySearchResultDialog', () => {
     mockMatchMedia(false);
     useFindLibraryStore.getState().resetFindLibraryFlow();
     mockRequestGet.mockReset();
-    mockRequestGet.mockResolvedValue({
-      hasBook: 'Y',
-      isbn13: DEFAULT_PARAMS.isbn,
-      libraryCode: 'LIB0001',
-      loanAvailable: 'Y',
-    });
+    mockRequestGet.mockResolvedValue(createMockLibraryAvailabilityResponse());
     mockUseGetSearchLibraries.mockReset();
     mockUseGetSearchLibraries.mockReturnValue(mockLibrarySearchResponse);
     mockKakaoMapConfig.appKey = undefined;
@@ -942,6 +954,69 @@ describe('LibrarySearchResultDialog', () => {
       expect(availabilityButton).toHaveAttribute('aria-busy', 'true');
     });
     expect(availabilityButton.querySelector('svg.animate-spin')).not.toBeNull();
+  });
+
+  it('desktop availability CTA는 대출 가능 응답이면 성공 문구를 표시하고 비활성화한다', async () => {
+    const user = userEvent.setup();
+
+    mockRequestGet.mockResolvedValueOnce(
+      createMockLibraryAvailabilityResponse({
+        hasBook: 'Y',
+        loanAvailable: 'Y',
+      }),
+    );
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    const successButton = await screen.findByRole('button', {name: '대출이 가능해요'});
+
+    expect(successButton).toBeDisabled();
+  });
+
+  it('desktop availability CTA는 대출 불가 응답이면 성공 문구를 표시하고 비활성화한다', async () => {
+    const user = userEvent.setup();
+
+    mockRequestGet.mockResolvedValueOnce(
+      createMockLibraryAvailabilityResponse({
+        hasBook: 'Y',
+        loanAvailable: 'N',
+      }),
+    );
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    const successButton = await screen.findByRole('button', {name: '대출이 불가능해요'});
+
+    expect(successButton).toBeDisabled();
+  });
+
+  it('desktop availability CTA는 미소장 응답이면 성공 문구를 표시하고 비활성화한다', async () => {
+    const user = userEvent.setup();
+
+    mockRequestGet.mockResolvedValueOnce(
+      createMockLibraryAvailabilityResponse({
+        hasBook: 'N',
+        loanAvailable: 'N',
+      }),
+    );
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    const successButton = await screen.findByRole('button', {name: '소장하지 않아요'});
+
+    expect(successButton).toBeDisabled();
   });
 
   it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
