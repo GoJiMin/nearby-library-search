@@ -24,5 +24,6 @@ export {Skeleton} from './skeleton';
 export type {SkeletonProps} from './skeleton';
 export {Text} from './text';
 export type {TextProps} from './text';
-export {AppToaster, toast} from './toast';
+export {toast} from './toast';
 export type {ToastContent} from './toast';
+export {AppToaster} from './toaster';
