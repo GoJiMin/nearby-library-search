@@ -19,7 +19,7 @@
 - [x] `/api/books/:isbn13` integration test가 축소된 `loanInfo` shape를 검증하도록 갱신한다.
 - [x] `byGender`, `byRegion`가 normalized response에 남지 않는지 검증한다.
 - [x] upstream payload 일부 누락 시에도 `loanInfo.total + byAge`가 안전하게 정규화되는지 검증한다.
-- [ ] 기존 `BOOK_DETAIL_*` 에러 흐름이 깨지지 않는지 검증한다.
+- [x] 기존 `BOOK_DETAIL_*` 에러 흐름이 깨지지 않는지 검증한다.
 
 ## 4. `features/book` 상세 dialog store 추가
 

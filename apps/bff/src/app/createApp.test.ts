@@ -690,6 +690,106 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('잘못된 isbn13이면 외부 호출 없이 400 book detail 에러를 반환한다', async () => {
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/1234',
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toEqual({
+      detail: 'isbn13은 13자리 숫자 문자열이어야 합니다.',
+      status: 400,
+      title: 'BOOK_DETAIL_ISBN13_INVALID',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('도서 상세 업스트림이 non-ok 응답을 반환하면 502 표준 에러로 정규화한다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        {
+          detail: 'upstream failed',
+          status: 503,
+          title: 'UPSTREAM_FAILURE',
+        },
+        'https://example.com/srchDtlList?isbn13=9788954682155',
+        503,
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/9788954682155',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'BOOK_DETAIL_UPSTREAM_ERROR',
+    });
+
+    await app.close();
+  });
+
+  it('도서 상세 업스트림 호출이 throw되면 502 표준 에러로 정규화한다', async () => {
+    requestLibraryApiMock.mockRejectedValue(new Error('network down'));
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/9788954682155',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'BOOK_DETAIL_UPSTREAM_ERROR',
+    });
+
+    await app.close();
+  });
+
+  it('도서 상세 비정상 응답을 502 표준 에러로 정규화한다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        {
+          response: {},
+        },
+        'https://example.com/srchDtlList?isbn13=9788954682155',
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/9788954682155',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '도서 상세 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'BOOK_DETAIL_RESPONSE_INVALID',
+    });
+
+    await app.close();
+  });
+
   it('도서관 대출 가능 여부 조회 success 응답을 정규화하고 bookExist upstream을 한 번만 호출한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
