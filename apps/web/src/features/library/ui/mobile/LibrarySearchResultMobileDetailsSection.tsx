@@ -1,5 +1,5 @@
 import type {LibraryCode} from '@nearby-library-search/contracts';
-import {Map, Search} from 'lucide-react';
+import {Map} from 'lucide-react';
 import {hasLibraryCoordinates, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
@@ -93,10 +93,7 @@ function LibrarySearchResultMobileDetailsSectionFallback() {
             <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
             지도로 보기
           </Button>
-          <Button className="w-full rounded-2xl" disabled size="lg" variant="default">
-            <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
-            대출 가능 여부 조회
-          </Button>
+          <LibrarySearchResultAvailabilityAction disabled />
         </div>
       </div>
     </section>

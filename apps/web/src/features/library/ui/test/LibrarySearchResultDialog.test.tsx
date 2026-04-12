@@ -1228,6 +1228,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(availabilityButton).toBeDisabled();
     expect(quickMapButton.compareDocumentPosition(availabilityButton) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
     expect(within(detailPanel).queryAllByRole('button', {name: '대출 가능 여부 조회'})).toHaveLength(1);
+    expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
   it('성공 상태의 지역 변경 action은 region dialog로 되돌린다', async () => {
