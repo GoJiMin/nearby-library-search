@@ -147,11 +147,25 @@
 - [ ] MVP 사용자 흐름 전체를 연결하고 통합 테스트와 최종 검증을 수행한다.
 - [ ] Phase 5-7 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
-## Phase 6. BFF 보안 하드닝
+## Phase 6. 리팩터링과 하드닝
+
+- [ ] MVP 구현 이후 구조적 모호성과 운영 리스크를 줄이기 위한 리팩터링과 하드닝 작업을 단계적으로 진행한다.
+
+## Phase 6-1. BFF 보안 하드닝
 
 - [ ] 공개 BFF route 전반에 대한 abuse 방어 전략을 정하고, 앱 레벨 rate limiting 또는 route 그룹 단위 호출량 제한을 적용한다.
 - [ ] 외부 Open API 호출 경계가 HTTPS만 사용하도록 고정하고, auth key가 계속 BFF runtime 내부에서만 관리되는지 검증한다.
 - [ ] BFF route 입력 검증 규칙을 재점검하고, `libraryCode` 같은 느슨한 path/query 입력에 길이 상한과 허용 규칙을 추가한다.
 - [ ] dev fixture mode에서 발생하는 비구조화 예외를 공통 에러 응답 규칙으로 정리해 내부 오류 노출을 줄인다.
 - [ ] BFF 앱 레벨 보안 기본값을 점검하고, 필요한 보안 헤더, 에러 핸들링, not-found 처리 기준을 정리한다.
-- [ ] Phase 6 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [ ] Phase 6-1 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+
+## Phase 6-2. 웹 상태 수명주기 리팩터링
+
+- [ ] `/books` 결과 문맥에 종속된 transient UI 상태와 세션 사이에 재사용할 persistent 상태를 구분한다.
+- [ ] `find-library` store에서 `lastRegionSelection` 같은 기억 상태와 현재 검색 결과에만 유효한 상태를 분리해 reset 의미를 명확히 한다.
+- [ ] `book detail dialog`와 `find-library` 흐름의 open/close/reset 규칙을 route lifecycle 기준으로 재정리한다.
+- [ ] `pages/book-search-result`가 store reset을 직접 흩어 호출하는 대신, 의도가 드러나는 lifecycle 경계 또는 전용 orchestration hook으로 정리한다.
+- [ ] reset API 이름과 책임을 `무엇을 지우는지`보다 `왜 지금 지우는지`가 드러나도록 재설계한다.
+- [ ] 검색 조건 변경, 페이지 이동, route 이탈, 재진입 시 상태 일관성이 유지되는지 사용자 흐름 기준 통합테스트로 검증한다.
+- [ ] Phase 6-2 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
