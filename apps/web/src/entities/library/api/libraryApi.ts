@@ -1,6 +1,6 @@
-import type {LibrarySearchResponse} from '@nearby-library-search/contracts';
+import type {LibraryAvailabilityResponse, LibrarySearchResponse} from '@nearby-library-search/contracts';
 import {requestGet} from '@/shared/request';
-import {LIBRARY_SEARCH_PAGE_SIZE, type LibrarySearchParams} from '../model/librarySchema';
+import {LIBRARY_SEARCH_PAGE_SIZE, type LibraryAvailabilityParams, type LibrarySearchParams} from '../model/librarySchema';
 
 async function getLibraries({detailRegion, isbn, page, region}: LibrarySearchParams) {
   return requestGet<LibrarySearchResponse>({
@@ -15,4 +15,10 @@ async function getLibraries({detailRegion, isbn, page, region}: LibrarySearchPar
   });
 }
 
-export {getLibraries};
+async function getLibraryAvailability({libraryCode, isbn13}: LibraryAvailabilityParams) {
+  return requestGet<LibraryAvailabilityResponse>({
+    endpoint: `/api/libraries/${libraryCode}/books/${isbn13}/availability`,
+  });
+}
+
+export {getLibraries, getLibraryAvailability};

@@ -44,7 +44,7 @@
 
 ## 7. web `entities/library` request 추가
 
-- [ ] `getLibraryAvailability` request 함수를 추가한다.
+- [x] `getLibraryAvailability` request 함수를 추가한다.
 - [ ] endpoint를 `/api/libraries/:libraryCode/books/:isbn13/availability`로 고정한다.
 - [ ] `shared/request`의 `requestGet`만 사용한다.
 - [ ] CTA 로컬 처리에 맞는 request error handling 방식을 고정한다.
