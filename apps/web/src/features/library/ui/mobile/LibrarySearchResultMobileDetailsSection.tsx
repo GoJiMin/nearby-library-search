@@ -6,6 +6,10 @@ import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
 import {kakaoMapConfig} from '@/shared/env';
 import {Button, LucideIcon, Text} from '@/shared/ui';
+import {
+  LibrarySearchResultAvailabilityAction,
+  LibrarySearchResultAvailabilityCta,
+} from '../common/LibrarySearchResultAvailabilityCta';
 import {LibrarySearchResultDetailsFields} from '../common/LibrarySearchResultDetails';
 import {LibrarySearchResultDetailsFieldsPlaceholder} from '../common/loading/LibrarySearchResultDetailsPlaceholder';
 
@@ -96,10 +100,11 @@ function LibrarySearchResultMobileDetailsSection({
         </div>
         <div className="grid gap-3">
           {quickMapAction}
-          <Button className="w-full rounded-2xl" disabled={currentSelectedLibrary == null} size="lg" variant="default">
-            <LucideIcon className="h-4 w-4" icon={Search} strokeWidth={2.2} />
-            대출 가능 여부 조회
-          </Button>
+          {currentSelectedLibrary == null ? (
+            <LibrarySearchResultAvailabilityAction disabled />
+          ) : (
+            <LibrarySearchResultAvailabilityCta isbn13={params.isbn} libraryCode={currentSelectedLibrary.code} />
+          )}
         </div>
       </div>
     </section>
