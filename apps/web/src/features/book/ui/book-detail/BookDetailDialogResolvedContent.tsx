@@ -24,8 +24,8 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
     book.className && book.classNumber ? `${book.className} · ${book.classNumber}` : book.className ?? book.classNumber;
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-      <aside className="border-line/60 bg-surface-muted/35 border-b px-6 py-8 lg:border-r lg:border-b-0 lg:px-8 lg:py-10">
+    <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
+      <aside className="border-line/60 bg-surface-muted/35 border-b px-6 py-8 lg:border-r lg:border-b-0 lg:px-6 lg:py-10">
         <div className="flex h-full flex-col gap-6 lg:gap-8">
           <div className="space-y-3 lg:pr-6">
             <Heading as="h2" className="text-balance" size="lg">
@@ -40,11 +40,11 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             {book.imageUrl ? (
               <img
                 alt={`${book.title} 표지 이미지`}
-                className="aspect-[3/4] w-full max-w-64 rounded-3xl object-cover sm:max-w-xs lg:max-w-sm"
+                className="aspect-[3/4] w-full max-w-64 rounded-3xl object-cover sm:max-w-xs lg:max-w-full"
                 src={book.imageUrl}
               />
             ) : (
-              <div className="bg-surface border-line flex aspect-[3/4] w-full max-w-64 items-center justify-center rounded-3xl border sm:max-w-xs lg:max-w-sm">
+              <div className="bg-surface border-line flex aspect-[3/4] w-full max-w-64 items-center justify-center rounded-3xl border sm:max-w-xs lg:max-w-full">
                 <LucideIcon className="text-text-muted h-10 w-10" icon={BookOpen} strokeWidth={1.8} />
               </div>
             )}
