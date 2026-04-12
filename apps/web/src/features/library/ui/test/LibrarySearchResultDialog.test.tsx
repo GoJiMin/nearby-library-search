@@ -1250,10 +1250,15 @@ describe('LibrarySearchResultDialog', () => {
 
     renderLibrarySearchResultDialog();
 
+    const mobileHeaderRow = document.querySelector('[data-slot="library-search-mobile-header-title-row"]');
     const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
     const quickMapButton = within(detailPanel).getByRole('button', {name: '지도로 보기'});
     const availabilityButton = within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'});
 
+    expect(screen.queryByRole('button', {name: '지역 변경'})).not.toBeInTheDocument();
+    expect(document.querySelector('[data-slot="library-search-mobile-change-region-placeholder"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-slot="library-search-mobile-summary-placeholder"]')).toBeInTheDocument();
+    expect(mobileHeaderRow).toHaveClass('min-h-10');
     expect(quickMapButton).toBeDisabled();
     expect(availabilityButton).toBeDisabled();
     expect(quickMapButton.compareDocumentPosition(availabilityButton) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);

@@ -4,7 +4,7 @@ import {useShallow} from 'zustand/react/shallow';
 import {LIBRARY_SEARCH_PAGE_SIZE} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
-import {Button, Heading, Text} from '@/shared/ui';
+import {Button, Heading, Skeleton, Text} from '@/shared/ui';
 import {LibrarySearchResultList} from '../common/LibrarySearchResultList';
 import {LibrarySearchResultPagination} from '../common/LibrarySearchResultPagination';
 import {LibrarySearchResultListPlaceholder} from '../common/loading/LibrarySearchResultListPlaceholder';
@@ -77,7 +77,7 @@ function LibrarySearchResultMobileLayout({
       ref={layoutRef}
     >
       <header className="bg-surface-strong border-line/40 border-b px-6 pt-6 pb-4">
-        <div className="flex items-center gap-1">
+        <div className="flex min-h-10 items-center gap-1" data-slot="library-search-mobile-header-title-row">
           <Heading as="h2" className="tracking-[-0.04em]" size="lg">
             검색 결과
           </Heading>
@@ -92,10 +92,23 @@ function LibrarySearchResultMobileLayout({
               지역 변경
             </Button>
           )}
+          {totalCount == null && (
+            <Skeleton
+              aria-hidden="true"
+              className="h-10 w-20 rounded-full"
+              data-slot="library-search-mobile-change-region-placeholder"
+            />
+          )}
         </div>
-        <Text className="mt-1 text-sm">
-          {totalCount == null ? '도서관 검색 결과를 불러오고 있어요.' : `총 ${totalCount}개의 도서관을 검색했어요.`}
-        </Text>
+        {totalCount == null ? (
+          <Skeleton
+            aria-hidden="true"
+            className="mt-1 h-7 w-56 rounded-full"
+            data-slot="library-search-mobile-summary-placeholder"
+          />
+        ) : (
+          <Text className="mt-1 text-sm">총 {totalCount}개의 도서관을 검색했어요.</Text>
+        )}
       </header>
 
       <div ref={detailsAnchorRef}>
