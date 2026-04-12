@@ -178,4 +178,27 @@ describe('useLibraryAvailabilityCtaState', () => {
     expect(result.current.disabled).toBe(false);
     expect(result.current.showSpinner).toBe(false);
   });
+
+  it('hasRequested를 local state로 관리하고 resetRequested로 초기화한다', () => {
+    const {result} = renderHook(() =>
+      useLibraryAvailabilityCtaState(createParams()),
+    );
+
+    expect(result.current.hasRequested).toBe(false);
+    expect(result.current.status).toBe('idle');
+
+    act(() => {
+      result.current.markRequested();
+    });
+
+    expect(result.current.hasRequested).toBe(true);
+    expect(result.current.status).toBe('pending');
+
+    act(() => {
+      result.current.resetRequested();
+    });
+
+    expect(result.current.hasRequested).toBe(false);
+    expect(result.current.status).toBe('idle');
+  });
 });
