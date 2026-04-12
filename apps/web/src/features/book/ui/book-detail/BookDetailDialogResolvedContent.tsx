@@ -1,7 +1,7 @@
 import type {Isbn13} from '@nearby-library-search/contracts';
 import {BookOpen} from 'lucide-react';
 import {useGetBookDetail} from '@/entities/book';
-import {Heading, LucideIcon, Text} from '@/shared/ui';
+import {Badge, Heading, LucideIcon, Text} from '@/shared/ui';
 import {BookDetailDialogEmptyContent} from './states/BookDetailDialogEmptyContent';
 
 type BookDetailDialogResolvedContentProps = {
@@ -11,7 +11,7 @@ type BookDetailDialogResolvedContentProps = {
 const detailSectionLabelClassName = 'text-text-muted text-sm leading-5 font-semibold tracking-[0.12em] uppercase';
 
 function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedContentProps) {
-  const {book} = useGetBookDetail(isbn13);
+  const {book, loanInfo} = useGetBookDetail(isbn13);
 
   if (book == null) {
     return <BookDetailDialogEmptyContent />;
@@ -22,6 +22,12 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
     book.publisher && publicationValue ? `${book.publisher} · ${publicationValue}` : book.publisher ?? publicationValue;
   const classificationLabel =
     book.className && book.classNumber ? `${book.className} · ${book.classNumber}` : book.className ?? book.classNumber;
+  const totalLoanInfo = loanInfo.total;
+  const totalLoanCount = totalLoanInfo?.loanCount;
+  const hasLoanTotal = totalLoanCount != null;
+  const hasLoanAgeStats = loanInfo.byAge.length > 0;
+  const totalLoanCountLabel = hasLoanTotal ? `총 대출 ${totalLoanCount.toLocaleString('ko-KR')}건` : null;
+  const totalLoanRankLabel = totalLoanInfo?.rank != null ? `대출 순위 ${totalLoanInfo.rank.toLocaleString('ko-KR')}위` : null;
 
   return (
     <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
@@ -95,6 +101,46 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
                 </div>
               )}
             </dl>
+          </section>
+
+          <section className="space-y-3">
+            <p className={detailSectionLabelClassName}>대출 정보</p>
+            {hasLoanTotal || hasLoanAgeStats ? (
+              <div className="space-y-4">
+                {hasLoanTotal && (
+                  <div className="space-y-1">
+                    <Heading as="h3" size="sm">
+                      {totalLoanCountLabel}
+                    </Heading>
+                    {totalLoanRankLabel && (
+                      <Text size="sm">
+                        {totalLoanRankLabel}
+                      </Text>
+                    )}
+                  </div>
+                )}
+
+                {hasLoanAgeStats && (
+                  <div className="flex flex-wrap gap-2">
+                    {loanInfo.byAge.map(ageStat => {
+                      if (ageStat.loanCount == null) {
+                        return <Badge key={ageStat.name} variant="muted">{ageStat.name}</Badge>;
+                      }
+
+                      return (
+                        <Badge key={ageStat.name} variant="muted">
+                          {`${ageStat.name} · ${ageStat.loanCount.toLocaleString('ko-KR')}건`}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Text size="sm" tone="default">
+                대출 정보가 없어요.
+              </Text>
+            )}
           </section>
         </div>
       </div>

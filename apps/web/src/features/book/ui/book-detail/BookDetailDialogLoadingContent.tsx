@@ -1,6 +1,7 @@
 import {Skeleton} from '@/shared/ui';
 
 const bookDetailMetaFieldWidths = ['w-3/5', 'w-4/5', 'w-2/3', 'w-3/4'] as const;
+const bookDetailLoanBadgeWidths = ['w-24', 'w-28', 'w-24'] as const;
 
 function BookDetailDialogLoadingContent() {
   return (
@@ -37,6 +38,19 @@ function BookDetailDialogLoadingContent() {
                   <Skeleton className="h-5 w-20 rounded-full" />
                   <Skeleton className={`h-6 rounded-full ${widthClassName}`} />
                 </div>
+              ))}
+            </div>
+          </section>
+
+          <section aria-hidden="true" className="flex flex-col gap-4">
+            <Skeleton className="h-5 w-20 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-7 w-36 rounded-full" />
+              <Skeleton className="h-5 w-24 rounded-full" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {bookDetailLoanBadgeWidths.map(widthClassName => (
+                <Skeleton className={`h-10 rounded-full ${widthClassName}`} key={widthClassName} />
               ))}
             </div>
           </section>
