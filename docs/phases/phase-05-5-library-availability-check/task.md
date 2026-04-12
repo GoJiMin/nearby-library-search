@@ -86,11 +86,11 @@
 
 ## 12. availability reset과 session cache 정리
 
-- [ ] 다른 도서관 선택 시 CTA 상태를 기본값으로 reset한다.
-- [ ] 페이지 변경 시 CTA 상태를 기본값으로 reset한다.
-- [ ] library result dialog close 시 관련 availability cache를 제거한다.
-- [ ] region backflow와 flow reset 시 관련 availability cache를 제거한다.
-- [ ] 같은 dialog 세션에서 같은 도서관 재조회 시 성공 cache를 재사용하는지 검증한다.
+- [x] 다른 도서관 선택 시 CTA 상태를 기본값으로 reset한다.
+- [x] 페이지 변경 시 CTA 상태를 기본값으로 reset한다.
+- [x] library result dialog close 시 availability cache를 제거하지 않고 기존 성공 cache를 유지한다.
+- [x] region backflow와 flow reset 시 availability cache를 제거하지 않고 기존 성공 cache를 유지한다.
+- [x] 같은 key 재조회 시 성공 cache를 재사용하는지 검증한다.
 
 ## 13. web integration test 추가
 
@@ -98,8 +98,8 @@
 - [ ] pending spinner + disabled를 검증한다.
 - [ ] `대출이 가능해요` / `대출이 불가능해요` / `소장하지 않아요`를 검증한다.
 - [ ] error 시 버튼 문구 `재시도`와 toast 안내를 검증한다.
-- [ ] 선택 변경 / 페이지 변경 / dialog close / backflow 후 reset을 검증한다.
-- [ ] 같은 dialog 세션의 cache reuse를 검증한다.
+- [ ] 선택 변경 / 페이지 변경 / dialog close / backflow / flow reset 후 기본 CTA 상태를 검증한다.
+- [ ] 같은 key의 성공 cache reuse를 검증한다.
 
 ## 14. 최종 검증과 문서 동기화
 
@@ -114,15 +114,16 @@
 - 이번 phase는 외부 Open API `/bookExist`를 BFF가 정규화해 availability 응답으로 제공하도록 고정한다.
 - web availability 조회는 예외적으로 `useQuery` 기반 on-demand 요청으로 구현한다.
 - availability 결과는 zustand가 아니라 query cache와 CTA local state로만 관리한다.
-- 성공 결과는 버튼 텍스트로 직접 보여주고, 성공 후에는 버튼을 비활성화한다.
+- availability success는 종료 상태로 보고, 명시적 cache invalidation 없이 성공 cache를 재사용한다.
+- 성공 결과는 버튼 텍스트로 직접 보여주고, 결과 표시 상태로 유지한다.
 - 실패 시에는 전역 toast로 안내하고, 버튼 문구를 `재시도`로 바꾼다.
 
 ## Test Plan
 
 - BFF route success / fixture / invalid param / upstream failure / invalid payload
 - web CTA 기본 / pending / success(Y) / success(N) / success(hasBook=N) / error
-- 선택 변경, 페이지 변경, dialog close, region backflow 시 reset
-- 같은 dialog 세션에서 같은 도서관 재조회 시 성공 cache reuse
+- 선택 변경, 페이지 변경, dialog close, region backflow, flow reset 후 기본 CTA 상태 reset
+- 같은 key 재조회 시 성공 cache reuse
 - `pnpm test:run`, `pnpm lint:web`, `pnpm typecheck:web`, `pnpm build:web`, `pnpm --filter @nearby-library-search/bff build`
 
 ## Assumptions

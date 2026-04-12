@@ -30,8 +30,8 @@
   - availability 조회는 버튼 클릭으로만 시작한다.
   - 이 phase에서는 예외적으로 `useSuspenseQuery`가 아니라 `useQuery`를 사용한다.
   - availability 결과는 zustand에 저장하지 않고 query cache와 CTA local state로만 관리한다.
-  - 같은 library result dialog 세션 안에서는 성공 결과를 캐시 재사용한다.
-  - dialog를 닫거나 region backflow로 빠지면 availability cache는 제거한다.
+  - availability success는 종료 상태로 보고, 같은 key의 성공 결과는 cache를 재사용한다.
+  - dialog를 닫거나 region backflow로 빠져도 availability cache는 제거하지 않는다.
   - request error는 React Query provider에서 중앙 수집하고, `errorHandlingType: 'toast'`인 요청은 전역 toast로 안내한다.
 - UI 기준
   - CTA는 계속 detail 영역 안에 남긴다.
@@ -166,14 +166,9 @@ type LibraryAvailabilityResponse = {
   - `libraryCode`
   - `isbn13`
 - query cache 재사용 기준
-  - 같은 dialog 세션 안에서는 같은 key의 **성공 결과만** 재사용한다.
+  - 같은 key의 **성공 결과만** 재사용한다.
   - error 결과는 재사용 가능한 성공 상태로 취급하지 않는다.
-- session cache 범위
-  - library result dialog가 열린 동안만 유지한다.
-  - dialog close
-  - region backflow
-  - find-library flow reset
-  시 관련 availability query cache를 제거한다.
+- dialog close, region backflow, flow reset에서도 availability cache는 제거하지 않는다.
 
 ### 3. CTA local state 계약
 
@@ -186,7 +181,7 @@ type LibraryAvailabilityResponse = {
   - 성공 캐시가 없으면 query를 실행한다.
 - 결과적으로
   - 선택/페이지 변경 후에는 기본 CTA로 보이고
-  - 같은 세션에서 같은 도서관을 다시 누르면 네트워크 재요청 없이 결과를 빠르게 복원할 수 있다.
+  - 같은 key를 다시 누르면 네트워크 재요청 없이 결과를 빠르게 복원할 수 있다.
 
 ## CTA 상태 계약
 
@@ -213,8 +208,8 @@ type LibraryAvailabilityResponse = {
 - `hasBook='N'`
   - 버튼 텍스트: `소장하지 않아요`
 - 위 세 경우 모두 성공 상태로 간주한다.
-- 성공 상태에서는 버튼을 항상 비활성화한다.
-  - 이유: 불필요한 재시도를 막고, 전날 기준 데이터라는 성격과 맞추기 위함이다.
+- 성공 상태에서는 CTA를 결과 표시 상태로 유지한다.
+- 성공 상태에서는 다시 누를 수 없지만, 가독성을 떨어뜨리는 disabled opacity는 사용하지 않는다.
 - 성공 상태에서도 보조 문구는 기본 disclaimer를 유지한다.
 
 ### 4. 에러 상태
@@ -230,9 +225,9 @@ type LibraryAvailabilityResponse = {
 - 아래 경우에는 CTA를 기본 상태로 되돌린다.
   - 다른 도서관 선택
   - 페이지 변경
-  - library result dialog close
-  - region backflow
-  - flow reset
+  - library result dialog 재진입
+  - region backflow 후 재진입
+  - flow reset 후 재진입
 
 ## UI 통합 계약
 
@@ -252,7 +247,7 @@ type LibraryAvailabilityResponse = {
 ### 3. 접근성
 
 - pending spinner가 들어가도 버튼 accessible name은 현재 텍스트로 유지돼야 한다.
-- 비활성 상태는 실제 `disabled`로 표현한다.
+- pending과 선택 불가 상태는 실제 `disabled`로 표현한다.
 - 보조 문구는 버튼 바로 아래에서 읽을 수 있는 가시 텍스트로 둔다.
 
 ## 테스트 기준
@@ -273,14 +268,14 @@ type LibraryAvailabilityResponse = {
 
 - 기본 CTA와 disclaimer 렌더
 - 클릭 시 spinner + disabled
-- `Y` 응답 시 `대출이 가능해요` + disabled
-- `N` 응답 시 `대출이 불가능해요` + disabled
-- `hasBook='N'` 응답 시 `소장하지 않아요` + disabled
-- 에러 시 버튼은 다시 `대출 가능 여부 조회`, 버튼 재활성, 보조 문구는 `다시 한 번 시도해주세요.`
+- `Y` 응답 시 `대출이 가능해요` + 결과 표시 상태
+- `N` 응답 시 `대출이 불가능해요` + 결과 표시 상태
+- `hasBook='N'` 응답 시 `소장하지 않아요` + 결과 표시 상태
+- 에러 시 버튼은 `재시도`, 버튼 재활성, 실패 안내는 toast
 - 다른 도서관 선택 후 기본 상태 reset
 - 페이지 변경 후 기본 상태 reset
-- dialog close / region backflow 후 기본 상태 reset
-- 같은 dialog 세션에서 같은 도서관 재조회 시 성공 cache reuse
+- dialog close / region backflow / flow reset 후 재진입 시 기본 상태 reset
+- 같은 key 재조회 시 성공 cache reuse
 
 ### 3. regression
 
