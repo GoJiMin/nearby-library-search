@@ -80,7 +80,7 @@
 ## 11. mobile detail CTA 연결
 
 - [x] mobile detail 영역의 `대출 가능 여부 조회` 버튼에 같은 상태 모델을 연결한다.
-- [ ] quick map 동작과 availability 상태가 섞이지 않게 분리한다.
+- [x] quick map 동작과 availability 상태가 섞이지 않게 분리한다.
 - [ ] desktop과 동일한 버튼/문구 계약을 적용한다.
 - [ ] mobile details fallback/로딩 상태와 availability CTA 배치가 충돌하지 않는지 확인한다.
 

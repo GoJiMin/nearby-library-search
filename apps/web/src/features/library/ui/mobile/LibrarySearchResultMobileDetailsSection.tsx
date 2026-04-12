@@ -1,4 +1,3 @@
-import type {ReactNode} from 'react';
 import type {LibraryCode} from '@nearby-library-search/contracts';
 import {Map, Search} from 'lucide-react';
 import {hasLibraryCoordinates, useGetSearchLibraries} from '@/entities/library';
@@ -18,12 +17,13 @@ type LibrarySearchResultMobileDetailsSectionProps = {
   params: LibrarySearchParams;
 };
 
+type SelectedLibrary = ReturnType<typeof useGetSearchLibraries>['items'][number] | null;
 type QuickMapState = 'hidden' | 'openable' | 'unavailable' | 'without-coordinate';
 
 function resolveQuickMapState({
   selectedLibrary,
 }: {
-  selectedLibrary: ReturnType<typeof useGetSearchLibraries>['items'][number] | null;
+  selectedLibrary: SelectedLibrary;
 }): QuickMapState {
   if (!kakaoMapConfig.isEnabled) {
     return 'unavailable';
@@ -38,6 +38,49 @@ function resolveQuickMapState({
   }
 
   return 'openable';
+}
+
+function LibrarySearchResultMobileQuickMapAction({
+  onOpenQuickMap,
+  selectedLibrary,
+}: {
+  onOpenQuickMap: (code: LibraryCode) => void;
+  selectedLibrary: SelectedLibrary;
+}) {
+  const quickMapState = resolveQuickMapState({selectedLibrary});
+
+  if (quickMapState === 'hidden') {
+    return null;
+  }
+
+  if (quickMapState === 'openable') {
+    const openableLibrary = selectedLibrary;
+
+    if (openableLibrary == null) {
+      return null;
+    }
+
+    return (
+      <Button className="w-full rounded-2xl" onClick={() => onOpenQuickMap(openableLibrary.code)} size="lg" variant="secondary">
+        <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
+        지도로 보기
+      </Button>
+    );
+  }
+
+  if (quickMapState === 'unavailable') {
+    return (
+      <Text className="px-1 text-sm" size="sm" tone="muted">
+        지도를 표시할 수 없어요.
+      </Text>
+    );
+  }
+
+  return (
+    <Text className="px-1 text-sm" size="sm" tone="muted">
+      위치 정보가 없어요.
+    </Text>
+  );
 }
 
 function LibrarySearchResultMobileDetailsSectionFallback() {
@@ -67,30 +110,6 @@ function LibrarySearchResultMobileDetailsSection({
   const response = useGetSearchLibraries(params);
   const selectedLibraryCode = useFindLibraryStore(state => state.selectedLibraryCode);
   const currentSelectedLibrary = response.items.find(item => item.code === selectedLibraryCode) ?? null;
-  const quickMapState = resolveQuickMapState({selectedLibrary: currentSelectedLibrary});
-  const openableLibrary = quickMapState === 'openable' ? currentSelectedLibrary : null;
-  let quickMapAction: ReactNode = null;
-
-  if (openableLibrary != null) {
-    quickMapAction = (
-      <Button className="w-full rounded-2xl" onClick={() => onOpenQuickMap(openableLibrary.code)} size="lg" variant="secondary">
-        <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
-        지도로 보기
-      </Button>
-    );
-  } else if (quickMapState === 'unavailable') {
-    quickMapAction = (
-      <Text className="px-1 text-sm" size="sm" tone="muted">
-        지도를 표시할 수 없어요.
-      </Text>
-    );
-  } else if (quickMapState === 'without-coordinate') {
-    quickMapAction = (
-      <Text className="px-1 text-sm" size="sm" tone="muted">
-        위치 정보가 없어요.
-      </Text>
-    );
-  }
 
   return (
     <section aria-label="선택된 도서관 정보 패널" className="bg-surface border-line/40 border-b px-6 py-5">
@@ -99,7 +118,10 @@ function LibrarySearchResultMobileDetailsSection({
           <LibrarySearchResultDetailsFields library={currentSelectedLibrary} />
         </div>
         <div className="grid gap-3">
-          {quickMapAction}
+          <LibrarySearchResultMobileQuickMapAction
+            onOpenQuickMap={onOpenQuickMap}
+            selectedLibrary={currentSelectedLibrary}
+          />
           {currentSelectedLibrary == null ? (
             <LibrarySearchResultAvailabilityAction disabled />
           ) : (
