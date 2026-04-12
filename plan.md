@@ -133,13 +133,11 @@
 - [x] desktop detail panel과 mobile detail 영역에서 같은 availability 결과를 일관되게 노출한다.
 - [x] Phase 5-5 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
-## Phase 5-6. BFF 보안 하드닝
+## Phase 5-6. 도서 상세 보기 구현
 
-- [ ] 공개 BFF route 전반에 대한 abuse 방어 전략을 정하고, 앱 레벨 rate limiting 또는 route 그룹 단위 호출량 제한을 적용한다.
-- [ ] 외부 Open API 호출 경계가 HTTPS만 사용하도록 고정하고, auth key가 계속 BFF runtime 내부에서만 관리되는지 검증한다.
-- [ ] BFF route 입력 검증 규칙을 재점검하고, `libraryCode` 같은 느슨한 path/query 입력에 길이 상한과 허용 규칙을 추가한다.
-- [ ] dev fixture mode에서 발생하는 비구조화 예외를 공통 에러 응답 규칙으로 정리해 내부 오류 노출을 줄인다.
-- [ ] BFF 앱 레벨 보안 기본값을 점검하고, 필요한 보안 헤더, 에러 핸들링, not-found 처리 기준을 정리한다.
+- [ ] 도서 검색 결과 카드의 `상세 보기` 버튼을 실제 도서 상세 조회 다이얼로그로 연결한다.
+- [ ] 도서 기본 정보, 표지, 대출 정보, 상세 링크의 표시 규칙을 현재 contracts와 UX 계약에 맞게 정리한다.
+- [ ] 상세 보기의 loading, empty, error, close 흐름을 결과 화면 안에서 자연스럽게 처리한다.
 - [ ] Phase 5-6 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
 ## Phase 5-7. 상태 처리와 통합 사용자 흐름 검증
@@ -148,3 +146,12 @@
 - [ ] 라이트/다크 토큰 적용, 반응형 마감, 접근성 기준을 전체 흐름에서 점검한다.
 - [ ] MVP 사용자 흐름 전체를 연결하고 통합 테스트와 최종 검증을 수행한다.
 - [ ] Phase 5-7 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+
+## Phase 6. BFF 보안 하드닝
+
+- [ ] 공개 BFF route 전반에 대한 abuse 방어 전략을 정하고, 앱 레벨 rate limiting 또는 route 그룹 단위 호출량 제한을 적용한다.
+- [ ] 외부 Open API 호출 경계가 HTTPS만 사용하도록 고정하고, auth key가 계속 BFF runtime 내부에서만 관리되는지 검증한다.
+- [ ] BFF route 입력 검증 규칙을 재점검하고, `libraryCode` 같은 느슨한 path/query 입력에 길이 상한과 허용 규칙을 추가한다.
+- [ ] dev fixture mode에서 발생하는 비구조화 예외를 공통 에러 응답 규칙으로 정리해 내부 오류 노출을 줄인다.
+- [ ] BFF 앱 레벨 보안 기본값을 점검하고, 필요한 보안 헤더, 에러 핸들링, not-found 처리 기준을 정리한다.
+- [ ] Phase 6 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
