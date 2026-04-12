@@ -26,6 +26,41 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
   return response;
 }
 
+function createBookDetailUpstreamPayload({
+  book = {
+    authors: '이민진',
+    bookImageURL: 'https://example.com/books/pachinko.jpg',
+    bookname: '파친코',
+    class_nm: '문학',
+    class_no: '813.6',
+    description: '재일조선인 가족의 삶을 그린 소설',
+    isbn: '895468215X',
+    isbn13: '9788954682155',
+    publication_date: '2018-03-09',
+    publication_year: '2018',
+    publisher: '문학사상',
+  },
+  loanInfo = [
+    {
+      Total: {
+        loanCnt: '120',
+        name: '전체',
+        ranking: '1',
+      },
+    },
+  ],
+}: {
+  book?: Record<string, unknown>;
+  loanInfo?: Array<Record<string, unknown>>;
+} = {}) {
+  return {
+    response: {
+      detail: [{book}],
+      loanInfo,
+    },
+  };
+}
+
 describe('createApp integration', () => {
   beforeEach(() => {
     requestLibraryApiMock.mockReset();
@@ -438,6 +473,219 @@ describe('createApp integration', () => {
       totalCount: 0,
     });
     expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('도서 상세 route가 축소된 loanInfo shape를 반환한다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        createBookDetailUpstreamPayload({
+          loanInfo: [
+            {
+              Total: {
+                loanCnt: '120',
+                name: '전체',
+                ranking: '1',
+              },
+              ageResult: [
+                {
+                  age: {
+                    loanCnt: '80',
+                    name: '20대',
+                    ranking: '1',
+                  },
+                },
+                {
+                  age: {
+                    loanCnt: '30',
+                    name: '30대',
+                    ranking: '2',
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+        'https://example.com/srchDtlList?isbn13=9788954682155',
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/9788954682155',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      book: {
+        author: '이민진',
+        className: '문학',
+        classNumber: '813.6',
+        description: '재일조선인 가족의 삶을 그린 소설',
+        imageUrl: 'https://example.com/books/pachinko.jpg',
+        isbn: '895468215X',
+        isbn13: '9788954682155',
+        publicationDate: '2018-03-09',
+        publicationYear: '2018',
+        publisher: '문학사상',
+        title: '파친코',
+      },
+      loanInfo: {
+        byAge: [
+          {
+            loanCount: 80,
+            name: '20대',
+            rank: 1,
+          },
+          {
+            loanCount: 30,
+            name: '30대',
+            rank: 2,
+          },
+        ],
+        total: {
+          loanCount: 120,
+          name: '전체',
+          rank: 1,
+        },
+      },
+    });
+
+    await app.close();
+  });
+
+  it('도서 상세 route 응답에 byGender와 byRegion를 남기지 않는다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        createBookDetailUpstreamPayload({
+          loanInfo: [
+            {
+              Total: {
+                loanCnt: '120',
+                name: '전체',
+                ranking: '1',
+              },
+              ageResult: [
+                {
+                  age: {
+                    loanCnt: '80',
+                    name: '20대',
+                    ranking: '1',
+                  },
+                },
+              ],
+              genderResult: [
+                {
+                  gender: {
+                    loanCnt: '70',
+                    name: '여성',
+                    ranking: '1',
+                  },
+                },
+              ],
+              regionResult: [
+                {
+                  region: {
+                    loanCnt: '90',
+                    name: '서울',
+                    ranking: '1',
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+        'https://example.com/srchDtlList?isbn13=9788954682155',
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/9788954682155',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().loanInfo).not.toHaveProperty('byGender');
+    expect(response.json().loanInfo).not.toHaveProperty('byRegion');
+
+    await app.close();
+  });
+
+  it('도서 상세 route가 부분 누락 loanInfo payload를 안전하게 정규화한다', async () => {
+    requestLibraryApiMock.mockResolvedValue(
+      createJsonResponse(
+        createBookDetailUpstreamPayload({
+          loanInfo: [
+            {
+              ageResult: [
+                {
+                  age: {
+                    loanCnt: '80',
+                    name: '20대',
+                    ranking: '1',
+                  },
+                },
+                {
+                  age: {
+                    loanCnt: '50',
+                    ranking: '2',
+                  },
+                },
+                {
+                  invalid: {
+                    loanCnt: '10',
+                    name: '잘못된 값',
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+        'https://example.com/srchDtlList?isbn13=9788954682155',
+      ),
+    );
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/9788954682155',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      book: {
+        author: '이민진',
+        className: '문학',
+        classNumber: '813.6',
+        description: '재일조선인 가족의 삶을 그린 소설',
+        imageUrl: 'https://example.com/books/pachinko.jpg',
+        isbn: '895468215X',
+        isbn13: '9788954682155',
+        publicationDate: '2018-03-09',
+        publicationYear: '2018',
+        publisher: '문학사상',
+        title: '파친코',
+      },
+      loanInfo: {
+        byAge: [
+          {
+            loanCount: 80,
+            name: '20대',
+            rank: 1,
+          },
+        ],
+        total: null,
+      },
+    });
 
     await app.close();
   });
