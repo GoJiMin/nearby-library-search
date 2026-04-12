@@ -1,7 +1,7 @@
 import {BarChart3, BookOpen, Fingerprint} from 'lucide-react';
 import type {BookSearchItem} from '@/entities/book';
 import {useFindLibraryStore} from '@/features/find-library';
-import {useBookSearchResultActions} from '../../lib/bookSearchResultActionContext';
+import {useBookDetailDialogStore} from '../../model/useBookDetailDialogStore';
 import {Card, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type BookSearchResultCardProps = {
@@ -35,8 +35,8 @@ function BookSearchResultActionButton({children, onClick}: BookSearchResultActio
 
 function BookSearchResultCard({item}: BookSearchResultCardProps) {
   const publisherPublicationLabel = createPublisherPublicationLabel(item);
+  const openBookDetailDialog = useBookDetailDialogStore(state => state.openBookDetailDialog);
   const openRegionDialog = useFindLibraryStore(state => state.openRegionDialog);
-  const {onOpenBookDetail} = useBookSearchResultActions();
 
   return (
     <article>
@@ -105,7 +105,7 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
             <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2">
               <BookSearchResultActionButton
                 onClick={() => {
-                  onOpenBookDetail?.({
+                  openBookDetailDialog({
                     detailUrl: item.detailUrl,
                     isbn13: item.isbn13,
                   });

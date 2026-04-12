@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import type {ReactElement} from 'react';
 import {MemoryRouter} from 'react-router-dom';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {BookSearchResult} from '@/features/book';
+import {BookSearchResult, useBookDetailDialogStore} from '@/features/book';
 import {useFindLibraryStore} from '@/features/find-library';
 import {RequestGetError} from '@/shared/request';
 
@@ -57,6 +57,7 @@ vi.mock('@/entities/book', async importOriginal => {
 
 beforeEach(() => {
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
+  useBookDetailDialogStore.getState().resetBookDetailDialog();
   useFindLibraryStore.getState().resetFindLibraryFlow();
 });
 
@@ -186,12 +187,10 @@ describe('BookSearchResult', () => {
 
   it('책 상세 보기와 소장 도서관 찾기를 바로 시작할 수 있다', async () => {
     const user = userEvent.setup();
-    const onOpenBookDetail = vi.fn();
 
     renderBookSearchResult(
       <BookSearchResult
         createPageHref={createPageHref}
-        onOpenBookDetail={onOpenBookDetail}
         onSubmitSearch={vi.fn()}
         params={{
           page: 1,
@@ -205,14 +204,13 @@ describe('BookSearchResult', () => {
     const detailButton = firstItemQueries.getByRole('button', {name: '상세 보기'});
     const selectButton = firstItemQueries.getByRole('button', {name: '소장 도서관 찾기'});
 
-    expect(onOpenBookDetail).not.toHaveBeenCalled();
+    expect(useBookDetailDialogStore.getState().selectedBookDetail).toBeNull();
     expect(useFindLibraryStore.getState().regionDialogBook).toBeNull();
 
     await user.click(detailButton);
     await user.click(selectButton);
 
-    expect(onOpenBookDetail).toHaveBeenCalledTimes(1);
-    expect(onOpenBookDetail).toHaveBeenCalledWith({
+    expect(useBookDetailDialogStore.getState().selectedBookDetail).toEqual({
       detailUrl: 'https://www.nl.go.kr/search/bookDetail.do?isbn=9788954682155',
       isbn13: '9788954682155',
     });
@@ -225,12 +223,10 @@ describe('BookSearchResult', () => {
 
   it('상세 링크가 없어도 책 상세 보기를 시작할 수 있다', async () => {
     const user = userEvent.setup();
-    const onOpenBookDetail = vi.fn();
 
     renderBookSearchResult(
       <BookSearchResult
         createPageHref={createPageHref}
-        onOpenBookDetail={onOpenBookDetail}
         onSubmitSearch={vi.fn()}
         params={{
           page: 1,
@@ -243,8 +239,7 @@ describe('BookSearchResult', () => {
 
     await user.click(within(secondItem).getByRole('button', {name: '상세 보기'}));
 
-    expect(onOpenBookDetail).toHaveBeenCalledTimes(1);
-    expect(onOpenBookDetail).toHaveBeenCalledWith({
+    expect(useBookDetailDialogStore.getState().selectedBookDetail).toEqual({
       detailUrl: null,
       isbn13: '9791196447182',
     });
