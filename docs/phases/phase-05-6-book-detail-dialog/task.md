@@ -72,10 +72,10 @@
 
 ## 11. 상세 dialog 대출 정보 구현
 
-- [ ] `loanInfo.total`을 대표 수치 블록으로 렌더한다.
-- [ ] `loanInfo.byAge`를 연령대별 목록 또는 토큰 형태로 렌더한다.
-- [ ] `loanInfo.total`과 `loanInfo.byAge`가 모두 없으면 `대출 정보가 없어요.`를 보여준다.
-- [ ] `byGender`, `byRegion` UI는 만들지 않는다.
+- [x] `loanInfo.total`을 대표 수치 블록으로 렌더한다.
+- [x] `loanInfo.byAge`를 연령대별 목록 또는 토큰 형태로 렌더한다.
+- [x] `loanInfo.total`과 `loanInfo.byAge`가 모두 없으면 `대출 정보가 없어요.`를 보여준다.
+- [x] `byGender`, `byRegion` UI는 만들지 않는다.
 
 ## 12. 상세 링크 표시 규칙 구현
 

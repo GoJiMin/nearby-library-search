@@ -22,8 +22,28 @@ const {mockBookDetailResponse, mockBookSearchResponse, mockUseGetBookDetail, moc
       title: '파친코',
     },
     loanInfo: {
-      byAge: [],
-      total: null,
+      byAge: [
+        {
+          loanCount: 430,
+          name: '20대',
+          rank: 1,
+        },
+        {
+          loanCount: 315,
+          name: '30대',
+          rank: 2,
+        },
+        {
+          loanCount: 188,
+          name: '40대',
+          rank: 3,
+        },
+      ],
+      total: {
+        loanCount: 1240,
+        name: '전체',
+        rank: 1,
+      },
     },
   },
   mockBookSearchResponse: {
@@ -484,6 +504,24 @@ describe('app router integration', () => {
     expect(introductionHeading.className).toBe(publicationHeading.className);
   });
 
+  it('상세 보기를 누르면 전체 대출 정보와 연령별 대출 정보를 확인할 수 있다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+
+    const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
+
+    expect(within(detailDialog).getByText('총 대출 1,240건')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('대출 순위 1위')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('20대 · 430건')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('30대 · 315건')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('40대 · 188건')).toBeInTheDocument();
+    expect(within(detailDialog).queryByText('성별')).not.toBeInTheDocument();
+    expect(within(detailDialog).queryByText('지역별')).not.toBeInTheDocument();
+  });
+
   it('상세 정보에 없는 항목은 보이지 않는다', async () => {
     const user = userEvent.setup();
 
@@ -514,6 +552,9 @@ describe('app router integration', () => {
     expect(within(detailDialog).queryByText('분류 정보')).not.toBeInTheDocument();
     expect(within(detailDialog).queryByText('책 소개')).not.toBeInTheDocument();
     expect(within(detailDialog).queryByRole('img', {name: '파친코 표지 이미지'})).not.toBeInTheDocument();
+    expect(within(detailDialog).getByText('대출 정보가 없어요.')).toBeInTheDocument();
+    expect(within(detailDialog).queryByText('총 대출')).not.toBeInTheDocument();
+    expect(within(detailDialog).queryByText(/대 · \d+건/)).not.toBeInTheDocument();
   });
 
   it('상세 정보를 찾지 못하면 빈 상태 안내를 본다', async () => {
