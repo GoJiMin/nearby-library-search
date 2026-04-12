@@ -112,7 +112,7 @@ function normalizeBookDetailTotalLoanStat(loanInfoRecords: Array<Record<string, 
   return loanInfoRecords.map(record => normalizeBookDetailLoanStat(record.Total)).find(isBookDetailLoanStat) ?? null;
 }
 
-function normalizeBookDetailLoanStats(value: unknown, key: 'age' | 'gender' | 'region') {
+function normalizeBookDetailAgeLoanStats(value: unknown) {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -123,7 +123,7 @@ function normalizeBookDetailLoanStats(value: unknown, key: 'age' | 'gender' | 'r
         return null;
       }
 
-      return normalizeBookDetailLoanStat(item[key]);
+      return normalizeBookDetailLoanStat(item.age);
     })
     .filter(isBookDetailLoanStat);
 }
@@ -156,7 +156,7 @@ function normalizeBookDetailLoanInfo(responseRoot: Record<string, unknown>): Boo
   const loanInfoRecords = Array.isArray(responseRoot.loanInfo) ? responseRoot.loanInfo.filter(isLibraryApiRecord) : [];
 
   return {
-    byAge: loanInfoRecords.flatMap(record => normalizeBookDetailLoanStats(record.ageResult, 'age')),
+    byAge: loanInfoRecords.flatMap(record => normalizeBookDetailAgeLoanStats(record.ageResult)),
     total: normalizeBookDetailTotalLoanStat(loanInfoRecords),
   };
 }
