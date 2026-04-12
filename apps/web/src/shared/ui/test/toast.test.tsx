@@ -1,7 +1,12 @@
 import {render, screen} from '@testing-library/react';
+import type {CSSProperties} from 'react';
 import {Toaster as SonnerToaster} from 'sonner';
 import {afterEach, describe, expect, it} from 'vitest';
 import {toast} from '@/shared/ui';
+
+const TOAST_VIEWPORT_STYLE = {
+  '--width': '420px',
+} as CSSProperties;
 
 describe('toast', () => {
   if (!HTMLElement.prototype.setPointerCapture) {
@@ -22,6 +27,7 @@ describe('toast', () => {
         expand={false}
         gap={12}
         position="top-center"
+        style={TOAST_VIEWPORT_STYLE}
         toastOptions={{
           unstyled: true,
         }}
