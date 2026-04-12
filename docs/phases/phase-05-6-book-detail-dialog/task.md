@@ -23,9 +23,9 @@
 
 ## 4. `features/book` 상세 dialog store 추가
 
-- [ ] `features/book/model`에 `useBookDetailDialogStore`를 추가한다.
-- [ ] store state는 `selectedBookDetail: { isbn13; detailUrl } | null`만 소유한다.
-- [ ] `openBookDetailDialog`, `closeBookDetailDialog`, `resetBookDetailDialog` action을 추가한다.
+- [x] `features/book/model`에 `useBookDetailDialogStore`를 추가한다.
+- [x] store state는 `selectedBookDetail: { isbn13; detailUrl } | null`만 소유한다.
+- [x] `openBookDetailDialog`, `closeBookDetailDialog`, `resetBookDetailDialog` action을 추가한다.
 - [ ] 상세 조회 응답 데이터는 store에 저장하지 않는 규칙을 고정한다.
 
 ## 5. `BookDetailActionPayload`와 결과 카드 open payload 정리
