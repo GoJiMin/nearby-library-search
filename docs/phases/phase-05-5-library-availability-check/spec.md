@@ -128,10 +128,12 @@ type LibraryAvailabilityResponse = {
   - `libraryAvailabilityFixture.data.ts`
   - `libraryAvailabilityFixture.ts`
 - fixture 응답 shape는 production normalized response와 완전히 동일해야 한다.
-- fixture는 최소 아래 케이스를 제공해야 한다.
-  - `hasBook='Y', loanAvailable='Y'`
-  - `hasBook='Y', loanAvailable='N'`
-  - `hasBook='N', loanAvailable='N'`
+- fixture는 개발 단계에서 바로 확인 가능한 명시적 시나리오 매핑을 제공해야 한다.
+  - `available`
+  - `unavailable`
+  - `error`
+  - `not-owned`
+- 첫 페이지에서 보이는 도서관 코드 기준으로 위 시나리오를 바로 확인할 수 있어야 한다.
 - fixture는 현재 library search fixture와 충돌하지 않는 도서관 코드/ISBN 조합을 사용해야 한다.
 - 개발 단계에서 `/books` 플로우 안에서 실제로 확인 가능한 fixture가 되어야 한다.
 
