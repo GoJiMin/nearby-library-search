@@ -9,5 +9,6 @@ export type {
   BookDetailDialogStore,
 } from './model/useBookDetailDialogStore';
 export {readBookSearchResultUrlState} from './model/bookSearchResultUrlState';
+export {BookDetailDialog} from './ui/book-detail/BookDetailDialog';
 export {BookSearchResult} from './ui/search-result/BookSearchResult';
 export type {BookSearchResultProps} from './ui/search-result/BookSearchResult';
