@@ -106,7 +106,6 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
               <BookSearchResultActionButton
                 onClick={() => {
                   openBookDetailDialog({
-                    detailUrl: item.detailUrl,
                     isbn13: item.isbn13,
                   });
                 }}

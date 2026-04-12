@@ -24,15 +24,15 @@
 ## 4. `features/book` 상세 dialog store 추가
 
 - [x] `features/book/model`에 `useBookDetailDialogStore`를 추가한다.
-- [x] store state는 `selectedBookDetail: { isbn13; detailUrl } | null`만 소유한다.
+- [x] store state는 `selectedBookDetail: { isbn13 } | null`만 소유한다.
 - [x] `openBookDetailDialog`, `closeBookDetailDialog`, `resetBookDetailDialog` action을 추가한다.
 - [x] 상세 조회 응답 데이터는 store에 저장하지 않는 규칙을 고정한다.
 
 ## 5. `BookDetailActionPayload`와 결과 카드 open payload 정리
 
-- [x] `BookDetailActionPayload`를 `isbn13 + detailUrl` 기준으로 확장한다.
+- [x] `BookDetailActionPayload`를 `isbn13` 기준으로 유지한다.
 - [x] `BookSearchResultCard`의 `상세 보기` 클릭 payload를 새 계약에 맞춘다.
-- [x] `detailUrl`이 `null`이어도 dialog를 여는 데 문제 없도록 고정한다.
+- [x] 검색 결과 item의 `detailUrl`과 무관하게 dialog를 열 수 있도록 고정한다.
 - [x] `소장 도서관 찾기` payload와 흐름은 그대로 유지한다.
 
 ## 6. `BookSearchResultActionContext` 제거
@@ -77,12 +77,12 @@
 - [x] `loanInfo.total`과 `loanInfo.byAge`가 모두 없으면 `대출 정보가 없어요.`를 보여준다.
 - [x] `byGender`, `byRegion` UI는 만들지 않는다.
 
-## 12. 상세 링크 표시 규칙 구현
+## 12. 외부 상세 링크 미도입 정리
 
-- [ ] store payload의 `detailUrl`을 dialog가 읽을 수 있게 연결한다.
-- [ ] `detailUrl`이 있을 때만 `상세 링크 보기`를 렌더한다.
-- [ ] `detailUrl`이 없으면 해당 CTA를 완전히 숨긴다.
-- [ ] 외부 링크는 현재 shared button/link 톤을 따르되, dialog 내부 보조 행동 수준으로 유지한다.
+- [x] store payload와 dialog UI에서 `detailUrl`을 사용하지 않는다.
+- [x] 검색 결과 응답의 `detailUrl`은 상세 dialog 문맥으로 넘기지 않는다.
+- [x] 상세 dialog는 `/api/books/:isbn13` 응답만으로 렌더되도록 유지한다.
+- [x] phase 문서를 외부 상세 링크 미도입 기준으로 동기화한다.
 
 ## 13. empty, error, close 흐름 구현
 
@@ -96,7 +96,7 @@
 - [ ] 결과 카드에서 `상세 보기`를 눌러 상세 창을 열 수 있는지 검증한다.
 - [ ] loading, success, empty, error를 사용자 기능 기준으로 검증한다.
 - [ ] 제목, 저자, 표지, 메타 정보, 전체 대출 정보, 연령별 대출 정보를 확인할 수 있는지 검증한다.
-- [ ] 설명이나 상세 링크가 없으면 보이지 않는지 검증한다.
+- [ ] 설명이 없으면 보이지 않는지 검증한다.
 - [ ] 창을 닫으면 결과 화면으로 자연스럽게 돌아가는지 검증한다.
 - [ ] 검색 조건이 바뀌면 상세 창이 닫히는지 검증한다.
 
@@ -125,7 +125,7 @@
 - web
   - `/books` 결과 화면에서 상세 dialog open/close
   - loading, success, empty, error
-  - 설명과 상세 링크 조건부 렌더
+  - 설명 조건부 렌더
   - 검색 조건 변경 시 dialog close
 - 테스트 원칙
   - 사용자 기능 통합테스트 중심
@@ -137,4 +137,4 @@
 - 구현과 테스트를 같은 단계에서 완료하는 현재 프로젝트 규칙을 그대로 따른다.
 - integration test 상호작용 기본값은 `@testing-library/user-event`다.
 - `상세 보기` 상태는 `useFindLibraryStore`와 분리된 `features/book` 전용 store로 간다.
-- `detailUrl`은 store payload로만 전달하고 BFF/contracts에는 추가하지 않는다.
+- 검색 결과 응답의 `detailUrl`은 이번 phase의 상세 dialog UI에서 사용하지 않는다.

@@ -25,8 +25,8 @@
   - 상세 dialog 내부 조회는 기존 `useSuspenseQuery` 흐름을 유지하고 `Suspense + QueryErrorBoundary` 조합으로 처리한다.
 - 데이터/계약 기준
   - `BookDetailResponse`는 유지하되 `loanInfo` shape를 `total + byAge`로 축소한다.
-  - `BookDetailActionPayload`는 `isbn13`만이 아니라 `detailUrl`도 포함한다.
-    - 이유: 외부 상세 링크는 현재 detail 응답이 아니라 검색 결과 카드의 `detailUrl`에만 있기 때문이다.
+  - `BookDetailActionPayload`는 `isbn13`만 가진다.
+  - 검색 결과의 `detailUrl`은 상세 dialog 문맥으로 넘기지 않는다.
   - BFF는 계속 `/api/books/:isbn13`를 제공하고, web은 기존 entity 공개 API만 사용한다.
 - UI 기준
   - 새 시각 언어를 만들지 않는다.
@@ -86,7 +86,6 @@
 ```ts
 type BookDetailDialogPayload = {
   isbn13: Isbn13;
-  detailUrl: string | null;
 };
 
 type BookDetailDialogState = {
@@ -117,7 +116,6 @@ type BookDetailDialogActions = {
 ```ts
 {
   isbn13: item.isbn13,
-  detailUrl: item.detailUrl,
 }
 ```
 
@@ -175,11 +173,8 @@ type BookDetailLoanInfo = {
   - 설명
   - 전체 대출 정보
   - 연령별 대출 정보
-  - 외부 상세 링크
 - 값이 없는 필드는 가짜 문구 없이 숨긴다.
 - `description`이 없으면 설명 섹션을 숨긴다.
-- `detailUrl`이 있을 때만 외부 링크를 노출한다.
-- `detailUrl` 버튼/링크 문구는 `상세 링크 보기`로 고정한다.
 
 ### 4. 반응형 구조
 
@@ -227,7 +222,7 @@ type BookDetailLoanInfo = {
   - 결과 카드에서 `상세 보기`를 눌러 도서 상세 창을 열 수 있다.
   - 상세 정보를 불러오는 동안 loading 상태를 본다.
   - 상세 정보가 있으면 제목, 저자, 표지, 기본 메타 정보, 전체 대출 정보, 연령별 대출 정보를 확인할 수 있다.
-  - 설명이나 상세 링크가 없으면 해당 정보는 보이지 않는다.
+  - 설명이 없으면 해당 정보는 보이지 않는다.
   - 상세 정보를 찾지 못하면 빈 상태 안내를 본다.
   - 상세 정보를 불러오지 못하면 dialog 안에서 다시 시도할 수 있다.
   - 창을 닫으면 결과 화면으로 자연스럽게 돌아간다.
@@ -254,6 +249,6 @@ type BookDetailLoanInfo = {
 ## Assumptions
 
 - `상세 보기` 상태는 `useFindLibraryStore`에 합치지 않고 `features/book` 전용 store로 분리한다.
-- `detailUrl`은 검색 결과 카드 payload로만 넘기고, BFF/contracts에는 추가하지 않는다.
+- 검색 결과 응답의 `detailUrl`은 이번 phase의 상세 dialog UI에서 사용하지 않는다.
 - 상세 응답 데이터는 zustand에 저장하지 않고 React Query가 계속 소유한다.
 - 상세 dialog 안에 `소장 도서관 찾기`를 다시 노출하지 않는다.

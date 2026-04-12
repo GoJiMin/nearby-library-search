@@ -2,7 +2,6 @@ import {create} from 'zustand';
 import type {Isbn13} from '@nearby-library-search/contracts';
 
 type BookDetailDialogPayload = {
-  detailUrl: string | null;
   isbn13: Isbn13;
 };
 

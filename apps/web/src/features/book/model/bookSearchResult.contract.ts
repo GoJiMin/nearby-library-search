@@ -1,7 +1,6 @@
 import type {Isbn13} from '@nearby-library-search/contracts';
 
 type BookDetailActionPayload = {
-  detailUrl: string | null;
   isbn13: Isbn13;
 };
 

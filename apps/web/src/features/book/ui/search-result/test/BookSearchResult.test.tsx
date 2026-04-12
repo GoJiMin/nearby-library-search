@@ -211,7 +211,6 @@ describe('BookSearchResult', () => {
     await user.click(selectButton);
 
     expect(useBookDetailDialogStore.getState().selectedBookDetail).toEqual({
-      detailUrl: 'https://www.nl.go.kr/search/bookDetail.do?isbn=9788954682155',
       isbn13: '9788954682155',
     });
     expect(useFindLibraryStore.getState().regionDialogBook).toEqual({
@@ -221,7 +220,7 @@ describe('BookSearchResult', () => {
     });
   });
 
-  it('상세 링크가 없어도 책 상세 보기를 시작할 수 있다', async () => {
+  it('어떤 책이든 상세 보기를 시작할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderBookSearchResult(
@@ -240,7 +239,6 @@ describe('BookSearchResult', () => {
     await user.click(within(secondItem).getByRole('button', {name: '상세 보기'}));
 
     expect(useBookDetailDialogStore.getState().selectedBookDetail).toEqual({
-      detailUrl: null,
       isbn13: '9791196447182',
     });
   });
