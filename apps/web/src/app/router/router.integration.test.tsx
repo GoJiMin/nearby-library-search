@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {createMemoryRouter, RouterProvider} from 'react-router-dom';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
+import {useBookDetailDialogStore} from '@/features/book';
 import {routes} from './router';
 
 const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
@@ -186,6 +187,7 @@ beforeEach(() => {
   mockKakaoMapConfig.appKey = undefined;
   mockKakaoMapConfig.isEnabled = false;
   mockLoadKakaoMapSdk.mockReset();
+  useBookDetailDialogStore.getState().resetBookDetailDialog();
   vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
     callback(0);
 
@@ -402,6 +404,65 @@ describe('app router integration', () => {
       expect(screen.queryByRole('dialog', {name: '검색 지역 선택'})).not.toBeInTheDocument();
     });
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+  });
+
+  it('검색 결과에서 상세 보기를 누르면 도서 상세 창을 열고 닫을 수 있다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+
+    const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
+
+    expect(detailDialog).toBeInTheDocument();
+    expect(within(detailDialog).getByText('도서 상세 정보를 불러올 준비 중이에요.')).toBeInTheDocument();
+
+    await user.click(within(detailDialog).getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
+  });
+
+  it('다른 검색어로 다시 검색하면 열려 있던 도서 상세 창이 닫힌다', async () => {
+    const {router} = renderRouter(['/books?title=파친코&page=1']);
+
+    await userEvent.setup().click(await screen.findByRole('button', {name: '상세 보기'}));
+    expect(await screen.findByRole('dialog', {name: '도서 상세 정보'})).toBeInTheDocument();
+
+    await act(async () => {
+      await router.navigate('/books?title=채식주의자&page=1');
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('heading', {level: 1, name: '채식주의자에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+  });
+
+  it('결과 화면을 벗어났다가 다시 돌아오면 이전에 열어둔 도서 상세 창이 남아 있지 않다', async () => {
+    const {router} = renderRouter(['/books?title=파친코&page=1']);
+
+    await userEvent.setup().click(await screen.findByRole('button', {name: '상세 보기'}));
+    expect(await screen.findByRole('dialog', {name: '도서 상세 정보'})).toBeInTheDocument();
+
+    await act(async () => {
+      await router.navigate('/');
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
+    });
+
+    await act(async () => {
+      await router.navigate('/books?title=파친코&page=1');
+    });
+
+    expect(await screen.findByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
   });
 
   it('다른 책을 보더라도 마지막으로 고른 지역을 다시 이어서 볼 수 있다', async () => {

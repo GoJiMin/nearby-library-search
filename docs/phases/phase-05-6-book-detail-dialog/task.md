@@ -44,10 +44,10 @@
 
 ## 7. `/books` route shell에 `BookDetailDialog` mount
 
-- [ ] `pages/book-search-result`가 `BookDetailDialog`를 `RegionSelectDialog`, `LibrarySearchResultDialog`와 함께 조합하도록 연결한다.
-- [ ] dialog open 기준을 `selectedBookDetail != null`로 고정한다.
-- [ ] close 시 result page는 유지되고 dialog만 닫히게 한다.
-- [ ] 검색 조건이 바뀌거나 route를 이탈하면 dialog를 reset하는 규칙을 연결한다.
+- [x] `pages/book-search-result`가 `BookDetailDialog`를 `RegionSelectDialog`, `LibrarySearchResultDialog`와 함께 조합하도록 연결한다.
+- [x] dialog open 기준을 `selectedBookDetail != null`로 고정한다.
+- [x] close 시 result page는 유지되고 dialog만 닫히게 한다.
+- [x] 검색 조건이 바뀌거나 route를 이탈하면 dialog를 reset하는 규칙을 연결한다.
 
 ## 8. `BookDetailDialog` 기본 골격 구현
 
