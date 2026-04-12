@@ -17,12 +17,16 @@ function resolveMostPopularAgeGroup(
     rank: number | null;
   }>,
 ) {
-  const highestLoanCountAgeGroup = byAge.reduce<typeof byAge[number] | null>((currentHighest, currentItem) => {
+  const highestLoanCountAgeGroup = byAge.reduce<(typeof byAge)[number] | null>((currentHighest, currentItem) => {
     if (currentItem.loanCount == null) {
       return currentHighest;
     }
 
-    if (currentHighest == null || currentHighest.loanCount == null || currentItem.loanCount > currentHighest.loanCount) {
+    if (
+      currentHighest == null ||
+      currentHighest.loanCount == null ||
+      currentItem.loanCount > currentHighest.loanCount
+    ) {
       return currentItem;
     }
 
@@ -45,15 +49,20 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
 
   const publicationValue = book.publicationDate ?? book.publicationYear;
   const publicationLabel =
-    book.publisher && publicationValue ? `${book.publisher} · ${publicationValue}` : book.publisher ?? publicationValue;
+    book.publisher && publicationValue
+      ? `${book.publisher} · ${publicationValue}`
+      : (book.publisher ?? publicationValue);
   const classificationLabel =
-    book.className && book.classNumber ? `${book.className} · ${book.classNumber}` : book.className ?? book.classNumber;
+    book.className && book.classNumber
+      ? `${book.className} · ${book.classNumber}`
+      : (book.className ?? book.classNumber);
   const totalLoanInfo = loanInfo.total;
   const totalLoanCount = totalLoanInfo?.loanCount;
   const hasLoanTotal = totalLoanCount != null;
   const hasLoanAgeStats = loanInfo.byAge.length > 0;
   const totalLoanCountLabel = hasLoanTotal ? `총 대출 ${totalLoanCount.toLocaleString('ko-KR')}건` : null;
-  const totalLoanRankLabel = totalLoanInfo?.rank != null ? `대출 순위 ${totalLoanInfo.rank.toLocaleString('ko-KR')}위` : null;
+  const totalLoanRankLabel =
+    totalLoanInfo?.rank != null ? `대출 순위 ${totalLoanInfo.rank.toLocaleString('ko-KR')}위` : null;
   const mostPopularAgeGroup = hasLoanAgeStats ? resolveMostPopularAgeGroup(loanInfo.byAge) : null;
   const mostPopularAgeLoanCountLabel =
     mostPopularAgeGroup?.loanCount != null
@@ -79,7 +88,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
       </aside>
       <div className="bg-surface min-h-0 overflow-y-auto">
         <div className="flex min-h-full flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10">
-          <section className="border-line/60 space-y-3 border-b pb-6">
+          <section className="border-line/60 space-y-1.5 border-b pb-6">
             <Heading as="h2" className="text-balance" size="lg">
               {book.title}
             </Heading>
@@ -134,7 +143,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             </section>
           </div>
 
-          <section className="border-line/60 space-y-3 border-t pt-6">
+          <section className="border-line/60 space-y-4 border-t pt-6">
             <p className={detailSectionLabelClassName}>대출 정보</p>
             {hasLoanTotal || hasLoanAgeStats ? (
               <div className="space-y-4">
@@ -143,11 +152,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
                     <Heading as="h3" size="sm">
                       {totalLoanCountLabel}
                     </Heading>
-                    {totalLoanRankLabel && (
-                      <Text size="sm">
-                        {totalLoanRankLabel}
-                      </Text>
-                    )}
+                    {totalLoanRankLabel && <Text size="sm">{totalLoanRankLabel}</Text>}
                   </div>
                 )}
 
@@ -161,10 +166,14 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
                 )}
 
                 {hasLoanAgeStats && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {loanInfo.byAge.map(ageStat => {
                       if (ageStat.loanCount == null) {
-                        return <Badge key={ageStat.name} variant="muted">{ageStat.name}</Badge>;
+                        return (
+                          <Badge key={ageStat.name} variant="muted">
+                            {ageStat.name}
+                          </Badge>
+                        );
                       }
 
                       return (
