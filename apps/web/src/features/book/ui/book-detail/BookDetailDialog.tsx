@@ -1,15 +1,18 @@
+import {Suspense} from 'react';
 import {useShallow} from 'zustand/react/shallow';
 import {useBookDetailDialogStore} from '../../model/useBookDetailDialogStore';
 import {Dialog} from '@/shared/ui';
-import {BookDetailDialogShell} from './BookDetailDialogShell';
+import {BookDetailDialogLoadingContent} from './BookDetailDialogLoadingContent';
+import {BookDetailDialogResolvedContent} from './BookDetailDialogResolvedContent';
 
 function BookDetailDialog() {
-  const {closeBookDetailDialog, open} = useBookDetailDialogStore(
+  const {closeBookDetailDialog, selectedBookDetail} = useBookDetailDialogStore(
     useShallow(state => ({
       closeBookDetailDialog: state.closeBookDetailDialog,
-      open: state.selectedBookDetail != null,
+      selectedBookDetail: state.selectedBookDetail,
     })),
   );
+  const open = selectedBookDetail != null;
 
   return (
     <Dialog
@@ -20,7 +23,11 @@ function BookDetailDialog() {
         }
       }}
     >
-      {open && <BookDetailDialogShell />}
+      {selectedBookDetail != null && (
+        <Suspense fallback={<BookDetailDialogLoadingContent />}>
+          <BookDetailDialogResolvedContent isbn13={selectedBookDetail.isbn13} />
+        </Suspense>
+      )}
     </Dialog>
   );
 }
