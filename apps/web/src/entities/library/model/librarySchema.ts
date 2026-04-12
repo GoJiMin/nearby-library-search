@@ -1,4 +1,4 @@
-import type {DetailRegionCode, Isbn, RegionCode} from '@nearby-library-search/contracts';
+import type {DetailRegionCode, Isbn, Isbn13, LibraryCode, RegionCode} from '@nearby-library-search/contracts';
 import {z} from 'zod';
 import {createPositiveIntegerSchema, normalizeOptionalString} from '@/shared/validation';
 
@@ -10,6 +10,11 @@ type LibrarySearchParams = {
   isbn: Isbn;
   page: number;
   region: RegionCode;
+};
+
+type LibraryAvailabilityParams = {
+  isbn13: Isbn13;
+  libraryCode: LibraryCode;
 };
 
 const searchLibrariesParamsSchema = z
@@ -35,4 +40,4 @@ function parseSearchLibrariesParams(params: unknown): LibrarySearchParams {
 }
 
 export {LIBRARY_SEARCH_PAGE_SIZE, parseSearchLibrariesParams, searchLibrariesParamsSchema};
-export type {LibrarySearchParams};
+export type {LibraryAvailabilityParams, LibrarySearchParams};
