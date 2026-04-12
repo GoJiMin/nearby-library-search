@@ -489,6 +489,8 @@ describe('app router integration', () => {
     const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
 
     expect(within(detailDialog).getByRole('heading', {name: '도서 상세 정보를 찾지 못했어요.'})).toBeInTheDocument();
+    expect(within(detailDialog).getByText('선택한 책의 상세 정보가 제공되지 않을 수 있어요.')).toBeInTheDocument();
+    expect(within(detailDialog).getByRole('button', {name: '다른 도서 보기'})).toBeInTheDocument();
   });
 
   it('다른 검색어로 다시 검색하면 열려 있던 도서 상세 창이 닫힌다', async () => {

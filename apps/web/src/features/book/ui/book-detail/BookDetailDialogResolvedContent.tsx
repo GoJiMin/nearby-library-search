@@ -2,6 +2,7 @@ import type {Isbn13} from '@nearby-library-search/contracts';
 import {BookOpen} from 'lucide-react';
 import {useGetBookDetail} from '@/entities/book';
 import {Heading, LucideIcon, Text} from '@/shared/ui';
+import {BookDetailDialogEmptyContent} from './states/BookDetailDialogEmptyContent';
 
 type BookDetailDialogResolvedContentProps = {
   isbn13: Isbn13;
@@ -29,13 +30,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
   const {book} = useGetBookDetail(isbn13);
 
   if (book == null) {
-    return (
-      <div className="flex h-full items-center px-6 py-8 sm:px-8 sm:py-10">
-        <Heading as="h2" size="md">
-          도서 상세 정보를 찾지 못했어요.
-        </Heading>
-      </div>
-    );
+    return <BookDetailDialogEmptyContent />;
   }
 
   const publicationLabel = createPublicationLabel(book);
