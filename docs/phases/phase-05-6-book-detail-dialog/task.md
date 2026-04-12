@@ -12,7 +12,7 @@
 - [x] `/api/books/:isbn13` normalized response에서 `loanInfo.total`만 대표 값으로 남긴다.
 - [x] `loanInfo.byAge`만 정규화하고 `genderResult`, `regionResult`는 버린다.
 - [x] `book === null`을 error가 아니라 empty 가능한 정상 응답으로 유지한다.
-- [ ] 기존 error helper와 route 구조를 그대로 유지한다.
+- [x] 기존 error helper와 route 구조를 그대로 유지한다.
 
 ## 3. BFF 상세 route 회귀 검증 정리
 
