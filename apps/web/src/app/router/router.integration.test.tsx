@@ -481,6 +481,7 @@ describe('app router integration', () => {
     const publicationHeading = within(detailDialog).getByText('출판 정보');
 
     expect(introductionHeading.compareDocumentPosition(publicationHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(introductionHeading.className).toBe(publicationHeading.className);
   });
 
   it('상세 정보에 없는 항목은 보이지 않는다', async () => {
