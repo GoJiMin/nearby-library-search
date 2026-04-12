@@ -108,6 +108,10 @@ function normalizeBookDetailLoanStat(value: unknown): BookDetailLoanStat | null 
   };
 }
 
+function normalizeBookDetailTotalLoanStat(loanInfoRecords: Array<Record<string, unknown>>) {
+  return loanInfoRecords.map(record => normalizeBookDetailLoanStat(record.Total)).find(isBookDetailLoanStat) ?? null;
+}
+
 function normalizeBookDetailLoanStats(value: unknown, key: 'age' | 'gender' | 'region') {
   if (!Array.isArray(value)) {
     return [];
@@ -151,14 +155,9 @@ function normalizeBookDetailRecord(value: Record<string, unknown>): BookDetail |
 function normalizeBookDetailLoanInfo(responseRoot: Record<string, unknown>): BookDetailLoanInfo {
   const loanInfoRecords = Array.isArray(responseRoot.loanInfo) ? responseRoot.loanInfo.filter(isLibraryApiRecord) : [];
 
-  const total =
-    loanInfoRecords.map(record => normalizeBookDetailLoanStat(record.Total)).find(isBookDetailLoanStat) ?? null;
-
   return {
     byAge: loanInfoRecords.flatMap(record => normalizeBookDetailLoanStats(record.ageResult, 'age')),
-    byGender: loanInfoRecords.flatMap(record => normalizeBookDetailLoanStats(record.genderResult, 'gender')),
-    byRegion: loanInfoRecords.flatMap(record => normalizeBookDetailLoanStats(record.regionResult, 'region')),
-    total,
+    total: normalizeBookDetailTotalLoanStat(loanInfoRecords),
   };
 }
 
