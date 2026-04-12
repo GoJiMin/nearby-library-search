@@ -149,18 +149,18 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
               <div className="space-y-4">
                 {hasLoanTotal && (
                   <div className="space-y-1">
-                    <Heading as="h3" size="sm">
+                    <Text className="font-semibold" size="sm" tone="default">
                       {totalLoanCountLabel}
-                    </Heading>
+                    </Text>
                     {totalLoanRankLabel && <Text size="sm">{totalLoanRankLabel}</Text>}
                   </div>
                 )}
 
                 {mostPopularAgeGroup && (
                   <div className="space-y-1">
-                    <Heading as="h3" size="sm">
+                    <Text className="font-semibold" size="sm" tone="default">
                       {`가장 많이 읽는 연령대는 ${mostPopularAgeGroup.name}예요.`}
-                    </Heading>
+                    </Text>
                     {mostPopularAgeLoanCountLabel && <Text size="sm">{mostPopularAgeLoanCountLabel}</Text>}
                   </div>
                 )}
