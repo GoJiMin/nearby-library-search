@@ -818,8 +818,9 @@ describe('LibrarySearchResultDialog', () => {
     renderLibrarySearchResultDialog();
 
     const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+    const quickMapButton = within(detailPanel).getByRole('button', {name: '지도를 표시할 수 없어요'});
 
-    expect(within(detailPanel).getByText('지도를 표시할 수 없어요.')).toBeInTheDocument();
+    expect(quickMapButton).toBeDisabled();
     expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
   });
 
@@ -845,8 +846,9 @@ describe('LibrarySearchResultDialog', () => {
     renderLibrarySearchResultDialog();
 
     const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+    const quickMapButton = within(detailPanel).getByRole('button', {name: '위치 정보가 없어요'});
 
-    expect(within(detailPanel).getByText('위치 정보가 없어요.')).toBeInTheDocument();
+    expect(quickMapButton).toBeDisabled();
     expect(within(detailPanel).queryByRole('button', {name: '지도로 보기'})).not.toBeInTheDocument();
   });
 

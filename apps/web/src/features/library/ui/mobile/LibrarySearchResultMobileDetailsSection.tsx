@@ -4,7 +4,7 @@ import {hasLibraryCoordinates, useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
 import {kakaoMapConfig} from '@/shared/env';
-import {Button, LucideIcon, Text} from '@/shared/ui';
+import {Button, LucideIcon} from '@/shared/ui';
 import {
   LibrarySearchResultAvailabilityAction,
   LibrarySearchResultAvailabilityCta,
@@ -49,6 +49,15 @@ function LibrarySearchResultMobileQuickMapAction({
 }) {
   const quickMapState = resolveQuickMapState({selectedLibrary});
 
+  function renderDisabledQuickMapButton(buttonLabel: string) {
+    return (
+      <Button className="w-full rounded-2xl" disabled size="lg" variant="secondary">
+        <LucideIcon className="h-4 w-4" icon={Map} strokeWidth={2.2} />
+        {buttonLabel}
+      </Button>
+    );
+  }
+
   if (quickMapState === 'hidden') {
     return null;
   }
@@ -69,18 +78,10 @@ function LibrarySearchResultMobileQuickMapAction({
   }
 
   if (quickMapState === 'unavailable') {
-    return (
-      <Text className="px-1 text-sm" size="sm" tone="muted">
-        지도를 표시할 수 없어요.
-      </Text>
-    );
+    return renderDisabledQuickMapButton('지도를 표시할 수 없어요');
   }
 
-  return (
-    <Text className="px-1 text-sm" size="sm" tone="muted">
-      위치 정보가 없어요.
-    </Text>
-  );
+  return renderDisabledQuickMapButton('위치 정보가 없어요');
 }
 
 function LibrarySearchResultMobileDetailsSectionFallback() {
