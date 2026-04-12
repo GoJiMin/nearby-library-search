@@ -27,7 +27,7 @@ function BookDetailDialog() {
       {selectedBookDetail != null && (
         <DialogContent
           aria-describedby={undefined}
-          className="h-[min(calc(100vh-32px),760px)] w-[min(calc(100vw-32px),980px)] gap-0 overflow-hidden p-0 sm:p-0"
+          className="h-[min(calc(100vh-32px),720px)] w-[min(calc(100vw-32px),980px)] gap-0 overflow-hidden p-0 sm:p-0"
           showCloseButton={false}
         >
           <DialogHeader className="sr-only">
