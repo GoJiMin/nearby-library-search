@@ -61,7 +61,7 @@
 - [x] `sonner` 기반 toast wrapper와 `AppToaster`를 추가한다.
 - [x] `shared/request`에 전역 request error queue를 추가한다.
 - [x] `ReactQueryProvider`가 `errorBoundary`와 `toast` 요청 에러를 다르게 라우팅하도록 정리한다.
-- [ ] `GlobalErrorDetector`와 global unexpected error boundary를 `AppProvider`에 연결한다.
+- [x] `GlobalErrorDetector`와 global unexpected error boundary를 `AppProvider`에 연결한다.
 
 ## 9. 공용 availability CTA 상태 모델 구현
 
