@@ -1,7 +1,10 @@
 import type {Isbn13, LibraryCode} from '@nearby-library-search/contracts';
 import {LoaderCircle, Search} from 'lucide-react';
 import {useGetLibraryAvailability} from '@/entities/library';
-import {type LibraryAvailabilityCtaStatus, useLibraryAvailabilityCtaState} from '@/features/library/model/useLibraryAvailabilityCtaState';
+import {
+  type LibraryAvailabilityCtaStatus,
+  useLibraryAvailabilityCtaState,
+} from '@/features/library/model/useLibraryAvailabilityCtaState';
 import {Button, LucideIcon, Text} from '@/shared/ui';
 
 type LibrarySearchResultAvailabilityActionProps = {
@@ -27,7 +30,7 @@ function LibrarySearchResultAvailabilityAction({
   const isResultStatus =
     status === 'success-available' || status === 'success-unavailable' || status === 'success-not-owned';
   const buttonClassName = isResultStatus
-    ? 'w-full rounded-2xl border border-accent/30 bg-transparent text-accent hover:bg-transparent hover:text-accent'
+    ? 'w-full rounded-2xl border border-accent/30 bg-transparent text-accent hover:bg-transparent hover:text-accent pointer-events-none'
     : 'w-full rounded-2xl';
 
   return (
