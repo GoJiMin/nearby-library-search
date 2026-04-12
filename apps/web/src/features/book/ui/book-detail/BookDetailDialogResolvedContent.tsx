@@ -87,8 +87,8 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
         </div>
       </aside>
       <div className="bg-surface lg:min-h-0 lg:overflow-y-auto">
-        <div className="flex flex-col gap-6 px-5 py-5 lg:min-h-full lg:gap-8 lg:px-8 lg:py-10">
-          <section className="border-line/60 space-y-1.5 border-b pb-5 lg:pb-6">
+        <div className="flex flex-col gap-4 px-5 py-5 lg:min-h-full lg:gap-8 lg:px-8 lg:py-10">
+          <section className="border-line/60 space-y-1.5 border-b pb-4 lg:pb-6">
             <Heading as="h2" className="text-balance" size="lg">
               {book.title}
             </Heading>
