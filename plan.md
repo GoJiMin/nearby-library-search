@@ -128,10 +128,10 @@
 
 ## Phase 5-5. 도서관 대출 가능 여부 조회 구현
 
-- [ ] 도서관 결과 dialog의 `대출 가능 여부 조회` CTA를 실제 availability 조회 흐름에 연결한다.
-- [ ] 선택된 도서관 기준 availability loading, success, empty, error 상태 계약을 정리한다.
-- [ ] desktop detail panel과 mobile detail 영역에서 같은 availability 결과를 일관되게 노출한다.
-- [ ] Phase 5-5 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [x] 도서관 결과 dialog의 `대출 가능 여부 조회` CTA를 실제 availability 조회 흐름에 연결한다.
+- [x] 선택된 도서관 기준 availability loading, success, empty, error 상태 계약을 정리한다.
+- [x] desktop detail panel과 mobile detail 영역에서 같은 availability 결과를 일관되게 노출한다.
+- [x] Phase 5-5 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
 ## Phase 5-6. BFF 보안 하드닝
 

@@ -58,8 +58,8 @@
 
 ## 8-1. web 전역 request error와 toast 인프라 선행 도입
 
-- [x] `sonner` 기반 toast wrapper와 `AppToaster`를 추가한다.
-- [x] `shared/request`에 전역 request error queue를 추가한다.
+- [x] `sonner` 기반 toast wrapper를 추가하고 app root에 toaster를 연결한다.
+- [x] `shared/request`에 전역 request error store를 추가한다.
 - [x] `ReactQueryProvider`가 `errorBoundary`와 `toast` 요청 에러를 다르게 라우팅하도록 정리한다.
 - [x] `GlobalErrorDetector`와 global unexpected error boundary를 `AppProvider`에 연결한다.
 
@@ -103,11 +103,11 @@
 
 ## 14. 최종 검증과 문서 동기화
 
-- [ ] `pnpm test:run`을 통과시킨다.
-- [ ] `pnpm lint:web`를 통과시킨다.
-- [ ] `pnpm typecheck:web`를 통과시킨다.
-- [ ] `pnpm build:web`와 `pnpm --filter @nearby-library-search/bff build`를 통과시킨다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 5-5 상태를 현재 구현 결과와 동기화한다.
+- [x] `pnpm test:run`을 통과시킨다.
+- [x] `pnpm lint:web`를 통과시킨다.
+- [x] `pnpm typecheck:web`를 통과시킨다.
+- [x] `pnpm build:web`와 `pnpm --filter @nearby-library-search/bff build`를 통과시킨다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 5-5 상태를 현재 구현 결과와 동기화한다.
 
 ## Important Changes
 
@@ -132,5 +132,5 @@
 - 구현과 테스트를 같은 단계에서 완료하는 현재 프로젝트 규칙을 그대로 따른다.
 - integration test 상호작용 기본값은 `@testing-library/user-event`다.
 - `open_api_spec.md`는 source of truth로만 사용하고, task 문서에는 raw 응답 구조를 중복 복붙하지 않는다.
-- 성공 결과는 `Y`, `N`, `hasBook='N'` 모두 버튼 비활성 상태로 처리한다.
+- 성공 결과는 `Y`, `N`, `hasBook='N'` 모두 결과 표시 상태로 처리한다.
 - 에러는 재시도 가능한 상태로 처리한다.
