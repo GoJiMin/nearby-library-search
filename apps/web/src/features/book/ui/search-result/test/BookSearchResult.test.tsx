@@ -12,7 +12,7 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
     items: [
       {
         author: '이민진',
-        detailUrl: null,
+        detailUrl: 'https://www.nl.go.kr/search/bookDetail.do?isbn=9788954682155',
         imageUrl: 'https://example.com/books/pachinko.jpg',
         isbn13: '9788954682155',
         loanCount: 12,
@@ -213,12 +213,40 @@ describe('BookSearchResult', () => {
 
     expect(onOpenBookDetail).toHaveBeenCalledTimes(1);
     expect(onOpenBookDetail).toHaveBeenCalledWith({
+      detailUrl: 'https://www.nl.go.kr/search/bookDetail.do?isbn=9788954682155',
       isbn13: '9788954682155',
     });
     expect(useFindLibraryStore.getState().regionDialogBook).toEqual({
       author: '이민진',
       isbn13: '9788954682155',
       title: '파친코',
+    });
+  });
+
+  it('상세 링크가 없어도 책 상세 보기를 시작할 수 있다', async () => {
+    const user = userEvent.setup();
+    const onOpenBookDetail = vi.fn();
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onOpenBookDetail={onOpenBookDetail}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const [, secondItem] = screen.getAllByRole('listitem');
+
+    await user.click(within(secondItem).getByRole('button', {name: '상세 보기'}));
+
+    expect(onOpenBookDetail).toHaveBeenCalledTimes(1);
+    expect(onOpenBookDetail).toHaveBeenCalledWith({
+      detailUrl: null,
+      isbn13: '9791196447182',
     });
   });
 

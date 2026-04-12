@@ -30,10 +30,10 @@
 
 ## 5. `BookDetailActionPayload`와 결과 카드 open payload 정리
 
-- [ ] `BookDetailActionPayload`를 `isbn13 + detailUrl` 기준으로 확장한다.
-- [ ] `BookSearchResultCard`의 `상세 보기` 클릭 payload를 새 계약에 맞춘다.
-- [ ] `detailUrl`이 `null`이어도 dialog를 여는 데 문제 없도록 고정한다.
-- [ ] `소장 도서관 찾기` payload와 흐름은 그대로 유지한다.
+- [x] `BookDetailActionPayload`를 `isbn13 + detailUrl` 기준으로 확장한다.
+- [x] `BookSearchResultCard`의 `상세 보기` 클릭 payload를 새 계약에 맞춘다.
+- [x] `detailUrl`이 `null`이어도 dialog를 여는 데 문제 없도록 고정한다.
+- [x] `소장 도서관 찾기` payload와 흐름은 그대로 유지한다.
 
 ## 6. `BookSearchResultActionContext` 제거
 
