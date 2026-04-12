@@ -49,7 +49,7 @@ function renderAlertToast({
   const {icon: Icon, iconClassName} = TOAST_TONE_META[tone];
 
   return (
-    <div className="border-line bg-surface shadow-card flex w-[min(92vw,420px)] items-start gap-4 rounded-3xl border px-4 py-4 backdrop-blur">
+    <div className="border-line bg-surface shadow-card flex w-full items-start gap-4 rounded-3xl border px-4 py-4 backdrop-blur">
       <div className={mergeClassNames('mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl', iconClassName)}>
         <Icon size={20} strokeWidth={2.2} />
       </div>
