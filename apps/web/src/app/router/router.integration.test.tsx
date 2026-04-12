@@ -461,7 +461,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
-  it('상세 보기를 누르면 도서 상세 정보를 불러오는 동안 loading 상태를 보고 창을 닫을 수 있다', async () => {
+  it('상세 보기를 누르면 책 정보를 확인하는 중에도 창을 닫고 검색 결과를 계속 볼 수 있다', async () => {
     const user = userEvent.setup();
     const pendingPromise = new Promise<never>(() => {});
 
@@ -486,6 +486,27 @@ describe('app router integration', () => {
     });
 
     expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
+  });
+
+  it('책 상세 창을 닫으면 검색 결과 화면으로 자연스럽게 돌아간다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+
+    const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
+
+    expect(within(detailDialog).getByRole('heading', {name: '파친코'})).toBeInTheDocument();
+
+    await user.click(within(detailDialog).getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '파친코에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
   });
 
   it('상세 보기를 누르면 책의 기본 정보와 소개를 확인할 수 있다', async () => {
