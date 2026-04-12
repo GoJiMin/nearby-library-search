@@ -10,13 +10,13 @@ const {mockBookDetailResponse, mockBookSearchResponse, mockUseGetBookDetail, moc
   mockBookDetailResponse: {
     book: {
       author: '이민진',
-      className: null,
-      classNumber: null,
-      description: null,
+      className: '문학',
+      classNumber: '813.6',
+      description: '재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.',
       imageUrl: 'https://image.example.com/pachinko.jpg',
-      isbn: '8954682150',
+      isbn: '895468215X',
       isbn13: '9788954682155',
-      publicationDate: null,
+      publicationDate: '2018-03-09',
       publicationYear: '2018',
       publisher: '문학사상',
       title: '파친코',
@@ -456,7 +456,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
   });
 
-  it('상세 보기를 누르면 제목, 저자, 출판 정보와 ISBN을 확인할 수 있다', async () => {
+  it('상세 보기를 누르면 책의 기본 정보와 소개를 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -465,10 +465,49 @@ describe('app router integration', () => {
 
     const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
 
+    expect(within(detailDialog).getByRole('img', {name: '파친코 표지 이미지'})).toBeInTheDocument();
     expect(within(detailDialog).getByRole('heading', {name: '파친코'})).toBeInTheDocument();
     expect(within(detailDialog).getByText('이민진')).toBeInTheDocument();
-    expect(within(detailDialog).getByText('문학사상 · 2018')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('문학사상 · 2018-03-09')).toBeInTheDocument();
     expect(within(detailDialog).getByText('9788954682155')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('895468215X')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('문학 · 813.6')).toBeInTheDocument();
+    expect(within(detailDialog).getByText('책 소개')).toBeInTheDocument();
+    expect(
+      within(detailDialog).getByText('재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.'),
+    ).toBeInTheDocument();
+  });
+
+  it('상세 정보에 없는 항목은 보이지 않는다', async () => {
+    const user = userEvent.setup();
+
+    mockUseGetBookDetail.mockReturnValue({
+      book: {
+        ...mockBookDetailResponse.book,
+        className: null,
+        classNumber: null,
+        description: null,
+        imageUrl: null,
+        isbn: null,
+        publicationDate: null,
+      },
+      loanInfo: {
+        byAge: [],
+        total: null,
+      },
+    });
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+
+    const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
+
+    expect(within(detailDialog).getByText('문학사상 · 2018')).toBeInTheDocument();
+    expect(within(detailDialog).queryByText('ISBN')).not.toBeInTheDocument();
+    expect(within(detailDialog).queryByText('분류 정보')).not.toBeInTheDocument();
+    expect(within(detailDialog).queryByText('책 소개')).not.toBeInTheDocument();
+    expect(within(detailDialog).queryByRole('img', {name: '파친코 표지 이미지'})).not.toBeInTheDocument();
   });
 
   it('상세 정보를 찾지 못하면 빈 상태 안내를 본다', async () => {
