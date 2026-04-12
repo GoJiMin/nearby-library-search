@@ -1,4 +1,4 @@
-import {getLibraries} from '../api/libraryApi';
+import {getLibraries, getLibraryAvailability} from '../api/libraryApi';
 import type {LibraryAvailabilityParams, LibrarySearchParams} from './librarySchema';
 
 function createLibrarySearchQueryKey(params: LibrarySearchParams) {
@@ -22,6 +22,10 @@ const librariesQueryKeys = {
 };
 
 const librariesQueryOptions = {
+  availability: (params: LibraryAvailabilityParams) => ({
+    queryFn: () => getLibraryAvailability(params),
+    queryKey: createLibraryAvailabilityQueryKey(params),
+  }),
   search: (params: LibrarySearchParams) => ({
     queryFn: () => getLibraries(params),
     queryKey: createLibrarySearchQueryKey(params),
