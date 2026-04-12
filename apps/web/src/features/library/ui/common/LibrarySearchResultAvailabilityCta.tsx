@@ -39,17 +39,14 @@ function LibrarySearchResultAvailabilityAction({
         />
         {buttonLabel}
       </Button>
-      <Text className="px-1 text-sm" size="sm" tone="muted">
-        대출 가능 여부는 전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.
+      <Text className="px-1 text-center text-xs" tone="muted">
+        전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.
       </Text>
     </div>
   );
 }
 
-function LibrarySearchResultAvailabilityCta({
-  isbn13,
-  libraryCode,
-}: LibrarySearchResultAvailabilityCtaProps) {
+function LibrarySearchResultAvailabilityCta({isbn13, libraryCode}: LibrarySearchResultAvailabilityCtaProps) {
   const availabilityQuery = useGetLibraryAvailability({
     isbn13,
     libraryCode,

@@ -10,7 +10,7 @@ type LibrarySearchResultRightPanelProps = {
 
 function LibrarySearchResultRightPanel({focusRequest, params}: LibrarySearchResultRightPanelProps) {
   return (
-    <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_250px]">
+    <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_265px]">
       <section aria-label="도서관 지도 패널" className="bg-surface-muted relative min-h-90 overflow-hidden">
         <LibrarySearchResultSelectedMap focusRequest={focusRequest} params={params} />
       </section>
