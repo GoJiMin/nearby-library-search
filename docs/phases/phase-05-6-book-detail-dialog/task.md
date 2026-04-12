@@ -86,10 +86,10 @@
 
 ## 13. empty, error, close 흐름 구현
 
-- [ ] `book === null`이면 `도서 상세 정보를 찾지 못했어요.` empty state를 렌더한다.
-- [ ] error는 dialog 내부 복구 가능한 상태로 렌더한다.
-- [ ] `다시 시도`로 query reset과 boundary reset을 수행한다.
-- [ ] 닫기 버튼, overlay click, `Esc` 모두 dialog close로 동작하게 한다.
+- [x] `book === null`이면 `도서 상세 정보를 찾지 못했어요.` empty state를 렌더한다.
+- [x] error는 dialog 내부 복구 가능한 상태로 렌더한다.
+- [x] `다시 시도`로 query reset과 boundary reset을 수행한다.
+- [x] 닫기 버튼, overlay click, `Esc` 모두 dialog close로 동작하게 한다.
 
 ## 14. 사용자 기능 통합테스트 추가
 

@@ -4,6 +4,7 @@ import {createMemoryRouter, RouterProvider} from 'react-router-dom';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
 import {useBookDetailDialogStore} from '@/features/book';
+import {RequestGetError} from '@/shared/request';
 import {routes} from './router';
 
 const {mockBookDetailResponse, mockBookSearchResponse, mockUseGetBookDetail, mockUseGetSearchBooks} = vi.hoisted(() => ({
@@ -64,6 +65,17 @@ const {mockBookDetailResponse, mockBookSearchResponse, mockUseGetBookDetail, moc
   mockUseGetBookDetail: vi.fn(),
   mockUseGetSearchBooks: vi.fn(),
 }));
+
+function createBookDetailRequestError() {
+  return new RequestGetError({
+    endpoint: '/api/books/9788954682155',
+    message: '도서 상세 정보를 불러오지 못했습니다.',
+    method: 'GET',
+    name: 'BOOK_DETAIL_UPSTREAM_ERROR',
+    requestBody: null,
+    status: 502,
+  });
+}
 
 function createMockLibraryAvailabilityResponse({
   hasBook = 'Y',
@@ -584,6 +596,83 @@ describe('app router integration', () => {
     expect(within(detailDialog).getByRole('heading', {name: '도서 상세 정보를 찾지 못했어요.'})).toBeInTheDocument();
     expect(within(detailDialog).getByText('선택한 책의 상세 정보가 제공되지 않을 수 있어요.')).toBeInTheDocument();
     expect(within(detailDialog).getByRole('button', {name: '다른 도서 보기'})).toBeInTheDocument();
+  });
+
+  it('상세 정보를 불러오지 못하면 창 안에서 다시 시도하거나 닫을 수 있다', async () => {
+    const user = userEvent.setup();
+    let shouldFail = true;
+
+    mockUseGetBookDetail.mockImplementation(() => {
+      if (shouldFail) {
+        throw createBookDetailRequestError();
+      }
+
+      return mockBookDetailResponse;
+    });
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+
+    const detailDialog = await screen.findByRole('dialog', {name: '도서 상세 정보'});
+    const errorSection = within(detailDialog)
+      .getByRole('heading', {name: '도서 상세 정보를 불러오지 못했어요'})
+      .closest('section');
+
+    expect(errorSection).toBeInstanceOf(HTMLElement);
+
+    if (!(errorSection instanceof HTMLElement)) {
+      throw new Error('book detail error section not found');
+    }
+
+    expect(
+      within(detailDialog).getByText('도서 상세 서버와 연결이 원활하지 않아요. 잠시 후 다시 시도해주세요.'),
+    ).toBeInTheDocument();
+    expect(within(errorSection).getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
+    expect(within(errorSection).getByRole('button', {name: '닫기'})).toBeInTheDocument();
+
+    shouldFail = false;
+    await user.click(within(errorSection).getByRole('button', {name: '다시 시도'}));
+
+    expect(await within(detailDialog).findByRole('heading', {name: '파친코'})).toBeInTheDocument();
+  });
+
+  it('Esc 키로 도서 상세 창을 닫을 수 있다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+    expect(await screen.findByRole('dialog', {name: '도서 상세 정보'})).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
+    });
+  });
+
+  it('배경을 누르면 도서 상세 창을 닫을 수 있다', async () => {
+    const user = userEvent.setup();
+
+    renderRouter(['/books?title=파친코&page=1']);
+
+    await user.click(await screen.findByRole('button', {name: '상세 보기'}));
+    expect(await screen.findByRole('dialog', {name: '도서 상세 정보'})).toBeInTheDocument();
+
+    const overlay = document.querySelector('[data-slot="dialog-overlay"]');
+
+    expect(overlay).toBeInstanceOf(HTMLElement);
+
+    if (!(overlay instanceof HTMLElement)) {
+      throw new Error('dialog overlay not found');
+    }
+
+    await user.click(overlay);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
+    });
   });
 
   it('다른 검색어로 다시 검색하면 열려 있던 도서 상세 창이 닫힌다', async () => {
