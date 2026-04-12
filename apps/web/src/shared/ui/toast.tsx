@@ -49,8 +49,13 @@ function renderAlertToast({
   const {icon: Icon, iconClassName} = TOAST_TONE_META[tone];
 
   return (
-    <div className="border-line bg-surface shadow-card flex w-full items-start gap-4 rounded-3xl border px-4 py-4 backdrop-blur">
-      <div className={mergeClassNames('mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl', iconClassName)}>
+    <div className="border-line bg-surface shadow-card flex w-full items-start gap-3 rounded-3xl border px-3 py-3.5 backdrop-blur sm:gap-4 sm:px-4 sm:py-4">
+      <div
+        className={mergeClassNames(
+          'mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-11 sm:w-11 sm:rounded-2xl',
+          iconClassName,
+        )}
+      >
         <Icon size={20} strokeWidth={2.2} />
       </div>
 
@@ -61,7 +66,7 @@ function renderAlertToast({
 
       <button
         aria-label="토스트 닫기"
-        className="text-text-muted hover:text-text focus-visible:ring-accent-soft inline-flex h-8 w-8 items-center justify-center rounded-full outline-none transition-colors focus-visible:ring-4"
+        className="text-text-muted hover:text-text focus-visible:ring-accent-soft inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full outline-none transition-colors focus-visible:ring-4 sm:h-8 sm:w-8"
         onClick={() => sonnerToast.dismiss(toastId)}
         type="button"
       >

@@ -12,6 +12,7 @@ function AppProvider({children}: PropsWithChildren) {
         <SonnerToaster
           expand={false}
           gap={12}
+          mobileOffset={12}
           position="top-center"
           toastOptions={{
             unstyled: true,
