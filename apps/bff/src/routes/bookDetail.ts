@@ -172,13 +172,15 @@ function normalizeBookDetailResponse(payload: unknown): Result<BookDetailRespons
     };
   }
 
+  const book =
+    getBookRecords(responseRoot)
+      .map(normalizeBookDetailRecord)
+      .find(item => item !== null) ?? null;
+
   return {
     ok: true,
     value: {
-      book:
-        getBookRecords(responseRoot)
-          .map(normalizeBookDetailRecord)
-          .find(item => item !== null) ?? null,
+      book,
       loanInfo: normalizeBookDetailLoanInfo(responseRoot),
     },
   };
