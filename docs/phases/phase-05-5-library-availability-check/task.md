@@ -58,7 +58,7 @@
 
 ## 8-1. web 전역 request error와 toast 인프라 선행 도입
 
-- [ ] `sonner` 기반 toast wrapper와 `AppToaster`를 추가한다.
+- [x] `sonner` 기반 toast wrapper와 `AppToaster`를 추가한다.
 - [ ] `shared/request`에 전역 request error queue를 추가한다.
 - [ ] `ReactQueryProvider`가 `errorBoundary`와 `toast` 요청 에러를 다르게 라우팅하도록 정리한다.
 - [ ] `GlobalErrorDetector`와 global unexpected error boundary를 `AppProvider`에 연결한다.
