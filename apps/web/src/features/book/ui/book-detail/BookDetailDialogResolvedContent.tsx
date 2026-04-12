@@ -71,24 +71,24 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
 
   return (
     <div className="grid min-h-full grid-cols-1 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
-      <aside className="border-line/60 bg-surface-muted/35 border-b px-6 py-8 lg:border-r lg:border-b-0 lg:px-6 lg:py-10">
+      <aside className="border-line/60 bg-surface-muted/35 border-b px-5 py-5 lg:border-r lg:border-b-0 lg:px-6 lg:py-10">
         <div className="flex items-center justify-center lg:h-full lg:items-start">
           {book.imageUrl ? (
             <img
               alt={`${book.title} 표지 이미지`}
-              className="aspect-3/4 w-full max-w-64 rounded-3xl object-cover sm:max-w-xs lg:max-w-full"
+              className="shadow-card aspect-3/4 w-full rounded-3xl object-cover"
               src={book.imageUrl}
             />
           ) : (
-            <div className="bg-surface border-line flex aspect-3/4 w-full max-w-64 items-center justify-center rounded-3xl border sm:max-w-xs lg:max-w-full">
+            <div className="bg-surface border-line flex aspect-3/4 w-full items-center justify-center rounded-3xl border">
               <LucideIcon className="text-text-muted h-10 w-10" icon={BookOpen} strokeWidth={1.8} />
             </div>
           )}
         </div>
       </aside>
       <div className="bg-surface lg:min-h-0 lg:overflow-y-auto">
-        <div className="flex flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10 lg:min-h-full">
-          <section className="border-line/60 space-y-1.5 border-b pb-6">
+        <div className="flex flex-col gap-6 px-5 py-5 lg:min-h-full lg:gap-8 lg:px-8 lg:py-10">
+          <section className="border-line/60 space-y-1.5 border-b pb-5 lg:pb-6">
             <Heading as="h2" className="text-balance" size="lg">
               {book.title}
             </Heading>
@@ -97,7 +97,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             </Text>
           </section>
 
-          <div className="space-y-8">
+          <div className="space-y-6 lg:space-y-8">
             {book.description && (
               <section className="space-y-2">
                 <p className={detailSectionLabelClassName}>책 소개</p>
@@ -143,10 +143,10 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             </section>
           </div>
 
-          <section className="border-line/60 space-y-4 border-t pt-6">
+          <section className="border-line/60 space-y-3 border-t pt-5 lg:space-y-4 lg:pt-6">
             <p className={detailSectionLabelClassName}>대출 정보</p>
             {hasLoanTotal || hasLoanAgeStats ? (
-              <div className="space-y-4">
+              <div className="space-y-3 lg:space-y-4">
                 {hasLoanTotal && (
                   <div className="space-y-1">
                     <Text className="font-semibold" size="sm" tone="default">
@@ -166,7 +166,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
                 )}
 
                 {hasLoanAgeStats && (
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2">
                     {loanInfo.byAge.map(ageStat => {
                       if (ageStat.loanCount == null) {
                         return (
