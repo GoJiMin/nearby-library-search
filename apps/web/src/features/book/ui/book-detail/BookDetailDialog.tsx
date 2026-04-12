@@ -27,7 +27,7 @@ function BookDetailDialog() {
       {selectedBookDetail != null && (
         <DialogContent
           aria-describedby={undefined}
-          className="h-[min(calc(100vh-32px),720px)] w-[min(calc(100vw-32px),980px)] gap-0 overflow-y-auto p-0 sm:p-0 lg:overflow-hidden"
+          className="h-[min(calc(100vh-32px),720px)] w-[min(calc(100vw-32px),980px)] gap-0 overflow-hidden p-0 sm:p-0"
           showCloseButton={false}
         >
           <DialogHeader className="sr-only">
@@ -42,9 +42,11 @@ function BookDetailDialog() {
               <LucideIcon icon={X} strokeWidth={2.2} />
             </button>
           </DialogClose>
-          <Suspense fallback={<BookDetailDialogLoadingContent />}>
-            <BookDetailDialogResolvedContent isbn13={selectedBookDetail.isbn13} />
-          </Suspense>
+          <div className="h-full min-h-0 overflow-y-auto lg:overflow-hidden">
+            <Suspense fallback={<BookDetailDialogLoadingContent />}>
+              <BookDetailDialogResolvedContent isbn13={selectedBookDetail.isbn13} />
+            </Suspense>
+          </div>
         </DialogContent>
       )}
     </Dialog>
