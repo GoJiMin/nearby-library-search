@@ -18,30 +18,32 @@ function BookDetailDialogLoadingContent() {
           className="flex min-h-full flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10"
           role="status"
         >
-          <section aria-hidden="true" className="space-y-3">
+          <section aria-hidden="true" className="border-line/60 space-y-3 border-b pb-6">
             <Skeleton className="h-10 w-4/5 rounded-full" />
             <Skeleton className="h-6 w-1/2 rounded-full" />
           </section>
 
-          <section aria-hidden="true" className="flex flex-col gap-2">
-            <Skeleton className="h-5 w-16 rounded-full" />
-            <Skeleton className="h-5 w-full rounded-full" />
-            <Skeleton className="h-5 w-11/12 rounded-full" />
-            <Skeleton className="h-5 w-4/5 rounded-full" />
-          </section>
+          <div aria-hidden="true" className="space-y-8">
+            <section className="flex flex-col gap-2">
+              <Skeleton className="h-5 w-16 rounded-full" />
+              <Skeleton className="h-5 w-full rounded-full" />
+              <Skeleton className="h-5 w-11/12 rounded-full" />
+              <Skeleton className="h-5 w-4/5 rounded-full" />
+            </section>
 
-          <section aria-hidden="true" className="flex flex-col gap-5">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {bookDetailMetaFieldWidths.map(widthClassName => (
-                <div className="space-y-2" key={widthClassName}>
-                  <Skeleton className="h-5 w-20 rounded-full" />
-                  <Skeleton className={`h-6 rounded-full ${widthClassName}`} />
-                </div>
-              ))}
-            </div>
-          </section>
+            <section className="flex flex-col gap-5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {bookDetailMetaFieldWidths.map(widthClassName => (
+                  <div className="space-y-2" key={widthClassName}>
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                    <Skeleton className={`h-6 rounded-full ${widthClassName}`} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
 
-          <section aria-hidden="true" className="flex flex-col gap-4">
+          <section aria-hidden="true" className="border-line/60 flex flex-col gap-4 border-t pt-6">
             <Skeleton className="h-5 w-20 rounded-full" />
             <div className="space-y-2">
               <Skeleton className="h-7 w-36 rounded-full" />

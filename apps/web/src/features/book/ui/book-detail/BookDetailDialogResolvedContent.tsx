@@ -79,7 +79,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
       </aside>
       <div className="bg-surface min-h-0 overflow-y-auto">
         <div className="flex min-h-full flex-col gap-8 px-6 py-8 sm:px-8 sm:py-10">
-          <section className="space-y-3">
+          <section className="border-line/60 space-y-3 border-b pb-6">
             <Heading as="h2" className="text-balance" size="lg">
               {book.title}
             </Heading>
@@ -88,51 +88,53 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
             </Text>
           </section>
 
-          {book.description && (
-            <section className="space-y-2">
-              <p className={detailSectionLabelClassName}>책 소개</p>
-              <Text size="sm" tone="default">
-                {book.description}
-              </Text>
-            </section>
-          )}
-
-          <section className="space-y-3">
-            <dl className="grid gap-4 sm:grid-cols-2">
-              {publicationLabel && (
-                <div className="space-y-2">
-                  <dt className={detailSectionLabelClassName}>출판 정보</dt>
-                  <Text as="dd" size="sm" tone="default">
-                    {publicationLabel}
-                  </Text>
-                </div>
-              )}
-              <div className="space-y-2">
-                <dt className={detailSectionLabelClassName}>ISBN13</dt>
-                <Text as="dd" size="sm" tone="default">
-                  {book.isbn13}
+          <div className="space-y-8">
+            {book.description && (
+              <section className="space-y-2">
+                <p className={detailSectionLabelClassName}>책 소개</p>
+                <Text size="sm" tone="default">
+                  {book.description}
                 </Text>
-              </div>
-              {book.isbn && (
-                <div className="space-y-2">
-                  <dt className={detailSectionLabelClassName}>ISBN</dt>
-                  <Text as="dd" size="sm" tone="default">
-                    {book.isbn}
-                  </Text>
-                </div>
-              )}
-              {classificationLabel && (
-                <div className="space-y-2">
-                  <dt className={detailSectionLabelClassName}>분류 정보</dt>
-                  <Text as="dd" size="sm" tone="default">
-                    {classificationLabel}
-                  </Text>
-                </div>
-              )}
-            </dl>
-          </section>
+              </section>
+            )}
 
-          <section className="space-y-3">
+            <section className="space-y-3">
+              <dl className="grid gap-4 sm:grid-cols-2">
+                {publicationLabel && (
+                  <div className="space-y-2">
+                    <dt className={detailSectionLabelClassName}>출판 정보</dt>
+                    <Text as="dd" size="sm" tone="default">
+                      {publicationLabel}
+                    </Text>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <dt className={detailSectionLabelClassName}>ISBN13</dt>
+                  <Text as="dd" size="sm" tone="default">
+                    {book.isbn13}
+                  </Text>
+                </div>
+                {book.isbn && (
+                  <div className="space-y-2">
+                    <dt className={detailSectionLabelClassName}>ISBN</dt>
+                    <Text as="dd" size="sm" tone="default">
+                      {book.isbn}
+                    </Text>
+                  </div>
+                )}
+                {classificationLabel && (
+                  <div className="space-y-2">
+                    <dt className={detailSectionLabelClassName}>분류 정보</dt>
+                    <Text as="dd" size="sm" tone="default">
+                      {classificationLabel}
+                    </Text>
+                  </div>
+                )}
+              </dl>
+            </section>
+          </div>
+
+          <section className="border-line/60 space-y-3 border-t pt-6">
             <p className={detailSectionLabelClassName}>대출 정보</p>
             {hasLoanTotal || hasLoanAgeStats ? (
               <div className="space-y-4">
