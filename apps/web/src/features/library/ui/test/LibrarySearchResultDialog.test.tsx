@@ -399,6 +399,15 @@ describe('LibrarySearchResultDialog', () => {
     expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
+  it('선택한 도서관에서 책을 확인하기 전 안내 문구를 볼 수 있다', async () => {
+    renderLibrarySearchResultDialog();
+
+    const detailPanel = await screen.findByLabelText('선택된 도서관 정보 패널');
+
+    expect(within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'})).toBeEnabled();
+    expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
+  });
+
   it('모바일 branch에서는 상세 정보, 리스트, 페이지네이션 순서로 조합하고 세로 스크롤을 가진다', async () => {
     mockMatchMedia(true);
 
@@ -920,7 +929,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().selectedLibraryCode).toBe('LIB0002');
   });
 
-  it('desktop availability CTA는 pending 동안 spinner와 disabled 상태를 표시한다', async () => {
+  it('선택한 도서관의 대출 여부를 확인하는 동안에는 다시 누를 수 없다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockImplementationOnce(() => new Promise(() => {}));
@@ -940,7 +949,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(availabilityButton.querySelector('svg.animate-spin')).not.toBeNull();
   });
 
-  it('desktop availability CTA는 대출 가능 응답이면 결과 스타일 문구를 표시한다', async () => {
+  it('선택한 도서관에서 책을 빌릴 수 있는 경우를 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockResolvedValueOnce(
@@ -962,7 +971,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(successButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('desktop availability CTA는 대출 불가 응답이면 결과 스타일 문구를 표시한다', async () => {
+  it('선택한 도서관에서 책을 빌릴 수 없는 경우를 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockResolvedValueOnce(
@@ -984,7 +993,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(successButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('desktop availability CTA는 미소장 응답이면 결과 스타일 문구를 표시한다', async () => {
+  it('선택한 도서관이 책을 소장하지 않은 경우를 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockResolvedValueOnce(
@@ -1006,7 +1015,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(successButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('desktop availability CTA는 실패 시 재시도 문구와 toast 안내를 표시한다', async () => {
+  it('대출 여부 확인에 실패하면 다시 시도할 수 있고 안내를 볼 수 있다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockRejectedValueOnce(
@@ -1035,7 +1044,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
   });
 
-  it('mobile availability CTA는 pending 동안 spinner와 non-interactive 상태를 표시한다', async () => {
+  it('모바일에서도 대출 여부를 확인하는 동안에는 다시 누를 수 없다', async () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
@@ -1057,7 +1066,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(availabilityButton.querySelector('svg.animate-spin')).not.toBeNull();
   });
 
-  it('mobile availability CTA는 success 결과를 desktop과 같은 문구로 표시한다', async () => {
+  it('모바일에서도 선택한 도서관에서 책을 빌릴 수 있는 경우를 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
@@ -1073,7 +1082,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(successButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('mobile availability CTA는 unavailable 결과를 desktop과 같은 문구로 표시한다', async () => {
+  it('모바일에서도 선택한 도서관에서 책을 빌릴 수 없는 경우를 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
@@ -1096,7 +1105,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(unavailableButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('mobile availability CTA는 not-owned 결과를 desktop과 같은 문구로 표시한다', async () => {
+  it('모바일에서도 선택한 도서관이 책을 소장하지 않은 경우를 확인할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockRequestGet.mockResolvedValueOnce(
@@ -1118,7 +1127,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(notOwnedButton).toHaveClass('bg-transparent', 'text-accent');
   });
 
-  it('mobile availability CTA는 실패 시 재시도와 toast 안내를 표시한다', async () => {
+  it('모바일에서도 대출 여부 확인에 실패하면 다시 시도할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockMatchMedia(true);
@@ -1147,7 +1156,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByText('대출 가능 여부를 다시 확인해주세요.')).toBeInTheDocument();
   });
 
-  it('모바일에서 다른 도서관을 선택하면 이전 availability 요청 상태를 재사용하지 않는다', async () => {
+  it('도서 대출 여부를 확인한 뒤 다른 도서관을 고르면 처음 상태로 돌아간다', async () => {
     const user = userEvent.setup();
     const scrollToMock = vi.fn();
 
@@ -1173,7 +1182,53 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.queryByRole('button', {name: '대출이 가능해요'})).not.toBeInTheDocument();
   });
 
-  it('선택된 도서관이 없으면 availability CTA는 비활성이다', () => {
+  it('도서 대출 여부를 확인한 뒤 페이지를 바꾸면 처음 상태로 돌아간다', async () => {
+    const user = userEvent.setup();
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    expect(await screen.findByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: '2페이지'}));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeEnabled();
+    });
+    expect(screen.queryByRole('button', {name: '대출이 가능해요'})).not.toBeInTheDocument();
+  });
+
+  it('같은 도서관으로 돌아와 다시 확인하면 이전 결과를 바로 볼 수 있다', async () => {
+    const user = userEvent.setup();
+
+    renderLibrarySearchResultDialog({
+      selectedLibraryCode: 'LIB0001',
+    });
+
+    await user.click(await screen.findByRole('button', {name: '대출 가능 여부 조회'}));
+
+    expect(await screen.findByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', {name: /합정열람실/}));
+
+    expect(await screen.findByRole('button', {name: '대출 가능 여부 조회'})).toBeEnabled();
+
+    await user.click(screen.getByRole('button', {name: /마포중앙도서관/}));
+
+    const checkAvailabilityButton = await screen.findByRole('button', {name: '대출 가능 여부 조회'});
+
+    await user.click(checkAvailabilityButton);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
+    });
+    expect(screen.queryByRole('button', {name: '대출 가능 여부 조회'})).not.toBeInTheDocument();
+  });
+
+  it('선택한 도서관이 없으면 대출 여부를 확인할 수 없다', () => {
     render(<LibrarySearchResultDetails library={null} />);
 
     expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
@@ -1239,7 +1294,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().regionDialogBook).toEqual(DEFAULT_SELECTED_BOOK);
   });
 
-  it('빈 응답이면 empty state와 복구 CTA를 렌더링한다', async () => {
+  it('도서관을 찾지 못하면 다시 선택할 수 있는 안내를 보여준다', async () => {
     mockUseGetSearchLibraries.mockReturnValue({
       ...mockLibrarySearchResponse,
       items: [],
@@ -1254,7 +1309,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByRole('button', {name: '다른 책 다시 선택'})).toBeInTheDocument();
   });
 
-  it('empty state의 지역 다시 선택 CTA는 region dialog로 되돌린다', async () => {
+  it('도서관을 찾지 못했을 때 지역을 다시 선택할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockUseGetSearchLibraries.mockReturnValue({
@@ -1273,7 +1328,7 @@ describe('LibrarySearchResultDialog', () => {
     expect(useFindLibraryStore.getState().regionDialogBook).toEqual(DEFAULT_SELECTED_BOOK);
   });
 
-  it('empty state의 다른 책 다시 선택 CTA는 library dialog 상태를 닫는다', async () => {
+  it('도서관을 찾지 못했을 때 다른 책을 다시 고를 수 있다', async () => {
     const user = userEvent.setup();
 
     mockUseGetSearchLibraries.mockReturnValue({

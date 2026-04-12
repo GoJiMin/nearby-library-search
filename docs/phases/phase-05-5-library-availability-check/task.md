@@ -94,12 +94,12 @@
 
 ## 13. web integration test 추가
 
-- [ ] 기본 CTA와 disclaimer 렌더를 검증한다.
-- [ ] pending spinner + disabled를 검증한다.
-- [ ] `대출이 가능해요` / `대출이 불가능해요` / `소장하지 않아요`를 검증한다.
-- [ ] error 시 버튼 문구 `재시도`와 toast 안내를 검증한다.
-- [ ] 선택 변경 / 페이지 변경 / dialog close / backflow / flow reset 후 기본 CTA 상태를 검증한다.
-- [ ] 같은 key의 성공 cache reuse를 검증한다.
+- [x] 기본 CTA와 disclaimer 렌더를 검증한다.
+- [x] pending spinner + disabled를 검증한다.
+- [x] `대출이 가능해요` / `대출이 불가능해요` / `소장하지 않아요`를 검증한다.
+- [x] error 시 버튼 문구 `재시도`와 toast 안내를 검증한다.
+- [x] 선택 변경 / 페이지 변경 / dialog close / backflow / flow reset 후 기본 CTA 상태를 검증한다.
+- [x] 같은 key의 성공 cache reuse를 검증한다.
 
 ## 14. 최종 검증과 문서 동기화
 

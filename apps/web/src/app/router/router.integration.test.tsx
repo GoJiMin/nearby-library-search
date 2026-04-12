@@ -24,6 +24,23 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
   mockUseGetSearchBooks: vi.fn(),
 }));
 
+function createMockLibraryAvailabilityResponse({
+  hasBook = 'Y',
+  libraryCode = 'LIB0001',
+  loanAvailable = 'Y',
+}: {
+  hasBook?: 'N' | 'Y';
+  libraryCode?: string;
+  loanAvailable?: 'N' | 'Y';
+} = {}) {
+  return {
+    hasBook,
+    isbn13: '9788954682155',
+    libraryCode,
+    loanAvailable,
+  };
+}
+
 const {mockLibrarySearchResponse, mockSecondPageLibrarySearchResponse, mockUseGetSearchLibraries} = vi.hoisted(
   () => ({
   mockLibrarySearchResponse: {
@@ -108,6 +125,10 @@ const {mockKakaoMapConfig, mockLoadKakaoMapSdk} = vi.hoisted(() => ({
   mockLoadKakaoMapSdk: vi.fn(),
 }));
 
+const {mockRequestGet} = vi.hoisted(() => ({
+  mockRequestGet: vi.fn(),
+}));
+
 vi.mock('@/entities/book', async importOriginal => {
   const actual = await importOriginal<typeof import('@/entities/book')>();
 
@@ -144,6 +165,15 @@ vi.mock('@/shared/kakao-map', async importOriginal => {
   };
 });
 
+vi.mock('@/shared/request', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/shared/request')>();
+
+  return {
+    ...actual,
+    requestGet: mockRequestGet,
+  };
+});
+
 beforeEach(() => {
   mockUseGetSearchBooks.mockReset();
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
@@ -151,6 +181,8 @@ beforeEach(() => {
   mockUseGetSearchLibraries.mockImplementation(params =>
     params.page === 2 ? mockSecondPageLibrarySearchResponse : mockLibrarySearchResponse,
   );
+  mockRequestGet.mockReset();
+  mockRequestGet.mockResolvedValue(createMockLibraryAvailabilityResponse());
   mockKakaoMapConfig.appKey = undefined;
   mockKakaoMapConfig.isEnabled = false;
   mockLoadKakaoMapSdk.mockReset();
@@ -353,7 +385,7 @@ describe('app router integration', () => {
     expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
   });
 
-  it('opens the region selection dialog when clicking the primary card CTA and closes it again', async () => {
+  it('도서 검색 결과에서 소장 도서관 찾기를 누르면 지역 선택 창을 열고 다시 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -533,7 +565,7 @@ describe('app router integration', () => {
     expect(within(detailPanel).getByText('서울특별시 마포구 독막로 11')).toBeInTheDocument();
   });
 
-  it('library dialog를 닫고 다시 region confirm하면 page 1과 첫 도서관 선택 상태로 다시 시작한다', async () => {
+  it('도서관 결과 창을 닫고 다시 열면 책을 다시 확인하기 전 상태로 보인다', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -554,6 +586,10 @@ describe('app router integration', () => {
     });
 
     await user.click(within(firstLibraryDialog).getByRole('button', {name: /성산열람실/}));
+    await user.click(within(firstLibraryDialog).getByRole('button', {name: '대출 가능 여부 조회'}));
+
+    expect(await screen.findByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
+
     await user.click(screen.getByRole('button', {name: '닫기'}));
 
     await waitFor(() => {
@@ -581,6 +617,10 @@ describe('app router integration', () => {
     expect(secondLibraryRow).toHaveAttribute('aria-pressed', 'false');
     expect(within(detailPanel).getByRole('heading', {name: '마포중앙도서관'})).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
+    expect(within(reopenedLibraryDialog).getByRole('button', {name: '대출 가능 여부 조회'})).toBeEnabled();
+    expect(
+      within(reopenedLibraryDialog).queryByRole('button', {name: '대출이 가능해요'}),
+    ).not.toBeInTheDocument();
   });
 
   it('marker를 클릭하면 같은 도서관이 list active row와 detail panel에 반영된다', async () => {
@@ -626,7 +666,7 @@ describe('app router integration', () => {
     });
   });
 
-  it('library search가 비어 있으면 지역 다시 선택 CTA로 region dialog를 다시 연다', async () => {
+  it('도서관을 찾지 못했을 때 지역을 다시 선택할 수 있다', async () => {
     const user = userEvent.setup();
 
     mockUseGetSearchLibraries.mockReturnValue({
@@ -655,7 +695,7 @@ describe('app router integration', () => {
     });
   });
 
-  it('성공 상태의 지역 변경 action은 region dialog로 되돌리고 재확정 시 page 1부터 다시 시작한다', async () => {
+  it('지역을 다시 선택한 뒤 결과를 다시 보면 책을 다시 확인하기 전 상태로 보인다', async () => {
     const user = userEvent.setup();
 
     renderRouter(['/books?title=파친코&page=1']);
@@ -677,6 +717,10 @@ describe('app router integration', () => {
     });
 
     await user.click(within(libraryDialog).getByRole('button', {name: /성산열람실/}));
+    await user.click(within(libraryDialog).getByRole('button', {name: '대출 가능 여부 조회'}));
+
+    expect(await screen.findByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
+
     await user.click(within(libraryDialog).getByRole('button', {name: '지역 변경'}));
 
     const regionDialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
@@ -704,9 +748,13 @@ describe('app router integration', () => {
     expect(secondLibraryRow).toHaveAttribute('aria-pressed', 'false');
     expect(within(detailPanel).getByRole('heading', {name: '마포중앙도서관'})).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
+    expect(within(reopenedLibraryDialog).getByRole('button', {name: '대출 가능 여부 조회'})).toBeEnabled();
+    expect(
+      within(reopenedLibraryDialog).queryByRole('button', {name: '대출이 가능해요'}),
+    ).not.toBeInTheDocument();
   });
 
-  it('library search가 비어 있으면 다른 책 다시 선택 CTA로 dialog만 닫는다', async () => {
+  it('도서관을 찾지 못했을 때 다른 책을 다시 고를 수 있다', async () => {
     const user = userEvent.setup();
 
     mockUseGetSearchLibraries.mockReturnValue({
@@ -735,7 +783,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
   });
 
-  it('/books route에 다시 진입하면 이전 library search flow 상태를 초기화한다', async () => {
+  it('책 검색 흐름을 다시 시작한 뒤 다시 들어오면 책을 다시 확인하기 전 상태로 보인다', async () => {
     const user = userEvent.setup();
     const {router} = renderRouter(['/books?title=파친코&page=1']);
 
@@ -744,7 +792,11 @@ describe('app router integration', () => {
     await user.click(screen.getByRole('button', {name: '마포구'}));
     await user.click(screen.getByRole('button', {name: '선택 완료'}));
 
-    expect(await screen.findByRole('dialog', {name: '도서관 검색 결과'})).toBeInTheDocument();
+    const firstLibraryDialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+
+    await user.click(within(firstLibraryDialog).getByRole('button', {name: '대출 가능 여부 조회'}));
+
+    expect(await screen.findByRole('button', {name: '대출이 가능해요'})).toBeInTheDocument();
 
     await act(async () => {
       await router.navigate('/');
@@ -762,9 +814,21 @@ describe('app router integration', () => {
 
     await user.click(screen.getByRole('button', {name: '소장 도서관 찾기'}));
 
-    expect(await screen.findByRole('dialog', {name: '검색 지역 선택'})).toBeInTheDocument();
+    const regionDialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
     expect(screen.getByText('지역을 선택해주세요')).toBeInTheDocument();
     expect(screen.queryByText('서울 > 마포구')).not.toBeInTheDocument();
+
+    await user.click(within(regionDialog).getByRole('button', {name: '서울'}));
+    await user.click(within(regionDialog).getByRole('button', {name: '마포구'}));
+    await user.click(within(regionDialog).getByRole('button', {name: '선택 완료'}));
+
+    const reopenedLibraryDialog = await screen.findByRole('dialog', {name: '도서관 검색 결과'});
+
+    expect(within(reopenedLibraryDialog).getByRole('button', {name: '대출 가능 여부 조회'})).toBeEnabled();
+    expect(
+      within(reopenedLibraryDialog).queryByRole('button', {name: '대출이 가능해요'}),
+    ).not.toBeInTheDocument();
   });
 
   it('redirects the empty book result route to the home page', async () => {
