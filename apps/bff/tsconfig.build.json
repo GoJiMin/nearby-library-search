@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@nearby-library-search/contracts": ["../../packages/contracts/dist/src/index.d.ts"]
+    }
+  },
+  "exclude": ["src/**/test/**", "src/**/*.test.ts"]
+}
