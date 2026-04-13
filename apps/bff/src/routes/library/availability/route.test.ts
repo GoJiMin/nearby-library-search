@@ -37,63 +37,19 @@ async function createAppWithLibraryAvailabilityFixtures(fixtureResolver?: AppFix
   });
 }
 
-function createLibraryAvailabilityFixtureResolver(): AppFixtures['libraryAvailability'] {
+function createLibraryAvailabilityFixtureResolver(
+  value = {
+    hasBook: 'Y' as const,
+    isbn13: '9781234567890',
+    libraryCode: 'LIB9001',
+    loanAvailable: 'N' as const,
+  },
+): AppFixtures['libraryAvailability'] {
   return {
-    resolve(params) {
-      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0001') {
-        return {
-          ok: true,
-          value: {
-            hasBook: 'Y',
-            isbn13: '9791192389479',
-            libraryCode: 'LIB0001',
-            loanAvailable: 'Y',
-          },
-        };
-      }
-
-      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0002') {
-        return {
-          ok: true,
-          value: {
-            hasBook: 'Y',
-            isbn13: '9791192389479',
-            libraryCode: 'LIB0002',
-            loanAvailable: 'N',
-          },
-        };
-      }
-
-      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0004') {
-        return {
-          ok: true,
-          value: {
-            hasBook: 'N',
-            isbn13: '9791192389479',
-            libraryCode: 'LIB0004',
-            loanAvailable: 'N',
-          },
-        };
-      }
-
-      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0003') {
-        return {
-          ok: false,
-          error: {
-            detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-            status: 502,
-            title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
-          },
-        };
-      }
-
+    resolve() {
       return {
-        ok: false,
-        error: {
-          detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-          status: 502,
-          title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
-        },
+        ok: true,
+        value,
       };
     },
   };
@@ -157,43 +113,21 @@ describe('library availability route integration', () => {
     await app.close();
   });
 
-  it('책이 준비된 도서관이면 대출 가능 상태를 바로 반환한다', async () => {
+  it('준비된 대출 가능 여부가 있으면 응답을 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
     const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
-      url: '/api/libraries/LIB0001/books/9791192389479/availability',
+      url: '/api/libraries/LIB9001/books/9781234567890/availability',
     });
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       hasBook: 'Y',
-      isbn13: '9791192389479',
-      libraryCode: 'LIB0001',
-      loanAvailable: 'Y',
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('책은 있지만 대출할 수 없으면 그 상태를 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/libraries/LIB0002/books/9791192389479/availability',
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      hasBook: 'Y',
-      isbn13: '9791192389479',
-      libraryCode: 'LIB0002',
+      isbn13: '9781234567890',
+      libraryCode: 'LIB9001',
       loanAvailable: 'N',
     });
     expect(requestLibraryApiMock).not.toHaveBeenCalled();
@@ -201,43 +135,30 @@ describe('library availability route integration', () => {
     await app.close();
   });
 
-  it('도서관에 책이 없으면 미소장 상태를 반환한다', async () => {
+  it('준비된 대출 가능 여부를 사용할 수 없으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
+    const app = await createAppWithLibraryAvailabilityFixtures({
+      resolve: () => ({
+        error: {
+          detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          status: 502,
+          title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
+        },
+        ok: false,
+      }),
+    });
 
     const response = await app.inject({
       method: 'GET',
-      url: '/api/libraries/LIB0004/books/9791192389479/availability',
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      hasBook: 'N',
-      isbn13: '9791192389479',
-      libraryCode: 'LIB0004',
-      loanAvailable: 'N',
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('대출 가능 여부를 준비할 수 없으면 표준 에러를 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/libraries/LIB0003/books/9791192389479/availability',
+      url: '/api/libraries/LIB9001/books/9781234567890/availability',
     });
 
     expect(response.statusCode).toBe(502);
     expect(response.json()).toEqual({
-      detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+      detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
       status: 502,
-      title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+      title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
     });
     expect(requestLibraryApiMock).not.toHaveBeenCalled();
 
