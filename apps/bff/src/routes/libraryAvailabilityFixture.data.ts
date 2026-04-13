@@ -1,5 +1,4 @@
 import type {Isbn13, LibraryCode} from '@nearby-library-search/contracts';
-import {librarySearchFixtureItems} from './librarySearchFixture.data.js';
 
 type LibraryAvailabilityFixtureItem = {
   isbn13: Isbn13;
@@ -26,11 +25,31 @@ function resolveLibraryAvailabilityFixtureScenario(libraryCode: LibraryCode): Li
   return FIXTURE_SCENARIO_BY_CODE_SUFFIX[suffix] ?? 'available';
 }
 
-const libraryAvailabilityFixtureItems: ReadonlyArray<LibraryAvailabilityFixtureItem> = librarySearchFixtureItems.map(item => ({
-  isbn13: item.isbn,
-  libraryCode: item.code,
-  scenario: resolveLibraryAvailabilityFixtureScenario(item.code),
-}));
+const libraryAvailabilityFixtureSeeds: ReadonlyArray<Pick<LibraryAvailabilityFixtureItem, 'isbn13' | 'libraryCode'>> = [
+  {
+    isbn13: '9791192389479',
+    libraryCode: 'LIB0001',
+  },
+  {
+    isbn13: '9791192389479',
+    libraryCode: 'LIB0002',
+  },
+  {
+    isbn13: '9791192389479',
+    libraryCode: 'LIB0003',
+  },
+  {
+    isbn13: '9791192389479',
+    libraryCode: 'LIB0004',
+  },
+];
+
+const libraryAvailabilityFixtureItems: ReadonlyArray<LibraryAvailabilityFixtureItem> = libraryAvailabilityFixtureSeeds.map(
+  item => ({
+    ...item,
+    scenario: resolveLibraryAvailabilityFixtureScenario(item.libraryCode),
+  }),
+);
 
 export {libraryAvailabilityFixtureItems, resolveLibraryAvailabilityFixtureScenario};
 export type {LibraryAvailabilityFixtureItem, LibraryAvailabilityFixtureScenario};
