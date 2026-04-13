@@ -65,23 +65,117 @@ function createBookDetailUpstreamPayload({
 async function createAppWithBookDetailFixtures(fixtureResolver?: AppFixtures['bookDetail']) {
   const {createApp} = await import('../../../app/createApp.js');
 
-  if (fixtureResolver) {
-    return createApp({
-      fixtures: {
-        bookDetail: fixtureResolver,
-      },
-    });
-  }
-
-  const {resolveBookDetailFixtureResult} = await import('../../bookDetailFixture.js');
-
   return createApp({
     fixtures: {
-      bookDetail: {
-        resolve: resolveBookDetailFixtureResult,
-      },
+      bookDetail: fixtureResolver,
     },
   });
+}
+
+function createPreparedBookDetailFixtureResolver(): NonNullable<AppFixtures['bookDetail']> {
+  return {
+    resolve(params) {
+      switch (params.isbn13) {
+        case '9788954682155':
+          return {
+            ok: true,
+            value: {
+              book: {
+                author: '이민진',
+                className: '문학',
+                classNumber: '813.6',
+                description: '재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.',
+                imageUrl:
+                  'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=320&q=80',
+                isbn: '895468215X',
+                isbn13: '9788954682155',
+                publicationDate: '2018-03-09',
+                publicationYear: '2018',
+                publisher: '문학사상',
+                title: '파친코',
+              },
+              loanInfo: {
+                byAge: [
+                  {
+                    loanCount: 430,
+                    name: '20대',
+                    rank: 1,
+                  },
+                  {
+                    loanCount: 315,
+                    name: '30대',
+                    rank: 2,
+                  },
+                  {
+                    loanCount: 188,
+                    name: '40대',
+                    rank: 3,
+                  },
+                ],
+                total: {
+                  loanCount: 1240,
+                  name: '전체',
+                  rank: 1,
+                },
+              },
+            },
+          };
+        case '9791196447182':
+          return {
+            ok: true,
+            value: {
+              book: {
+                author: '손원평',
+                className: null,
+                classNumber: null,
+                description: null,
+                imageUrl:
+                  'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=320&q=80',
+                isbn: null,
+                isbn13: '9791196447182',
+                publicationDate: null,
+                publicationYear: '2017',
+                publisher: '창비',
+                title: '아몬드',
+              },
+              loanInfo: {
+                byAge: [],
+                total: null,
+              },
+            },
+          };
+        case '9788936434124':
+          return {
+            ok: true,
+            value: {
+              book: null,
+              loanInfo: {
+                byAge: [],
+                total: null,
+              },
+            },
+          };
+        case '9791192389479':
+          return {
+            error: {
+              detail: '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+              status: 502,
+              title: 'BOOK_DETAIL_UPSTREAM_ERROR',
+            },
+            ok: false,
+          };
+        default:
+          return {
+            error: {
+              detail: '도서 상세 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+              status: 502,
+              title: 'BOOK_DETAIL_RESPONSE_INVALID',
+            },
+            ok: false,
+          };
+      }
+    },
+  };
 }
 
 describe('book detail route integration', () => {
@@ -415,7 +509,7 @@ describe('book detail route integration', () => {
   it('파친코 상세를 찾으면 준비된 책 정보를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures();
+    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -470,7 +564,7 @@ describe('book detail route integration', () => {
   it('아몬드 상세를 찾으면 없는 항목 없이 최소 정보만 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures();
+    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -505,7 +599,7 @@ describe('book detail route integration', () => {
   it('채식주의자 상세를 찾으면 빈 결과를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures();
+    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -528,7 +622,7 @@ describe('book detail route integration', () => {
   it('하우스메이드 상세를 찾으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures();
+    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -549,7 +643,7 @@ describe('book detail route integration', () => {
   it('등록되지 않은 책 상세를 찾으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures();
+    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
