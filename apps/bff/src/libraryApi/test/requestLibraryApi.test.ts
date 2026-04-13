@@ -1,13 +1,13 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
-vi.mock('../config/env.js', () => ({
+vi.mock('../../config/env.js', () => ({
   libraryApiConfig: {
     authKey: 'test-auth-key',
     baseUrl: 'https://example.com/openapi',
   },
 }));
 
-import {LibraryApiRequestConfigError, requestLibraryApi} from './requestLibraryApi.js';
+import {LibraryApiRequestConfigError, requestLibraryApi} from '../requestLibraryApi.js';
 
 describe('requestLibraryApi', () => {
   const fetchMock = vi.fn();

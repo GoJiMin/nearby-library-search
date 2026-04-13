@@ -1,11 +1,11 @@
 import {describe, expect, it} from 'vitest';
-import {bookDetailParamsSchema, bookSearchQuerySchema, DEFAULT_PAGE, DEFAULT_PAGE_SIZE} from './book.js';
+import {bookDetailParamsSchema, bookSearchQuerySchema, DEFAULT_PAGE, DEFAULT_PAGE_SIZE} from '../book.js';
 import {
   DEFAULT_LIBRARY_SEARCH_PAGE,
   DEFAULT_LIBRARY_SEARCH_PAGE_SIZE,
   libraryAvailabilityParamsSchema,
   librarySearchQuerySchema,
-} from './library.js';
+} from '../library.js';
 
 describe('bff schemas', () => {
   it('도서 검색은 검색 조건 중 하나가 있어야 하고 기본 페이지 값을 채운다', () => {

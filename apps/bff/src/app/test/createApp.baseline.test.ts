@@ -11,7 +11,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('헬스체크 라우트가 no-store 헤더와 ok 상태를 반환한다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -29,7 +29,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('운영 web custom domain origin 요청에 CORS 허용 헤더를 반환한다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -49,7 +49,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('개발용 CORS 허용 플래그가 꺼져 있으면 localhost origin 요청을 허용하지 않는다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -70,7 +70,7 @@ describe('createApp baseline integration', () => {
   it('개발용 CORS 허용 플래그가 켜져 있으면 localhost origin 요청을 허용한다', async () => {
     process.env.ALLOW_DEV_CORS_ORIGINS = 'true';
 
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -90,7 +90,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('허용되지 않은 외부 origin 요청에는 CORS 허용 헤더를 반환하지 않는다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -109,7 +109,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('허용 origin preflight OPTIONS 요청에 204와 허용 헤더를 반환한다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -130,7 +130,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('허용되지 않은 origin preflight OPTIONS 요청에는 CORS 허용 헤더를 반환하지 않는다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -151,7 +151,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('unknown route에 404 structured error를 반환한다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -170,7 +170,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('앱 레벨 unknown exception을 500 structured error로 감싼다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     app.get('/__test/error', async () => {
@@ -194,7 +194,7 @@ describe('createApp baseline integration', () => {
   });
 
   it('security headers를 응답에 포함한다', async () => {
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../createApp.js');
     const app = createApp();
 
     const response = await app.inject({

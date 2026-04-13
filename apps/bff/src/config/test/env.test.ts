@@ -3,7 +3,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 const originalEnv = {...process.env};
 
 async function importEnvModule() {
-  return import('./env.js');
+  return import('../env.js');
 }
 
 describe('env', () => {

@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
-import {getBookRecords, getDocRecords, getLibraryApiResponseRoot, getLibraryRecords} from './libraryApiResponse.js';
-import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from './normalize.js';
+import {getBookRecords, getDocRecords, getLibraryApiResponseRoot, getLibraryRecords} from '../libraryApiResponse.js';
+import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../normalize.js';
 
 describe('bff utils', () => {
   it('nullable 문자열과 숫자 값을 정규화한다', () => {
