@@ -5,20 +5,20 @@ async function importLibraryAvailabilityFixtureModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./libraryAvailabilityFixture.js');
+  return import('./fixture.js');
 }
 
-describe('libraryAvailabilityFixture', () => {
+describe('library availability fixture', () => {
   beforeEach(() => {
     vi.resetModules();
   });
 
-  it('대출 가능 케이스를 반환한다', () => {
+  it('준비된 도서관이면 대출 가능 상태를 반환한다', () => {
     const run = async () => {
-      const {resolveLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
+      const {getLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
 
       expect(
-        resolveLibraryAvailabilityFixtureResult({
+        getLibraryAvailabilityFixtureResult({
           isbn13: '9791192389479',
           libraryCode: 'LIB0001',
         }),
@@ -36,12 +36,12 @@ describe('libraryAvailabilityFixture', () => {
     return run();
   });
 
-  it('대출 불가 케이스를 반환한다', () => {
+  it('책은 있지만 대출할 수 없으면 그 상태를 반환한다', () => {
     const run = async () => {
-      const {resolveLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
+      const {getLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
 
       expect(
-        resolveLibraryAvailabilityFixtureResult({
+        getLibraryAvailabilityFixtureResult({
           isbn13: '9791192389479',
           libraryCode: 'LIB0002',
         }),
@@ -59,12 +59,12 @@ describe('libraryAvailabilityFixture', () => {
     return run();
   });
 
-  it('에러 케이스를 반환한다', () => {
+  it('대출 가능 여부를 준비할 수 없으면 표준 에러를 반환한다', () => {
     const run = async () => {
-      const {resolveLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
+      const {getLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
 
       expect(
-        resolveLibraryAvailabilityFixtureResult({
+        getLibraryAvailabilityFixtureResult({
           isbn13: '9791192389479',
           libraryCode: 'LIB0003',
         }),
@@ -81,12 +81,12 @@ describe('libraryAvailabilityFixture', () => {
     return run();
   });
 
-  it('미소장 케이스를 반환한다', () => {
+  it('도서관에 책이 없으면 미소장 상태를 반환한다', () => {
     const run = async () => {
-      const {resolveLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
+      const {getLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
 
       expect(
-        resolveLibraryAvailabilityFixtureResult({
+        getLibraryAvailabilityFixtureResult({
           isbn13: '9791192389479',
           libraryCode: 'LIB0004',
         }),
@@ -104,12 +104,12 @@ describe('libraryAvailabilityFixture', () => {
     return run();
   });
 
-  it('fixture가 없으면 구조화된 response invalid 에러를 반환한다', () => {
+  it('준비되지 않은 조합이면 표준 에러를 반환한다', () => {
     const run = async () => {
-      const {resolveLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
+      const {getLibraryAvailabilityFixtureResult} = await importLibraryAvailabilityFixtureModule();
 
       expect(
-        resolveLibraryAvailabilityFixtureResult({
+        getLibraryAvailabilityFixtureResult({
           isbn13: '9791192389479',
           libraryCode: 'LIB9999',
         }),
