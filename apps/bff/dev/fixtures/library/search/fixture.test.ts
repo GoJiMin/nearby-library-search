@@ -5,19 +5,19 @@ async function importLibrarySearchFixtureModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./librarySearchFixture.js');
+  return import('./fixture.js');
 }
 
-describe('librarySearchFixture', () => {
+describe('library search fixture', () => {
   beforeEach(() => {
     vi.resetModules();
   });
 
-  it('도서관 검색 fixture를 반환한다', async () => {
-    const {resolveLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
+  it('선택한 지역과 세부 지역에 맞는 도서관 목록을 반환한다', async () => {
+    const {getLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
 
     expect(
-      resolveLibrarySearchFixtureResult({
+      getLibrarySearchFixtureResult({
         isbn: '9788954682155',
         page: 2,
         pageSize: 10,
@@ -48,11 +48,11 @@ describe('librarySearchFixture', () => {
     });
   });
 
-  it('조건에 맞는 도서관 fixture가 없으면 빈 결과를 반환한다', async () => {
-    const {resolveLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
+  it('조건에 맞는 도서관이 없으면 빈 목록을 반환한다', async () => {
+    const {getLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
 
     expect(
-      resolveLibrarySearchFixtureResult({
+      getLibrarySearchFixtureResult({
         isbn: '9788954682155',
         page: 1,
         pageSize: 10,
@@ -72,11 +72,11 @@ describe('librarySearchFixture', () => {
     });
   });
 
-  it('fixture creator가 예외를 던지면 구조화된 response invalid 에러를 반환한다', async () => {
-    const {resolveLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
+  it('도서관 목록을 준비할 수 없으면 표준 에러를 반환한다', async () => {
+    const {getLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
 
     expect(
-      resolveLibrarySearchFixtureResult(
+      getLibrarySearchFixtureResult(
         {
           isbn: '9788954682155',
           page: 1,
@@ -99,11 +99,11 @@ describe('librarySearchFixture', () => {
     });
   });
 
-  it('fixture creator가 비정상 응답을 반환하면 구조화된 response invalid 에러를 반환한다', async () => {
-    const {resolveLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
+  it('형식이 맞지 않는 도서관 목록은 표준 에러로 다룬다', async () => {
+    const {getLibrarySearchFixtureResult} = await importLibrarySearchFixtureModule();
 
     expect(
-      resolveLibrarySearchFixtureResult(
+      getLibrarySearchFixtureResult(
         {
           isbn: '9788954682155',
           page: 1,
