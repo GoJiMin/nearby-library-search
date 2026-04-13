@@ -5,20 +5,20 @@ async function importBookDetailFixtureModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./bookDetailFixture.js');
+  return import('./fixture.js');
 }
 
-describe('bookDetailFixture', () => {
+describe('book detail fixture', () => {
   beforeEach(() => {
     vi.resetModules();
   });
 
   it('풍부한 상세 정보 fixture를 반환한다', () => {
     const run = async () => {
-      const {resolveBookDetailFixtureResult} = await importBookDetailFixtureModule();
+      const {getBookDetailFixtureResult} = await importBookDetailFixtureModule();
 
       expect(
-        resolveBookDetailFixtureResult({
+        getBookDetailFixtureResult({
           isbn13: '9788954682155',
         }),
       ).toEqual({
@@ -71,10 +71,10 @@ describe('bookDetailFixture', () => {
 
   it('최소 상세 정보 fixture를 반환한다', () => {
     const run = async () => {
-      const {resolveBookDetailFixtureResult} = await importBookDetailFixtureModule();
+      const {getBookDetailFixtureResult} = await importBookDetailFixtureModule();
 
       expect(
-        resolveBookDetailFixtureResult({
+        getBookDetailFixtureResult({
           isbn13: '9791196447182',
         }),
       ).toEqual({
@@ -107,10 +107,10 @@ describe('bookDetailFixture', () => {
 
   it('empty 상세 정보 fixture를 반환한다', () => {
     const run = async () => {
-      const {resolveBookDetailFixtureResult} = await importBookDetailFixtureModule();
+      const {getBookDetailFixtureResult} = await importBookDetailFixtureModule();
 
       expect(
-        resolveBookDetailFixtureResult({
+        getBookDetailFixtureResult({
           isbn13: '9788936434124',
         }),
       ).toEqual({
@@ -130,10 +130,10 @@ describe('bookDetailFixture', () => {
 
   it('에러 시나리오 fixture를 반환한다', () => {
     const run = async () => {
-      const {resolveBookDetailFixtureResult} = await importBookDetailFixtureModule();
+      const {getBookDetailFixtureResult} = await importBookDetailFixtureModule();
 
       expect(
-        resolveBookDetailFixtureResult({
+        getBookDetailFixtureResult({
           isbn13: '9791192389479',
         }),
       ).toEqual({
@@ -151,10 +151,10 @@ describe('bookDetailFixture', () => {
 
   it('fixture가 없으면 구조화된 response invalid 에러를 반환한다', () => {
     const run = async () => {
-      const {resolveBookDetailFixtureResult} = await importBookDetailFixtureModule();
+      const {getBookDetailFixtureResult} = await importBookDetailFixtureModule();
 
       expect(
-        resolveBookDetailFixtureResult({
+        getBookDetailFixtureResult({
           isbn13: '9799999999999',
         }),
       ).toEqual({
