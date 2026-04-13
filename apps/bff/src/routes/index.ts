@@ -1,14 +1,19 @@
 import type {FastifyInstance} from 'fastify';
-import {bookDetailRoute} from './bookDetail.js';
-import {bookSearchRoute} from './book/search/route.js';
+import type {AppFixtures} from '../app/fixtures.js';
+import {createBookDetailRoute} from './bookDetail.js';
+import {createBookSearchRoute} from './book/search/route.js';
 import {healthRoute} from './health/route.js';
-import {libraryAvailabilityRoute} from './libraryAvailability.js';
-import {librarySearchRoute} from './librarySearch.js';
+import {createLibraryAvailabilityRoute} from './libraryAvailability.js';
+import {createLibrarySearchRoute} from './librarySearch.js';
 
-export function registerRoutes(app: FastifyInstance) {
-  app.register(bookDetailRoute);
-  app.register(bookSearchRoute);
+type RegisterRoutesOptions = {
+  fixtures?: AppFixtures;
+};
+
+export function registerRoutes(app: FastifyInstance, options: RegisterRoutesOptions = {}) {
+  app.register(createBookDetailRoute(options.fixtures?.bookDetail));
+  app.register(createBookSearchRoute(options.fixtures?.bookSearch));
   app.register(healthRoute);
-  app.register(libraryAvailabilityRoute);
-  app.register(librarySearchRoute);
+  app.register(createLibraryAvailabilityRoute(options.fixtures?.libraryAvailability));
+  app.register(createLibrarySearchRoute(options.fixtures?.librarySearch));
 }

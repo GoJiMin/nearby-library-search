@@ -57,7 +57,8 @@
   - [health/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/health/route.ts)와 [book/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.ts)는 도메인 경로로 이동했다.
   - 반면 [bookDetail.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/bookDetail.ts), [librarySearch.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/librarySearch.ts), [libraryAvailability.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/libraryAvailability.ts)와 fixture/helper 파일은 아직 `src/routes` 루트에 남아 있다.
 - 현재 구조는 “도메인 폴더 뼈대는 생겼지만, 도메인별 production 코드와 fixture 경계가 함께 정리되지는 않은 중간 상태”다.
-- `USE_DEV_FIXTURES`는 runtime flag로만 제어되고, fixture resolver/data는 production route 코드에서 정적으로 import된다.
+- `USE_DEV_FIXTURES`는 아직 runtime flag로 제어되지만, fixture resolver는 이제 `createApp()`과 `registerRoutes()`의 주입 경계를 통해 route에 전달된다.
+- 다만 default fixture registry와 fixture source 자체는 아직 production `src` 안에 남아 있다.
 - `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
 - `libraryAvailabilityParams.ts`, `libraryAvailabilityResponse.ts`처럼 분리 이득이 있는 순수 helper도 있지만, `bookSearchFixture.builders.ts`처럼 단일 소비자용 helper까지 별도 파일로 나뉘어 있다.
 

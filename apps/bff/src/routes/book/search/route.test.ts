@@ -1,3 +1,4 @@
+import type {AppFixtures} from '../../../app/fixtures.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
@@ -26,11 +27,32 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
   return response;
 }
 
+async function createAppWithBookSearchFixtures(fixtureResolver?: AppFixtures['bookSearch']) {
+  const {createApp} = await import('../../../app/createApp.js');
+
+  if (fixtureResolver) {
+    return createApp({
+      fixtures: {
+        bookSearch: fixtureResolver,
+      },
+    });
+  }
+
+  const {resolveBookSearchFixtureResult} = await import('../../bookSearchFixture.js');
+
+  return createApp({
+    fixtures: {
+      bookSearch: {
+        resolve: resolveBookSearchFixtureResult,
+      },
+    },
+  });
+}
+
 describe('book search route integration', () => {
   beforeEach(() => {
     requestLibraryApiMock.mockReset();
     vi.resetModules();
-    vi.doUnmock('../../bookSearchFixture.js');
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
     process.env.WEB_APP_ORIGIN = 'https://app.example.com';
@@ -39,7 +61,6 @@ describe('book search route integration', () => {
   });
 
   afterEach(() => {
-    vi.doUnmock('../../bookSearchFixture.js');
     vi.restoreAllMocks();
   });
 
@@ -106,8 +127,7 @@ describe('book search route integration', () => {
   it('도서 제목으로 찾으면 일치하는 결과를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithBookSearchFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -132,8 +152,7 @@ describe('book search route integration', () => {
   it('검색 결과가 여러 페이지면 요청한 페이지의 목록만 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithBookSearchFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -194,24 +213,16 @@ describe('book search route integration', () => {
   it('도서 검색 결과를 준비할 수 없으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    vi.doMock('../../bookSearchFixture.js', async importOriginal => {
-      const actual = await importOriginal<typeof import('../../bookSearchFixture.js')>();
-
-      return {
-        ...actual,
-        resolveBookSearchFixtureResult: vi.fn(() => ({
-          error: {
-            detail: '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-            status: 502,
-            title: 'BOOK_SEARCH_RESPONSE_INVALID',
-          },
-          ok: false,
-        })),
-      };
+    const app = await createAppWithBookSearchFixtures({
+      resolve: () => ({
+        error: {
+          detail: '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          status: 502,
+          title: 'BOOK_SEARCH_RESPONSE_INVALID',
+        },
+        ok: false as const,
+      }),
     });
-
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
 
     const response = await app.inject({
       method: 'GET',

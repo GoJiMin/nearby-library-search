@@ -8,6 +8,7 @@ import type {
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
+import type {AppFixtures} from '../app/fixtures.js';
 import {developmentConfig} from '../config/env.js';
 import {bookDetailParamsSchema} from '../schemas/book.js';
 import {
@@ -18,7 +19,6 @@ import {
 } from '../utils/error.js';
 import {getBookRecords, getLibraryApiResponseRoot, isLibraryApiRecord} from '../utils/libraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../utils/normalize.js';
-import {resolveBookDetailFixtureResult} from './bookDetailFixture.js';
 
 type Result<T> =
   | {
@@ -188,51 +188,57 @@ function normalizeBookDetailResponse(payload: unknown): Result<BookDetailRespons
   };
 }
 
-export const bookDetailRoute: FastifyPluginAsync = async app => {
-  app.get('/api/books/:isbn13', async (request, reply) => {
-    const parsedParams = parseBookDetailParams(request.params);
+type BookDetailFixtureResolver = AppFixtures['bookDetail'];
 
-    if (!parsedParams.ok) {
-      reply.status(parsedParams.error.status);
+function createBookDetailRoute(fixtureResolver?: BookDetailFixtureResolver): FastifyPluginAsync {
+  return async app => {
+    app.get('/api/books/:isbn13', async (request, reply) => {
+      const parsedParams = parseBookDetailParams(request.params);
 
-      return parsedParams.error;
-    }
+      if (!parsedParams.ok) {
+        reply.status(parsedParams.error.status);
 
-    if (developmentConfig.useDevFixtures) {
-      const fixtureResult = resolveBookDetailFixtureResult(parsedParams.value);
-
-      if (!fixtureResult.ok) {
-        reply.status(fixtureResult.error.status);
-
-        return fixtureResult.error;
+        return parsedParams.error;
       }
 
-      return fixtureResult.value;
-    }
+      if (developmentConfig.useDevFixtures && fixtureResolver) {
+        const fixtureResult = fixtureResolver.resolve(parsedParams.value);
 
-    const bookDetailPayload = await fetchBookDetailPayload(parsedParams.value.isbn13);
+        if (!fixtureResult.ok) {
+          reply.status(fixtureResult.error.status);
 
-    if (!bookDetailPayload.ok) {
-      app.log.warn({errorTitle: bookDetailPayload.error.title}, 'Book detail upstream request failed');
+          return fixtureResult.error;
+        }
 
-      reply.status(bookDetailPayload.error.status);
+        return fixtureResult.value;
+      }
 
-      return bookDetailPayload.error;
-    }
+      const bookDetailPayload = await fetchBookDetailPayload(parsedParams.value.isbn13);
 
-    const normalizedBookDetailResponse = normalizeBookDetailResponse(bookDetailPayload.value);
+      if (!bookDetailPayload.ok) {
+        app.log.warn({errorTitle: bookDetailPayload.error.title}, 'Book detail upstream request failed');
 
-    if (!normalizedBookDetailResponse.ok) {
-      app.log.warn(
-        {errorTitle: normalizedBookDetailResponse.error.title},
-        'Book detail upstream response could not be normalized',
-      );
+        reply.status(bookDetailPayload.error.status);
 
-      reply.status(normalizedBookDetailResponse.error.status);
+        return bookDetailPayload.error;
+      }
 
-      return normalizedBookDetailResponse.error;
-    }
+      const normalizedBookDetailResponse = normalizeBookDetailResponse(bookDetailPayload.value);
 
-    return normalizedBookDetailResponse.value;
-  });
-};
+      if (!normalizedBookDetailResponse.ok) {
+        app.log.warn(
+          {errorTitle: normalizedBookDetailResponse.error.title},
+          'Book detail upstream response could not be normalized',
+        );
+
+        reply.status(normalizedBookDetailResponse.error.status);
+
+        return normalizedBookDetailResponse.error;
+      }
+
+      return normalizedBookDetailResponse.value;
+    });
+  };
+}
+
+export {createBookDetailRoute};

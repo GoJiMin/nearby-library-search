@@ -1,11 +1,11 @@
 import type {ErrorResponse, LibrarySearchItem, LibrarySearchResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
+import type {AppFixtures} from '../app/fixtures.js';
 import {developmentConfig} from '../config/env.js';
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import {librarySearchQuerySchema} from '../schemas/library.js';
 import type {LibrarySearchQuery} from '../schemas/library.js';
-import {resolveLibrarySearchFixtureResult} from './librarySearchFixture.js';
 import {
   createErrorResponse,
   createRetryableUpstreamRequestError,
@@ -204,59 +204,65 @@ function normalizeLibrarySearchResponse(payload: unknown, query: LibrarySearchQu
   };
 }
 
-export const librarySearchRoute: FastifyPluginAsync = async app => {
-  app.get('/api/libraries/search', async (request, reply) => {
-    const parsedQuery = parseLibrarySearchQuery(request.query);
+type LibrarySearchFixtureResolver = AppFixtures['librarySearch'];
 
-    if (!parsedQuery.ok) {
-      reply.status(parsedQuery.error.status);
+function createLibrarySearchRoute(fixtureResolver?: LibrarySearchFixtureResolver): FastifyPluginAsync {
+  return async app => {
+    app.get('/api/libraries/search', async (request, reply) => {
+      const parsedQuery = parseLibrarySearchQuery(request.query);
 
-      return parsedQuery.error;
-    }
+      if (!parsedQuery.ok) {
+        reply.status(parsedQuery.error.status);
 
-    if (developmentConfig.useDevFixtures) {
-      const fixtureResult = resolveLibrarySearchFixtureResult(parsedQuery.value);
-
-      if (!fixtureResult.ok) {
-        app.log.warn(
-          {errorTitle: fixtureResult.error.title},
-          'Library search fixture response could not be resolved safely',
-        );
-
-        reply.status(fixtureResult.error.status);
-
-        return fixtureResult.error;
+        return parsedQuery.error;
       }
 
-      return fixtureResult.value;
-    }
+      if (developmentConfig.useDevFixtures && fixtureResolver) {
+        const fixtureResult = fixtureResolver.resolve(parsedQuery.value);
 
-    const librarySearchPayload = await fetchLibrarySearchPayload(parsedQuery.value);
+        if (!fixtureResult.ok) {
+          app.log.warn(
+            {errorTitle: fixtureResult.error.title},
+            'Library search fixture response could not be resolved safely',
+          );
 
-    if (!librarySearchPayload.ok) {
-      app.log.warn({errorTitle: librarySearchPayload.error.title}, 'Library search upstream request failed');
+          reply.status(fixtureResult.error.status);
 
-      reply.status(librarySearchPayload.error.status);
+          return fixtureResult.error;
+        }
 
-      return librarySearchPayload.error;
-    }
+        return fixtureResult.value;
+      }
 
-    const normalizedLibrarySearchResponse = normalizeLibrarySearchResponse(
-      librarySearchPayload.value,
-      parsedQuery.value,
-    );
+      const librarySearchPayload = await fetchLibrarySearchPayload(parsedQuery.value);
 
-    if (!normalizedLibrarySearchResponse.ok) {
-      app.log.warn(
-        {errorTitle: normalizedLibrarySearchResponse.error.title},
-        'Library search upstream response could not be normalized',
+      if (!librarySearchPayload.ok) {
+        app.log.warn({errorTitle: librarySearchPayload.error.title}, 'Library search upstream request failed');
+
+        reply.status(librarySearchPayload.error.status);
+
+        return librarySearchPayload.error;
+      }
+
+      const normalizedLibrarySearchResponse = normalizeLibrarySearchResponse(
+        librarySearchPayload.value,
+        parsedQuery.value,
       );
 
-      reply.status(normalizedLibrarySearchResponse.error.status);
+      if (!normalizedLibrarySearchResponse.ok) {
+        app.log.warn(
+          {errorTitle: normalizedLibrarySearchResponse.error.title},
+          'Library search upstream response could not be normalized',
+        );
 
-      return normalizedLibrarySearchResponse.error;
-    }
+        reply.status(normalizedLibrarySearchResponse.error.status);
 
-    return normalizedLibrarySearchResponse.value;
-  });
-};
+        return normalizedLibrarySearchResponse.error;
+      }
+
+      return normalizedLibrarySearchResponse.value;
+    });
+  };
+}
+
+export {createLibrarySearchRoute};

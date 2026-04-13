@@ -1,3 +1,4 @@
+import type {AppFixtures} from '../../../app/fixtures.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
@@ -65,11 +66,32 @@ function createLibrarySearchUpstreamPayload({
   };
 }
 
+async function createAppWithLibrarySearchFixtures(fixtureResolver?: AppFixtures['librarySearch']) {
+  const {createApp} = await import('../../../app/createApp.js');
+
+  if (fixtureResolver) {
+    return createApp({
+      fixtures: {
+        librarySearch: fixtureResolver,
+      },
+    });
+  }
+
+  const {resolveLibrarySearchFixtureResult} = await import('../../librarySearchFixture.js');
+
+  return createApp({
+    fixtures: {
+      librarySearch: {
+        resolve: resolveLibrarySearchFixtureResult,
+      },
+    },
+  });
+}
+
 describe('library search route integration', () => {
   beforeEach(() => {
     requestLibraryApiMock.mockReset();
     vi.resetModules();
-    vi.doUnmock('../../librarySearchFixture.js');
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
     process.env.WEB_APP_ORIGIN = 'https://app.example.com';
@@ -78,7 +100,6 @@ describe('library search route integration', () => {
   });
 
   afterEach(() => {
-    vi.doUnmock('../../librarySearchFixture.js');
     vi.restoreAllMocks();
   });
 
@@ -237,8 +258,7 @@ describe('library search route integration', () => {
   it('선택한 지역과 세부 지역에 맞는 도서관 목록을 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibrarySearchFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -273,8 +293,7 @@ describe('library search route integration', () => {
   it('서울 전체에서 도서관을 찾으면 첫 페이지 목록을 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibrarySearchFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -340,8 +359,7 @@ describe('library search route integration', () => {
   it('서울 전체에서 다음 페이지를 요청하면 이어지는 목록을 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibrarySearchFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -407,8 +425,7 @@ describe('library search route integration', () => {
   it('조건에 맞는 도서관이 없으면 빈 목록을 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibrarySearchFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -433,24 +450,16 @@ describe('library search route integration', () => {
   it('도서관 검색 결과를 준비할 수 없으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    vi.doMock('../../librarySearchFixture.js', async importOriginal => {
-      const actual = await importOriginal<typeof import('../../librarySearchFixture.js')>();
-
-      return {
-        ...actual,
-        resolveLibrarySearchFixtureResult: vi.fn(() => ({
-          error: {
-            detail: '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-            status: 502,
-            title: 'LIBRARY_SEARCH_RESPONSE_INVALID',
-          },
-          ok: false,
-        })),
-      };
+    const app = await createAppWithLibrarySearchFixtures({
+      resolve: () => ({
+        error: {
+          detail: '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          status: 502,
+          title: 'LIBRARY_SEARCH_RESPONSE_INVALID',
+        },
+        ok: false as const,
+      }),
     });
-
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
 
     const response = await app.inject({
       method: 'GET',

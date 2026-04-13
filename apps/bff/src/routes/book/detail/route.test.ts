@@ -1,3 +1,4 @@
+import type {AppFixtures} from '../../../app/fixtures.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
@@ -59,6 +60,28 @@ function createBookDetailUpstreamPayload({
       loanInfo,
     },
   };
+}
+
+async function createAppWithBookDetailFixtures(fixtureResolver?: AppFixtures['bookDetail']) {
+  const {createApp} = await import('../../../app/createApp.js');
+
+  if (fixtureResolver) {
+    return createApp({
+      fixtures: {
+        bookDetail: fixtureResolver,
+      },
+    });
+  }
+
+  const {resolveBookDetailFixtureResult} = await import('../../bookDetailFixture.js');
+
+  return createApp({
+    fixtures: {
+      bookDetail: {
+        resolve: resolveBookDetailFixtureResult,
+      },
+    },
+  });
 }
 
 describe('book detail route integration', () => {
@@ -392,8 +415,7 @@ describe('book detail route integration', () => {
   it('파친코 상세를 찾으면 준비된 책 정보를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithBookDetailFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -448,8 +470,7 @@ describe('book detail route integration', () => {
   it('아몬드 상세를 찾으면 없는 항목 없이 최소 정보만 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithBookDetailFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -484,8 +505,7 @@ describe('book detail route integration', () => {
   it('채식주의자 상세를 찾으면 빈 결과를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithBookDetailFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -508,8 +528,7 @@ describe('book detail route integration', () => {
   it('하우스메이드 상세를 찾으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithBookDetailFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -530,8 +549,7 @@ describe('book detail route integration', () => {
   it('등록되지 않은 책 상세를 찾으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithBookDetailFixtures();
 
     const response = await app.inject({
       method: 'GET',

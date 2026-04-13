@@ -1,3 +1,4 @@
+import type {AppFixtures} from '../../../app/fixtures.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
@@ -24,6 +25,28 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
   });
 
   return response;
+}
+
+async function createAppWithLibraryAvailabilityFixtures(fixtureResolver?: AppFixtures['libraryAvailability']) {
+  const {createApp} = await import('../../../app/createApp.js');
+
+  if (fixtureResolver) {
+    return createApp({
+      fixtures: {
+        libraryAvailability: fixtureResolver,
+      },
+    });
+  }
+
+  const {resolveLibraryAvailabilityFixtureResult} = await import('../../libraryAvailabilityFixture.js');
+
+  return createApp({
+    fixtures: {
+      libraryAvailability: {
+        resolve: resolveLibraryAvailabilityFixtureResult,
+      },
+    },
+  });
 }
 
 describe('library availability route integration', () => {
@@ -87,8 +110,7 @@ describe('library availability route integration', () => {
   it('책이 준비된 도서관이면 대출 가능 상태를 바로 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibraryAvailabilityFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -110,8 +132,7 @@ describe('library availability route integration', () => {
   it('책은 있지만 대출할 수 없으면 그 상태를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibraryAvailabilityFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -133,8 +154,7 @@ describe('library availability route integration', () => {
   it('도서관에 책이 없으면 미소장 상태를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibraryAvailabilityFixtures();
 
     const response = await app.inject({
       method: 'GET',
@@ -156,8 +176,7 @@ describe('library availability route integration', () => {
   it('대출 가능 여부를 준비할 수 없으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('../../../app/createApp.js');
-    const app = createApp();
+    const app = await createAppWithLibraryAvailabilityFixtures();
 
     const response = await app.inject({
       method: 'GET',

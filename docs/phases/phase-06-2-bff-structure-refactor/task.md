@@ -44,10 +44,10 @@
 
 ## 7. fixture 주입 경계를 먼저 도입한다.
 
-- [ ] `createApp(options?: {fixtures?: AppFixtures})` 형태의 주입 경계를 추가한다.
-- [ ] `registerRoutes(app, options?)`가 주입받은 fixture resolver를 route에 전달할 수 있게 정리한다.
-- [ ] route 코드가 fixture resolver를 정적으로 import하지 않도록 전환한다.
-- [ ] 이 주입 경계가 생기기 전에는 어떤 도메인도 완료로 처리하지 않는다.
+- [x] `createApp(options?: {fixtures?: AppFixtures})` 형태의 주입 경계를 추가한다.
+- [x] `registerRoutes(app, options?)`가 주입받은 fixture resolver를 route에 전달할 수 있게 정리한다.
+- [x] route 코드가 fixture resolver를 정적으로 import하지 않도록 전환한다.
+- [x] 이 주입 경계가 생기기 전에는 어떤 도메인도 완료로 처리하지 않는다.
 
 ## 8. book search 도메인 package를 완성한다.
 

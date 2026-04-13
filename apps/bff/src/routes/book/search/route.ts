@@ -1,6 +1,7 @@
 import type {BookSearchItem, BookSearchResponse, ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
+import type {AppFixtures} from '../../../app/fixtures.js';
 import {developmentConfig} from '../../../config/env.js';
 import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
 import {bookSearchQuerySchema} from '../../../schemas/book.js';
@@ -13,7 +14,6 @@ import {
 } from '../../../utils/error.js';
 import {getDocRecords, getLibraryApiResponseRoot} from '../../../utils/libraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../../../utils/normalize.js';
-import {resolveBookSearchFixtureResult} from '../../bookSearchFixture.js';
 
 type Result<T> =
   | {
@@ -170,53 +170,59 @@ function normalizeBookSearchResponse(payload: unknown): Result<BookSearchRespons
   };
 }
 
-export const bookSearchRoute: FastifyPluginAsync = async app => {
-  app.get('/api/books/search', async (request, reply) => {
-    const parsedQuery = parseBookSearchQuery(request.query);
+type BookSearchFixtureResolver = AppFixtures['bookSearch'];
 
-    if (!parsedQuery.ok) {
-      reply.status(parsedQuery.error.status);
+function createBookSearchRoute(fixtureResolver?: BookSearchFixtureResolver): FastifyPluginAsync {
+  return async app => {
+    app.get('/api/books/search', async (request, reply) => {
+      const parsedQuery = parseBookSearchQuery(request.query);
 
-      return parsedQuery.error;
-    }
+      if (!parsedQuery.ok) {
+        reply.status(parsedQuery.error.status);
 
-    if (developmentConfig.useDevFixtures) {
-      const fixtureResult = resolveBookSearchFixtureResult(parsedQuery.value);
-
-      if (!fixtureResult.ok) {
-        app.log.warn({errorTitle: fixtureResult.error.title}, 'Book search fixture response could not be resolved safely');
-
-        reply.status(fixtureResult.error.status);
-
-        return fixtureResult.error;
+        return parsedQuery.error;
       }
 
-      return fixtureResult.value;
-    }
+      if (developmentConfig.useDevFixtures && fixtureResolver) {
+        const fixtureResult = fixtureResolver.resolve(parsedQuery.value);
 
-    const bookSearchPayload = await fetchBookSearchPayload(parsedQuery.value);
+        if (!fixtureResult.ok) {
+          app.log.warn({errorTitle: fixtureResult.error.title}, 'Book search fixture response could not be resolved safely');
 
-    if (!bookSearchPayload.ok) {
-      app.log.warn({errorTitle: bookSearchPayload.error.title}, 'Book search upstream request failed');
+          reply.status(fixtureResult.error.status);
 
-      reply.status(bookSearchPayload.error.status);
+          return fixtureResult.error;
+        }
 
-      return bookSearchPayload.error;
-    }
+        return fixtureResult.value;
+      }
 
-    const normalizedBookSearchResponse = normalizeBookSearchResponse(bookSearchPayload.value);
+      const bookSearchPayload = await fetchBookSearchPayload(parsedQuery.value);
 
-    if (!normalizedBookSearchResponse.ok) {
-      app.log.warn(
-        {errorTitle: normalizedBookSearchResponse.error.title},
-        'Book search upstream response could not be normalized',
-      );
+      if (!bookSearchPayload.ok) {
+        app.log.warn({errorTitle: bookSearchPayload.error.title}, 'Book search upstream request failed');
 
-      reply.status(normalizedBookSearchResponse.error.status);
+        reply.status(bookSearchPayload.error.status);
 
-      return normalizedBookSearchResponse.error;
-    }
+        return bookSearchPayload.error;
+      }
 
-    return normalizedBookSearchResponse.value;
-  });
-};
+      const normalizedBookSearchResponse = normalizeBookSearchResponse(bookSearchPayload.value);
+
+      if (!normalizedBookSearchResponse.ok) {
+        app.log.warn(
+          {errorTitle: normalizedBookSearchResponse.error.title},
+          'Book search upstream response could not be normalized',
+        );
+
+        reply.status(normalizedBookSearchResponse.error.status);
+
+        return normalizedBookSearchResponse.error;
+      }
+
+      return normalizedBookSearchResponse.value;
+    });
+  };
+}
+
+export {createBookSearchRoute};

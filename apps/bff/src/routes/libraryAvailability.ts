@@ -1,9 +1,9 @@
 import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
+import type {AppFixtures} from '../app/fixtures.js';
 import {developmentConfig} from '../config/env.js';
 import {parseLibraryAvailabilityParams} from './libraryAvailabilityParams.js';
 import {normalizeLibraryAvailabilityResponse} from './libraryAvailabilityResponse.js';
-import {resolveLibraryAvailabilityFixtureResult} from './libraryAvailabilityFixture.js';
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import {createRetryableUpstreamRequestError, toLibraryApiErrorResponse} from '../utils/error.js';
 
@@ -49,57 +49,63 @@ async function fetchLibraryAvailabilityPayload(libraryCode: string, isbn13: stri
   }
 }
 
-export const libraryAvailabilityRoute: FastifyPluginAsync = async app => {
-  app.get('/api/libraries/:libraryCode/books/:isbn13/availability', async (request, reply) => {
-    const parsedParams = parseLibraryAvailabilityParams(request.params);
+type LibraryAvailabilityFixtureResolver = AppFixtures['libraryAvailability'];
 
-    if (!parsedParams.ok) {
-      reply.status(parsedParams.error.status);
+function createLibraryAvailabilityRoute(fixtureResolver?: LibraryAvailabilityFixtureResolver): FastifyPluginAsync {
+  return async app => {
+    app.get('/api/libraries/:libraryCode/books/:isbn13/availability', async (request, reply) => {
+      const parsedParams = parseLibraryAvailabilityParams(request.params);
 
-      return parsedParams.error;
-    }
+      if (!parsedParams.ok) {
+        reply.status(parsedParams.error.status);
 
-    if (developmentConfig.useDevFixtures) {
-      const fixtureResult = resolveLibraryAvailabilityFixtureResult(parsedParams.value);
-
-      if (!fixtureResult.ok) {
-        reply.status(fixtureResult.error.status);
-
-        return fixtureResult.error;
+        return parsedParams.error;
       }
 
-      return fixtureResult.value;
-    }
+      if (developmentConfig.useDevFixtures && fixtureResolver) {
+        const fixtureResult = fixtureResolver.resolve(parsedParams.value);
 
-    const libraryAvailabilityPayload = await fetchLibraryAvailabilityPayload(
-      parsedParams.value.libraryCode,
-      parsedParams.value.isbn13,
-    );
+        if (!fixtureResult.ok) {
+          reply.status(fixtureResult.error.status);
 
-    if (!libraryAvailabilityPayload.ok) {
-      app.log.warn({errorTitle: libraryAvailabilityPayload.error.title}, 'Library availability upstream request failed');
+          return fixtureResult.error;
+        }
 
-      reply.status(libraryAvailabilityPayload.error.status);
+        return fixtureResult.value;
+      }
 
-      return libraryAvailabilityPayload.error;
-    }
-
-    const normalizedLibraryAvailabilityResponse = normalizeLibraryAvailabilityResponse(
-      libraryAvailabilityPayload.value,
-      parsedParams.value,
-    );
-
-    if (!normalizedLibraryAvailabilityResponse.ok) {
-      app.log.warn(
-        {errorTitle: normalizedLibraryAvailabilityResponse.error.title},
-        'Library availability upstream response could not be normalized',
+      const libraryAvailabilityPayload = await fetchLibraryAvailabilityPayload(
+        parsedParams.value.libraryCode,
+        parsedParams.value.isbn13,
       );
 
-      reply.status(normalizedLibraryAvailabilityResponse.error.status);
+      if (!libraryAvailabilityPayload.ok) {
+        app.log.warn({errorTitle: libraryAvailabilityPayload.error.title}, 'Library availability upstream request failed');
 
-      return normalizedLibraryAvailabilityResponse.error;
-    }
+        reply.status(libraryAvailabilityPayload.error.status);
 
-    return normalizedLibraryAvailabilityResponse.value;
-  });
-};
+        return libraryAvailabilityPayload.error;
+      }
+
+      const normalizedLibraryAvailabilityResponse = normalizeLibraryAvailabilityResponse(
+        libraryAvailabilityPayload.value,
+        parsedParams.value,
+      );
+
+      if (!normalizedLibraryAvailabilityResponse.ok) {
+        app.log.warn(
+          {errorTitle: normalizedLibraryAvailabilityResponse.error.title},
+          'Library availability upstream response could not be normalized',
+        );
+
+        reply.status(normalizedLibraryAvailabilityResponse.error.status);
+
+        return normalizedLibraryAvailabilityResponse.error;
+      }
+
+      return normalizedLibraryAvailabilityResponse.value;
+    });
+  };
+}
+
+export {createLibraryAvailabilityRoute};
