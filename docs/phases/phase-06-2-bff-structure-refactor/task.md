@@ -51,10 +51,10 @@
 
 ## 8. book search 도메인 package를 완성한다.
 
-- [ ] `apps/bff/src/routes/book/search` 안에 production route code와 route integration test가 함께 남도록 정리한다.
-- [ ] `book search` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/book/search`로 이동한다.
-- [ ] `bookSearchFixture.builders.ts`는 별도 파일로 유지하지 않고 fixture data 파일로 흡수한다.
-- [ ] `book search` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
+- [x] `apps/bff/src/routes/book/search` 안에 production route code와 route integration test가 함께 남도록 정리한다.
+- [x] `book search` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/book/search`로 이동한다.
+- [x] `bookSearchFixture.builders.ts`는 별도 파일로 유지하지 않고 fixture data 파일로 흡수한다.
+- [x] `book search` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
 ## 9. book detail 도메인 package를 완성한다.
 
