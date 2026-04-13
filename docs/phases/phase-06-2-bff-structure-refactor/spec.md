@@ -33,10 +33,10 @@
 
 ## 구현 범위
 
-- `createApp.test.ts`를 baseline test와 route integration test로 분리
-- `src/routes`를 도메인 기준 폴더 구조로 재정리
+- app baseline test와 route integration test를 목적별로 분리
+- `src/routes`를 도메인 기준 production package 구조로 재정리
 - fixture source와 fixture test를 dev/test 전용 경계로 이동
-- production bootstrap과 dev bootstrap을 분리
+- fixture 주입 경계를 먼저 도입한 뒤 production bootstrap과 dev bootstrap을 분리
 - route별 과분리 helper를 흡수하고 유지 가치가 있는 순수 로직만 남김
 - 리팩터링 후 전체 BFF test/typecheck/build 기준 재검증
 
@@ -50,15 +50,35 @@
 
 ## 현재 구현 상태
 
-- [createApp.test.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/createApp.test.ts)는 앱 baseline, 도서 검색, 도서관 검색, 도서 상세, 대출 가능 여부 regression을 모두 한 파일에서 검증하고 있다.
-- `src/routes` 루트에는 route plugin, fixture resolver, fixture data, pure helper, 테스트가 평평하게 섞여 있다.
+- app baseline과 route integration test 분리는 이미 시작됐다.
+  - [createApp.baseline.test.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/createApp.baseline.test.ts)가 baseline regression을 담당한다.
+  - route integration test는 [book search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.test.ts), [book detail](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/route.test.ts), [library search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/search/route.test.ts), [library availability](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/route.test.ts)로 분리됐다.
+- `src/routes` 도메인 뼈대도 일부 생겼지만, production 코드 co-location은 아직 불완전하다.
+  - [health/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/health/route.ts)와 [book/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.ts)는 도메인 경로로 이동했다.
+  - 반면 [bookDetail.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/bookDetail.ts), [librarySearch.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/librarySearch.ts), [libraryAvailability.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/libraryAvailability.ts)와 fixture/helper 파일은 아직 `src/routes` 루트에 남아 있다.
+- 현재 구조는 “도메인 폴더 뼈대는 생겼지만, 도메인별 production 코드와 fixture 경계가 함께 정리되지는 않은 중간 상태”다.
 - `USE_DEV_FIXTURES`는 runtime flag로만 제어되고, fixture resolver/data는 production route 코드에서 정적으로 import된다.
 - `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
 - `libraryAvailabilityParams.ts`, `libraryAvailabilityResponse.ts`처럼 분리 이득이 있는 순수 helper도 있지만, `bookSearchFixture.builders.ts`처럼 단일 소비자용 helper까지 별도 파일로 나뉘어 있다.
 
 ## 구조 리팩터링 기준
 
-### 1. 테스트 구조 재편
+### 1. 도메인 package 완성 기준
+
+- 이번 phase에서 도메인 폴더는 단순 뼈대가 아니라 **해당 도메인의 production route package**여야 한다.
+- 어떤 도메인 task도 아래 조건을 모두 만족하기 전에는 완료로 보지 않는다.
+  - 해당 도메인의 production route code가 도메인 폴더 안에 있다.
+  - 해당 도메인의 route integration test가 같은 도메인 폴더 안에 있다.
+  - route-owned pure helper와 focused helper test가 같은 도메인 폴더 안에 있다.
+  - 해당 도메인의 flat production 파일이 `src/routes` 루트에 남아 있지 않다.
+- `src/routes` 루트는 최종적으로 아래만 남기는 것을 기준으로 삼는다.
+  - `index.ts`
+  - `book/`
+  - `library/`
+  - `health/`
+- 즉 `book search` route 하나만 옮기고 fixture/helper가 루트에 남아 있는 상태는 도메인 구조 정리 완료가 아니다.
+
+### 2. 테스트 구조 재편
 
 - `createApp.test.ts`는 해체하고 아래 구조로 재배치한다.
   - `src/app/createApp.baseline.test.ts`
@@ -92,7 +112,7 @@
 - assertion 문장, request URL, route별 기대 응답은 각 테스트 파일에 직접 남긴다.
 - 하나의 shared test util이 route-specific assertion까지 숨기면 안 된다.
 
-### 2. `src/routes` 도메인 폴더 구조
+### 3. `src/routes` 도메인 폴더 구조
 
 - 목표 구조는 아래로 고정한다.
 
@@ -121,12 +141,13 @@ apps/bff/src/routes/
   index.ts
 ```
 
+- 완료된 도메인에 대해 production route code가 `src/routes` 루트 flat 파일로 남아 있으면 안 된다.
 - `routes/index.ts`는 새 도메인 폴더에서 route register만 담당한다.
 - `book/detail/route.ts`, `book/search/route.ts`, `library/search/route.ts`는 route-local helper를 같은 파일 안에 두는 것을 기본값으로 한다.
 - `library/availability`는 현재처럼 parse/normalize 책임이 명확하고 전용 테스트가 있으므로 분리 유지한다.
 - `health`는 단일 route라 `route.ts` 하나만 유지한다.
 
-### 3. 과분리 정리 기준
+### 4. 과분리 정리 기준
 
 - 아래는 분리 유지 대상으로 본다.
   - 독립 입력 검증 helper
@@ -141,7 +162,24 @@ apps/bff/src/routes/
 
 ## Fixture 격리 기준
 
-### 1. fixture source 위치
+### 1. fixture 주입 경계는 도메인 완성의 선행 조건이다
+
+- fixture를 `dev/fixtures`로 내보내려면 route가 fixture resolver를 정적으로 import하지 않아야 한다.
+- 따라서 아래 내부 인터페이스는 fixture 이동보다 먼저 도입해야 한다.
+
+```ts
+type CreateAppOptions = {
+  fixtures?: AppFixtures;
+};
+
+declare function createApp(options?: CreateAppOptions): FastifyInstance;
+declare function registerRoutes(app: FastifyInstance, options?: CreateAppOptions): void;
+```
+
+- 이 주입 경계가 없으면 fixture source를 production `src` 밖으로 이동할 수 없고, 결국 `src/routes` 루트에 도메인별 fixture 파일이 계속 남는다.
+- 따라서 fixture 주입 경계는 “나중에 추가해도 되는 개선”이 아니라 도메인 package completion의 선행 조건으로 본다.
+
+### 2. fixture source 위치
 
 - fixture source는 `apps/bff/dev/fixtures` 아래로 이동한다.
 - 목표 구조는 아래를 기본으로 한다.
@@ -174,7 +212,7 @@ apps/bff/dev/
 - fixture test도 fixture source와 같은 `dev/fixtures` 경계로 이동한다.
 - production compile target은 계속 `src`만 포함한다.
 
-### 2. bootstrap과 주입 방식
+### 3. bootstrap과 주입 방식
 
 - `createApp()`은 optional runtime option을 받도록 바꾼다.
 
@@ -209,7 +247,7 @@ type CreateAppOptions = {
 - production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 부팅 시 즉시 실패시킨다.
   - silent fallback으로 live path를 타면 안 된다.
 
-### 3. build 경계
+### 4. build 경계
 
 - `apps/bff/package.json` script 기준은 아래로 정리한다.
   - `build`: production `src`만 컴파일
@@ -272,11 +310,13 @@ type CreateAppOptions = {
 
 ## Acceptance 기준
 
-- 더 이상 `createApp.test.ts` 하나가 모든 BFF regression을 담당하지 않는다.
-- `src/routes`를 열었을 때 route 파일이 도메인 기준으로 묶여 있고, 관련 테스트와 순수 helper 경계가 바로 보인다.
+- 더 이상 단일 테스트 파일이 모든 BFF regression을 담당하지 않는다.
+- 완료된 각 도메인에 대해 production route code, route integration test, route-owned helper가 같은 도메인 폴더 안에 있다.
+- 완료된 도메인에 대한 flat production 파일이 `src/routes` 루트에 남아 있지 않다.
+- `src/routes` 루트는 최종적으로 `index.ts`와 도메인 폴더만 남는다.
 - fixture source는 production `src` 밖에 존재하며, production build 산출물에 포함되지 않는다.
 - route 공개 계약과 fixture regression은 모두 유지된다.
-- `pnpm --filter @nearby-library-search/bff exec vitest run`과 `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 계속 통과한다.
+- `pnpm --filter @nearby-library-search/bff exec vitest run`, `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`, `pnpm --filter @nearby-library-search/bff build`를 계속 통과한다.
 
 ## Assumptions
 

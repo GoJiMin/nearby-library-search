@@ -35,65 +35,57 @@
 - [x] fixture available/unavailable/not-owned/error 회귀를 새 파일로 옮긴다.
 - [x] 기존 `createApp.test.ts`의 availability 관련 assertion을 제거하고 legacy test 파일을 제거한다.
 
-## 6. `src/routes` 도메인 폴더 뼈대를 정리한다.
+## 6. `src/routes` 도메인 폴더 시작점을 정리한다.
 
 - [x] `apps/bff/src/routes/book`, `apps/bff/src/routes/library`, `apps/bff/src/routes/health` 폴더를 기준 구조로 만든다.
 - [x] `health` route를 `apps/bff/src/routes/health/route.ts`로 옮긴다.
-- [x] `apps/bff/src/routes/index.ts`가 새 도메인 경로만 register 하도록 정리한다.
-- [x] 불필요한 flat route import 경로를 더 이상 유지하지 않는다.
+- [x] `apps/bff/src/routes/index.ts`가 새 도메인 경로 전환을 시작하도록 정리한다.
+- [x] 이 단계는 도메인 package 완성 이전의 뼈대 정리 단계로만 간주한다.
 
-## 7. book search route 파일 구조를 리팩터링한다.
+## 7. fixture 주입 경계를 먼저 도입한다.
 
-- [x] `apps/bff/src/routes/book/search/route.ts`로 route plugin을 이동한다.
-- [x] parse, upstream fetch, normalize, logging helper는 route-local 기준으로 유지한다.
-- [x] route 관련 import 경로를 새 폴더 구조에 맞게 갱신한다.
-- [x] 리팩터링 후 book search route test가 계속 통과하는지 확인한다.
+- [ ] `createApp(options?: {fixtures?: AppFixtures})` 형태의 주입 경계를 추가한다.
+- [ ] `registerRoutes(app, options?)`가 주입받은 fixture resolver를 route에 전달할 수 있게 정리한다.
+- [ ] route 코드가 fixture resolver를 정적으로 import하지 않도록 전환한다.
+- [ ] 이 주입 경계가 생기기 전에는 어떤 도메인도 완료로 처리하지 않는다.
 
-## 8. book detail route 파일 구조를 리팩터링한다.
+## 8. book search 도메인 package를 완성한다.
 
-- [ ] `apps/bff/src/routes/book/detail/route.ts`로 route plugin을 이동한다.
-- [ ] parse, upstream fetch, normalize, logging helper는 route-local 기준으로 유지한다.
-- [ ] route 관련 import 경로를 새 폴더 구조에 맞게 갱신한다.
-- [ ] 리팩터링 후 book detail route test가 계속 통과하는지 확인한다.
-
-## 9. library search route 파일 구조를 리팩터링한다.
-
-- [ ] `apps/bff/src/routes/library/search/route.ts`로 route plugin을 이동한다.
-- [ ] parse, upstream fetch, normalize, logging helper는 route-local 기준으로 유지한다.
-- [ ] route 관련 import 경로를 새 폴더 구조에 맞게 갱신한다.
-- [ ] 리팩터링 후 library search route test가 계속 통과하는지 확인한다.
-
-## 10. library availability route 파일 구조를 리팩터링한다.
-
-- [ ] `apps/bff/src/routes/library/availability/route.ts`로 route plugin을 이동한다.
-- [ ] `parseParams.ts`, `normalizeResponse.ts`와 해당 focused test를 같은 도메인 폴더로 이동한다.
-- [ ] availability는 parse/normalize 분리 유지 원칙을 지킨다.
-- [ ] 리팩터링 후 availability route test와 pure helper test가 계속 통과하는지 확인한다.
-
-## 11. book fixture를 dev/test 전용 경계로 이동한다.
-
-- [ ] `apps/bff/dev/fixtures/book/search`, `apps/bff/dev/fixtures/book/detail` 구조를 추가한다.
-- [ ] book search fixture data/resolver/test를 dev 경계로 이동한다.
-- [ ] book detail fixture data/resolver/test를 dev 경계로 이동한다.
+- [ ] `apps/bff/src/routes/book/search` 안에 production route code와 route integration test가 함께 남도록 정리한다.
+- [ ] `book search` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/book/search`로 이동한다.
 - [ ] `bookSearchFixture.builders.ts`는 별도 파일로 유지하지 않고 fixture data 파일로 흡수한다.
+- [ ] `book search` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
-## 12. library fixture를 dev/test 전용 경계로 이동한다.
+## 9. book detail 도메인 package를 완성한다.
 
-- [ ] `apps/bff/dev/fixtures/library/search`, `apps/bff/dev/fixtures/library/availability` 구조를 추가한다.
-- [ ] library search fixture data/resolver/test를 dev 경계로 이동한다.
-- [ ] library availability fixture data/resolver/test를 dev 경계로 이동한다.
+- [ ] `apps/bff/src/routes/book/detail` 안에 production route code와 route integration test가 함께 남도록 정리한다.
+- [ ] `book detail` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/book/detail`로 이동한다.
+- [ ] route-local helper는 같은 도메인 경로에 두고, 불필요한 flat helper를 남기지 않는다.
+- [ ] `book detail` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
+
+## 10. library search 도메인 package를 완성한다.
+
+- [ ] `apps/bff/src/routes/library/search` 안에 production route code와 route integration test가 함께 남도록 정리한다.
+- [ ] `library search` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/library/search`로 이동한다.
+- [ ] route-local helper는 같은 도메인 경로에 두고, 불필요한 flat helper를 남기지 않는다.
+- [ ] `library search` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
+
+## 11. library availability 도메인 package를 완성한다.
+
+- [ ] `apps/bff/src/routes/library/availability` 안에 route, parse helper, normalize helper, route/helper test가 함께 남도록 정리한다.
+- [ ] `library availability` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/library/availability`로 이동한다.
+- [ ] availability는 parse/normalize 분리 유지 원칙을 지키되, 관련 파일이 도메인 폴더 밖에 흩어지지 않게 한다.
+- [ ] `library availability` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
+
+## 12. production/dev bootstrap을 마감한다.
+
 - [ ] `apps/bff/dev/fixtures/index.ts`에서 전체 fixture registry를 조합한다.
-
-## 13. production/dev bootstrap과 fixture 주입 구조를 재설계한다.
-
-- [ ] `createApp(options?: {fixtures?: AppFixtures})` 형태로 fixture 주입 경계를 추가한다.
-- [ ] `registerRoutes(app, options?)`가 주입받은 fixture resolver만 사용하도록 바꾼다.
 - [ ] `apps/bff/src/main.ts`는 production bootstrap만 담당하게 정리한다.
 - [ ] `apps/bff/dev/main.ts`를 추가해 dev bootstrap에서만 fixture registry를 연결한다.
 - [ ] production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 fail-fast 하도록 고정한다.
 - [ ] `apps/bff/package.json`의 `dev` 스크립트가 dev bootstrap을 사용하도록 정리한다.
 
-## 14. 최종 검증과 문서 동기화를 마감한다.
+## 13. 최종 검증과 문서 동기화를 마감한다.
 
 - [ ] `pnpm --filter @nearby-library-search/bff exec vitest run`을 통과시킨다.
 - [ ] `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 통과시킨다.
@@ -105,8 +97,9 @@
 
 - 이번 phase는 공개 `/api` 계약을 바꾸지 않고 BFF 내부 구조만 리팩터링한다.
 - `createApp.test.ts` 단일 파일 구조를 해체하고 app baseline과 route별 integration test로 분리한다.
-- `src/routes`는 flat 구조를 버리고 book/library/health 도메인 폴더 기준으로 재정리한다.
+- `src/routes`는 단순 뼈대가 아니라, 각 도메인의 production route code와 test가 함께 있는 package 구조로 재정리한다.
 - fixture는 production `src`에서 분리된 `dev` 경계로 옮기고, production bootstrap에서는 직접 import하지 않는다.
+- route 파일 하나만 옮긴 상태는 완료로 보지 않고, fixture와 helper까지 포함한 도메인 package completion을 기준으로 닫는다.
 
 ## Test Plan
 
