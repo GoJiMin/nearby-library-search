@@ -30,23 +30,73 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
 async function createAppWithLibraryAvailabilityFixtures(fixtureResolver?: AppFixtures['libraryAvailability']) {
   const {createApp} = await import('../../../app/createApp.js');
 
-  if (fixtureResolver) {
-    return createApp({
-      fixtures: {
-        libraryAvailability: fixtureResolver,
-      },
-    });
-  }
-
-  const {resolveLibraryAvailabilityFixtureResult} = await import('../../libraryAvailabilityFixture.js');
-
   return createApp({
     fixtures: {
-      libraryAvailability: {
-        resolve: resolveLibraryAvailabilityFixtureResult,
-      },
+      libraryAvailability: fixtureResolver,
     },
   });
+}
+
+function createLibraryAvailabilityFixtureResolver(): AppFixtures['libraryAvailability'] {
+  return {
+    resolve(params) {
+      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0001') {
+        return {
+          ok: true,
+          value: {
+            hasBook: 'Y',
+            isbn13: '9791192389479',
+            libraryCode: 'LIB0001',
+            loanAvailable: 'Y',
+          },
+        };
+      }
+
+      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0002') {
+        return {
+          ok: true,
+          value: {
+            hasBook: 'Y',
+            isbn13: '9791192389479',
+            libraryCode: 'LIB0002',
+            loanAvailable: 'N',
+          },
+        };
+      }
+
+      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0004') {
+        return {
+          ok: true,
+          value: {
+            hasBook: 'N',
+            isbn13: '9791192389479',
+            libraryCode: 'LIB0004',
+            loanAvailable: 'N',
+          },
+        };
+      }
+
+      if (params.isbn13 === '9791192389479' && params.libraryCode === 'LIB0003') {
+        return {
+          ok: false,
+          error: {
+            detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+            status: 502,
+            title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+          },
+        };
+      }
+
+      return {
+        ok: false,
+        error: {
+          detail: '대출 가능 여부 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          status: 502,
+          title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
+        },
+      };
+    },
+  };
 }
 
 describe('library availability route integration', () => {
@@ -110,7 +160,7 @@ describe('library availability route integration', () => {
   it('책이 준비된 도서관이면 대출 가능 상태를 바로 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithLibraryAvailabilityFixtures();
+    const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -132,7 +182,7 @@ describe('library availability route integration', () => {
   it('책은 있지만 대출할 수 없으면 그 상태를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithLibraryAvailabilityFixtures();
+    const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -154,7 +204,7 @@ describe('library availability route integration', () => {
   it('도서관에 책이 없으면 미소장 상태를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithLibraryAvailabilityFixtures();
+    const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -176,7 +226,7 @@ describe('library availability route integration', () => {
   it('대출 가능 여부를 준비할 수 없으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithLibraryAvailabilityFixtures();
+    const app = await createAppWithLibraryAvailabilityFixtures(createLibraryAvailabilityFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
