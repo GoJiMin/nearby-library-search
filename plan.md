@@ -153,7 +153,17 @@
 - [x] BFF 앱 레벨 보안 기본값으로 exact-origin CORS, security headers, 404/500 structured error를 추가한다.
 - [x] Phase 6-1 내용을 기준으로 `spec.md`, `task.md`, 최종 검증 상태를 마감한다.
 
-## Phase 6-2. 웹 상태 수명주기 리팩터링
+## Phase 6-2. BFF 구조 리팩터링
+
+- [ ] `createApp.test.ts`처럼 과도하게 비대해진 BFF integration 테스트를 앱 baseline, route별 목적 기준으로 분리한다.
+- [ ] `routes` 디렉터리를 도메인별 폴더 구조로 재정리해 route plugin, fixture, pure helper, 테스트의 탐색 경계를 명확히 한다.
+- [ ] fixture 관련 파일 분리를 재점검하고, 단일 소비자용 과분리 helper는 흡수하고 유지 가치가 있는 순수 로직만 남긴다.
+- [ ] fixture를 dev/test 전용 경계로 격리해 production build와 runtime에서 직접 섞이지 않도록 bootstrap 구조를 재설계한다.
+- [ ] route별 parse, fixture/live branch, normalize 흐름에서 반복되는 패턴을 진단하고 공통화가 실제 이득인 범위만 정리한다.
+- [ ] 리팩터링 후에도 기존 search/detail/library/availability route 계약과 fixture 회귀가 유지되는지 검증한다.
+- [ ] Phase 6-2 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+
+## Phase 6-3. 웹 상태 수명주기 리팩터링
 
 - [ ] `/books` 결과 문맥에 종속된 transient UI 상태와 세션 사이에 재사용할 persistent 상태를 구분한다.
 - [ ] `find-library` store에서 `lastRegionSelection` 같은 기억 상태와 현재 검색 결과에만 유효한 상태를 분리해 reset 의미를 명확히 한다.
@@ -161,4 +171,4 @@
 - [ ] `pages/book-search-result`가 store reset을 직접 흩어 호출하는 대신, 의도가 드러나는 lifecycle 경계 또는 전용 orchestration hook으로 정리한다.
 - [ ] reset API 이름과 책임을 `무엇을 지우는지`보다 `왜 지금 지우는지`가 드러나도록 재설계한다.
 - [ ] 검색 조건 변경, 페이지 이동, route 이탈, 재진입 시 상태 일관성이 유지되는지 사용자 흐름 기준 통합테스트로 검증한다.
-- [ ] Phase 6-2 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [ ] Phase 6-3 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
