@@ -1,12 +1,8 @@
-import {resolveBookDetailFixtureResult} from '../routes/bookDetailFixture.js';
 import {resolveLibraryAvailabilityFixtureResult} from '../routes/libraryAvailabilityFixture.js';
 import {resolveLibrarySearchFixtureResult} from '../routes/librarySearchFixture.js';
 import type {AppFixtures} from './fixtures.js';
 
 const defaultAppFixtures: AppFixtures = {
-  bookDetail: {
-    resolve: resolveBookDetailFixtureResult,
-  },
   libraryAvailability: {
     resolve: resolveLibraryAvailabilityFixtureResult,
   },

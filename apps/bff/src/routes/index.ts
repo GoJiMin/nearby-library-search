@@ -1,6 +1,6 @@
 import type {FastifyInstance} from 'fastify';
 import type {AppFixtures} from '../app/fixtures.js';
-import {createBookDetailRoute} from './bookDetail.js';
+import {createBookDetailRoute} from './book/detail/route.js';
 import {createBookSearchRoute} from './book/search/route.js';
 import {healthRoute} from './health/route.js';
 import {createLibraryAvailabilityRoute} from './libraryAvailability.js';
