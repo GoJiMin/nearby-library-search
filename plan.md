@@ -174,4 +174,4 @@
 - [ ] lazy boundary loading fallback을 기존 loading/placeholder 계약 안에서 정리해 화면 전환 품질을 유지한다.
 - [ ] `pnpm --filter @nearby-library-search/web build`에서 Vite chunk size warning이 없어지도록 초기 JS 비용을 줄인다.
 - [ ] emitted app JS chunk가 여러 개로 나뉘고, 어느 chunk도 minified 기준 400 kB를 넘지 않도록 맞춘다.
-- [ ] Phase 6-3 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [x] Phase 6-3 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
