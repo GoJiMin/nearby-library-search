@@ -5,7 +5,7 @@ async function importLibraryAvailabilityFixtureModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./fixture.js');
+  return import('../fixture.js');
 }
 
 describe('library availability fixture', () => {
