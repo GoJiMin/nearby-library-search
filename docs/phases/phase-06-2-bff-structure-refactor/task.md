@@ -2,10 +2,10 @@
 
 ## 1. `createApp` baseline integration test를 분리한다.
 
-- [ ] `apps/bff/src/app/createApp.baseline.test.ts`를 추가한다.
-- [ ] health, exact-origin CORS, preflight, 404/500 structured error, security headers 검증을 새 파일로 옮긴다.
-- [ ] 기존 `createApp.test.ts`에서는 baseline 관련 assertion을 제거한다.
-- [ ] baseline test가 `createApp().inject()` 기준을 그대로 유지하는지 확인한다.
+- [x] `apps/bff/src/app/createApp.baseline.test.ts`를 추가한다.
+- [x] health, exact-origin CORS, preflight, 404/500 structured error, security headers 검증을 새 파일로 옮긴다.
+- [x] 기존 `createApp.test.ts`에서는 baseline 관련 assertion을 제거한다.
+- [x] baseline test가 `createApp().inject()` 기준을 그대로 유지하는지 확인한다.
 
 ## 2. book search route integration test를 분리한다.
 
