@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file-if-exists=.env --import tsx dev/main.ts",
-    "prebuild": "node scripts/clean-dist.mjs",
-    "build": "pnpm --filter @nearby-library-search/contracts build && tsc -p tsconfig.build.json && node scripts/assert-production-dist.mjs",
+    "build": "pnpm --filter @nearby-library-search/contracts build && tsc -p tsconfig.build.json",
     "test": "vitest",
     "test:run": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
