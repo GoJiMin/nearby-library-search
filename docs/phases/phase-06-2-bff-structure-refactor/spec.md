@@ -60,8 +60,9 @@
 -  - [health/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/health/route.ts)와 [book/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.ts)는 도메인 경로로 이동했다.
 -  - `book search` fixture source와 fixture test는 [dev/fixtures/book/search](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/search)로 이동했고, `src/routes` 루트의 `bookSearchFixture*` flat 파일은 제거됐다.
 -  - [book/detail/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/route.ts)도 도메인 경로로 이동했고, `book detail` fixture source와 fixture test는 [dev/fixtures/book/detail](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/detail)로 이동했다.
--  - 반면 [librarySearch.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/librarySearch.ts)와 [libraryAvailability.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/libraryAvailability.ts), 해당 fixture/helper 파일은 아직 `src/routes` 루트에 남아 있다.
-- 현재 구조는 “`book search`, `book detail`은 도메인 package가 완성됐지만, `library` 도메인은 아직 production 코드와 fixture 경계가 함께 정리되지 않은 중간 상태”다.
+-  - [library/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/search/route.ts)도 도메인 경로로 이동했고, `library search` fixture source와 fixture test는 [dev/fixtures/library/search](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/library/search)로 이동했다.
+-  - 반면 [libraryAvailability.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/libraryAvailability.ts)와 해당 fixture/helper 파일은 아직 `src/routes` 루트에 남아 있다.
+- 현재 구조는 “`book search`, `book detail`, `library search`는 도메인 package가 완성됐지만, `library availability`는 아직 production 코드와 fixture 경계가 함께 정리되지 않은 중간 상태”다.
 - `USE_DEV_FIXTURES`는 아직 runtime flag로 제어되지만, fixture resolver는 이제 `createApp()`과 `registerRoutes()`의 주입 경계를 통해 route에 전달된다.
 - 다만 default fixture registry와 일부 fixture source는 아직 production `src` 안에 남아 있다.
 - `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
