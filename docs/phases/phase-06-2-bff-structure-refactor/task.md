@@ -58,10 +58,10 @@
 
 ## 9. book detail 도메인 package를 완성한다.
 
-- [ ] `apps/bff/src/routes/book/detail` 안에 production route code와 route integration test가 함께 남도록 정리한다.
-- [ ] `book detail` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/book/detail`로 이동한다.
-- [ ] route-local helper는 같은 도메인 경로에 두고, 불필요한 flat helper를 남기지 않는다.
-- [ ] `book detail` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
+- [x] `apps/bff/src/routes/book/detail` 안에 production route code와 route integration test가 함께 남도록 정리한다.
+- [x] `book detail` fixture source와 fixture test를 `apps/bff/dev/fixtures/book/detail`로 이동한다.
+- [x] route-local helper는 같은 도메인 경로에 두고, 불필요한 flat helper를 남기지 않는다.
+- [x] `book detail` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
 ## 10. library search 도메인 package를 완성한다.
 

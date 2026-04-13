@@ -56,12 +56,13 @@
 - `src/routes` 도메인 뼈대도 일부 생겼지만, production 코드 co-location은 아직 불완전하다.
 -  - [health/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/health/route.ts)와 [book/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.ts)는 도메인 경로로 이동했다.
 -  - `book search` fixture source와 fixture test는 [dev/fixtures/book/search](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/search)로 이동했고, `src/routes` 루트의 `bookSearchFixture*` flat 파일은 제거됐다.
--  - 반면 [bookDetail.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/bookDetail.ts), [librarySearch.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/librarySearch.ts), [libraryAvailability.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/libraryAvailability.ts)와 해당 fixture/helper 파일은 아직 `src/routes` 루트에 남아 있다.
-- 현재 구조는 “`book search`는 도메인 package가 완성됐지만, 나머지 도메인은 아직 production 코드와 fixture 경계가 함께 정리되지 않은 중간 상태”다.
+-  - [book/detail/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/route.ts)도 도메인 경로로 이동했고, `book detail` fixture source와 fixture test는 [dev/fixtures/book/detail](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/detail)로 이동했다.
+-  - 반면 [librarySearch.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/librarySearch.ts)와 [libraryAvailability.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/libraryAvailability.ts), 해당 fixture/helper 파일은 아직 `src/routes` 루트에 남아 있다.
+- 현재 구조는 “`book search`, `book detail`은 도메인 package가 완성됐지만, `library` 도메인은 아직 production 코드와 fixture 경계가 함께 정리되지 않은 중간 상태”다.
 - `USE_DEV_FIXTURES`는 아직 runtime flag로 제어되지만, fixture resolver는 이제 `createApp()`과 `registerRoutes()`의 주입 경계를 통해 route에 전달된다.
 - 다만 default fixture registry와 일부 fixture source는 아직 production `src` 안에 남아 있다.
 - `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
-- `libraryAvailabilityParams.ts`, `libraryAvailabilityResponse.ts`처럼 분리 이득이 있는 순수 helper는 남아 있지만, `book search` 쪽의 단일 소비자용 fixture builder 분리는 이미 흡수됐다.
+- `libraryAvailabilityParams.ts`, `libraryAvailabilityResponse.ts`처럼 분리 이득이 있는 순수 helper는 남아 있지만, `book` 도메인 fixture 쪽의 단일 소비자용 helper 분리는 이미 흡수됐다.
 
 ## 구조 리팩터링 기준
 
@@ -191,28 +192,30 @@ apps/bff/dev/
   fixtures/
     book/
       detail/
-        data.ts
-        resolver.ts
-        resolver.test.ts
+        books.ts
+        fixture.ts
+        fixture.test.ts
       search/
-        data.ts
-        resolver.ts
-        resolver.test.ts
+        books.ts
+        fixture.ts
+        fixture.test.ts
     library/
       availability/
-        data.ts
-        resolver.ts
-        resolver.test.ts
+        fixture.ts
+        fixture.test.ts
       search/
-        data.ts
-        resolver.ts
-        resolver.test.ts
+        libraries.ts
+        fixture.ts
+        fixture.test.ts
     index.ts
   main.ts
 ```
 
 - fixture test도 fixture source와 같은 `dev/fixtures` 경계로 이동한다.
 - production compile target은 계속 `src`만 포함한다.
+- fixture 파일 이름은 `data`/`resolver` 같은 일반화보다 도메인 용어를 우선한다.
+  - 예: `books.ts`, `libraries.ts`, `fixture.ts`
+  - 별도 추상 레이어를 암시하는 `resolver.ts`는 기본값으로 쓰지 않는다.
 
 ### 3. bootstrap과 주입 방식
 
