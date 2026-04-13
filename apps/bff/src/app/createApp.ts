@@ -4,7 +4,6 @@ import type {FastifyInstance} from 'fastify';
 import {developmentConfig, webAppConfig} from '../config/env.js';
 import {registerRoutes} from '../routes/index.js';
 import {createErrorResponse} from '../utils/error.js';
-import {createAppFixtures} from './defaultFixtures.js';
 import type {CreateAppOptions} from './fixtures.types.js';
 
 const CORS_ALLOWED_METHODS = 'GET,HEAD,OPTIONS';
@@ -32,8 +31,6 @@ export function createApp(options: CreateAppOptions = {}): FastifyInstance {
     },
   });
   const allowedCorsOrigins = createAllowedCorsOrigins();
-  const fixtures = createAppFixtures(options.fixtures);
-
   void app.register(helmet, {
     contentSecurityPolicy: false,
     hsts: false,
@@ -59,7 +56,7 @@ export function createApp(options: CreateAppOptions = {}): FastifyInstance {
     }
   });
 
-  registerRoutes(app, {fixtures});
+  registerRoutes(app, {fixtures: options.fixtures});
 
   app.setNotFoundHandler(async (_, reply) => {
     return reply.status(404).send(createErrorResponse('NOT_FOUND', '요청한 경로를 찾을 수 없습니다.', 404));
