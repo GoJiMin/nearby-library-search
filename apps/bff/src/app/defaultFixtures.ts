@@ -1,15 +1,11 @@
 import {resolveBookDetailFixtureResult} from '../routes/bookDetailFixture.js';
-import {resolveBookSearchFixtureResult} from '../routes/bookSearchFixture.js';
 import {resolveLibraryAvailabilityFixtureResult} from '../routes/libraryAvailabilityFixture.js';
 import {resolveLibrarySearchFixtureResult} from '../routes/librarySearchFixture.js';
 import type {AppFixtures} from './fixtures.js';
 
-const defaultAppFixtures: Required<AppFixtures> = {
+const defaultAppFixtures: AppFixtures = {
   bookDetail: {
     resolve: resolveBookDetailFixtureResult,
-  },
-  bookSearch: {
-    resolve: resolveBookSearchFixtureResult,
   },
   libraryAvailability: {
     resolve: resolveLibraryAvailabilityFixtureResult,
@@ -19,7 +15,7 @@ const defaultAppFixtures: Required<AppFixtures> = {
   },
 };
 
-function createAppFixtures(overrides?: AppFixtures): Required<AppFixtures> {
+function createAppFixtures(overrides?: AppFixtures): AppFixtures {
   return {
     bookDetail: overrides?.bookDetail ?? defaultAppFixtures.bookDetail,
     bookSearch: overrides?.bookSearch ?? defaultAppFixtures.bookSearch,

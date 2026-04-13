@@ -1,6 +1,5 @@
 import type {DetailRegionCode, Isbn, RegionCode} from '@nearby-library-search/contracts';
 import type {LibrarySearchItem} from '@nearby-library-search/contracts';
-import {bookSearchFixtureItems} from './bookSearchFixture.data.js';
 
 type LibrarySearchFixtureItem = LibrarySearchItem & {
   detailRegion?: DetailRegionCode;
@@ -222,7 +221,28 @@ const seoulLibrarySearchFixtureDistricts: ReadonlyArray<SeoulLibrarySearchFixtur
   },
 ];
 
-const supportedFixtureIsbns = Array.from(new Set(bookSearchFixtureItems.map(item => item.isbn13)));
+const supportedFixtureBaseIsbns: ReadonlyArray<Isbn> = [
+  '9788954682155',
+  '9791196447182',
+  '9788936434124',
+  '9791192389479',
+  '9788932021670',
+  '9788954683374',
+  '9788937482674',
+  '9788956609952',
+  '9788972976519',
+  '9791157842728',
+  '9788932471635',
+  '9791191234567',
+];
+
+const supportedFixturePaginatedIsbns: ReadonlyArray<Isbn> = Array.from({length: 24}, (_, index) => {
+  const itemNumber = index + 1;
+
+  return `9791198800${String(itemNumber).padStart(3, '0')}` as Isbn;
+});
+
+const supportedFixtureIsbns = [...supportedFixtureBaseIsbns, ...supportedFixturePaginatedIsbns];
 
 function formatCoordinate(value: number) {
   return Number(value.toFixed(4));
