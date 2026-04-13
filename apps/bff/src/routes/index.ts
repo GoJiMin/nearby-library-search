@@ -1,5 +1,5 @@
 import type {FastifyInstance} from 'fastify';
-import type {AppFixtures} from '../app/fixtures.js';
+import type {AppFixtures} from '../app/fixtures.types.js';
 import {createBookDetailRoute} from './book/detail/route.js';
 import {createBookSearchRoute} from './book/search/route.js';
 import {healthRoute} from './health/route.js';

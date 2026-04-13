@@ -5,7 +5,7 @@ import {developmentConfig, webAppConfig} from '../config/env.js';
 import {registerRoutes} from '../routes/index.js';
 import {createErrorResponse} from '../utils/error.js';
 import {createAppFixtures} from './defaultFixtures.js';
-import type {CreateAppOptions} from './fixtures.js';
+import type {CreateAppOptions} from './fixtures.types.js';
 
 const CORS_ALLOWED_METHODS = 'GET,HEAD,OPTIONS';
 const DEV_CORS_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'] as const;

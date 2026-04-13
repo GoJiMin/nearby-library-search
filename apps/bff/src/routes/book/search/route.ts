@@ -1,7 +1,7 @@
 import type {BookSearchItem, BookSearchResponse, ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
-import type {AppFixtures} from '../../../app/fixtures.js';
+import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
 import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
 import {bookSearchQuerySchema} from '../../../schemas/book.js';

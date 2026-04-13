@@ -1,4 +1,4 @@
-import type {AppFixtures} from '../../../app/fixtures.js';
+import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({

@@ -1,6 +1,6 @@
 import {resolveLibraryAvailabilityFixtureResult} from '../routes/libraryAvailabilityFixture.js';
 import {resolveLibrarySearchFixtureResult} from '../routes/librarySearchFixture.js';
-import type {AppFixtures} from './fixtures.js';
+import type {AppFixtures} from './fixtures.types.js';
 
 const defaultAppFixtures: AppFixtures = {
   libraryAvailability: {

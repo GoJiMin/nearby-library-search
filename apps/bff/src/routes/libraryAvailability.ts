@@ -1,6 +1,6 @@
 import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
-import type {AppFixtures} from '../app/fixtures.js';
+import type {AppFixtures} from '../app/fixtures.types.js';
 import {developmentConfig} from '../config/env.js';
 import {parseLibraryAvailabilityParams} from './libraryAvailabilityParams.js';
 import {normalizeLibraryAvailabilityResponse} from './libraryAvailabilityResponse.js';
