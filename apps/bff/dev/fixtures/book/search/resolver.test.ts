@@ -5,10 +5,10 @@ async function importBookSearchFixtureModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./bookSearchFixture.js');
+  return import('./resolver.js');
 }
 
-describe('bookSearchFixture', () => {
+describe('book search fixture resolver', () => {
   beforeEach(() => {
     vi.resetModules();
   });
