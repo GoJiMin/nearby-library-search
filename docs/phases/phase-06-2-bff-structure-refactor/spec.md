@@ -1,0 +1,286 @@
+# Phase 6-2. BFF 구조 리팩터링
+
+## 목표
+
+- 현재 Fastify BFF의 테스트 구조, route 디렉터리 구조, fixture 경계를 리팩터링해 탐색 비용과 변경 비용을 낮춘다.
+- 기존 `/api` 계약과 Phase 6-1 보안 하드닝 결과는 유지한 채, 구현 코드와 테스트 코드가 목적별 책임을 분명히 갖도록 정리한다.
+- fixture를 dev/test 전용 경계로 격리해 production build와 runtime에서 직접 섞이지 않도록 bootstrap 구조를 다시 고정한다.
+
+## 1차 source of truth
+
+- 루트 `.impeccable.md`
+- 루트 `AGENTS.md`
+- `plan.md`의 `Phase 6-2`
+- `docs/phases/phase-03-bff/spec.md`
+- `docs/phases/phase-05-5-library-availability-check/spec.md`
+- `docs/phases/phase-05-6-book-detail-dialog/spec.md`
+- `docs/phases/phase-06-1-bff-security-hardening/spec.md`
+
+## 기술 결정
+
+- 이번 phase는 **구조 리팩터링**이다.
+  - 기존 route URL, response shape, error title, env 계약은 바꾸지 않는다.
+  - business rule 추가나 provider contract 변경은 하지 않는다.
+- 테스트 원칙은 유지한다.
+  - BFF route regression은 계속 `createApp().inject()`로 검증한다.
+  - pure helper는 독립 검증 가치가 있을 때만 focused test를 유지한다.
+- 과한 공용화는 금지한다.
+  - parse -> fixture/live branch -> normalize 흐름을 generic route factory로 숨기지 않는다.
+  - 파일을 쪼개기 위한 쪼개기는 하지 않는다.
+- fixture는 production `src`와 분리한다.
+  - production build target은 `src`만 유지한다.
+  - dev fixture source는 `apps/bff/dev` 경계로 이동한다.
+
+## 구현 범위
+
+- `createApp.test.ts`를 baseline test와 route integration test로 분리
+- `src/routes`를 도메인 기준 폴더 구조로 재정리
+- fixture source와 fixture test를 dev/test 전용 경계로 이동
+- production bootstrap과 dev bootstrap을 분리
+- route별 과분리 helper를 흡수하고 유지 가치가 있는 순수 로직만 남김
+- 리팩터링 후 전체 BFF test/typecheck/build 기준 재검증
+
+## 비범위
+
+- `/api/books/search`, `/api/books/:isbn13`, `/api/libraries/search`, `/api/libraries/:libraryCode/books/:isbn13/availability`의 공개 계약 변경
+- 새 provider endpoint 추가
+- route pipeline 전체를 generic abstraction으로 치환
+- web app 코드 변경
+- Vercel 배포 설정 자체 변경
+
+## 현재 구현 상태
+
+- [createApp.test.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/createApp.test.ts)는 앱 baseline, 도서 검색, 도서관 검색, 도서 상세, 대출 가능 여부 regression을 모두 한 파일에서 검증하고 있다.
+- `src/routes` 루트에는 route plugin, fixture resolver, fixture data, pure helper, 테스트가 평평하게 섞여 있다.
+- `USE_DEV_FIXTURES`는 runtime flag로만 제어되고, fixture resolver/data는 production route 코드에서 정적으로 import된다.
+- `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
+- `libraryAvailabilityParams.ts`, `libraryAvailabilityResponse.ts`처럼 분리 이득이 있는 순수 helper도 있지만, `bookSearchFixture.builders.ts`처럼 단일 소비자용 helper까지 별도 파일로 나뉘어 있다.
+
+## 구조 리팩터링 기준
+
+### 1. 테스트 구조 재편
+
+- `createApp.test.ts`는 해체하고 아래 구조로 재배치한다.
+  - `src/app/createApp.baseline.test.ts`
+    - health
+    - exact-origin CORS
+    - 404 structured error
+    - 500 structured error
+    - security headers
+  - `src/routes/book/search/route.test.ts`
+    - query validation
+    - upstream success/empty/error
+    - fixture success/error
+  - `src/routes/book/detail/route.test.ts`
+    - param validation
+    - upstream success/error
+    - fixture rich/minimal/empty/error
+  - `src/routes/library/search/route.test.ts`
+    - query validation
+    - upstream success/empty/error
+    - fixture success/error
+  - `src/routes/library/availability/route.test.ts`
+    - param validation
+    - upstream success/error
+    - fixture available/unavailable/not-owned/error
+- route integration test는 각 route 폴더에 둔다.
+- app baseline test만 `src/app`에 남긴다.
+- 공통 helper 허용 범위는 아래로 제한한다.
+  - 기본 env setup
+  - `requestLibraryApi` mock wiring
+  - JSON `Response` 생성 helper
+- assertion 문장, request URL, route별 기대 응답은 각 테스트 파일에 직접 남긴다.
+- 하나의 shared test util이 route-specific assertion까지 숨기면 안 된다.
+
+### 2. `src/routes` 도메인 폴더 구조
+
+- 목표 구조는 아래로 고정한다.
+
+```text
+apps/bff/src/routes/
+  book/
+    detail/
+      route.ts
+      route.test.ts
+    search/
+      route.ts
+      route.test.ts
+  health/
+    route.ts
+  library/
+    availability/
+      parseParams.ts
+      parseParams.test.ts
+      normalizeResponse.ts
+      normalizeResponse.test.ts
+      route.ts
+      route.test.ts
+    search/
+      route.ts
+      route.test.ts
+  index.ts
+```
+
+- `routes/index.ts`는 새 도메인 폴더에서 route register만 담당한다.
+- `book/detail/route.ts`, `book/search/route.ts`, `library/search/route.ts`는 route-local helper를 같은 파일 안에 두는 것을 기본값으로 한다.
+- `library/availability`는 현재처럼 parse/normalize 책임이 명확하고 전용 테스트가 있으므로 분리 유지한다.
+- `health`는 단일 route라 `route.ts` 하나만 유지한다.
+
+### 3. 과분리 정리 기준
+
+- 아래는 분리 유지 대상으로 본다.
+  - 독립 입력 검증 helper
+  - 독립 normalize helper
+  - 전용 unit test가 이미 있는 pure function
+- 아래는 흡수 대상으로 본다.
+  - 단일 소비자용 trivial builder
+  - fixture data 생성만 돕는 얕은 helper
+  - 테스트 가치 없이 route 한 곳에서만 읽히는 얇은 변환 함수
+- 따라서 `bookSearchFixture.builders.ts` 같은 파일은 별도 파일로 유지하지 않고 fixture data 파일로 흡수한다.
+- 리팩터링 후에는 “route 폴더를 열었을 때 route contract, pure helper, integration test의 경계가 바로 보이는지”를 기준으로 삼는다.
+
+## Fixture 격리 기준
+
+### 1. fixture source 위치
+
+- fixture source는 `apps/bff/dev/fixtures` 아래로 이동한다.
+- 목표 구조는 아래를 기본으로 한다.
+
+```text
+apps/bff/dev/
+  fixtures/
+    book/
+      detail/
+        data.ts
+        resolver.ts
+        resolver.test.ts
+      search/
+        data.ts
+        resolver.ts
+        resolver.test.ts
+    library/
+      availability/
+        data.ts
+        resolver.ts
+        resolver.test.ts
+      search/
+        data.ts
+        resolver.ts
+        resolver.test.ts
+    index.ts
+  main.ts
+```
+
+- fixture test도 fixture source와 같은 `dev/fixtures` 경계로 이동한다.
+- production compile target은 계속 `src`만 포함한다.
+
+### 2. bootstrap과 주입 방식
+
+- `createApp()`은 optional runtime option을 받도록 바꾼다.
+
+```ts
+type AppFixtures = {
+  bookSearch?: {
+    resolve(query: BookSearchQuery): Result<BookSearchResponse>;
+  };
+  bookDetail?: {
+    resolve(params: BookDetailParams): Result<BookDetailResponse>;
+  };
+  librarySearch?: {
+    resolve(query: LibrarySearchQuery): Result<LibrarySearchResponse>;
+  };
+  libraryAvailability?: {
+    resolve(params: LibraryAvailabilityParams): Result<LibraryAvailabilityResponse>;
+  };
+};
+
+type CreateAppOptions = {
+  fixtures?: AppFixtures;
+};
+```
+
+- `src/main.ts`는 production bootstrap만 담당한다.
+  - `createApp()`을 fixture 없이 호출한다.
+- `dev/main.ts`는 dev bootstrap만 담당한다.
+  - `USE_DEV_FIXTURES=true`면 `dev/fixtures/index.ts`의 registry를 주입한다.
+  - `USE_DEV_FIXTURES=false`면 fixture 없이 `createApp()`을 호출해도 된다.
+- route 코드는 fixture resolver를 정적으로 import하지 않는다.
+  - route는 `registerRoutes(app, options)`에서 주입받은 fixture resolver만 사용한다.
+- production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 부팅 시 즉시 실패시킨다.
+  - silent fallback으로 live path를 타면 안 된다.
+
+### 3. build 경계
+
+- `apps/bff/package.json` script 기준은 아래로 정리한다.
+  - `build`: production `src`만 컴파일
+  - `start`: production `dist/main.js`
+  - `dev`: dev bootstrap 진입점 사용
+- acceptance는 아래로 고정한다.
+  - `tsc -p tsconfig.json` 결과물에 fixture source 파일이 포함되지 않는다.
+  - production runtime entrypoint가 dev fixture source를 import하지 않는다.
+
+## 반복 패턴 정리 기준
+
+- route 내부의 아래 흐름은 route-local로 유지한다.
+  - parse
+  - fixture/live branch
+  - normalize
+  - logging
+  - reply status 결정
+- 허용하는 공통화는 아래까지만이다.
+  - `Result<T>` 공용 타입 alias
+  - fixture registry/interface 타입
+  - test env/bootstrap helper
+- 금지하는 공통화는 아래다.
+  - route generic factory
+  - 모든 route를 하나의 공용 실행기로 감싸는 abstraction
+  - domain 차이를 숨기는 공용 parse/normalize framework
+
+## 테스트 기준
+
+### 1. baseline test
+
+- `createApp.baseline.test.ts`는 아래만 검증한다.
+  - health route
+  - CORS allow/block
+  - preflight 처리
+  - 404/500 structured error
+  - helmet headers
+
+### 2. route integration test
+
+- 각 route test는 아래를 최소로 검증한다.
+  - 입력 검증 failure
+  - upstream success
+  - upstream empty 또는 no-result path
+  - upstream non-ok/throw/invalid path
+  - fixture success/error path
+- route integration test는 `requestLibraryApi` mock을 경계로 유지한다.
+
+### 3. pure helper test
+
+- 분리 유지한 pure helper만 focused test를 유지한다.
+  - `library availability` parse/normalize
+  - fixture resolver validation
+- route-local helper로 흡수된 함수는 별도 unit test를 만들지 않는다.
+
+### 4. fixture/build 검증
+
+- `USE_DEV_FIXTURES=true` + dev bootstrap에서 fixture route가 정상 동작한다.
+- production bootstrap에서 fixture registry 없이 `USE_DEV_FIXTURES=true`면 부팅이 실패한다.
+- production build 산출물에는 fixture source 파일이 없어야 한다.
+
+## Acceptance 기준
+
+- 더 이상 `createApp.test.ts` 하나가 모든 BFF regression을 담당하지 않는다.
+- `src/routes`를 열었을 때 route 파일이 도메인 기준으로 묶여 있고, 관련 테스트와 순수 helper 경계가 바로 보인다.
+- fixture source는 production `src` 밖에 존재하며, production build 산출물에 포함되지 않는다.
+- route 공개 계약과 fixture regression은 모두 유지된다.
+- `pnpm --filter @nearby-library-search/bff exec vitest run`과 `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 계속 통과한다.
+
+## Assumptions
+
+- 이번 phase는 코드 가독성과 배포 경계를 위한 구조 리팩터링이므로, 사용자 가시 기능 변화는 없다.
+- fixture는 dev/test 전용으로만 유지하고, production runtime에서 켤 수 없는 구조를 목표로 한다.
+- 테스트 파일 수 증가는 허용하지만, 각 파일은 한 가지 목적만 담당해야 한다.
+- `dev` 경계 코드는 production `tsc` 대상이 아니며, fixture 회귀는 Vitest로 계속 검증한다.
