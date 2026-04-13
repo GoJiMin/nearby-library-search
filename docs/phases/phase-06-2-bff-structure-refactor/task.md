@@ -99,13 +99,20 @@
 - [x] production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 fail-fast 하도록 고정한다.
 - [x] `apps/bff/package.json`의 `dev` 스크립트가 dev bootstrap을 사용하도록 정리한다.
 
-## 15. 최종 검증과 문서 동기화를 마감한다.
+## 15. production build 경계를 정리한다.
 
-- [ ] `pnpm --filter @nearby-library-search/bff exec vitest run`을 통과시킨다.
-- [ ] `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 통과시킨다.
-- [ ] `pnpm --filter @nearby-library-search/bff build`를 통과시킨다.
-- [ ] production build 산출물에 fixture source가 포함되지 않는지 확인한다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 6-2 상태를 실제 구현과 동기화한다.
+- [x] `apps/bff/tsconfig.build.json`을 추가해 production emit 대상을 `src` runtime 파일로 한정한다.
+- [x] `apps/bff/package.json`에 `prebuild`, `build`, `typecheck`를 분리해 clean build와 typecheck를 다른 행위로 고정한다.
+- [x] build 전에 `dist`와 build cache를 항상 비우고, clean build 후 현재 `src` runtime에 대응하지 않는 산출물이 있으면 실패하도록 자동 검증한다.
+- [x] production build에서 `test/` 산출물과 dev fixture source가 emit되지 않도록 고정한다.
+
+## 16. 최종 검증과 문서 동기화를 마감한다.
+
+- [x] `pnpm --filter @nearby-library-search/bff exec vitest run`을 통과시킨다.
+- [x] `pnpm --filter @nearby-library-search/bff typecheck`를 통과시킨다.
+- [x] `pnpm --filter @nearby-library-search/bff build`를 통과시킨다.
+- [x] production build 산출물이 `src` runtime 대응 파일만 포함하는지 검증한다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 6-2 상태를 실제 구현과 동기화한다.
 
 ## Important Changes
 
@@ -114,6 +121,7 @@
 - `src/routes`는 단순 뼈대가 아니라, 각 도메인의 production route code와 test가 함께 있는 package 구조로 재정리한다.
 - BFF test 파일은 runtime 파일 옆에 직접 두지 않고, 대상 코드와 같은 depth의 `test/` 폴더에 둔다.
 - fixture는 production `src`에서 분리된 `dev` 경계로 옮기고, production bootstrap에서는 직접 import하지 않는다.
+- production build는 `tsconfig.build.json`과 clean `dist` 기준으로 test/dev fixture 산출물을 내지 않아야 한다.
 - route 파일 하나만 옮긴 상태는 완료로 보지 않고, fixture와 helper까지 포함한 도메인 package completion을 기준으로 닫는다.
 - type-only 파일은 `*.types.ts`로만 두고, 공용 `Result<T>` 같은 내부 타입은 한 곳에서 재사용한다.
 
@@ -134,7 +142,7 @@
   - availability parse/normalize
   - fixture source validation
   - production bootstrap fail-fast
-  - production build에 fixture 미포함
+  - production build에 test/dev fixture 산출물 미포함
 
 ## Assumptions
 

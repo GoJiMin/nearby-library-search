@@ -53,22 +53,25 @@
 
 ## 현재 구현 상태
 
-- app baseline과 route integration test 분리는 이미 시작됐다.
+- app baseline과 route integration test는 이미 목적별로 분리됐다.
   - [createApp.baseline.test.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/test/createApp.baseline.test.ts)가 baseline regression을 담당한다.
-  - route integration test는 [book search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/test/route.test.ts), [book detail](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/test/route.test.ts), [library search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/search/test/route.test.ts), [library availability](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/test/route.test.ts)로 분리됐다.
-- `src/routes` 도메인 구조와 `dev/fixtures` 경계는 대부분 정리됐고, 남은 구조 리팩터링은 bootstrap 마감과 최종 정리다.
--  - [health/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/health/route.ts)와 [book/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.ts)는 도메인 경로로 이동했다.
--  - `book search` fixture source와 fixture test는 [dev/fixtures/book/search](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/search)로 이동했고, `src/routes` 루트의 `bookSearchFixture*` flat 파일은 제거됐다.
--  - [book/detail/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/route.ts)도 도메인 경로로 이동했고, `book detail` fixture source와 fixture test는 [dev/fixtures/book/detail](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/detail)로 이동했다.
--  - [library/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/search/route.ts)도 도메인 경로로 이동했고, `library search` fixture source와 fixture test는 [dev/fixtures/library/search](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/library/search)로 이동했다.
--  - [library/availability/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/route.ts), [parseParams.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/parseParams.ts), [normalizeResponse.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/normalizeResponse.ts)도 도메인 경로로 이동했고, `library availability` fixture source와 fixture test는 [dev/fixtures/library/availability](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/library/availability)로 이동했다.
-- 현재 구조는 `book`, `library`, `health`의 production route package와 `book`/`library` fixture dev 경계가 모두 나뉜 상태고, 남은 구조 리팩터링은 bootstrap 마감과 최종 정리다.
-- `USE_DEV_FIXTURES`는 아직 runtime flag로 제어되지만, fixture resolver는 이제 `createApp()`과 `registerRoutes()`의 주입 경계를 통해 route에 전달된다.
-- 다만 default fixture registry와 일부 fixture source는 아직 production `src` 안에 남아 있다.
-- `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
-- `book/search`, `book/detail`, `library/availability`는 parse/normalize helper는 도메인 경로에 두고, helper test는 같은 depth의 `test/` 폴더에 두는 기준으로 정리됐다.
-- 공용 타입 경계 정리도 시작됐다.
-  - [fixtures.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/fixtures.types.ts)와 [result.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/utils/result.types.ts)가 현재 BFF의 confirmed type-only 파일이다.
+  - route integration test는 [book search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/test/route.test.ts), [book detail](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/test/route.test.ts), [library search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/search/test/route.test.ts), [library availability](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/test/route.test.ts)로 정리됐다.
+- `src/routes`는 `book`, `library`, `health` production package 구조로 정리됐다.
+  - `book/search`, `book/detail`, `library/availability`는 parse/normalize helper와 helper test까지 같은 도메인 경로에 둔다.
+  - `library/search`도 production route와 route test를 같은 도메인 경로에 둔다.
+- real fixture source와 fixture test는 모두 `apps/bff/dev/fixtures` 아래로 이동했다.
+  - `book`과 `library` fixture는 production `src` 밖에서만 관리한다.
+  - route integration test는 real fixture source를 직접 import하지 않고 injected fixture로만 검증한다.
+- bootstrap 경계는 분리됐다.
+  - [src/main.ts](/Users/gojimin/Desktop/ai/apps/bff/src/main.ts)는 production bootstrap만 사용한다.
+  - [dev/main.ts](/Users/gojimin/Desktop/ai/apps/bff/dev/main.ts)는 dev fixture registry를 연결한 dev bootstrap만 사용한다.
+  - production bootstrap은 `USE_DEV_FIXTURES=true`면 즉시 실패한다.
+- build 경계도 분리됐다.
+  - `typecheck`는 `tsconfig.json --noEmit` 기준으로 전체 `src`를 검사한다.
+  - `build`는 먼저 `@nearby-library-search/contracts` declaration build를 보장한 뒤, `tsconfig.build.json` 기준으로 production runtime 파일만 emit한다.
+  - build 전에 `dist`와 `tsconfig.build.tsbuildinfo`를 비우고, build 후에는 현재 `src` runtime 대응 산출물만 남는지 자동 검증한다.
+- 공용 타입 경계도 정리됐다.
+  - [fixtures.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/fixtures.types.ts)와 [result.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/utils/result.types.ts)가 type-only 기준을 따른다.
   - `Result<T>`는 route, helper, dev fixture에서 공용 `result.types.ts`를 재사용한다.
 
 ## 구조 리팩터링 기준
@@ -284,12 +287,21 @@ type CreateAppOptions = {
 ### 4. build 경계
 
 - `apps/bff/package.json` script 기준은 아래로 정리한다.
-  - `build`: production `src`만 컴파일
-  - `start`: production `dist/main.js`
   - `dev`: dev bootstrap 진입점 사용
+  - `typecheck`: `tsconfig.json --noEmit` 기준 전체 `src` 검사
+  - `prebuild`: `dist`와 build cache clean
+  - `build`: contracts declaration build 후 `tsconfig.build.json` 기준 production `src` runtime만 emit한 뒤 산출물 검증
+  - `start`: production `dist/main.js`
+- `apps/bff/tsconfig.build.json`은 아래를 만족해야 한다.
+  - `src` runtime 파일만 emit 대상으로 둔다.
+  - `src/**/test/**`와 `**/*.test.ts`는 emit 대상에서 제외한다.
+  - `@nearby-library-search/contracts`는 workspace source가 아니라 `packages/contracts/dist/src/index.d.ts` declaration output을 바라본다.
+- production build 산출물 검증은 수동 확인이 아니라 자동 실패 조건으로 둔다.
+  - clean build 후 `dist` 파일 목록은 현재 production `src` runtime 대응 산출물과 정확히 일치해야 한다.
+  - extra file과 missing file이 하나라도 있으면 build를 실패시킨다.
 - acceptance는 아래로 고정한다.
-  - `tsc -p tsconfig.json` 결과물에 fixture source 파일이 포함되지 않는다.
   - production runtime entrypoint가 dev fixture source를 import하지 않는다.
+  - `pnpm --filter @nearby-library-search/bff build`가 clean build와 dist assertion까지 포함해 통과한다.
 
 ## 반복 패턴 정리 기준
 
@@ -353,7 +365,7 @@ type CreateAppOptions = {
 - `src/routes` 루트는 최종적으로 `index.ts`와 도메인 폴더만 남는다.
 - fixture source는 production `src` 밖에 존재하며, production build 산출물에 포함되지 않는다.
 - route 공개 계약과 fixture regression은 모두 유지된다.
-- `pnpm --filter @nearby-library-search/bff exec vitest run`, `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`, `pnpm --filter @nearby-library-search/bff build`를 계속 통과한다.
+- `pnpm --filter @nearby-library-search/bff exec vitest run`, `pnpm --filter @nearby-library-search/bff typecheck`, `pnpm --filter @nearby-library-search/bff build`를 계속 통과한다.
 
 ## Assumptions
 
