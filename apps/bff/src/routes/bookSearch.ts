@@ -13,7 +13,7 @@ import {
   toLibraryApiErrorResponse,
 } from '../utils/error.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../utils/normalize.js';
-import {createBookSearchFixtureResponse} from './bookSearchFixture.js';
+import {resolveBookSearchFixtureResult} from './bookSearchFixture.js';
 
 type Result<T> =
   | {
@@ -181,7 +181,17 @@ export const bookSearchRoute: FastifyPluginAsync = async app => {
     }
 
     if (developmentConfig.useDevFixtures) {
-      return createBookSearchFixtureResponse(parsedQuery.value);
+      const fixtureResult = resolveBookSearchFixtureResult(parsedQuery.value);
+
+      if (!fixtureResult.ok) {
+        app.log.warn({errorTitle: fixtureResult.error.title}, 'Book search fixture response could not be resolved safely');
+
+        reply.status(fixtureResult.error.status);
+
+        return fixtureResult.error;
+      }
+
+      return fixtureResult.value;
     }
 
     const bookSearchPayload = await fetchBookSearchPayload(parsedQuery.value);

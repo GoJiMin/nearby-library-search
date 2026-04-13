@@ -1,6 +1,38 @@
-import type {BookSearchItem, BookSearchResponse} from '@nearby-library-search/contracts';
+import type {BookSearchItem, BookSearchResponse, ErrorResponse} from '@nearby-library-search/contracts';
+import {z} from 'zod';
 import type {BookSearchQuery} from '../schemas/book.js';
+import {createRetryableUpstreamResponseError} from '../utils/error.js';
 import {bookSearchFixtureItems} from './bookSearchFixture.data.js';
+
+type Result<T> =
+  | {
+      ok: true;
+      value: T;
+    }
+  | {
+      ok: false;
+      error: ErrorResponse;
+    };
+
+type BookSearchFixtureResolverOptions = {
+  createResponse?: (query: BookSearchQuery) => unknown;
+};
+
+const bookSearchFixtureItemSchema = z.object({
+  author: z.string(),
+  detailUrl: z.string().nullable(),
+  imageUrl: z.string().nullable(),
+  isbn13: z.string().regex(/^\d{13}$/),
+  loanCount: z.number().nullable(),
+  publicationYear: z.string().nullable(),
+  publisher: z.string().nullable(),
+  title: z.string(),
+});
+
+const bookSearchFixtureResponseSchema = z.object({
+  items: z.array(bookSearchFixtureItemSchema),
+  totalCount: z.number().int().nonnegative(),
+});
 
 function normalizeSearchTerm(value: string) {
   return value.trim().toLowerCase();
@@ -33,4 +65,33 @@ function createBookSearchFixtureResponse(query: BookSearchQuery): BookSearchResp
   };
 }
 
-export {createBookSearchFixtureResponse};
+function resolveBookSearchFixtureResult(
+  query: BookSearchQuery,
+  options: BookSearchFixtureResolverOptions = {},
+): Result<BookSearchResponse> {
+  const createResponse = options.createResponse ?? createBookSearchFixtureResponse;
+
+  try {
+    const response = createResponse(query);
+    const parsedResponse = bookSearchFixtureResponseSchema.safeParse(response);
+
+    if (!parsedResponse.success) {
+      return {
+        ok: false,
+        error: createRetryableUpstreamResponseError('BOOK_SEARCH_RESPONSE_INVALID', '도서 검색'),
+      };
+    }
+
+    return {
+      ok: true,
+      value: parsedResponse.data,
+    };
+  } catch {
+    return {
+      ok: false,
+      error: createRetryableUpstreamResponseError('BOOK_SEARCH_RESPONSE_INVALID', '도서 검색'),
+    };
+  }
+}
+
+export {resolveBookSearchFixtureResult};

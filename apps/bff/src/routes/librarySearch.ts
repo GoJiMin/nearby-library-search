@@ -5,7 +5,7 @@ import {developmentConfig} from '../config/env.js';
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import {librarySearchQuerySchema} from '../schemas/library.js';
 import type {LibrarySearchQuery} from '../schemas/library.js';
-import {createLibrarySearchFixtureResponse} from './librarySearchFixture.js';
+import {resolveLibrarySearchFixtureResult} from './librarySearchFixture.js';
 import {
   createErrorResponse,
   createRetryableUpstreamRequestError,
@@ -215,7 +215,20 @@ export const librarySearchRoute: FastifyPluginAsync = async app => {
     }
 
     if (developmentConfig.useDevFixtures) {
-      return createLibrarySearchFixtureResponse(parsedQuery.value);
+      const fixtureResult = resolveLibrarySearchFixtureResult(parsedQuery.value);
+
+      if (!fixtureResult.ok) {
+        app.log.warn(
+          {errorTitle: fixtureResult.error.title},
+          'Library search fixture response could not be resolved safely',
+        );
+
+        reply.status(fixtureResult.error.status);
+
+        return fixtureResult.error;
+      }
+
+      return fixtureResult.value;
     }
 
     const librarySearchPayload = await fetchLibrarySearchPayload(parsedQuery.value);
