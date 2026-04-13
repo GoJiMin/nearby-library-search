@@ -3,16 +3,7 @@ import type {ZodError} from 'zod';
 import {libraryAvailabilityParamsSchema} from '../schemas/library.js';
 import type {LibraryAvailabilityParams} from '../schemas/library.js';
 import {createErrorResponse} from '../utils/error.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../utils/result.types.js';
 
 function getLibraryAvailabilityParamsError(error: ZodError): ErrorResponse {
   const [firstIssue] = error.issues;

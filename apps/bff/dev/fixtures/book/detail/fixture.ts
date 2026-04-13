@@ -3,23 +3,13 @@ import type {
   BookDetailLoanInfo,
   BookDetailLoanStat,
   BookDetailResponse,
-  ErrorResponse,
   Isbn13,
 } from '@nearby-library-search/contracts';
 import type {BookDetailParams} from '../../../../src/schemas/book.js';
 import {createRetryableUpstreamRequestError, createRetryableUpstreamResponseError} from '../../../../src/utils/error.js';
+import type {Result} from '../../../../src/utils/result.types.js';
 import {bookDetailFixtureBooks} from './books.js';
 import type {BookDetailFixtureBookSeed} from './books.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
 
 type BookDetailFixtureScenario = 'empty' | 'error' | 'success-minimal' | 'success-rich';
 

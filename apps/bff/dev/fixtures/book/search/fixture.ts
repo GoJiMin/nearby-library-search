@@ -1,18 +1,9 @@
-import type {BookSearchItem, BookSearchResponse, ErrorResponse} from '@nearby-library-search/contracts';
+import type {BookSearchItem, BookSearchResponse} from '@nearby-library-search/contracts';
 import {z} from 'zod';
 import type {BookSearchQuery} from '../../../../src/schemas/book.js';
 import {createRetryableUpstreamResponseError} from '../../../../src/utils/error.js';
+import type {Result} from '../../../../src/utils/result.types.js';
 import {bookSearchFixtureBooks} from './books.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
 
 type BookSearchFixtureOptions = {
   createResponse?: (query: BookSearchQuery) => unknown;

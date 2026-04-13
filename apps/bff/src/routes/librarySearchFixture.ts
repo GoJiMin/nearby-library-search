@@ -1,18 +1,9 @@
-import type {ErrorResponse, LibrarySearchResponse} from '@nearby-library-search/contracts';
+import type {LibrarySearchResponse} from '@nearby-library-search/contracts';
 import {z} from 'zod';
 import type {LibrarySearchQuery} from '../schemas/library.js';
 import {createRetryableUpstreamResponseError} from '../utils/error.js';
 import {librarySearchFixtureItems} from './librarySearchFixture.data.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../utils/result.types.js';
 
 type LibrarySearchFixtureResolverOptions = {
   createResponse?: (query: LibrarySearchQuery) => unknown;

@@ -14,16 +14,7 @@ import {
 } from '../utils/error.js';
 import {getLibraryApiResponseRoot, getLibraryRecords, isLibraryApiRecord} from '../utils/libraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../utils/normalize.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../utils/result.types.js';
 
 function getLibrarySearchQueryError(error: ZodError): ErrorResponse {
   const [firstIssue] = error.issues;

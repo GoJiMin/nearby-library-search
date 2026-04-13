@@ -3,16 +3,7 @@ import type {LibraryAvailabilityParams} from '../schemas/library.js';
 import {getLibraryApiResponseRoot, isLibraryApiRecord} from '../utils/libraryApiResponse.js';
 import {normalizeNullableString} from '../utils/normalize.js';
 import {createRetryableUpstreamResponseError} from '../utils/error.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../utils/result.types.js';
 
 function normalizeLibraryAvailabilityFlag(value: unknown): LibraryAvailabilityResponse['hasBook'] | null {
   const normalizedValue = normalizeNullableString(value);

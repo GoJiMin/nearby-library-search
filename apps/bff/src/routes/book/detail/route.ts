@@ -3,8 +3,8 @@ import type {
   BookDetailLoanInfo,
   BookDetailLoanStat,
   BookDetailResponse,
-  ErrorResponse,
 } from '@nearby-library-search/contracts';
+import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
@@ -19,16 +19,7 @@ import {
 } from '../../../utils/error.js';
 import {getBookRecords, getLibraryApiResponseRoot, isLibraryApiRecord} from '../../../utils/libraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../../../utils/normalize.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../../../utils/result.types.js';
 
 function getBookDetailParamsError(error: ZodError): ErrorResponse {
   const [firstIssue] = error.issues;

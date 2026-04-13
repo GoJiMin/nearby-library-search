@@ -1,17 +1,8 @@
-import type {ErrorResponse, LibraryAvailabilityResponse} from '@nearby-library-search/contracts';
+import type {LibraryAvailabilityResponse} from '@nearby-library-search/contracts';
 import type {LibraryAvailabilityParams} from '../schemas/library.js';
 import {createRetryableUpstreamRequestError, createRetryableUpstreamResponseError} from '../utils/error.js';
 import {libraryAvailabilityFixtureItems} from './libraryAvailabilityFixture.data.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../utils/result.types.js';
 
 function resolveLibraryAvailabilityFixtureResult(params: LibraryAvailabilityParams): Result<LibraryAvailabilityResponse> {
   const fixtureItem = libraryAvailabilityFixtureItems.find(

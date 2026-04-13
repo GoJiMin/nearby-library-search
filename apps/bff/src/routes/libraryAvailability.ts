@@ -1,4 +1,3 @@
-import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {FastifyPluginAsync} from 'fastify';
 import type {AppFixtures} from '../app/fixtures.types.js';
 import {developmentConfig} from '../config/env.js';
@@ -6,16 +5,7 @@ import {parseLibraryAvailabilityParams} from './libraryAvailabilityParams.js';
 import {normalizeLibraryAvailabilityResponse} from './libraryAvailabilityResponse.js';
 import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import {createRetryableUpstreamRequestError, toLibraryApiErrorResponse} from '../utils/error.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../utils/result.types.js';
 
 async function fetchLibraryAvailabilityPayload(libraryCode: string, isbn13: string): Promise<Result<unknown>> {
   const upstreamError = createRetryableUpstreamRequestError('LIBRARY_AVAILABILITY_UPSTREAM_ERROR', '대출 가능 여부 조회');

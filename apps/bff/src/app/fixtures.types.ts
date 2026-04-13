@@ -1,22 +1,12 @@
 import type {
   BookDetailResponse,
   BookSearchResponse,
-  ErrorResponse,
   LibraryAvailabilityResponse,
   LibrarySearchResponse,
 } from '@nearby-library-search/contracts';
 import type {BookDetailParams, BookSearchQuery} from '../schemas/book.js';
 import type {LibraryAvailabilityParams, LibrarySearchQuery} from '../schemas/library.js';
-
-type Result<T> =
-  | {
-      ok: true;
-      value: T;
-    }
-  | {
-      ok: false;
-      error: ErrorResponse;
-    };
+import type {Result} from '../utils/result.types.js';
 
 type FixtureResolver<TInput, TOutput> = {
   resolve(input: TInput): Result<TOutput>;
