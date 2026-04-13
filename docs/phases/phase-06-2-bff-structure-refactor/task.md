@@ -79,10 +79,10 @@
 
 ## 12. library availability 도메인 package를 완성한다.
 
-- [ ] `apps/bff/src/routes/library/availability` 안에 route, parse helper, normalize helper, route/helper test가 함께 남도록 정리한다.
-- [ ] `library availability` fixture source와 fixture test를 `apps/bff/dev/fixtures/library/availability`로 이동한다.
-- [ ] availability는 parse/normalize 분리 유지 원칙을 지키되, 관련 파일이 도메인 폴더 밖에 흩어지지 않게 한다.
-- [ ] `library availability` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
+- [x] `apps/bff/src/routes/library/availability` 안에 route, parse helper, normalize helper, route/helper test가 함께 남도록 정리한다.
+- [x] `library availability` fixture source와 fixture test를 `apps/bff/dev/fixtures/library/availability`로 이동한다.
+- [x] availability는 parse/normalize 분리 유지 원칙을 지키되, 관련 파일이 도메인 폴더 밖에 흩어지지 않게 한다.
+- [x] `library availability` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
 ## 13. production/dev bootstrap을 마감한다.
 
