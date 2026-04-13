@@ -1,7 +1,7 @@
 import type {FastifyInstance} from 'fastify';
 import {bookDetailRoute} from './bookDetail.js';
 import {bookSearchRoute} from './bookSearch.js';
-import {healthRoute} from './health.js';
+import {healthRoute} from './health/route.js';
 import {libraryAvailabilityRoute} from './libraryAvailability.js';
 import {librarySearchRoute} from './librarySearch.js';
 

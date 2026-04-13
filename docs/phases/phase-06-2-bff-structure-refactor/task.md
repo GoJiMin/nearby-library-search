@@ -37,10 +37,10 @@
 
 ## 6. `src/routes` 도메인 폴더 뼈대를 정리한다.
 
-- [ ] `apps/bff/src/routes/book`, `apps/bff/src/routes/library`, `apps/bff/src/routes/health` 폴더를 기준 구조로 만든다.
-- [ ] `health` route를 `apps/bff/src/routes/health/route.ts`로 옮긴다.
-- [ ] `apps/bff/src/routes/index.ts`가 새 도메인 경로만 register 하도록 정리한다.
-- [ ] 불필요한 flat route import 경로를 더 이상 유지하지 않는다.
+- [x] `apps/bff/src/routes/book`, `apps/bff/src/routes/library`, `apps/bff/src/routes/health` 폴더를 기준 구조로 만든다.
+- [x] `health` route를 `apps/bff/src/routes/health/route.ts`로 옮긴다.
+- [x] `apps/bff/src/routes/index.ts`가 새 도메인 경로만 register 하도록 정리한다.
+- [x] 불필요한 flat route import 경로를 더 이상 유지하지 않는다.
 
 ## 7. book search route 파일 구조를 리팩터링한다.
 
