@@ -25,10 +25,27 @@ describe('env', () => {
     process.env.WEB_APP_ORIGIN = 'https://app.example.com/';
     process.env.LIBRARY_API_BASE_URL = 'https://data4library.kr/api/';
 
-    const {libraryApiConfig, webAppConfig} = await importEnvModule();
+    const {developmentConfig, libraryApiConfig, webAppConfig} = await importEnvModule();
 
+    expect(developmentConfig.allowDevCorsOrigins).toBe(false);
     expect(webAppConfig.origin).toBe('https://app.example.com');
     expect(libraryApiConfig.baseUrl).toBe('https://data4library.kr/api');
+  });
+
+  it('ALLOW_DEV_CORS_ORIGINS가 true면 개발용 CORS 허용 플래그를 켠다', async () => {
+    process.env.ALLOW_DEV_CORS_ORIGINS = 'true';
+
+    const {developmentConfig} = await importEnvModule();
+
+    expect(developmentConfig.allowDevCorsOrigins).toBe(true);
+  });
+
+  it('ALLOW_DEV_CORS_ORIGINS가 boolean-like 값이 아니면 실패한다', async () => {
+    process.env.ALLOW_DEV_CORS_ORIGINS = 'maybe';
+
+    await expect(importEnvModule()).rejects.toThrow(
+      'Invalid server env: ALLOW_DEV_CORS_ORIGINS must be a boolean-like value',
+    );
   });
 
   it('WEB_APP_ORIGIN이 없으면 실패한다', async () => {

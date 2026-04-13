@@ -9,10 +9,10 @@
 
 ## 2. `createApp()` 앱 레벨 보안 baseline 정리
 
-- [ ] `@fastify/helmet`을 등록한다.
-- [ ] CORS를 exact origin allowlist 방식으로 바꾼다.
-- [ ] `setNotFoundHandler`로 404 structured error를 추가한다.
-- [ ] `setErrorHandler`로 500 structured error를 추가한다.
+- [x] `@fastify/helmet`을 등록한다.
+- [x] CORS를 `WEB_APP_ORIGIN` + dev opt-in localhost allowlist 방식으로 바꾼다.
+- [x] `setNotFoundHandler`로 404 structured error를 추가한다.
+- [x] `setErrorHandler`로 500 structured error를 추가한다.
 
 ## 3. `libraryCode` path param 검증 hardening
 
@@ -51,7 +51,7 @@
 
 - 이번 phase는 Vercel 배포를 전제로 BFF를 얇은 API boundary 기준으로 hardening한다.
 - 앱 내부 IP 기반 rate limit는 구현하지 않고, Vercel Firewall/WAF를 운영 보호 기준으로 둔다.
-- `WEB_APP_ORIGIN` exact allowlist 기반 CORS와 404/500 structured error를 앱 레벨 기본값으로 추가한다.
+- `WEB_APP_ORIGIN`과 `ALLOW_DEV_CORS_ORIGINS` 기반 exact-origin CORS, 404/500 structured error를 앱 레벨 기본값으로 추가한다.
 - `LIBRARY_API_BASE_URL`은 https-only로 강제하고, `libraryCode` 검증을 강화한다.
 - fixture mode에서도 raw stack이 아니라 structured error만 반환하도록 정리한다.
 
@@ -64,6 +64,7 @@
   - security headers
 - env/config
   - `WEB_APP_ORIGIN` missing/invalid failure
+  - `ALLOW_DEV_CORS_ORIGINS` boolean-like validation
   - `LIBRARY_API_BASE_URL` http rejection
 - route regression
   - `libraryCode` invalid 400
