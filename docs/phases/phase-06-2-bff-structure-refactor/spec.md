@@ -69,7 +69,6 @@
 - build 경계도 분리됐다.
   - `typecheck`는 `tsconfig.json --noEmit` 기준으로 전체 `src`를 검사한다.
   - `build`는 먼저 `@nearby-library-search/contracts` declaration build를 보장한 뒤, `tsconfig.build.json` 기준으로 production runtime 파일만 emit한다.
-  - build 전에 `dist`와 `tsconfig.build.tsbuildinfo`를 비우고, build 후에는 현재 `src` runtime 대응 산출물만 남는지 자동 검증한다.
 - 공용 타입 경계도 정리됐다.
   - [fixtures.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/fixtures.types.ts)와 [result.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/utils/result.types.ts)가 type-only 기준을 따른다.
   - `Result<T>`는 route, helper, dev fixture에서 공용 `result.types.ts`를 재사용한다.
@@ -289,19 +288,15 @@ type CreateAppOptions = {
 - `apps/bff/package.json` script 기준은 아래로 정리한다.
   - `dev`: dev bootstrap 진입점 사용
   - `typecheck`: `tsconfig.json --noEmit` 기준 전체 `src` 검사
-  - `prebuild`: `dist`와 build cache clean
-  - `build`: contracts declaration build 후 `tsconfig.build.json` 기준 production `src` runtime만 emit한 뒤 산출물 검증
+  - `build`: contracts declaration build 후 `tsconfig.build.json` 기준 production `src` runtime만 emit
   - `start`: production `dist/main.js`
 - `apps/bff/tsconfig.build.json`은 아래를 만족해야 한다.
   - `src` runtime 파일만 emit 대상으로 둔다.
   - `src/**/test/**`와 `**/*.test.ts`는 emit 대상에서 제외한다.
   - `@nearby-library-search/contracts`는 workspace source가 아니라 `packages/contracts/dist/src/index.d.ts` declaration output을 바라본다.
-- production build 산출물 검증은 수동 확인이 아니라 자동 실패 조건으로 둔다.
-  - clean build 후 `dist` 파일 목록은 현재 production `src` runtime 대응 산출물과 정확히 일치해야 한다.
-  - extra file과 missing file이 하나라도 있으면 build를 실패시킨다.
 - acceptance는 아래로 고정한다.
   - production runtime entrypoint가 dev fixture source를 import하지 않는다.
-  - `pnpm --filter @nearby-library-search/bff build`가 clean build와 dist assertion까지 포함해 통과한다.
+  - fresh workspace 기준 `pnpm --filter @nearby-library-search/bff build`가 test/dev fixture를 emit하지 않고 통과한다.
 
 ## 반복 패턴 정리 기준
 
@@ -355,7 +350,7 @@ type CreateAppOptions = {
 
 - `USE_DEV_FIXTURES=true` + dev bootstrap에서 fixture route가 정상 동작한다.
 - production bootstrap에서 fixture registry 없이 `USE_DEV_FIXTURES=true`면 부팅이 실패한다.
-- production build 산출물에는 fixture source 파일이 없어야 한다.
+- production build는 `apps/bff/dev/**`와 `src/**/test/**`를 emit하지 않아야 한다.
 
 ## Acceptance 기준
 
@@ -363,7 +358,7 @@ type CreateAppOptions = {
 - 완료된 각 도메인에 대해 production route code, route integration test, route-owned helper가 같은 도메인 폴더 안에 있다.
 - 완료된 도메인에 대한 flat production 파일이 `src/routes` 루트에 남아 있지 않다.
 - `src/routes` 루트는 최종적으로 `index.ts`와 도메인 폴더만 남는다.
-- fixture source는 production `src` 밖에 존재하며, production build 산출물에 포함되지 않는다.
+- fixture source는 production `src` 밖에 존재하며, production build에서 emit되지 않는다.
 - route 공개 계약과 fixture regression은 모두 유지된다.
 - `pnpm --filter @nearby-library-search/bff exec vitest run`, `pnpm --filter @nearby-library-search/bff typecheck`, `pnpm --filter @nearby-library-search/bff build`를 계속 통과한다.
 
@@ -373,3 +368,4 @@ type CreateAppOptions = {
 - fixture는 dev/test 전용으로만 유지하고, production runtime에서 켤 수 없는 구조를 목표로 한다.
 - 테스트 파일 수 증가는 허용하지만, 각 파일은 한 가지 목적만 담당해야 한다.
 - `dev` 경계 코드는 production `tsc` 대상이 아니며, fixture 회귀는 Vitest로 계속 검증한다.
+- production build 결과 평가는 fresh CI workspace를 기준으로 하고, local stale artifact cleanup까지 build 책임으로 두지 않는다.

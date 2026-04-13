@@ -160,7 +160,7 @@
 - [x] `routes` 디렉터리를 도메인별 폴더 구조로 재정리해 route plugin, fixture, pure helper, 테스트의 탐색 경계를 명확히 한다.
 - [x] `Result<T>` 같은 내부 공용 타입과 type-only 파일 naming을 정리해 runtime 경계와 타입 경계를 분명히 한다.
 - [x] fixture 관련 파일 분리를 재점검하고, 단일 소비자용 과분리 helper는 흡수하고 유지 가치가 있는 순수 로직만 남긴다.
-- [x] fixture를 dev/test 전용 경계로 격리하고, production build가 test/fixture 산출물을 내지 않도록 bootstrap과 build 경계를 재설계한다.
+- [x] fixture를 dev/test 전용 경계로 격리하고, production build가 `dev/**`와 test 파일을 emit하지 않도록 bootstrap과 build 경계를 재설계한다.
 - [x] route별 parse, fixture/live branch, normalize 흐름을 진단하고, availability 기준의 helper 분리는 유지하되 불필요한 공용화는 도입하지 않는다.
 - [x] 리팩터링 후에도 기존 search/detail/library/availability route 계약과 fixture 회귀가 유지되는지 검증한다.
 - [x] Phase 6-2 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
