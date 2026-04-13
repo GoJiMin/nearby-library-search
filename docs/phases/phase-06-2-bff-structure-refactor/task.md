@@ -30,10 +30,10 @@
 
 ## 5. library availability route integration test를 분리한다.
 
-- [ ] `apps/bff/src/routes/library/availability/route.test.ts`를 추가한다.
-- [ ] availability param validation, upstream success/error, 응답 정규화 회귀를 새 파일로 옮긴다.
-- [ ] fixture available/unavailable/not-owned/error 회귀를 새 파일로 옮긴다.
-- [ ] 기존 `createApp.test.ts`의 availability 관련 assertion을 제거하고 legacy test 파일을 제거한다.
+- [x] `apps/bff/src/routes/library/availability/route.test.ts`를 추가한다.
+- [x] availability param validation, upstream success/error, 응답 정규화 회귀를 새 파일로 옮긴다.
+- [x] fixture available/unavailable/not-owned/error 회귀를 새 파일로 옮긴다.
+- [x] 기존 `createApp.test.ts`의 availability 관련 assertion을 제거하고 legacy test 파일을 제거한다.
 
 ## 6. `src/routes` 도메인 폴더 뼈대를 정리한다.
 

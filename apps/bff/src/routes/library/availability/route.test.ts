@@ -4,8 +4,8 @@ const {requestLibraryApiMock} = vi.hoisted(() => ({
   requestLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../libraryApi/requestLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../libraryApi/requestLibraryApi.js')>();
 
   return {
     ...actual,
@@ -26,7 +26,7 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
   return response;
 }
 
-describe('createApp route integration', () => {
+describe('library availability route integration', () => {
   beforeEach(() => {
     requestLibraryApiMock.mockReset();
     vi.resetModules();
@@ -41,7 +41,7 @@ describe('createApp route integration', () => {
     vi.restoreAllMocks();
   });
 
-  it('도서관 대출 가능 여부 조회 success 응답을 정규화하고 bookExist upstream을 한 번만 호출한다', async () => {
+  it('도서관에 책이 있으면 대출 가능 여부를 반환한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
@@ -56,7 +56,7 @@ describe('createApp route integration', () => {
       ),
     );
 
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -84,10 +84,10 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('개발용 fixture 모드가 켜져 있으면 도서관 대출 가능 여부를 외부 호출 없이 반환한다', async () => {
+  it('책이 준비된 도서관이면 대출 가능 상태를 바로 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -107,10 +107,10 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('개발용 fixture 모드에서 대출 불가 시나리오를 외부 호출 없이 반환한다', async () => {
+  it('책은 있지만 대출할 수 없으면 그 상태를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -130,32 +130,10 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('개발용 fixture 모드에서 에러 시나리오를 외부 호출 없이 반환한다', async () => {
+  it('도서관에 책이 없으면 미소장 상태를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const {createApp} = await import('./createApp.js');
-    const app = createApp();
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/libraries/LIB0003/books/9791192389479/availability',
-    });
-
-    expect(response.statusCode).toBe(502);
-    expect(response.json()).toEqual({
-      detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-      status: 502,
-      title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('개발용 fixture 모드에서 미소장 시나리오를 외부 호출 없이 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -175,8 +153,30 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('잘못된 isbn13이면 외부 호출 없이 400 availability 에러를 반환한다', async () => {
-    const {createApp} = await import('./createApp.js');
+  it('대출 가능 여부를 준비할 수 없으면 표준 에러를 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    const {createApp} = await import('../../../app/createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB0003/books/9791192389479/availability',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '대출 가능 여부 조회 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'LIBRARY_AVAILABILITY_UPSTREAM_ERROR',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('형식이 잘못된 책 번호로 대출 가능 여부를 찾으려 하면 요청이 거절된다', async () => {
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -195,8 +195,8 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('비어 있는 libraryCode면 외부 호출 없이 400 availability 에러를 반환한다', async () => {
-    const {createApp} = await import('./createApp.js');
+  it('비어 있는 도서관 코드로 대출 가능 여부를 찾으려 하면 요청이 거절된다', async () => {
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -215,8 +215,8 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('하이픈이 포함된 libraryCode면 외부 호출 없이 400 availability 에러를 반환한다', async () => {
-    const {createApp} = await import('./createApp.js');
+  it('형식이 잘못된 도서관 코드로 대출 가능 여부를 찾으려 하면 요청이 거절된다', async () => {
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -235,7 +235,7 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('도서관 대출 가능 여부 조회에서 upstream이 non-ok 응답을 반환하면 502 표준 에러로 정규화한다', async () => {
+  it('대출 가능 여부 정보를 불러오지 못하면 표준 에러를 반환한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
@@ -248,7 +248,7 @@ describe('createApp route integration', () => {
       ),
     );
 
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -266,10 +266,10 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('도서관 대출 가능 여부 조회에서 upstream 호출이 throw되면 502 표준 에러로 정규화한다', async () => {
+  it('대출 가능 여부 요청이 중간에 실패해도 표준 에러를 반환한다', async () => {
     requestLibraryApiMock.mockRejectedValue(new Error('network down'));
 
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -287,7 +287,7 @@ describe('createApp route integration', () => {
     await app.close();
   });
 
-  it('도서관 대출 가능 여부 조회 비정상 응답을 502 표준 에러로 정규화한다', async () => {
+  it('대출 가능 여부 응답을 해석할 수 없으면 표준 에러를 반환한다', async () => {
     requestLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
@@ -297,7 +297,7 @@ describe('createApp route integration', () => {
       ),
     );
 
-    const {createApp} = await import('./createApp.js');
+    const {createApp} = await import('../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -314,5 +314,4 @@ describe('createApp route integration', () => {
 
     await app.close();
   });
-
 });
