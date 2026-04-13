@@ -27,7 +27,7 @@ const librarySearchQuerySchema = z
 
 const libraryAvailabilityParamsSchema = z.object({
   isbn13: z.preprocess(normalizeOptionalQueryString, z.string().regex(/^\d{13}$/)),
-  libraryCode: z.preprocess(normalizeOptionalQueryString, z.string().min(1)),
+  libraryCode: z.preprocess(normalizeOptionalQueryString, z.string().regex(/^[A-Za-z0-9]{1,20}$/)),
 });
 
 type LibrarySearchQuery = z.infer<typeof librarySearchQuerySchema> & {

@@ -21,7 +21,7 @@ function getLibraryAvailabilityParamsError(error: ZodError): ErrorResponse {
     case 'libraryCode':
       return createErrorResponse(
         'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
-        'libraryCode는 비어 있지 않은 문자열이어야 합니다.',
+        'libraryCode는 1~20자의 영문자 또는 숫자여야 합니다.',
         400,
       );
     case 'isbn13':
