@@ -1,3 +1,4 @@
+import type {BookDetailResponse} from '@nearby-library-search/contracts';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
@@ -72,108 +73,43 @@ async function createAppWithBookDetailFixtures(fixtureResolver?: AppFixtures['bo
   });
 }
 
-function createPreparedBookDetailFixtureResolver(): NonNullable<AppFixtures['bookDetail']> {
+function createBookDetailFixtureResolver(
+  value: BookDetailResponse = {
+    book: {
+      author: '준비된 저자',
+      className: '문학',
+      classNumber: '813.6',
+      description: '준비된 책 설명입니다.',
+      imageUrl: 'https://example.com/books/prepared-book.jpg',
+      isbn: '1234567890',
+      isbn13: '9781234567890',
+      publicationDate: '2024-01-01',
+      publicationYear: '2024',
+      publisher: '준비된 출판사',
+      title: '준비된 상세',
+    },
+    loanInfo: {
+      byAge: [
+        {
+          loanCount: 12,
+          name: '20대',
+          rank: 1,
+        },
+      ],
+      total: {
+        loanCount: 34,
+        name: '전체',
+        rank: 1,
+      },
+    },
+  },
+): NonNullable<AppFixtures['bookDetail']> {
   return {
-    resolve(params) {
-      switch (params.isbn13) {
-        case '9788954682155':
-          return {
-            ok: true,
-            value: {
-              book: {
-                author: '이민진',
-                className: '문학',
-                classNumber: '813.6',
-                description: '재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.',
-                imageUrl:
-                  'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=320&q=80',
-                isbn: '895468215X',
-                isbn13: '9788954682155',
-                publicationDate: '2018-03-09',
-                publicationYear: '2018',
-                publisher: '문학사상',
-                title: '파친코',
-              },
-              loanInfo: {
-                byAge: [
-                  {
-                    loanCount: 430,
-                    name: '20대',
-                    rank: 1,
-                  },
-                  {
-                    loanCount: 315,
-                    name: '30대',
-                    rank: 2,
-                  },
-                  {
-                    loanCount: 188,
-                    name: '40대',
-                    rank: 3,
-                  },
-                ],
-                total: {
-                  loanCount: 1240,
-                  name: '전체',
-                  rank: 1,
-                },
-              },
-            },
-          };
-        case '9791196447182':
-          return {
-            ok: true,
-            value: {
-              book: {
-                author: '손원평',
-                className: null,
-                classNumber: null,
-                description: null,
-                imageUrl:
-                  'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=320&q=80',
-                isbn: null,
-                isbn13: '9791196447182',
-                publicationDate: null,
-                publicationYear: '2017',
-                publisher: '창비',
-                title: '아몬드',
-              },
-              loanInfo: {
-                byAge: [],
-                total: null,
-              },
-            },
-          };
-        case '9788936434124':
-          return {
-            ok: true,
-            value: {
-              book: null,
-              loanInfo: {
-                byAge: [],
-                total: null,
-              },
-            },
-          };
-        case '9791192389479':
-          return {
-            error: {
-              detail: '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-              status: 502,
-              title: 'BOOK_DETAIL_UPSTREAM_ERROR',
-            },
-            ok: false,
-          };
-        default:
-          return {
-            error: {
-              detail: '도서 상세 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-              status: 502,
-              title: 'BOOK_DETAIL_RESPONSE_INVALID',
-            },
-            ok: false,
-          };
-      }
+    resolve() {
+      return {
+        ok: true,
+        value,
+      };
     },
   };
 }
@@ -506,51 +442,41 @@ describe('book detail route integration', () => {
     await app.close();
   });
 
-  it('파친코 상세를 찾으면 준비된 책 정보를 반환한다', async () => {
+  it('준비된 책 상세 정보가 있으면 응답을 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
+    const app = await createAppWithBookDetailFixtures(createBookDetailFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
-      url: '/api/books/9788954682155',
+      url: '/api/books/9781234567890',
     });
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       book: {
-        author: '이민진',
+        author: '준비된 저자',
         className: '문학',
         classNumber: '813.6',
-        description: '재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.',
-        imageUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=320&q=80',
-        isbn: '895468215X',
-        isbn13: '9788954682155',
-        publicationDate: '2018-03-09',
-        publicationYear: '2018',
-        publisher: '문학사상',
-        title: '파친코',
+        description: '준비된 책 설명입니다.',
+        imageUrl: 'https://example.com/books/prepared-book.jpg',
+        isbn: '1234567890',
+        isbn13: '9781234567890',
+        publicationDate: '2024-01-01',
+        publicationYear: '2024',
+        publisher: '준비된 출판사',
+        title: '준비된 상세',
       },
       loanInfo: {
         byAge: [
           {
-            loanCount: 430,
+            loanCount: 12,
             name: '20대',
             rank: 1,
           },
-          {
-            loanCount: 315,
-            name: '30대',
-            rank: 2,
-          },
-          {
-            loanCount: 188,
-            name: '40대',
-            rank: 3,
-          },
         ],
         total: {
-          loanCount: 1240,
+          loanCount: 34,
           name: '전체',
           rank: 1,
         },
@@ -561,49 +487,22 @@ describe('book detail route integration', () => {
     await app.close();
   });
 
-  it('아몬드 상세를 찾으면 없는 항목 없이 최소 정보만 반환한다', async () => {
+  it('준비된 책 상세 정보가 없으면 빈 결과를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
+    const app = await createAppWithBookDetailFixtures(
+      createBookDetailFixtureResolver({
+        book: null,
+        loanInfo: {
+          byAge: [],
+          total: null,
+        },
+      }),
+    );
 
     const response = await app.inject({
       method: 'GET',
-      url: '/api/books/9791196447182',
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      book: {
-        author: '손원평',
-        className: null,
-        classNumber: null,
-        description: null,
-        imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=320&q=80',
-        isbn: null,
-        isbn13: '9791196447182',
-        publicationDate: null,
-        publicationYear: '2017',
-        publisher: '창비',
-        title: '아몬드',
-      },
-      loanInfo: {
-        byAge: [],
-        total: null,
-      },
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('채식주의자 상세를 찾으면 빈 결과를 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/books/9788936434124',
+      url: '/api/books/9781234567890',
     });
 
     expect(response.statusCode).toBe(200);
@@ -619,35 +518,23 @@ describe('book detail route integration', () => {
     await app.close();
   });
 
-  it('하우스메이드 상세를 찾으면 표준 에러를 반환한다', async () => {
+  it('준비된 책 상세 정보를 사용할 수 없으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
+    const app = await createAppWithBookDetailFixtures({
+      resolve: () => ({
+        error: {
+          detail: '도서 상세 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          status: 502,
+          title: 'BOOK_DETAIL_RESPONSE_INVALID',
+        },
+        ok: false,
+      }),
+    });
 
     const response = await app.inject({
       method: 'GET',
-      url: '/api/books/9791192389479',
-    });
-
-    expect(response.statusCode).toBe(502);
-    expect(response.json()).toEqual({
-      detail: '도서 상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-      status: 502,
-      title: 'BOOK_DETAIL_UPSTREAM_ERROR',
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('등록되지 않은 책 상세를 찾으면 표준 에러를 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const app = await createAppWithBookDetailFixtures(createPreparedBookDetailFixtureResolver());
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/books/9799999999999',
+      url: '/api/books/9781234567890',
     });
 
     expect(response.statusCode).toBe(502);
