@@ -1,6 +1,6 @@
 import type {ErrorResponse, LibraryAvailabilityResponse} from '@nearby-library-search/contracts';
 import {createRetryableUpstreamResponseError} from '../../../utils/error.js';
-import {getLibraryApiResponseRoot, isLibraryApiRecord} from '../../../utils/libraryApiResponse.js';
+import {getLibraryApiResponseRoot, isLibraryApiRecord} from '../../../libraryApi/parseLibraryApiResponse.js';
 import {normalizeNullableString} from '../../../utils/normalize.js';
 import type {Result} from '../../../utils/result.types.js';
 import type {LibraryAvailabilityParams} from './libraryAvailabilityParamsSchema.js';

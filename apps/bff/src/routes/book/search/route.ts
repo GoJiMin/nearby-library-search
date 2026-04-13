@@ -1,11 +1,9 @@
 import type {FastifyPluginAsync} from 'fastify';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
-import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
-import {
-  createRetryableUpstreamRequestError,
-  toLibraryApiErrorResponse,
-} from '../../../utils/error.js';
+import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
+import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
+import {createRetryableUpstreamRequestError} from '../../../utils/error.js';
 import type {Result} from '../../../utils/result.types.js';
 import type {BookSearchQuery} from './bookSearchQuerySchema.js';
 import {normalizeBookSearchResponse} from './normalizeResponse.js';
@@ -15,7 +13,7 @@ async function fetchBookSearchPayload(query: BookSearchQuery): Promise<Result<un
   const upstreamError = createRetryableUpstreamRequestError('BOOK_SEARCH_UPSTREAM_ERROR', '도서 검색');
 
   try {
-    const response = await requestLibraryApi({
+    const response = await fetchLibraryApi({
       endpoint: '/srchBooks',
       queryParams: {
         author: query.author,

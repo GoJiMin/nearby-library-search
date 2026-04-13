@@ -1,6 +1,6 @@
 import type {BookSearchItem, BookSearchResponse} from '@nearby-library-search/contracts';
 import {createRetryableUpstreamResponseError} from '../../../utils/error.js';
-import {getDocRecords, getLibraryApiResponseRoot} from '../../../utils/libraryApiResponse.js';
+import {getDocRecords, getLibraryApiResponseRoot} from '../../../libraryApi/parseLibraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../../../utils/normalize.js';
 import type {Result} from '../../../utils/result.types.js';
 

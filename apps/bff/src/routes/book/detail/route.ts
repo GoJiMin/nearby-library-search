@@ -1,11 +1,9 @@
 import type {FastifyPluginAsync} from 'fastify';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
-import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
-import {
-  createRetryableUpstreamRequestError,
-  toLibraryApiErrorResponse,
-} from '../../../utils/error.js';
+import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
+import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
+import {createRetryableUpstreamRequestError} from '../../../utils/error.js';
 import type {Result} from '../../../utils/result.types.js';
 import {normalizeBookDetailResponse} from './normalizeResponse.js';
 import {parseBookDetailParams} from './parseParams.js';
@@ -14,7 +12,7 @@ async function fetchBookDetailPayload(isbn13: string): Promise<Result<unknown>> 
   const upstreamError = createRetryableUpstreamRequestError('BOOK_DETAIL_UPSTREAM_ERROR', '도서 상세');
 
   try {
-    const response = await requestLibraryApi({
+    const response = await fetchLibraryApi({
       endpoint: '/srchDtlList',
       queryParams: {
         isbn13,

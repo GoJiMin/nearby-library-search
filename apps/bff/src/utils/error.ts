@@ -1,5 +1,4 @@
 import type {ErrorResponse} from '@nearby-library-search/contracts';
-import {LibraryApiRequestConfigError} from '../libraryApi/requestLibraryApi.js';
 
 const RETRYABLE_ERROR_SUFFIX = '잠시 후 다시 시도해주세요.';
 
@@ -23,17 +22,8 @@ function createRetryableUpstreamResponseError(title: ErrorResponse['title'], res
   );
 }
 
-function toLibraryApiErrorResponse(error: unknown, fallbackError: ErrorResponse): ErrorResponse {
-  if (error instanceof LibraryApiRequestConfigError) {
-    return createErrorResponse(error.title, error.detail, error.status);
-  }
-
-  return fallbackError;
-}
-
 export {
   createErrorResponse,
   createRetryableUpstreamRequestError,
   createRetryableUpstreamResponseError,
-  toLibraryApiErrorResponse,
 };

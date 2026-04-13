@@ -1,4 +1,5 @@
 import {libraryApiConfig} from '../config/env.js';
+import {LibraryApiRequestConfigError} from './toLibraryApiErrorResponse.js';
 
 type LibraryApiEndpoint = '/srchBooks' | '/srchDtlList' | '/libSrchByBook' | '/bookExist';
 
@@ -6,30 +7,13 @@ type LibraryApiQueryValue = string | number | boolean | null | undefined;
 
 type LibraryApiQueryParams = Record<string, LibraryApiQueryValue>;
 
-type RequestLibraryApiProps = {
+type FetchLibraryApiProps = {
   endpoint: LibraryApiEndpoint;
   queryParams?: LibraryApiQueryParams;
   requiredQueryParams?: string[];
 };
 
 const LIBRARY_API_REQUEST_TIMEOUT_MS = 5000;
-
-class LibraryApiRequestConfigError extends Error {
-  detail;
-  status;
-  title;
-
-  constructor(missingParams: string[]) {
-    const detail = `필수 요청 파라미터가 누락되었습니다: ${missingParams.join(', ')}`;
-
-    super(detail);
-
-    this.name = 'LibraryApiRequestConfigError';
-    this.title = 'LIBRARY_API_REQUIRED_PARAM_MISSING';
-    this.detail = detail;
-    this.status = 400;
-  }
-}
 
 function isEmptyQueryValue(value: LibraryApiQueryValue) {
   if (value === null || value === undefined) {
@@ -51,7 +35,7 @@ function assertRequiredQueryParams(queryParams: LibraryApiQueryParams, requiredQ
   }
 }
 
-function createLibraryApiUrl({endpoint, queryParams = {}}: RequestLibraryApiProps) {
+function createLibraryApiUrl({endpoint, queryParams = {}}: FetchLibraryApiProps) {
   const requestUrl = new URL(endpoint.slice(1), `${libraryApiConfig.baseUrl.replace(/\/$/, '')}/`);
 
   requestUrl.searchParams.set('authKey', libraryApiConfig.authKey);
@@ -68,7 +52,7 @@ function createLibraryApiUrl({endpoint, queryParams = {}}: RequestLibraryApiProp
   return requestUrl;
 }
 
-async function requestLibraryApi({endpoint, queryParams, requiredQueryParams = []}: RequestLibraryApiProps) {
+async function fetchLibraryApi({endpoint, queryParams, requiredQueryParams = []}: FetchLibraryApiProps) {
   assertRequiredQueryParams(queryParams ?? {}, requiredQueryParams);
 
   const requestUrl = createLibraryApiUrl({endpoint, queryParams});
@@ -81,4 +65,4 @@ async function requestLibraryApi({endpoint, queryParams, requiredQueryParams = [
 }
 
 export type {LibraryApiEndpoint, LibraryApiQueryParams, LibraryApiQueryValue};
-export {LibraryApiRequestConfigError, requestLibraryApi};
+export {fetchLibraryApi};

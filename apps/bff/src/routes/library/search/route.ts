@@ -3,14 +3,14 @@ import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
-import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
+import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
+import {getLibraryApiResponseRoot, getLibraryRecords, isLibraryApiRecord} from '../../../libraryApi/parseLibraryApiResponse.js';
+import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
 import {
   createErrorResponse,
   createRetryableUpstreamRequestError,
   createRetryableUpstreamResponseError,
-  toLibraryApiErrorResponse,
 } from '../../../utils/error.js';
-import {getLibraryApiResponseRoot, getLibraryRecords, isLibraryApiRecord} from '../../../utils/libraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../../../utils/normalize.js';
 import type {Result} from '../../../utils/result.types.js';
 import {librarySearchQuerySchema} from './librarySearchQuerySchema.js';
@@ -68,7 +68,7 @@ async function fetchLibrarySearchPayload(query: LibrarySearchQuery): Promise<Res
   const upstreamError = createRetryableUpstreamRequestError('LIBRARY_SEARCH_UPSTREAM_ERROR', '도서관 조회');
 
   try {
-    const response = await requestLibraryApi({
+    const response = await fetchLibraryApi({
       endpoint: '/libSrchByBook',
       queryParams: {
         dtl_region: query.detailRegion,

@@ -1,8 +1,9 @@
 import type {FastifyPluginAsync} from 'fastify';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
-import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
-import {createRetryableUpstreamRequestError, toLibraryApiErrorResponse} from '../../../utils/error.js';
+import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
+import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
+import {createRetryableUpstreamRequestError} from '../../../utils/error.js';
 import type {Result} from '../../../utils/result.types.js';
 import {parseLibraryAvailabilityParams} from './parseParams.js';
 import {normalizeLibraryAvailabilityResponse} from './normalizeResponse.js';
@@ -11,7 +12,7 @@ async function fetchLibraryAvailabilityPayload(libraryCode: string, isbn13: stri
   const upstreamError = createRetryableUpstreamRequestError('LIBRARY_AVAILABILITY_UPSTREAM_ERROR', '대출 가능 여부 조회');
 
   try {
-    const response = await requestLibraryApi({
+    const response = await fetchLibraryApi({
       endpoint: '/bookExist',
       queryParams: {
         isbn13,
