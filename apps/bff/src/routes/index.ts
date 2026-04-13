@@ -4,7 +4,7 @@ import {createBookDetailRoute} from './book/detail/route.js';
 import {createBookSearchRoute} from './book/search/route.js';
 import {healthRoute} from './health/route.js';
 import {createLibraryAvailabilityRoute} from './libraryAvailability.js';
-import {createLibrarySearchRoute} from './librarySearch.js';
+import {createLibrarySearchRoute} from './library/search/route.js';
 
 type RegisterRoutesOptions = {
   fixtures?: AppFixtures;
