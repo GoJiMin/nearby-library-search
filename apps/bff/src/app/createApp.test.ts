@@ -65,6 +65,8 @@ describe('createApp integration', () => {
   beforeEach(() => {
     requestLibraryApiMock.mockReset();
     vi.resetModules();
+    vi.doUnmock('../routes/bookSearchFixture.js');
+    vi.doUnmock('../routes/librarySearchFixture.js');
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
     process.env.WEB_APP_ORIGIN = 'https://app.example.com';
@@ -73,6 +75,8 @@ describe('createApp integration', () => {
   });
 
   afterEach(() => {
+    vi.doUnmock('../routes/bookSearchFixture.js');
+    vi.doUnmock('../routes/librarySearchFixture.js');
     vi.restoreAllMocks();
   });
 
@@ -363,6 +367,44 @@ describe('createApp integration', () => {
     await app.close();
   });
 
+  it('개발용 fixture 모드에서 도서 검색 fixture resolver가 실패하면 구조화된 에러를 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    vi.doMock('../routes/bookSearchFixture.js', async importOriginal => {
+      const actual = await importOriginal<typeof import('../routes/bookSearchFixture.js')>();
+
+      return {
+        ...actual,
+        resolveBookSearchFixtureResult: vi.fn(() => ({
+          error: {
+            detail: '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+            status: 502,
+            title: 'BOOK_SEARCH_RESPONSE_INVALID',
+          },
+          ok: false,
+        })),
+      };
+    });
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/search?title=파친코',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'BOOK_SEARCH_RESPONSE_INVALID',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
   it('개발용 fixture 모드에서 페이지네이션 확인용 검색 결과를 여러 페이지로 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
@@ -455,6 +497,44 @@ describe('createApp integration', () => {
       region: '11',
       resultCount: 2,
       totalCount: 12,
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('개발용 fixture 모드에서 도서관 검색 fixture resolver가 실패하면 구조화된 에러를 반환한다', async () => {
+    process.env.USE_DEV_FIXTURES = 'true';
+
+    vi.doMock('../routes/librarySearchFixture.js', async importOriginal => {
+      const actual = await importOriginal<typeof import('../routes/librarySearchFixture.js')>();
+
+      return {
+        ...actual,
+        resolveLibrarySearchFixtureResult: vi.fn(() => ({
+          error: {
+            detail: '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+            status: 502,
+            title: 'LIBRARY_SEARCH_RESPONSE_INVALID',
+          },
+          ok: false,
+        })),
+      };
+    });
+
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/search?isbn=9788954682155&region=11&detailRegion=11140&page=2',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toEqual({
+      detail: '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'LIBRARY_SEARCH_RESPONSE_INVALID',
     });
     expect(requestLibraryApiMock).not.toHaveBeenCalled();
 

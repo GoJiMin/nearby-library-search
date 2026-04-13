@@ -28,12 +28,12 @@
 
 ## 5. BFF integration과 env/config 테스트 보강
 
-- [ ] `WEB_APP_ORIGIN` missing 또는 invalid failure를 검증한다.
-- [ ] `LIBRARY_API_BASE_URL` http rejection을 검증한다.
-- [ ] exact-origin CORS allow/block를 검증한다.
-- [ ] 404/500 structured error를 검증한다.
-- [ ] security headers를 검증한다.
-- [ ] `libraryCode` invalid regression과 fixture safe error regression을 검증한다.
+- [x] `WEB_APP_ORIGIN` missing 또는 invalid failure를 검증한다.
+- [x] `LIBRARY_API_BASE_URL` http rejection을 검증한다.
+- [x] exact-origin CORS allow/block를 검증한다.
+- [x] 404/500 structured error를 검증한다.
+- [x] security headers를 검증한다.
+- [x] `libraryCode` invalid regression과 fixture safe error regression을 검증한다.
 
 ## 6. Vercel 배포 전 운영 확인 항목 정리
 
