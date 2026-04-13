@@ -66,7 +66,7 @@
 - `USE_DEV_FIXTURES`는 아직 runtime flag로 제어되지만, fixture resolver는 이제 `createApp()`과 `registerRoutes()`의 주입 경계를 통해 route에 전달된다.
 - 다만 default fixture registry와 일부 fixture source는 아직 production `src` 안에 남아 있다.
 - `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
-- `libraryAvailabilityParams.ts`, `libraryAvailabilityResponse.ts`처럼 분리 이득이 있는 순수 helper는 남아 있지만, `book` 도메인 fixture 쪽의 단일 소비자용 helper 분리는 이미 흡수됐다.
+- `book/search`, `book/detail`, `library/availability`는 parse/normalize helper와 helper test까지 같은 도메인 경로에 두는 기준으로 정리됐다.
 - 공용 타입 경계 정리도 시작됐다.
   - [fixtures.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/fixtures.types.ts)와 [result.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/utils/result.types.ts)가 현재 BFF의 confirmed type-only 파일이다.
   - `Result<T>`는 route, helper, dev fixture에서 공용 `result.types.ts`를 재사용한다.
@@ -130,9 +130,17 @@
 apps/bff/src/routes/
   book/
     detail/
+      normalizeResponse.test.ts
+      normalizeResponse.ts
+      parseParams.test.ts
+      parseParams.ts
       route.ts
       route.test.ts
     search/
+      normalizeResponse.test.ts
+      normalizeResponse.ts
+      parseQuery.test.ts
+      parseQuery.ts
       route.ts
       route.test.ts
   health/
@@ -153,8 +161,8 @@ apps/bff/src/routes/
 
 - 완료된 도메인에 대해 production route code가 `src/routes` 루트 flat 파일로 남아 있으면 안 된다.
 - `routes/index.ts`는 새 도메인 폴더에서 route register만 담당한다.
-- `book/detail/route.ts`, `book/search/route.ts`, `library/search/route.ts`는 route-local helper를 같은 파일 안에 두는 것을 기본값으로 한다.
-- `library/availability`는 현재처럼 parse/normalize 책임이 명확하고 전용 테스트가 있으므로 분리 유지한다.
+- `book/search`, `book/detail`, `library/availability`는 parse/normalize 책임이 명확하므로 helper를 같은 도메인 경로에 분리 유지한다.
+- `library/search`는 아직 route-local helper를 같은 파일 안에 두는 상태지만, 기준 자체는 helper 분리 쪽으로 맞춘다.
 - `health`는 단일 route라 `route.ts` 하나만 유지한다.
 
 ### 4. 과분리 정리 기준
@@ -314,9 +322,11 @@ type CreateAppOptions = {
 ### 3. pure helper test
 
 - 분리 유지한 pure helper만 focused test를 유지한다.
+  - `book search` parse/normalize
+  - `book detail` parse/normalize
   - `library availability` parse/normalize
   - fixture source validation
-- route-local helper로 흡수된 함수는 별도 unit test를 만들지 않는다.
+- route-local helper는 정말 분리 이득이 없는 경우에만 같은 파일 안에 둔다.
 
 ### 4. fixture/build 검증
 
