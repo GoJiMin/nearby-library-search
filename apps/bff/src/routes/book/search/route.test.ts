@@ -30,23 +30,76 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
 async function createAppWithBookSearchFixtures(fixtureResolver?: AppFixtures['bookSearch']) {
   const {createApp} = await import('../../../app/createApp.js');
 
-  if (fixtureResolver) {
-    return createApp({
-      fixtures: {
-        bookSearch: fixtureResolver,
-      },
-    });
-  }
-
-  const {resolveBookSearchFixtureResult} = await import('../../bookSearchFixture.js');
-
   return createApp({
     fixtures: {
-      bookSearch: {
-        resolve: resolveBookSearchFixtureResult,
-      },
+      bookSearch: fixtureResolver,
     },
   });
+}
+
+function createPreparedBookSearchFixtureResolver(): NonNullable<AppFixtures['bookSearch']> {
+  return {
+    resolve(query) {
+      if (query.title === '파친코') {
+        return {
+          ok: true,
+          value: {
+            items: [
+              {
+                author: '이민진',
+                detailUrl: 'https://example.com/books/9788954682155',
+                imageUrl:
+                  'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=320&q=80',
+                isbn13: '9788954682155',
+                loanCount: 1240,
+                publicationYear: '2018',
+                publisher: '문학사상',
+                title: '파친코',
+              },
+            ],
+            totalCount: 1,
+          },
+        };
+      }
+
+      if (query.author === '건축연구회' && query.page === 2) {
+        return {
+          ok: true,
+          value: {
+            items: Array.from({length: 10}, (_, index) => {
+              const itemNumber = index + 11;
+              const isbn13 = `9791198800${String(itemNumber).padStart(3, '0')}`;
+
+              return {
+                author: '건축연구회',
+                detailUrl: `https://example.com/books/architecture-lab/${isbn13}`,
+                imageUrl:
+                  index % 3 === 0
+                    ? 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=320&q=80'
+                    : index % 3 === 1
+                      ? 'https://images.unsplash.com/photo-1516972810927-80185027ca84?auto=format&fit=crop&w=320&q=80'
+                      : 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=320&q=80',
+                isbn13,
+                loanCount: 48 + (itemNumber - 1) * 7,
+                publicationYear: String(2000 + itemNumber),
+                publisher: '아키텍처 프레스',
+                title: `건축 연습 ${String(itemNumber).padStart(2, '0')}`,
+              };
+            }),
+            totalCount: 24,
+          },
+        };
+      }
+
+      return {
+        ok: true,
+        value: {
+          items: [],
+          totalCount: 0,
+        },
+      };
+    },
+  };
 }
 
 describe('book search route integration', () => {
@@ -127,7 +180,7 @@ describe('book search route integration', () => {
   it('도서 제목으로 찾으면 일치하는 결과를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookSearchFixtures();
+    const app = await createAppWithBookSearchFixtures(createPreparedBookSearchFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
@@ -152,7 +205,7 @@ describe('book search route integration', () => {
   it('검색 결과가 여러 페이지면 요청한 페이지의 목록만 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
-    const app = await createAppWithBookSearchFixtures();
+    const app = await createAppWithBookSearchFixtures(createPreparedBookSearchFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
