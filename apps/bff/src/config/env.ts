@@ -99,6 +99,7 @@ export const serverEnv = {
 };
 
 export const developmentConfig = {
+  allowDevCorsOrigins: readBooleanEnv('ALLOW_DEV_CORS_ORIGINS', false),
   useDevFixtures: readBooleanEnv('USE_DEV_FIXTURES', false),
 };
 

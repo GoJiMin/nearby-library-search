@@ -11,6 +11,7 @@
     "start": "node --env-file-if-exists=.env dist/main.js"
   },
   "dependencies": {
+    "@fastify/helmet": "^13.0.2",
     "@nearby-library-search/contracts": "workspace:*",
     "fastify": "^5.8.4",
     "zod": "^4.3.6"

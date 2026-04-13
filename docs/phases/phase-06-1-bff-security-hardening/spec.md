@@ -45,6 +45,7 @@
 - `createApp()`에 security headers, exact-origin CORS, 404, 500 baseline 추가
 - `LIBRARY_API_BASE_URL` https-only 강제
 - `WEB_APP_ORIGIN` env 추가와 exact origin 검증
+- `ALLOW_DEV_CORS_ORIGINS` opt-in env로 localhost 개발 CORS 허용 제어
 - `libraryCode` path param 허용 규칙 강화
 - fixture mode 비구조화 예외를 공통 에러 응답 규칙으로 통일
 - BFF integration test, env/config test, CORS allow/block test 보강
@@ -81,9 +82,10 @@
 ### 2. Exact-origin CORS
 
 - BFF는 아래 origin만 허용한다.
-  - `WEB_APP_ORIGIN`
-  - `http://localhost:5173`
-  - `http://127.0.0.1:5173`
+  - 기본: `WEB_APP_ORIGIN`
+  - `ALLOW_DEV_CORS_ORIGINS=true`일 때만 추가:
+    - `http://localhost:5173`
+    - `http://127.0.0.1:5173`
 - `WEB_APP_ORIGIN`은 운영 web custom domain origin 한 개만 받는다.
   - 예: `https://app.example.com`
 - `*.vercel.app` wildcard는 허용하지 않는다.
@@ -121,6 +123,8 @@
 
 - `WEB_APP_ORIGIN`은 반드시 `https://` URL이어야 한다.
 - `WEB_APP_ORIGIN`은 `localhost`나 `127.0.0.1`이 아닌 운영 web custom domain origin만 받는다.
+- `ALLOW_DEV_CORS_ORIGINS`는 선택값이며 기본값은 `false`다.
+- `ALLOW_DEV_CORS_ORIGINS=true`일 때만 localhost 개발 origin CORS를 허용한다.
 - `LIBRARY_API_BASE_URL`은 반드시 `https://` URL이어야 한다.
 - `http://`는 개발 환경에서도 허용하지 않는다.
 - `LIBRARY_API_AUTH_KEY`는 계속 필수 env로 유지한다.
@@ -201,6 +205,8 @@
 
 - `createApp().inject()` 기준으로 아래를 검증한다.
   - 운영 custom domain origin은 CORS 허용 헤더를 받는다.
+  - `ALLOW_DEV_CORS_ORIGINS=false`일 때 localhost origin은 CORS 허용 헤더를 받지 않는다.
+  - `ALLOW_DEV_CORS_ORIGINS=true`일 때 localhost origin은 CORS 허용 헤더를 받는다.
   - 허용되지 않은 외부 origin은 CORS 허용 헤더를 받지 않는다.
   - unknown route는 404 structured error를 반환한다.
   - 앱 레벨 unknown exception은 500 structured error를 반환하고 stack을 노출하지 않는다.
@@ -209,6 +215,7 @@
 ### 2. env / request 경계 검증
 
 - `WEB_APP_ORIGIN`이 없거나 invalid URL이면 env loading이 실패한다.
+- `ALLOW_DEV_CORS_ORIGINS`가 boolean-like 값이 아니면 env loading이 실패한다.
 - `LIBRARY_API_BASE_URL`이 `http://...`면 env loading이 실패한다.
 - `requestLibraryApi`는 계속 `https` base URL과 allowlisted endpoint만 사용한다.
 
