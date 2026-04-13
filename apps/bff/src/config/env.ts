@@ -49,21 +49,48 @@ function readBooleanEnv(name: string, defaultValue = false) {
   throw new Error(`Invalid server env: ${name} must be a boolean-like value`);
 }
 
-function readBaseUrlEnv() {
-  const value = readRequiredStringEnv('LIBRARY_API_BASE_URL');
+function readUrlEnv(name: string) {
+  const value = readRequiredStringEnv(name);
   let url: URL;
 
   try {
     url = new URL(value);
   } catch {
-    throw new Error('Invalid server env: LIBRARY_API_BASE_URL must be a valid URL');
+    throw new Error(`Invalid server env: ${name} must be a valid URL`);
   }
 
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-    throw new Error('Invalid server env: LIBRARY_API_BASE_URL must use http or https');
+  return {
+    url,
+    value,
+  };
+}
+
+function readBaseUrlEnv() {
+  const {url, value} = readUrlEnv('LIBRARY_API_BASE_URL');
+
+  if (url.protocol !== 'https:') {
+    throw new Error('Invalid server env: LIBRARY_API_BASE_URL must use https');
   }
 
   return value.replace(/\/$/, '');
+}
+
+function readWebAppOriginEnv() {
+  const {url} = readUrlEnv('WEB_APP_ORIGIN');
+
+  if (url.protocol !== 'https:') {
+    throw new Error('Invalid server env: WEB_APP_ORIGIN must use https');
+  }
+
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    throw new Error('Invalid server env: WEB_APP_ORIGIN must not use localhost or 127.0.0.1');
+  }
+
+  if (url.pathname !== '/' || url.search || url.hash) {
+    throw new Error('Invalid server env: WEB_APP_ORIGIN must be an exact origin without path, query, or hash');
+  }
+
+  return url.origin;
 }
 
 export const serverEnv = {
@@ -73,6 +100,10 @@ export const serverEnv = {
 
 export const developmentConfig = {
   useDevFixtures: readBooleanEnv('USE_DEV_FIXTURES', false),
+};
+
+export const webAppConfig = {
+  origin: readWebAppOriginEnv(),
 };
 
 export const libraryApiConfig = {

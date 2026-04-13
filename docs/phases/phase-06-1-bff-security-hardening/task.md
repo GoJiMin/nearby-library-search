@@ -2,10 +2,10 @@
 
 ## 1. Vercel 배포 기준 env 계약 hardening
 
-- [ ] `apps/bff` env에 `WEB_APP_ORIGIN`을 추가한다.
-- [ ] `WEB_APP_ORIGIN`이 운영 web custom domain exact origin만 허용하도록 검증한다.
-- [ ] `LIBRARY_API_BASE_URL`을 https-only로 강제한다.
-- [ ] auth key가 계속 BFF runtime env에서만 읽히는지 확인한다.
+- [x] `apps/bff` env에 `WEB_APP_ORIGIN`을 추가한다.
+- [x] `WEB_APP_ORIGIN`이 운영 web custom domain exact origin만 허용하도록 검증한다.
+- [x] `LIBRARY_API_BASE_URL`을 https-only로 강제한다.
+- [x] auth key가 계속 BFF runtime env에서만 읽히는지 확인한다.
 
 ## 2. `createApp()` 앱 레벨 보안 baseline 정리
 

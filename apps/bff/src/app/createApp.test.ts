@@ -66,6 +66,7 @@ describe('createApp integration', () => {
     requestLibraryApiMock.mockReset();
     vi.resetModules();
     delete process.env.USE_DEV_FIXTURES;
+    process.env.WEB_APP_ORIGIN = 'https://app.example.com';
     process.env.LIBRARY_API_BASE_URL = 'https://example.com';
     process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   });

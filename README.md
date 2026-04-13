@@ -74,6 +74,8 @@ pnpm build:all # web + bff 전체 빌드
 웹 앱 공개 환경변수 예시는 [apps/web/.env.example](/Users/gojimin/Desktop/ai/apps/web/.env.example)에 두고, BFF 서버 전용 환경변수 예시는 [apps/bff/.env.example](/Users/gojimin/Desktop/ai/apps/bff/.env.example)에 둡니다.
 웹 앱에서는 `VITE_` 접두사를 가진 공개 설정만 사용하고, 외부 Open API 인증키는 `apps/bff/.env`에서만 관리합니다.
 `apps/web/.env`의 `VITE_API_BASE_URL`에는 외부 provider 주소가 아니라 Fastify BFF 주소만 넣습니다.
+`apps/bff/.env`의 `WEB_APP_ORIGIN`에는 운영 web custom domain origin만 넣고, localhost origin은 넣지 않습니다.
+`apps/bff/.env`의 `LIBRARY_API_BASE_URL`은 `https://` 주소만 허용합니다.
 
 ## 검증
 

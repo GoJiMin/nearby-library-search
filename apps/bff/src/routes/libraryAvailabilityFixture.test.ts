@@ -1,6 +1,7 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
 async function importLibraryAvailabilityFixtureModule() {
+  process.env.WEB_APP_ORIGIN = 'https://app.example.com';
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
