@@ -120,7 +120,7 @@
 - app baseline test도 `src/app/test`에 둔다.
 - 공통 helper 허용 범위는 아래로 제한한다.
   - 기본 env setup
-  - `requestLibraryApi` mock wiring
+  - `fetchLibraryApi` mock wiring
   - JSON `Response` 생성 helper
 - assertion 문장, request URL, route별 기대 응답은 각 테스트 파일에 직접 남긴다.
 - 하나의 shared test util이 route-specific assertion까지 숨기면 안 된다.
@@ -334,7 +334,7 @@ type CreateAppOptions = {
   - upstream empty 또는 no-result path
   - upstream non-ok/throw/invalid path
   - fixture success/error path
-- route integration test는 `requestLibraryApi` mock을 경계로 유지한다.
+- route integration test는 `fetchLibraryApi` mock을 경계로 유지한다.
 - route/helper/fixture test는 모두 대상 코드와 같은 depth의 `test/` 폴더에 둔다.
 
 ### 3. pure helper test

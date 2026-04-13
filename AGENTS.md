@@ -48,7 +48,7 @@
 - Add focused unit tests only when complex UI branching or pure logic needs detailed verification.
 - Use unit tests to cover edge cases, failure cases, and error-handling paths when integration tests alone are not sufficient.
 - For Fastify BFF routes, prefer `createApp().inject()` based integration tests over port-bound server tests.
-- Mock external Open API calls at the `requestLibraryApi` boundary in BFF tests.
+- Mock external Open API calls at the `fetchLibraryApi` boundary in BFF tests.
 - Place test files in a sibling `test/` directory at the same depth as the code under test.
 - Do not place `*.test.ts` files directly next to runtime files.
 
