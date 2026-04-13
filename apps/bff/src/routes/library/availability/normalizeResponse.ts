@@ -1,9 +1,9 @@
 import type {ErrorResponse, LibraryAvailabilityResponse} from '@nearby-library-search/contracts';
-import type {LibraryAvailabilityParams} from '../schemas/library.js';
-import {getLibraryApiResponseRoot, isLibraryApiRecord} from '../utils/libraryApiResponse.js';
-import {normalizeNullableString} from '../utils/normalize.js';
-import {createRetryableUpstreamResponseError} from '../utils/error.js';
-import type {Result} from '../utils/result.types.js';
+import type {LibraryAvailabilityParams} from '../../../schemas/library.js';
+import {createRetryableUpstreamResponseError} from '../../../utils/error.js';
+import {getLibraryApiResponseRoot, isLibraryApiRecord} from '../../../utils/libraryApiResponse.js';
+import {normalizeNullableString} from '../../../utils/normalize.js';
+import type {Result} from '../../../utils/result.types.js';
 
 function normalizeLibraryAvailabilityFlag(value: unknown): LibraryAvailabilityResponse['hasBook'] | null {
   const normalizedValue = normalizeNullableString(value);

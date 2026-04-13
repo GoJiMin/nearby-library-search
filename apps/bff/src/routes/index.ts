@@ -3,7 +3,7 @@ import type {AppFixtures} from '../app/fixtures.types.js';
 import {createBookDetailRoute} from './book/detail/route.js';
 import {createBookSearchRoute} from './book/search/route.js';
 import {healthRoute} from './health/route.js';
-import {createLibraryAvailabilityRoute} from './libraryAvailability.js';
+import {createLibraryAvailabilityRoute} from './library/availability/route.js';
 import {createLibrarySearchRoute} from './library/search/route.js';
 
 type RegisterRoutesOptions = {
