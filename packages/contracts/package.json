@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/clean-build.mjs",
     "build": "tsc -p tsconfig.json"
   },
   "types": "./dist/src/index.d.ts",
