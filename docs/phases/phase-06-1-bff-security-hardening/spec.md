@@ -58,15 +58,14 @@
 - Redis 등 외부 rate limit store 도입
 - web app 동작 변경
 
-## 현재 기반 상태
+## 현재 구현 상태
 
-- `apps/bff`는 현재 Fastify 단일 앱이며 `CORS onRequest hook`만 앱 레벨로 적용한다.
-- 앱 레벨 `helmet`, `setNotFoundHandler`, `setErrorHandler`는 아직 없다.
-- `LIBRARY_API_BASE_URL`은 현재 `http`와 `https`를 모두 허용한다.
-- `WEB_APP_ORIGIN` 같은 운영 web origin env는 아직 없다.
-- `bookSearch`, `bookDetail`, `librarySearch`, `libraryAvailability`는 route별 Zod parse helper를 사용한다.
-- `bookSearch`/`librarySearch` fixture는 성공 응답만 직접 반환하고, fixture branch 자체를 safe wrapper로 감싸는 규칙은 아직 없다.
-- `libraryAvailabilityParamsSchema`의 `libraryCode`는 현재 `min(1)` 수준이라 허용 범위가 느슨하다.
+- `apps/bff`는 Fastify 단일 앱이며 `@fastify/helmet`, exact-origin CORS, `setNotFoundHandler`, `setErrorHandler`를 앱 레벨 baseline으로 적용한다.
+- `WEB_APP_ORIGIN`은 필수 env로 검증되고, `ALLOW_DEV_CORS_ORIGINS=true`일 때만 localhost 개발 origin CORS를 임시 허용한다.
+- `LIBRARY_API_BASE_URL`은 https-only로 고정돼 있고, auth key는 계속 BFF runtime env에서만 읽는다.
+- `bookSearch`, `bookDetail`, `librarySearch`, `libraryAvailability`는 route별 Zod parse helper를 계속 사용한다.
+- `bookSearch`, `bookDetail`, `librarySearch`, `libraryAvailability`의 fixture branch는 safe resolver를 통해 success 또는 structured error만 반환한다.
+- `libraryAvailabilityParamsSchema`의 `libraryCode`는 영문자/숫자 1~20자 규칙으로 hardening돼 있다.
 
 ## 앱 레벨 보안 baseline
 
@@ -196,8 +195,9 @@
   - `GET /api/libraries/search`
 - 앱 코드에서는 429를 직접 구현하지 않는다.
 - 배포 시 수동 확인 항목으로 아래를 고정한다.
-  - Vercel Firewall/WAF에서 search route 보호 규칙이 설정돼 있다.
+  - production BFF 프로젝트의 Firewall/WAF에 search route 보호 규칙이 설정돼 있다.
   - 운영 web custom domain과 BFF custom domain이 연결돼 있다.
+  - preview `*.vercel.app` web의 cross-origin 호출은 이번 phase acceptance가 아니다.
 
 ## 테스트 기준
 
@@ -228,8 +228,9 @@
 
 ### 4. 운영 확인 항목
 
-- Vercel Firewall/WAF search route 보호 규칙이 존재하는지 확인한다.
-- production custom domain 기준으로 web → bff CORS가 정상 동작하는지 확인한다.
+- production BFF 프로젝트의 Vercel Firewall/WAF에 `GET /api/books/search`, `GET /api/libraries/search` 보호 규칙이 존재하는지 확인한다.
+- production web custom domain에서 production BFF로 실제 요청을 보냈을 때 `access-control-allow-origin`이 `WEB_APP_ORIGIN`과 일치하는지 확인한다.
+- preview `*.vercel.app` origin의 cross-origin 호출은 이번 phase acceptance가 아니며, 허용되지 않아도 회귀로 보지 않는다.
 
 ## Acceptance 기준
 

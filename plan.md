@@ -146,12 +146,12 @@
 
 ## Phase 6-1. BFF 보안 하드닝
 
-- [ ] 공개 BFF route 전반에 대한 abuse 방어 전략을 정하고, 앱 레벨 rate limiting 또는 route 그룹 단위 호출량 제한을 적용한다.
-- [ ] 외부 Open API 호출 경계가 HTTPS만 사용하도록 고정하고, auth key가 계속 BFF runtime 내부에서만 관리되는지 검증한다.
-- [ ] BFF route 입력 검증 규칙을 재점검하고, `libraryCode` 같은 느슨한 path/query 입력에 길이 상한과 허용 규칙을 추가한다.
-- [ ] dev fixture mode에서 발생하는 비구조화 예외를 공통 에러 응답 규칙으로 정리해 내부 오류 노출을 줄인다.
-- [ ] BFF 앱 레벨 보안 기본값을 점검하고, 필요한 보안 헤더, 에러 핸들링, not-found 처리 기준을 정리한다.
-- [ ] Phase 6-1 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- [x] Vercel Firewall/WAF 중심의 abuse 방어 기준과 production custom domain CORS 운영 확인 절차를 정리한다.
+- [x] `WEB_APP_ORIGIN`, `ALLOW_DEV_CORS_ORIGINS`, https-only `LIBRARY_API_BASE_URL` 기준으로 env와 외부 Open API 호출 경계를 hardening한다.
+- [x] BFF route 입력 검증 규칙을 재점검하고, `libraryCode` 같은 느슨한 path/query 입력에 길이 상한과 허용 규칙을 추가한다.
+- [x] dev fixture mode에서 발생하는 비구조화 예외를 공통 에러 응답 규칙으로 정리해 내부 오류 노출을 줄인다.
+- [x] BFF 앱 레벨 보안 기본값으로 exact-origin CORS, security headers, 404/500 structured error를 추가한다.
+- [x] Phase 6-1 내용을 기준으로 `spec.md`, `task.md`, 최종 검증 상태를 마감한다.
 
 ## Phase 6-2. 웹 상태 수명주기 리팩터링
 

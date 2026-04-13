@@ -37,15 +37,23 @@
 
 ## 6. Vercel 배포 전 운영 확인 항목 정리
 
-- [ ] Vercel Firewall/WAF에서 search route 보호 규칙이 필요한 이유와 확인 기준을 task에 적는다.
-- [ ] production custom domain 기준 CORS 확인 절차를 task에 적는다.
-- [ ] preview cross-origin이 이번 phase 범위 밖이라는 점을 task에 적는다.
+- [x] Vercel Firewall/WAF에서 search route 보호 규칙이 필요한 이유와 확인 기준을 task에 적는다.
+  - 보호 대상은 production BFF 프로젝트의 `GET /api/books/search`, `GET /api/libraries/search`다.
+  - 이유는 Vercel Functions 환경에서 앱 메모리 rate limit를 보안 기준으로 두지 않고, search route를 플랫폼 레벨에서 먼저 보호하기 위해서다.
+  - 완료 기준은 Vercel 대시보드에서 해당 route 보호 규칙이 존재하는지 수동 확인하는 것이다.
+- [x] production custom domain 기준 CORS 확인 절차를 task에 적는다.
+  - `WEB_APP_ORIGIN`은 production web custom domain exact origin이어야 한다.
+  - deployed web에서 production BFF로 실제 요청을 보내고, 응답의 `access-control-allow-origin`이 production web origin과 일치하는지 확인한다.
+  - localhost origin은 `ALLOW_DEV_CORS_ORIGINS=true`일 때만 임시 허용 대상이며, production acceptance에 포함하지 않는다.
+- [x] preview cross-origin이 이번 phase 범위 밖이라는 점을 task에 적는다.
+  - preview `*.vercel.app` web이 production BFF를 cross-origin으로 호출하는 흐름은 이번 phase acceptance가 아니다.
+  - preview origin 차단은 회귀가 아니라 의도된 비범위로 본다.
 
 ## 7. 최종 검증과 문서 동기화
 
-- [ ] `pnpm --filter @nearby-library-search/bff exec vitest run`을 통과시킨다.
-- [ ] `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 통과시킨다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 6-1 상태를 실제 구현과 동기화한다.
+- [x] `pnpm --filter @nearby-library-search/bff exec vitest run`을 통과시킨다.
+- [x] `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 통과시킨다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 6-1 상태를 실제 구현과 동기화한다.
 
 ## Important Changes
 
