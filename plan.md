@@ -165,12 +165,13 @@
 - [x] 리팩터링 후에도 기존 search/detail/library/availability route 계약과 fixture 회귀가 유지되는지 검증한다.
 - [x] Phase 6-2 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
 
-## Phase 6-3. 웹 상태 수명주기 리팩터링
+## Phase 6-3. 웹 번들 최적화
 
-- [ ] `/books` 결과 문맥에 종속된 transient UI 상태와 세션 사이에 재사용할 persistent 상태를 구분한다.
-- [ ] `find-library` store에서 `lastRegionSelection` 같은 기억 상태와 현재 검색 결과에만 유효한 상태를 분리해 reset 의미를 명확히 한다.
-- [ ] `book detail dialog`와 `find-library` 흐름의 open/close/reset 규칙을 route lifecycle 기준으로 재정리한다.
-- [ ] `pages/book-search-result`가 store reset을 직접 흩어 호출하는 대신, 의도가 드러나는 lifecycle 경계 또는 전용 orchestration hook으로 정리한다.
-- [ ] reset API 이름과 책임을 `무엇을 지우는지`보다 `왜 지금 지우는지`가 드러나도록 재설계한다.
-- [ ] 검색 조건 변경, 페이지 이동, route 이탈, 재진입 시 상태 일관성이 유지되는지 사용자 흐름 기준 통합테스트로 검증한다.
+- [ ] `/books` route를 eager entry에서 분리하고 route-level lazy loading으로 별도 chunk를 만든다.
+- [ ] `/books` 결과 문맥의 `BookDetailDialog`, `RegionSelectDialog`, `LibrarySearchResultDialog`를 필요 시점에만 로드되도록 lazy boundary로 분리한다.
+- [ ] `LibrarySearchResultDialog` 안의 Kakao map 관련 UI, model, SDK 로딩을 결과 dialog 본체와 분리된 별도 chunk로 늦춘다.
+- [ ] `manualChunks` 같은 번들 설정 꼼수보다 route, dialog, map 단위의 semantic code-splitting을 우선 적용한다.
+- [ ] lazy boundary loading fallback을 기존 loading/placeholder 계약 안에서 정리해 화면 전환 품질을 유지한다.
+- [ ] `pnpm --filter @nearby-library-search/web build`에서 Vite chunk size warning이 없어지도록 초기 JS 비용을 줄인다.
+- [ ] emitted app JS chunk가 여러 개로 나뉘고, 어느 chunk도 minified 기준 400 kB를 넘지 않도록 맞춘다.
 - [ ] Phase 6-3 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
