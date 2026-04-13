@@ -5,19 +5,19 @@ async function importBookSearchFixtureModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./resolver.js');
+  return import('./fixture.js');
 }
 
-describe('book search fixture resolver', () => {
+describe('book search fixture', () => {
   beforeEach(() => {
     vi.resetModules();
   });
 
   it('검색 결과 fixture를 반환한다', async () => {
-    const {resolveBookSearchFixtureResult} = await importBookSearchFixtureModule();
+    const {getBookSearchFixtureResult} = await importBookSearchFixtureModule();
 
     expect(
-      resolveBookSearchFixtureResult({
+      getBookSearchFixtureResult({
         page: 1,
         pageSize: 10,
         title: '파친코',
@@ -37,10 +37,10 @@ describe('book search fixture resolver', () => {
   });
 
   it('조건에 맞는 fixture가 없으면 빈 결과를 반환한다', async () => {
-    const {resolveBookSearchFixtureResult} = await importBookSearchFixtureModule();
+    const {getBookSearchFixtureResult} = await importBookSearchFixtureModule();
 
     expect(
-      resolveBookSearchFixtureResult({
+      getBookSearchFixtureResult({
         page: 1,
         pageSize: 10,
         title: '없는 책',
@@ -54,11 +54,11 @@ describe('book search fixture resolver', () => {
     });
   });
 
-  it('fixture creator가 예외를 던지면 구조화된 response invalid 에러를 반환한다', async () => {
-    const {resolveBookSearchFixtureResult} = await importBookSearchFixtureModule();
+  it('준비된 응답을 만들지 못하면 표준 에러를 반환한다', async () => {
+    const {getBookSearchFixtureResult} = await importBookSearchFixtureModule();
 
     expect(
-      resolveBookSearchFixtureResult(
+      getBookSearchFixtureResult(
         {
           page: 1,
           pageSize: 10,
@@ -80,11 +80,11 @@ describe('book search fixture resolver', () => {
     });
   });
 
-  it('fixture creator가 비정상 응답을 반환하면 구조화된 response invalid 에러를 반환한다', async () => {
-    const {resolveBookSearchFixtureResult} = await importBookSearchFixtureModule();
+  it('형식이 올바르지 않은 준비된 응답이면 표준 에러를 반환한다', async () => {
+    const {getBookSearchFixtureResult} = await importBookSearchFixtureModule();
 
     expect(
-      resolveBookSearchFixtureResult(
+      getBookSearchFixtureResult(
         {
           page: 1,
           pageSize: 10,

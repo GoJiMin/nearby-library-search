@@ -42,7 +42,7 @@ function createBookSearchFixtureSeries({
   });
 }
 
-const bookSearchFixtureBaseItems: BookSearchItem[] = [
+const bookSearchFixtureBaseBooks: BookSearchItem[] = [
   {
     author: '이민진',
     detailUrl: 'https://example.com/books/9788954682155',
@@ -165,7 +165,7 @@ const bookSearchFixtureBaseItems: BookSearchItem[] = [
   },
 ];
 
-const paginatedBookSearchFixtureItems = createBookSearchFixtureSeries({
+const paginatedBookSearchFixtureBooks = createBookSearchFixtureSeries({
   author: '건축연구회',
   count: 24,
   detailUrlBase: 'https://example.com/books/architecture-lab',
@@ -181,6 +181,6 @@ const paginatedBookSearchFixtureItems = createBookSearchFixtureSeries({
   titlePrefix: '건축 연습',
 });
 
-const bookSearchFixtureItems = [...bookSearchFixtureBaseItems, ...paginatedBookSearchFixtureItems];
+const bookSearchFixtureBooks = [...bookSearchFixtureBaseBooks, ...paginatedBookSearchFixtureBooks];
 
-export {bookSearchFixtureItems};
+export {bookSearchFixtureBooks};

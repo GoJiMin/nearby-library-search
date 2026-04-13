@@ -2,7 +2,7 @@ import type {BookSearchItem, BookSearchResponse, ErrorResponse} from '@nearby-li
 import {z} from 'zod';
 import type {BookSearchQuery} from '../../../../src/schemas/book.js';
 import {createRetryableUpstreamResponseError} from '../../../../src/utils/error.js';
-import {bookSearchFixtureItems} from './data.js';
+import {bookSearchFixtureBooks} from './books.js';
 
 type Result<T> =
   | {
@@ -14,7 +14,7 @@ type Result<T> =
       error: ErrorResponse;
     };
 
-type BookSearchFixtureResolverOptions = {
+type BookSearchFixtureOptions = {
   createResponse?: (query: BookSearchQuery) => unknown;
 };
 
@@ -55,7 +55,7 @@ function matchesBookSearchFixtureItem(item: BookSearchItem, query: BookSearchQue
 }
 
 function createBookSearchFixtureResponse(query: BookSearchQuery): BookSearchResponse {
-  const filteredItems = bookSearchFixtureItems.filter(item => matchesBookSearchFixtureItem(item, query));
+  const filteredItems = bookSearchFixtureBooks.filter(item => matchesBookSearchFixtureItem(item, query));
   const startIndex = (query.page - 1) * query.pageSize;
   const endIndex = startIndex + query.pageSize;
 
@@ -65,9 +65,9 @@ function createBookSearchFixtureResponse(query: BookSearchQuery): BookSearchResp
   };
 }
 
-function resolveBookSearchFixtureResult(
+function getBookSearchFixtureResult(
   query: BookSearchQuery,
-  options: BookSearchFixtureResolverOptions = {},
+  options: BookSearchFixtureOptions = {},
 ): Result<BookSearchResponse> {
   const createResponse = options.createResponse ?? createBookSearchFixtureResponse;
 
@@ -94,4 +94,4 @@ function resolveBookSearchFixtureResult(
   }
 }
 
-export {resolveBookSearchFixtureResult};
+export {getBookSearchFixtureResult};
