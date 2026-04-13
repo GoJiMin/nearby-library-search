@@ -93,11 +93,11 @@
 
 ## 14. production/dev bootstrap을 마감한다.
 
-- [ ] `apps/bff/dev/fixtures/index.ts`에서 전체 fixture registry를 조합한다.
-- [ ] `apps/bff/src/main.ts`는 production bootstrap만 담당하게 정리한다.
-- [ ] `apps/bff/dev/main.ts`를 추가해 dev bootstrap에서만 fixture registry를 연결한다.
-- [ ] production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 fail-fast 하도록 고정한다.
-- [ ] `apps/bff/package.json`의 `dev` 스크립트가 dev bootstrap을 사용하도록 정리한다.
+- [x] `apps/bff/dev/fixtures/index.ts`에서 전체 fixture registry를 조합한다.
+- [x] `apps/bff/src/main.ts`는 production bootstrap만 담당하게 정리한다.
+- [x] `apps/bff/dev/main.ts`를 추가해 dev bootstrap에서만 fixture registry를 연결한다.
+- [x] production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 fail-fast 하도록 고정한다.
+- [x] `apps/bff/package.json`의 `dev` 스크립트가 dev bootstrap을 사용하도록 정리한다.
 
 ## 15. 최종 검증과 문서 동기화를 마감한다.
 
