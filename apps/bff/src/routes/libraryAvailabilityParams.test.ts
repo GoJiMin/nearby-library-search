@@ -30,6 +30,23 @@ describe('libraryAvailabilityParams', () => {
     });
   });
 
+  it('숫자만 있는 libraryCode도 통과시킨다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(
+      parseLibraryAvailabilityParams({
+        isbn13: '9791190157551',
+        libraryCode: '143136',
+      }),
+    ).toEqual({
+      ok: true,
+      value: {
+        isbn13: '9791190157551',
+        libraryCode: '143136',
+      },
+    });
+  });
+
   it('빈 libraryCode는 availability 전용 error title로 실패한다', async () => {
     const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
 
@@ -40,7 +57,61 @@ describe('libraryAvailabilityParams', () => {
       }),
     ).toEqual({
       error: {
-        detail: 'libraryCode는 비어 있지 않은 문자열이어야 합니다.',
+        detail: 'libraryCode는 1~20자의 영문자 또는 숫자여야 합니다.',
+        status: 400,
+        title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
+      },
+      ok: false,
+    });
+  });
+
+  it('하이픈이 포함된 libraryCode는 실패한다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(
+      parseLibraryAvailabilityParams({
+        isbn13: '9791190157551',
+        libraryCode: 'LIB-0001',
+      }),
+    ).toEqual({
+      error: {
+        detail: 'libraryCode는 1~20자의 영문자 또는 숫자여야 합니다.',
+        status: 400,
+        title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
+      },
+      ok: false,
+    });
+  });
+
+  it('특수문자가 포함된 libraryCode는 실패한다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(
+      parseLibraryAvailabilityParams({
+        isbn13: '9791190157551',
+        libraryCode: 'LIB_0001',
+      }),
+    ).toEqual({
+      error: {
+        detail: 'libraryCode는 1~20자의 영문자 또는 숫자여야 합니다.',
+        status: 400,
+        title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
+      },
+      ok: false,
+    });
+  });
+
+  it('21자를 넘는 libraryCode는 실패한다', async () => {
+    const {parseLibraryAvailabilityParams} = await importLibraryAvailabilityParamsModule();
+
+    expect(
+      parseLibraryAvailabilityParams({
+        isbn13: '9791190157551',
+        libraryCode: 'ABCDEFGHIJKLMNOPQRSTU',
+      }),
+    ).toEqual({
+      error: {
+        detail: 'libraryCode는 1~20자의 영문자 또는 숫자여야 합니다.',
         status: 400,
         title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
       },

@@ -16,9 +16,9 @@
 
 ## 3. `libraryCode` path param 검증 hardening
 
-- [ ] `libraryCode`를 `^[A-Za-z0-9]{1,20}$` 기준으로 검증한다.
-- [ ] `LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID` detail 문구를 새 규칙에 맞게 고친다.
-- [ ] 숫자 코드와 fixture 영숫자 코드가 모두 통과하는지 확인한다.
+- [x] `libraryCode`를 `^[A-Za-z0-9]{1,20}$` 기준으로 검증한다.
+- [x] `LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID` detail 문구를 새 규칙에 맞게 고친다.
+- [x] 숫자 코드와 fixture 영숫자 코드가 모두 통과하는지 확인한다.
 
 ## 4. fixture mode 공통 에러 규칙 정리
 

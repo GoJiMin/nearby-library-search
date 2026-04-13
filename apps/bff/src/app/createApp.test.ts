@@ -1259,7 +1259,27 @@ describe('createApp integration', () => {
 
     expect(response.statusCode).toBe(400);
     expect(response.json()).toEqual({
-      detail: 'libraryCode는 비어 있지 않은 문자열이어야 합니다.',
+      detail: 'libraryCode는 1~20자의 영문자 또는 숫자여야 합니다.',
+      status: 400,
+      title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
+    });
+    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+
+    await app.close();
+  });
+
+  it('하이픈이 포함된 libraryCode면 외부 호출 없이 400 availability 에러를 반환한다', async () => {
+    const {createApp} = await import('./createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/libraries/LIB-0001/books/9791190157551/availability',
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toEqual({
+      detail: 'libraryCode는 1~20자의 영문자 또는 숫자여야 합니다.',
       status: 400,
       title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
     });
