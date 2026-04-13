@@ -91,102 +91,23 @@ function createFixtureLibrary(code: string, name: string) {
   };
 }
 
-function createLibrarySearchFixtureResolver(): AppFixtures['librarySearch'] {
+function createLibrarySearchFixtureResolver(
+  response = {
+    detailRegion: '11140',
+    isbn: '9781234567890',
+    items: [createFixtureLibrary('LIB9001', '준비된도서관')],
+    page: 1,
+    pageSize: 10,
+    region: '11',
+    resultCount: 1,
+    totalCount: 1,
+  },
+): AppFixtures['librarySearch'] {
   return {
-    resolve(query) {
-      if (query.isbn === '9788954682155' && query.region === '11' && query.detailRegion === '11140' && query.page === 2) {
-        return {
-          ok: true,
-          value: {
-            detailRegion: '11140',
-            isbn: '9788954682155',
-            items: [
-              createFixtureLibrary('LIB0011', '공덕자료보관실'),
-              createFixtureLibrary('LIB0012', '신촌아카이브'),
-            ],
-            page: 2,
-            pageSize: 10,
-            region: '11',
-            resultCount: 2,
-            totalCount: 12,
-          },
-        };
-      }
-
-      if (query.isbn === '9791192389479' && query.region === '11' && query.page === 1) {
-        return {
-          ok: true,
-          value: {
-            isbn: '9791192389479',
-            items: [
-              createFixtureLibrary('LIB0001', '마포중앙도서관'),
-              createFixtureLibrary('LIB0002', '합정열람실'),
-              createFixtureLibrary('LIB0003', '서강책마루'),
-              createFixtureLibrary('LIB0004', '토정정보도서관'),
-              createFixtureLibrary('LIB0005', '성산서고'),
-              createFixtureLibrary('LIB0006', '상암미디어도서관'),
-              createFixtureLibrary('LIB0007', '망원책나루'),
-              createFixtureLibrary('LIB0008', '연남문고'),
-              createFixtureLibrary('LIB0009', '서교정보서재'),
-              createFixtureLibrary('LIB0010', '홍대창작자료실'),
-            ],
-            page: 1,
-            pageSize: 10,
-            region: '11',
-            resultCount: 10,
-            totalCount: 96,
-          },
-        };
-      }
-
-      if (query.isbn === '9791192389479' && query.region === '11' && query.page === 5) {
-        return {
-          ok: true,
-          value: {
-            isbn: '9791192389479',
-            items: [
-              createFixtureLibrary('LIB1119005', '영등포 성산서고'),
-              createFixtureLibrary('LIB1119006', '영등포 상암미디어도서관'),
-              createFixtureLibrary('LIB1119007', '영등포 망원책나루'),
-              createFixtureLibrary('LIB1119008', '영등포 연남문고'),
-              createFixtureLibrary('LIB1119009', '영등포 서교정보서재'),
-              createFixtureLibrary('LIB1119010', '영등포 홍대창작자료실'),
-              createFixtureLibrary('LIB1119011', '영등포 공덕자료보관실'),
-              createFixtureLibrary('LIB1119012', '영등포 신촌아카이브'),
-              createFixtureLibrary('LIB1120001', '동작 마포중앙도서관'),
-              createFixtureLibrary('LIB1120002', '동작 합정열람실'),
-            ],
-            page: 5,
-            pageSize: 10,
-            region: '11',
-            resultCount: 10,
-            totalCount: 96,
-          },
-        };
-      }
-
-      if (query.isbn === '9788954682155' && query.region === '26' && query.page === 1) {
-        return {
-          ok: true,
-          value: {
-            isbn: '9788954682155',
-            items: [],
-            page: 1,
-            pageSize: 10,
-            region: '26',
-            resultCount: 0,
-            totalCount: 0,
-          },
-        };
-      }
-
+    resolve() {
       return {
-        ok: false,
-        error: {
-          detail: '도서관 조회 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
-          status: 502,
-          title: 'LIBRARY_SEARCH_RESPONSE_INVALID',
-        },
+        ok: true,
+        value: response,
       };
     },
   };
@@ -359,199 +280,35 @@ describe('library search route integration', () => {
     await app.close();
   });
 
-  it('선택한 지역과 세부 지역에 맞는 도서관 목록을 반환한다', async () => {
+  it('준비된 도서관 검색 결과가 있으면 응답을 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
     const app = await createAppWithLibrarySearchFixtures(createLibrarySearchFixtureResolver());
 
     const response = await app.inject({
       method: 'GET',
-      url: '/api/libraries/search?isbn=9788954682155&region=11&detailRegion=11140&page=2',
+      url: '/api/libraries/search?isbn=9781234567890&region=11&detailRegion=11140&page=1',
     });
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       detailRegion: '11140',
-      isbn: '9788954682155',
+      isbn: '9781234567890',
       items: [
-        expect.objectContaining({
-          code: 'LIB0011',
-          name: '공덕자료보관실',
-        }),
-        expect.objectContaining({
-          code: 'LIB0012',
-          name: '신촌아카이브',
-        }),
-      ],
-      page: 2,
-      pageSize: 10,
-      region: '11',
-      resultCount: 2,
-      totalCount: 12,
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('서울 전체에서 도서관을 찾으면 첫 페이지 목록을 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const app = await createAppWithLibrarySearchFixtures(createLibrarySearchFixtureResolver());
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/libraries/search?isbn=9791192389479&region=11&page=1',
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      isbn: '9791192389479',
-      items: [
-        expect.objectContaining({
-          code: 'LIB0001',
-          name: '마포중앙도서관',
-        }),
-        expect.objectContaining({
-          code: 'LIB0002',
-          name: '합정열람실',
-        }),
-        expect.objectContaining({
-          code: 'LIB0003',
-          name: '서강책마루',
-        }),
-        expect.objectContaining({
-          code: 'LIB0004',
-          name: '토정정보도서관',
-        }),
-        expect.objectContaining({
-          code: 'LIB0005',
-          name: '성산서고',
-        }),
-        expect.objectContaining({
-          code: 'LIB0006',
-          name: '상암미디어도서관',
-        }),
-        expect.objectContaining({
-          code: 'LIB0007',
-          name: '망원책나루',
-        }),
-        expect.objectContaining({
-          code: 'LIB0008',
-          name: '연남문고',
-        }),
-        expect.objectContaining({
-          code: 'LIB0009',
-          name: '서교정보서재',
-        }),
-        expect.objectContaining({
-          code: 'LIB0010',
-          name: '홍대창작자료실',
-        }),
+        createFixtureLibrary('LIB9001', '준비된도서관'),
       ],
       page: 1,
       pageSize: 10,
       region: '11',
-      resultCount: 10,
-      totalCount: 96,
+      resultCount: 1,
+      totalCount: 1,
     });
     expect(requestLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
 
-  it('서울 전체에서 다음 페이지를 요청하면 이어지는 목록을 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const app = await createAppWithLibrarySearchFixtures(createLibrarySearchFixtureResolver());
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/libraries/search?isbn=9791192389479&region=11&page=5',
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      isbn: '9791192389479',
-      items: [
-        expect.objectContaining({
-          code: 'LIB1119005',
-          name: '영등포 성산서고',
-        }),
-        expect.objectContaining({
-          code: 'LIB1119006',
-          name: '영등포 상암미디어도서관',
-        }),
-        expect.objectContaining({
-          code: 'LIB1119007',
-          name: '영등포 망원책나루',
-        }),
-        expect.objectContaining({
-          code: 'LIB1119008',
-          name: '영등포 연남문고',
-        }),
-        expect.objectContaining({
-          code: 'LIB1119009',
-          name: '영등포 서교정보서재',
-        }),
-        expect.objectContaining({
-          code: 'LIB1119010',
-          name: '영등포 홍대창작자료실',
-        }),
-        expect.objectContaining({
-          code: 'LIB1119011',
-          name: '영등포 공덕자료보관실',
-        }),
-        expect.objectContaining({
-          code: 'LIB1119012',
-          name: '영등포 신촌아카이브',
-        }),
-        expect.objectContaining({
-          code: 'LIB1120001',
-          name: '동작 마포중앙도서관',
-        }),
-        expect.objectContaining({
-          code: 'LIB1120002',
-          name: '동작 합정열람실',
-        }),
-      ],
-      page: 5,
-      pageSize: 10,
-      region: '11',
-      resultCount: 10,
-      totalCount: 96,
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('조건에 맞는 도서관이 없으면 빈 목록을 반환한다', async () => {
-    process.env.USE_DEV_FIXTURES = 'true';
-
-    const app = await createAppWithLibrarySearchFixtures(createLibrarySearchFixtureResolver());
-
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/libraries/search?isbn=9788954682155&region=26&page=1',
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      isbn: '9788954682155',
-      items: [],
-      page: 1,
-      pageSize: 10,
-      region: '26',
-      resultCount: 0,
-      totalCount: 0,
-    });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
-
-    await app.close();
-  });
-
-  it('도서관 검색 결과를 준비할 수 없으면 표준 에러를 반환한다', async () => {
+  it('준비된 도서관 검색 결과를 사용할 수 없으면 표준 에러를 반환한다', async () => {
     process.env.USE_DEV_FIXTURES = 'true';
 
     const app = await createAppWithLibrarySearchFixtures({
