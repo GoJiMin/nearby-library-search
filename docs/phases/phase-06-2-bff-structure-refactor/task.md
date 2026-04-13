@@ -44,10 +44,10 @@
 
 ## 7. book search route 파일 구조를 리팩터링한다.
 
-- [ ] `apps/bff/src/routes/book/search/route.ts`로 route plugin을 이동한다.
-- [ ] parse, upstream fetch, normalize, logging helper는 route-local 기준으로 유지한다.
-- [ ] route 관련 import 경로를 새 폴더 구조에 맞게 갱신한다.
-- [ ] 리팩터링 후 book search route test가 계속 통과하는지 확인한다.
+- [x] `apps/bff/src/routes/book/search/route.ts`로 route plugin을 이동한다.
+- [x] parse, upstream fetch, normalize, logging helper는 route-local 기준으로 유지한다.
+- [x] route 관련 import 경로를 새 폴더 구조에 맞게 갱신한다.
+- [x] 리팩터링 후 book search route test가 계속 통과하는지 확인한다.
 
 ## 8. book detail route 파일 구조를 리팩터링한다.
 

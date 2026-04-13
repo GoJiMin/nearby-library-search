@@ -1,19 +1,19 @@
 import type {BookSearchItem, BookSearchResponse, ErrorResponse} from '@nearby-library-search/contracts';
-import {requestLibraryApi} from '../libraryApi/requestLibraryApi.js';
 import type {FastifyPluginAsync} from 'fastify';
 import type {ZodError} from 'zod';
-import {developmentConfig} from '../config/env.js';
-import {bookSearchQuerySchema} from '../schemas/book.js';
-import type {BookSearchQuery} from '../schemas/book.js';
-import {getDocRecords, getLibraryApiResponseRoot} from '../utils/libraryApiResponse.js';
+import {developmentConfig} from '../../../config/env.js';
+import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
+import {bookSearchQuerySchema} from '../../../schemas/book.js';
+import type {BookSearchQuery} from '../../../schemas/book.js';
 import {
   createErrorResponse,
   createRetryableUpstreamRequestError,
   createRetryableUpstreamResponseError,
   toLibraryApiErrorResponse,
-} from '../utils/error.js';
-import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../utils/normalize.js';
-import {resolveBookSearchFixtureResult} from './bookSearchFixture.js';
+} from '../../../utils/error.js';
+import {getDocRecords, getLibraryApiResponseRoot} from '../../../utils/libraryApiResponse.js';
+import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../../../utils/normalize.js';
+import {resolveBookSearchFixtureResult} from '../../bookSearchFixture.js';
 
 type Result<T> =
   | {
