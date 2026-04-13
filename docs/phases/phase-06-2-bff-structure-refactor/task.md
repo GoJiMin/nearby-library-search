@@ -16,10 +16,10 @@
 
 ## 3. library search route integration test를 분리한다.
 
-- [ ] `apps/bff/src/routes/library/search/route.test.ts`를 추가한다.
-- [ ] 도서관 검색 query validation, upstream success/empty/error 회귀를 새 파일로 옮긴다.
-- [ ] fixture success, fixture pagination, fixture resolver failure 회귀를 새 파일로 옮긴다.
-- [ ] 기존 `createApp.test.ts`의 library search 관련 assertion을 제거한다.
+- [x] `apps/bff/src/routes/library/search/route.test.ts`를 추가한다.
+- [x] 도서관 검색 query validation, upstream success/empty/error 회귀를 새 파일로 옮긴다.
+- [x] fixture success, fixture pagination, fixture resolver failure 회귀를 새 파일로 옮긴다.
+- [x] 기존 `createApp.test.ts`의 library search 관련 assertion을 제거한다.
 
 ## 4. book detail route integration test를 분리한다.
 
