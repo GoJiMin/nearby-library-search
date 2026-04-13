@@ -63,21 +63,28 @@
 - [x] route-local helper는 같은 도메인 경로에 두고, 불필요한 flat helper를 남기지 않는다.
 - [x] `book detail` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
-## 10. library search 도메인 package를 완성한다.
+## 10. 공용 타입 경계와 type-only 파일 naming을 정리한다.
+
+- [x] `fixtures.ts`처럼 runtime 파일로 오해될 수 있는 type-only 파일을 `*.types.ts` 규칙으로 정리한다.
+- [x] `Result<T>`를 `apps/bff/src/utils/result.types.ts`로 공용화하고 route, helper, dev fixture의 중복 정의를 제거한다.
+- [x] 현재 BFF에서 확인된 type-only 파일이 `fixtures.types.ts`, `result.types.ts`라는 점을 기준으로 남은 naming 규칙을 고정한다.
+- [x] 이 정리 없이 다음 도메인 package task를 진행하지 않는다.
+
+## 11. library search 도메인 package를 완성한다.
 
 - [ ] `apps/bff/src/routes/library/search` 안에 production route code와 route integration test가 함께 남도록 정리한다.
-- [ ] `library search` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/library/search`로 이동한다.
+- [ ] `library search` fixture source와 fixture test를 `apps/bff/dev/fixtures/library/search`로 이동한다.
 - [ ] route-local helper는 같은 도메인 경로에 두고, 불필요한 flat helper를 남기지 않는다.
 - [ ] `library search` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
-## 11. library availability 도메인 package를 완성한다.
+## 12. library availability 도메인 package를 완성한다.
 
 - [ ] `apps/bff/src/routes/library/availability` 안에 route, parse helper, normalize helper, route/helper test가 함께 남도록 정리한다.
-- [ ] `library availability` fixture data, resolver, resolver test를 `apps/bff/dev/fixtures/library/availability`로 이동한다.
+- [ ] `library availability` fixture source와 fixture test를 `apps/bff/dev/fixtures/library/availability`로 이동한다.
 - [ ] availability는 parse/normalize 분리 유지 원칙을 지키되, 관련 파일이 도메인 폴더 밖에 흩어지지 않게 한다.
 - [ ] `library availability` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
-## 12. production/dev bootstrap을 마감한다.
+## 13. production/dev bootstrap을 마감한다.
 
 - [ ] `apps/bff/dev/fixtures/index.ts`에서 전체 fixture registry를 조합한다.
 - [ ] `apps/bff/src/main.ts`는 production bootstrap만 담당하게 정리한다.
@@ -85,7 +92,7 @@
 - [ ] production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 fail-fast 하도록 고정한다.
 - [ ] `apps/bff/package.json`의 `dev` 스크립트가 dev bootstrap을 사용하도록 정리한다.
 
-## 13. 최종 검증과 문서 동기화를 마감한다.
+## 14. 최종 검증과 문서 동기화를 마감한다.
 
 - [ ] `pnpm --filter @nearby-library-search/bff exec vitest run`을 통과시킨다.
 - [ ] `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 통과시킨다.
@@ -100,6 +107,7 @@
 - `src/routes`는 단순 뼈대가 아니라, 각 도메인의 production route code와 test가 함께 있는 package 구조로 재정리한다.
 - fixture는 production `src`에서 분리된 `dev` 경계로 옮기고, production bootstrap에서는 직접 import하지 않는다.
 - route 파일 하나만 옮긴 상태는 완료로 보지 않고, fixture와 helper까지 포함한 도메인 package completion을 기준으로 닫는다.
+- type-only 파일은 `*.types.ts`로만 두고, 공용 `Result<T>` 같은 내부 타입은 한 곳에서 재사용한다.
 
 ## Test Plan
 
@@ -116,7 +124,7 @@
   - library availability
 - pure helper / fixture
   - availability parse/normalize
-  - fixture resolver validation
+  - fixture source validation
   - production bootstrap fail-fast
   - production build에 fixture 미포함
 

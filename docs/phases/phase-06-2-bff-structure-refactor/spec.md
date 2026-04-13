@@ -27,6 +27,9 @@
 - 과한 공용화는 금지한다.
   - parse -> fixture/live branch -> normalize 흐름을 generic route factory로 숨기지 않는다.
   - 파일을 쪼개기 위한 쪼개기는 하지 않는다.
+- type-only 파일은 명시적으로 드러낸다.
+  - type-only module은 `*.types.ts`를 사용한다.
+  - runtime 모듈과 type-only 모듈을 이름으로 구분할 수 있어야 한다.
 - fixture는 production `src`와 분리한다.
   - production build target은 `src`만 유지한다.
   - dev fixture source는 `apps/bff/dev` 경계로 이동한다.
@@ -63,6 +66,9 @@
 - 다만 default fixture registry와 일부 fixture source는 아직 production `src` 안에 남아 있다.
 - `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
 - `libraryAvailabilityParams.ts`, `libraryAvailabilityResponse.ts`처럼 분리 이득이 있는 순수 helper는 남아 있지만, `book` 도메인 fixture 쪽의 단일 소비자용 helper 분리는 이미 흡수됐다.
+- 공용 타입 경계 정리도 시작됐다.
+  - [fixtures.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/fixtures.types.ts)와 [result.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/utils/result.types.ts)가 현재 BFF의 confirmed type-only 파일이다.
+  - `Result<T>`는 route, helper, dev fixture에서 공용 `result.types.ts`를 재사용한다.
 
 ## 구조 리팩터링 기준
 
@@ -242,6 +248,10 @@ type CreateAppOptions = {
 };
 ```
 
+- `AppFixtures`, `CreateAppOptions`, `FixtureResolver`는 `app/fixtures.types.ts`에 둔다.
+- `Result<T>`는 `utils/result.types.ts`에 둔다.
+- route, helper, dev fixture는 공용 타입을 재선언하지 않고 `import type`으로 재사용한다.
+
 - `src/main.ts`는 production bootstrap만 담당한다.
   - `createApp()`을 fixture 없이 호출한다.
 - `dev/main.ts`는 dev bootstrap만 담당한다.
@@ -304,7 +314,7 @@ type CreateAppOptions = {
 
 - 분리 유지한 pure helper만 focused test를 유지한다.
   - `library availability` parse/normalize
-  - fixture resolver validation
+  - fixture source validation
 - route-local helper로 흡수된 함수는 별도 unit test를 만들지 않는다.
 
 ### 4. fixture/build 검증

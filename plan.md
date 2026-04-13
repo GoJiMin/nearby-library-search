@@ -157,6 +157,7 @@
 
 - [ ] `createApp.test.ts`처럼 과도하게 비대해진 BFF integration 테스트를 앱 baseline, route별 목적 기준으로 분리한다.
 - [ ] `routes` 디렉터리를 도메인별 폴더 구조로 재정리해 route plugin, fixture, pure helper, 테스트의 탐색 경계를 명확히 한다.
+- [ ] `Result<T>` 같은 내부 공용 타입과 type-only 파일 naming을 정리해 runtime 경계와 타입 경계를 분명히 한다.
 - [ ] fixture 관련 파일 분리를 재점검하고, 단일 소비자용 과분리 helper는 흡수하고 유지 가치가 있는 순수 로직만 남긴다.
 - [ ] fixture를 dev/test 전용 경계로 격리해 production build와 runtime에서 직접 섞이지 않도록 bootstrap 구조를 재설계한다.
 - [ ] route별 parse, fixture/live branch, normalize 흐름에서 반복되는 패턴을 진단하고 공통화가 실제 이득인 범위만 정리한다.
