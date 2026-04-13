@@ -1,6 +1,6 @@
 import type {LibrarySearchResponse} from '@nearby-library-search/contracts';
 import {z} from 'zod';
-import type {LibrarySearchQuery} from '../../../../src/schemas/library.js';
+import type {LibrarySearchQuery} from '../../../../src/routes/library/search/librarySearchQuerySchema.js';
 import {createRetryableUpstreamResponseError} from '../../../../src/utils/error.js';
 import type {Result} from '../../../../src/utils/result.types.js';
 import {librarySearchFixtureLibraries} from './libraries.js';

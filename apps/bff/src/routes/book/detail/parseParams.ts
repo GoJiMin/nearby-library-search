@@ -1,7 +1,7 @@
 import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {ZodError} from 'zod';
-import {bookDetailParamsSchema} from '../../../schemas/book.js';
-import type {BookDetailParams} from '../../../schemas/book.js';
+import {bookDetailParamsSchema} from './bookDetailParamsSchema.js';
+import type {BookDetailParams} from './bookDetailParamsSchema.js';
 import {createErrorResponse} from '../../../utils/error.js';
 import type {Result} from '../../../utils/result.types.js';
 

@@ -4,8 +4,6 @@ import type {ZodError} from 'zod';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
 import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
-import {librarySearchQuerySchema} from '../../../schemas/library.js';
-import type {LibrarySearchQuery} from '../../../schemas/library.js';
 import {
   createErrorResponse,
   createRetryableUpstreamRequestError,
@@ -15,6 +13,8 @@ import {
 import {getLibraryApiResponseRoot, getLibraryRecords, isLibraryApiRecord} from '../../../utils/libraryApiResponse.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../../../utils/normalize.js';
 import type {Result} from '../../../utils/result.types.js';
+import {librarySearchQuerySchema} from './librarySearchQuerySchema.js';
+import type {LibrarySearchQuery} from './librarySearchQuerySchema.js';
 
 function getLibrarySearchQueryError(error: ZodError): ErrorResponse {
   const [firstIssue] = error.issues;

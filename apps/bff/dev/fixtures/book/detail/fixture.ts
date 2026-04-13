@@ -5,7 +5,7 @@ import type {
   BookDetailResponse,
   Isbn13,
 } from '@nearby-library-search/contracts';
-import type {BookDetailParams} from '../../../../src/schemas/book.js';
+import type {BookDetailParams} from '../../../../src/routes/book/detail/bookDetailParamsSchema.js';
 import {createRetryableUpstreamRequestError, createRetryableUpstreamResponseError} from '../../../../src/utils/error.js';
 import type {Result} from '../../../../src/utils/result.types.js';
 import {bookDetailFixtureBooks} from './books.js';

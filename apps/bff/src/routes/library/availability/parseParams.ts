@@ -1,7 +1,7 @@
 import type {ErrorResponse} from '@nearby-library-search/contracts';
 import type {ZodError} from 'zod';
-import {libraryAvailabilityParamsSchema} from '../../../schemas/library.js';
-import type {LibraryAvailabilityParams} from '../../../schemas/library.js';
+import {libraryAvailabilityParamsSchema} from './libraryAvailabilityParamsSchema.js';
+import type {LibraryAvailabilityParams} from './libraryAvailabilityParamsSchema.js';
 import {createErrorResponse} from '../../../utils/error.js';
 import type {Result} from '../../../utils/result.types.js';
 

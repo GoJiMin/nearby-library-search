@@ -2,12 +2,12 @@ import type {FastifyPluginAsync} from 'fastify';
 import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
 import {requestLibraryApi} from '../../../libraryApi/requestLibraryApi.js';
-import type {BookSearchQuery} from '../../../schemas/book.js';
 import {
   createRetryableUpstreamRequestError,
   toLibraryApiErrorResponse,
 } from '../../../utils/error.js';
 import type {Result} from '../../../utils/result.types.js';
+import type {BookSearchQuery} from './bookSearchQuerySchema.js';
 import {normalizeBookSearchResponse} from './normalizeResponse.js';
 import {parseBookSearchQuery} from './parseQuery.js';
 

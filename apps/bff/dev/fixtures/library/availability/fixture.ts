@@ -1,5 +1,5 @@
 import type {LibraryAvailabilityResponse} from '@nearby-library-search/contracts';
-import type {LibraryAvailabilityParams} from '../../../../src/schemas/library.js';
+import type {LibraryAvailabilityParams} from '../../../../src/routes/library/availability/libraryAvailabilityParamsSchema.js';
 import {createRetryableUpstreamRequestError, createRetryableUpstreamResponseError} from '../../../../src/utils/error.js';
 import type {Result} from '../../../../src/utils/result.types.js';
 import {libraryAvailabilityHoldings} from './holdings.js';

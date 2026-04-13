@@ -4,8 +4,10 @@ import type {
   LibraryAvailabilityResponse,
   LibrarySearchResponse,
 } from '@nearby-library-search/contracts';
-import type {BookDetailParams, BookSearchQuery} from '../schemas/book.js';
-import type {LibraryAvailabilityParams, LibrarySearchQuery} from '../schemas/library.js';
+import type {BookDetailParams} from '../routes/book/detail/bookDetailParamsSchema.js';
+import type {BookSearchQuery} from '../routes/book/search/bookSearchQuerySchema.js';
+import type {LibraryAvailabilityParams} from '../routes/library/availability/libraryAvailabilityParamsSchema.js';
+import type {LibrarySearchQuery} from '../routes/library/search/librarySearchQuerySchema.js';
 import type {Result} from '../utils/result.types.js';
 
 type FixtureResolver<TInput, TOutput> = {
