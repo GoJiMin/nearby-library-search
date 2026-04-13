@@ -1,13 +1,13 @@
 import type {BookDetailResponse} from '@nearby-library-search/contracts';
-import type {AppFixtures} from '../../../app/fixtures.types.js';
+import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
   requestLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
 
   return {
     ...actual,
@@ -64,7 +64,7 @@ function createBookDetailUpstreamPayload({
 }
 
 async function createAppWithBookDetailFixtures(fixtureResolver?: AppFixtures['bookDetail']) {
-  const {createApp} = await import('../../../app/createApp.js');
+  const {createApp} = await import('../../../../app/createApp.js');
 
   return createApp({
     fixtures: {
@@ -130,7 +130,7 @@ describe('book detail route integration', () => {
   });
 
   it('형식이 잘못된 책 번호로 상세를 찾으려 하면 요청이 거절된다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -183,7 +183,7 @@ describe('book detail route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -275,7 +275,7 @@ describe('book detail route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -324,7 +324,7 @@ describe('book detail route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -375,7 +375,7 @@ describe('book detail route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -396,7 +396,7 @@ describe('book detail route integration', () => {
   it('책 상세 요청이 중간에 실패해도 표준 에러를 반환한다', async () => {
     requestLibraryApiMock.mockRejectedValue(new Error('network down'));
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -424,7 +424,7 @@ describe('book detail route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({

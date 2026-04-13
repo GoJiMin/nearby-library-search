@@ -1,12 +1,12 @@
-import type {AppFixtures} from '../../../app/fixtures.types.js';
+import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
   requestLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
 
   return {
     ...actual,
@@ -28,7 +28,7 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
 }
 
 async function createAppWithBookSearchFixtures(fixtureResolver?: AppFixtures['bookSearch']) {
-  const {createApp} = await import('../../../app/createApp.js');
+  const {createApp} = await import('../../../../app/createApp.js');
 
   return createApp({
     fixtures: {
@@ -80,7 +80,7 @@ describe('book search route integration', () => {
   });
 
   it('검색 조건 없이 도서를 찾으려 하면 요청이 거절된다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -112,7 +112,7 @@ describe('book search route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -213,7 +213,7 @@ describe('book search route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -244,7 +244,7 @@ describe('book search route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({

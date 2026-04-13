@@ -5,7 +5,7 @@ async function importBookSearchParseQueryModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./parseQuery.js');
+  return import('../parseQuery.js');
 }
 
 describe('book search parse query', () => {

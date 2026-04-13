@@ -5,7 +5,7 @@ async function importBookSearchNormalizeResponseModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./normalizeResponse.js');
+  return import('../normalizeResponse.js');
 }
 
 function createBookSearchPayload({

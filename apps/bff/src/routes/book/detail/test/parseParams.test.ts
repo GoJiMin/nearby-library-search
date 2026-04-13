@@ -5,7 +5,7 @@ async function importBookDetailParseParamsModule() {
   process.env.LIBRARY_API_AUTH_KEY = 'test-auth-key';
   process.env.LIBRARY_API_BASE_URL = 'https://example.com';
 
-  return import('./parseParams.js');
+  return import('../parseParams.js');
 }
 
 describe('book detail parse params', () => {
