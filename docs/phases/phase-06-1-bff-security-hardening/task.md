@@ -22,9 +22,9 @@
 
 ## 4. fixture mode 공통 에러 규칙 정리
 
-- [ ] `bookSearch` fixture branch를 safe wrapper로 감싼다.
-- [ ] `librarySearch` fixture branch를 safe wrapper로 감싼다.
-- [ ] fixture 내부 예외나 invalid fixture 응답이 structured error로 변환되게 고정한다.
+- [x] `bookSearch` fixture branch를 safe wrapper로 감싼다.
+- [x] `librarySearch` fixture branch를 safe wrapper로 감싼다.
+- [x] fixture 내부 예외나 invalid fixture 응답이 structured error로 변환되게 고정한다.
 
 ## 5. BFF integration과 env/config 테스트 보강
 
