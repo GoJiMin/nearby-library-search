@@ -1,12 +1,12 @@
-import type {AppFixtures} from '../../../app/fixtures.types.js';
+import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
   requestLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
 
   return {
     ...actual,
@@ -28,7 +28,7 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
 }
 
 async function createAppWithLibraryAvailabilityFixtures(fixtureResolver?: AppFixtures['libraryAvailability']) {
-  const {createApp} = await import('../../../app/createApp.js');
+  const {createApp} = await import('../../../../app/createApp.js');
 
   return createApp({
     fixtures: {
@@ -85,7 +85,7 @@ describe('library availability route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -166,7 +166,7 @@ describe('library availability route integration', () => {
   });
 
   it('형식이 잘못된 책 번호로 대출 가능 여부를 찾으려 하면 요청이 거절된다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -186,7 +186,7 @@ describe('library availability route integration', () => {
   });
 
   it('비어 있는 도서관 코드로 대출 가능 여부를 찾으려 하면 요청이 거절된다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -206,7 +206,7 @@ describe('library availability route integration', () => {
   });
 
   it('형식이 잘못된 도서관 코드로 대출 가능 여부를 찾으려 하면 요청이 거절된다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -238,7 +238,7 @@ describe('library availability route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -259,7 +259,7 @@ describe('library availability route integration', () => {
   it('대출 가능 여부 요청이 중간에 실패해도 표준 에러를 반환한다', async () => {
     requestLibraryApiMock.mockRejectedValue(new Error('network down'));
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -287,7 +287,7 @@ describe('library availability route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({

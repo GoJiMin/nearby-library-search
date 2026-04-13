@@ -1,12 +1,12 @@
-import type {AppFixtures} from '../../../app/fixtures.types.js';
+import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {requestLibraryApiMock} = vi.hoisted(() => ({
   requestLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
 
   return {
     ...actual,
@@ -67,7 +67,7 @@ function createLibrarySearchUpstreamPayload({
 }
 
 async function createAppWithLibrarySearchFixtures(fixtureResolver?: AppFixtures['librarySearch']) {
-  const {createApp} = await import('../../../app/createApp.js');
+  const {createApp} = await import('../../../../app/createApp.js');
 
   return createApp({
     fixtures: {
@@ -129,7 +129,7 @@ describe('library search route integration', () => {
   });
 
   it('도서 정보 없이 도서관을 찾으려 하면 요청이 거절된다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -149,7 +149,7 @@ describe('library search route integration', () => {
   });
 
   it('지역 정보 없이 도서관을 찾으려 하면 요청이 거절된다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -169,7 +169,7 @@ describe('library search route integration', () => {
   });
 
   it('선택한 지역과 맞지 않는 세부 지역은 요청할 수 없다', async () => {
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -196,7 +196,7 @@ describe('library search route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -257,7 +257,7 @@ describe('library search route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -351,7 +351,7 @@ describe('library search route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
@@ -379,7 +379,7 @@ describe('library search route integration', () => {
       ),
     );
 
-    const {createApp} = await import('../../../app/createApp.js');
+    const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
 
     const response = await app.inject({
