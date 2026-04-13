@@ -1,16 +1,16 @@
 import type {AppFixtures} from '../fixtures.types.js';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-const {requestLibraryApiMock} = vi.hoisted(() => ({
-  requestLibraryApiMock: vi.fn(),
+const {fetchLibraryApiMock} = vi.hoisted(() => ({
+  fetchLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../libraryApi/fetchLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../libraryApi/fetchLibraryApi.js')>();
 
   return {
     ...actual,
-    requestLibraryApi: requestLibraryApiMock,
+    fetchLibraryApi: fetchLibraryApiMock,
   };
 });
 
@@ -41,7 +41,7 @@ async function importBootstrapModule() {
 describe('app bootstrap', () => {
   beforeEach(() => {
     vi.resetModules();
-    requestLibraryApiMock.mockReset();
+    fetchLibraryApiMock.mockReset();
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
   });
@@ -93,7 +93,7 @@ describe('app bootstrap', () => {
       items: [],
       totalCount: 0,
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -121,7 +121,7 @@ describe('app bootstrap', () => {
     expect(response.json()).toEqual({
       status: 'ok',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });

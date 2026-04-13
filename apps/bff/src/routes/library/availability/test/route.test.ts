@@ -1,16 +1,16 @@
 import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
-const {requestLibraryApiMock} = vi.hoisted(() => ({
-  requestLibraryApiMock: vi.fn(),
+const {fetchLibraryApiMock} = vi.hoisted(() => ({
+  fetchLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/fetchLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/fetchLibraryApi.js')>();
 
   return {
     ...actual,
-    requestLibraryApi: requestLibraryApiMock,
+    fetchLibraryApi: fetchLibraryApiMock,
   };
 });
 
@@ -57,7 +57,7 @@ function createLibraryAvailabilityFixtureResolver(
 
 describe('library availability route integration', () => {
   beforeEach(() => {
-    requestLibraryApiMock.mockReset();
+    fetchLibraryApiMock.mockReset();
     vi.resetModules();
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
@@ -71,7 +71,7 @@ describe('library availability route integration', () => {
   });
 
   it('도서관에 책이 있으면 대출 가능 여부를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           response: {
@@ -100,7 +100,7 @@ describe('library availability route integration', () => {
       libraryCode: 'LIB0001',
       loanAvailable: 'N',
     });
-    expect(requestLibraryApiMock).toHaveBeenCalledWith({
+    expect(fetchLibraryApiMock).toHaveBeenCalledWith({
       endpoint: '/bookExist',
       queryParams: {
         isbn13: '9791190157551',
@@ -108,7 +108,7 @@ describe('library availability route integration', () => {
       },
       requiredQueryParams: ['libCode', 'isbn13'],
     });
-    expect(requestLibraryApiMock).toHaveBeenCalledTimes(1);
+    expect(fetchLibraryApiMock).toHaveBeenCalledTimes(1);
 
     await app.close();
   });
@@ -130,7 +130,7 @@ describe('library availability route integration', () => {
       libraryCode: 'LIB9001',
       loanAvailable: 'N',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -160,7 +160,7 @@ describe('library availability route integration', () => {
       status: 502,
       title: 'LIBRARY_AVAILABILITY_RESPONSE_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -180,7 +180,7 @@ describe('library availability route integration', () => {
       status: 400,
       title: 'LIBRARY_AVAILABILITY_ISBN13_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -200,7 +200,7 @@ describe('library availability route integration', () => {
       status: 400,
       title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -220,13 +220,13 @@ describe('library availability route integration', () => {
       status: 400,
       title: 'LIBRARY_AVAILABILITY_LIBRARY_CODE_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
 
   it('대출 가능 여부 정보를 불러오지 못하면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           detail: 'upstream failed',
@@ -257,7 +257,7 @@ describe('library availability route integration', () => {
   });
 
   it('대출 가능 여부 요청이 중간에 실패해도 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockRejectedValue(new Error('network down'));
+    fetchLibraryApiMock.mockRejectedValue(new Error('network down'));
 
     const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
@@ -278,7 +278,7 @@ describe('library availability route integration', () => {
   });
 
   it('대출 가능 여부 응답을 해석할 수 없으면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           response: {},

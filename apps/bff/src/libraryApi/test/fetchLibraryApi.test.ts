@@ -7,9 +7,10 @@ vi.mock('../../config/env.js', () => ({
   },
 }));
 
-import {LibraryApiRequestConfigError, requestLibraryApi} from '../requestLibraryApi.js';
+import {fetchLibraryApi} from '../fetchLibraryApi.js';
+import {LibraryApiRequestConfigError} from '../toLibraryApiErrorResponse.js';
 
-describe('requestLibraryApi', () => {
+describe('fetchLibraryApi', () => {
   const fetchMock = vi.fn();
 
   beforeEach(() => {
@@ -24,7 +25,7 @@ describe('requestLibraryApi', () => {
   it('공통 인증 파라미터를 붙이고 Accept 헤더 없이 GET 요청을 보낸다', async () => {
     fetchMock.mockResolvedValue(new Response('{}', {status: 200}));
 
-    await requestLibraryApi({
+    await fetchLibraryApi({
       endpoint: '/srchBooks',
       queryParams: {
         pageNo: 1,
@@ -47,7 +48,7 @@ describe('requestLibraryApi', () => {
   it('bookExist endpoint도 같은 공통 인증 파라미터 규칙으로 요청한다', async () => {
     fetchMock.mockResolvedValue(new Response('{}', {status: 200}));
 
-    await requestLibraryApi({
+    await fetchLibraryApi({
       endpoint: '/bookExist',
       queryParams: {
         isbn13: '9791190157551',
@@ -70,7 +71,7 @@ describe('requestLibraryApi', () => {
 
   it('빈 문자열 파라미터는 제외하고 필수 파라미터 누락은 설정 오류로 막는다', async () => {
     await expect(() =>
-      requestLibraryApi({
+      fetchLibraryApi({
         endpoint: '/libSrchByBook',
         queryParams: {
           isbn: '9791190157551',

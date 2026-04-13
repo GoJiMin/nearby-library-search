@@ -1,16 +1,16 @@
 import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
-const {requestLibraryApiMock} = vi.hoisted(() => ({
-  requestLibraryApiMock: vi.fn(),
+const {fetchLibraryApiMock} = vi.hoisted(() => ({
+  fetchLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/fetchLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/fetchLibraryApi.js')>();
 
   return {
     ...actual,
-    requestLibraryApi: requestLibraryApiMock,
+    fetchLibraryApi: fetchLibraryApiMock,
   };
 });
 
@@ -66,7 +66,7 @@ function createBookSearchFixtureResolver(
 
 describe('book search route integration', () => {
   beforeEach(() => {
-    requestLibraryApiMock.mockReset();
+    fetchLibraryApiMock.mockReset();
     vi.resetModules();
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
@@ -94,13 +94,13 @@ describe('book search route integration', () => {
       status: 400,
       title: 'BOOK_SEARCH_QUERY_MISSING',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
 
   it('조건에 맞는 도서가 없으면 빈 목록을 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           response: {
@@ -125,7 +125,7 @@ describe('book search route integration', () => {
       items: [],
       totalCount: 0,
     });
-    expect(requestLibraryApiMock).toHaveBeenCalledWith({
+    expect(fetchLibraryApiMock).toHaveBeenCalledWith({
       endpoint: '/srchBooks',
       queryParams: {
         author: undefined,
@@ -165,7 +165,7 @@ describe('book search route integration', () => {
       ],
       totalCount: 1,
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -195,13 +195,13 @@ describe('book search route integration', () => {
       status: 502,
       title: 'BOOK_SEARCH_RESPONSE_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
 
   it('도서 검색 정보를 불러오지 못하면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           detail: 'upstream failed',
@@ -232,7 +232,7 @@ describe('book search route integration', () => {
   });
 
   it('도서 검색 응답을 해석할 수 없으면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           response: {

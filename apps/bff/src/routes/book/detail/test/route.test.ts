@@ -2,16 +2,16 @@ import type {BookDetailResponse} from '@nearby-library-search/contracts';
 import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
-const {requestLibraryApiMock} = vi.hoisted(() => ({
-  requestLibraryApiMock: vi.fn(),
+const {fetchLibraryApiMock} = vi.hoisted(() => ({
+  fetchLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/fetchLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/fetchLibraryApi.js')>();
 
   return {
     ...actual,
-    requestLibraryApi: requestLibraryApiMock,
+    fetchLibraryApi: fetchLibraryApiMock,
   };
 });
 
@@ -116,7 +116,7 @@ function createBookDetailFixtureResolver(
 
 describe('book detail route integration', () => {
   beforeEach(() => {
-    requestLibraryApiMock.mockReset();
+    fetchLibraryApiMock.mockReset();
     vi.resetModules();
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
@@ -144,13 +144,13 @@ describe('book detail route integration', () => {
       status: 400,
       title: 'BOOK_DETAIL_ISBN13_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
 
   it('책 상세를 찾으면 책 정보와 대출 통계를 함께 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         createBookDetailUpstreamPayload({
           loanInfo: [
@@ -231,7 +231,7 @@ describe('book detail route integration', () => {
   });
 
   it('책 상세 응답에는 연령별 대출 통계만 남는다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         createBookDetailUpstreamPayload({
           loanInfo: [
@@ -291,7 +291,7 @@ describe('book detail route integration', () => {
   });
 
   it('일부 대출 통계가 비어 있어도 안전하게 정리된 결과를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         createBookDetailUpstreamPayload({
           loanInfo: [
@@ -363,7 +363,7 @@ describe('book detail route integration', () => {
   });
 
   it('책 상세 정보를 불러오지 못하면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           detail: 'upstream failed',
@@ -394,7 +394,7 @@ describe('book detail route integration', () => {
   });
 
   it('책 상세 요청이 중간에 실패해도 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockRejectedValue(new Error('network down'));
+    fetchLibraryApiMock.mockRejectedValue(new Error('network down'));
 
     const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();
@@ -415,7 +415,7 @@ describe('book detail route integration', () => {
   });
 
   it('책 상세 응답을 해석할 수 없으면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           response: {},
@@ -482,7 +482,7 @@ describe('book detail route integration', () => {
         },
       },
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -513,7 +513,7 @@ describe('book detail route integration', () => {
         total: null,
       },
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -543,7 +543,7 @@ describe('book detail route integration', () => {
       status: 502,
       title: 'BOOK_DETAIL_RESPONSE_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });

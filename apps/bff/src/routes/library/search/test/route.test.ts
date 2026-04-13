@@ -1,16 +1,16 @@
 import type {AppFixtures} from '../../../../app/fixtures.types.js';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
-const {requestLibraryApiMock} = vi.hoisted(() => ({
-  requestLibraryApiMock: vi.fn(),
+const {fetchLibraryApiMock} = vi.hoisted(() => ({
+  fetchLibraryApiMock: vi.fn(),
 }));
 
-vi.mock('../../../../libraryApi/requestLibraryApi.js', async importOriginal => {
-  const actual = await importOriginal<typeof import('../../../../libraryApi/requestLibraryApi.js')>();
+vi.mock('../../../../libraryApi/fetchLibraryApi.js', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../../../libraryApi/fetchLibraryApi.js')>();
 
   return {
     ...actual,
-    requestLibraryApi: requestLibraryApiMock,
+    fetchLibraryApi: fetchLibraryApiMock,
   };
 });
 
@@ -115,7 +115,7 @@ function createLibrarySearchFixtureResolver(
 
 describe('library search route integration', () => {
   beforeEach(() => {
-    requestLibraryApiMock.mockReset();
+    fetchLibraryApiMock.mockReset();
     vi.resetModules();
     delete process.env.ALLOW_DEV_CORS_ORIGINS;
     delete process.env.USE_DEV_FIXTURES;
@@ -143,7 +143,7 @@ describe('library search route integration', () => {
       status: 400,
       title: 'LIBRARY_SEARCH_ISBN_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -163,7 +163,7 @@ describe('library search route integration', () => {
       status: 400,
       title: 'LIBRARY_SEARCH_REGION_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -183,13 +183,13 @@ describe('library search route integration', () => {
       status: 400,
       title: 'LIBRARY_SEARCH_DETAIL_REGION_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
 
   it('도서관을 찾으면 일치하는 목록을 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         createLibrarySearchUpstreamPayload(),
         'https://example.com/libSrchByBook?isbn=9788954682155&region=11&dtl_region=11140',
@@ -228,7 +228,7 @@ describe('library search route integration', () => {
       resultCount: 1,
       totalCount: 1,
     });
-    expect(requestLibraryApiMock).toHaveBeenCalledWith({
+    expect(fetchLibraryApiMock).toHaveBeenCalledWith({
       endpoint: '/libSrchByBook',
       queryParams: {
         dtl_region: '11140',
@@ -244,7 +244,7 @@ describe('library search route integration', () => {
   });
 
   it('검색 결과가 없으면 빈 목록을 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         createLibrarySearchUpstreamPayload({
           libs: [],
@@ -303,7 +303,7 @@ describe('library search route integration', () => {
       resultCount: 1,
       totalCount: 1,
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
@@ -333,13 +333,13 @@ describe('library search route integration', () => {
       status: 502,
       title: 'LIBRARY_SEARCH_RESPONSE_INVALID',
     });
-    expect(requestLibraryApiMock).not.toHaveBeenCalled();
+    expect(fetchLibraryApiMock).not.toHaveBeenCalled();
 
     await app.close();
   });
 
   it('도서관 정보를 불러오지 못하면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         {
           detail: 'upstream failed',
@@ -370,7 +370,7 @@ describe('library search route integration', () => {
   });
 
   it('도서관 검색 응답을 해석할 수 없으면 표준 에러를 반환한다', async () => {
-    requestLibraryApiMock.mockResolvedValue(
+    fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
         createLibrarySearchUpstreamPayload({
           numFound: 'invalid',
