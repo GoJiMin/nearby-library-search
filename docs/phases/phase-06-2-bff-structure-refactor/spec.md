@@ -54,9 +54,9 @@
 ## 현재 구현 상태
 
 - app baseline과 route integration test 분리는 이미 시작됐다.
-  - [createApp.baseline.test.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/createApp.baseline.test.ts)가 baseline regression을 담당한다.
-  - route integration test는 [book search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.test.ts), [book detail](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/route.test.ts), [library search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/search/route.test.ts), [library availability](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/route.test.ts)로 분리됐다.
-- `src/routes` 도메인 뼈대도 일부 생겼지만, production 코드 co-location은 아직 불완전하다.
+  - [createApp.baseline.test.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/test/createApp.baseline.test.ts)가 baseline regression을 담당한다.
+  - route integration test는 [book search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/test/route.test.ts), [book detail](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/test/route.test.ts), [library search](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/search/test/route.test.ts), [library availability](/Users/gojimin/Desktop/ai/apps/bff/src/routes/library/availability/test/route.test.ts)로 분리됐다.
+- `src/routes` 도메인 구조와 `dev/fixtures` 경계는 대부분 정리됐고, 남은 구조 리팩터링은 bootstrap 마감과 최종 정리다.
 -  - [health/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/health/route.ts)와 [book/search/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/search/route.ts)는 도메인 경로로 이동했다.
 -  - `book search` fixture source와 fixture test는 [dev/fixtures/book/search](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/search)로 이동했고, `src/routes` 루트의 `bookSearchFixture*` flat 파일은 제거됐다.
 -  - [book/detail/route.ts](/Users/gojimin/Desktop/ai/apps/bff/src/routes/book/detail/route.ts)도 도메인 경로로 이동했고, `book detail` fixture source와 fixture test는 [dev/fixtures/book/detail](/Users/gojimin/Desktop/ai/apps/bff/dev/fixtures/book/detail)로 이동했다.
@@ -66,7 +66,7 @@
 - `USE_DEV_FIXTURES`는 아직 runtime flag로 제어되지만, fixture resolver는 이제 `createApp()`과 `registerRoutes()`의 주입 경계를 통해 route에 전달된다.
 - 다만 default fixture registry와 일부 fixture source는 아직 production `src` 안에 남아 있다.
 - `src/main.ts`는 production bootstrap과 dev fixture bootstrap을 구분하지 않고 동일한 `createApp()` 진입만 사용한다.
-- `book/search`, `book/detail`, `library/availability`는 parse/normalize helper와 helper test까지 같은 도메인 경로에 두는 기준으로 정리됐다.
+- `book/search`, `book/detail`, `library/availability`는 parse/normalize helper는 도메인 경로에 두고, helper test는 같은 depth의 `test/` 폴더에 두는 기준으로 정리됐다.
 - 공용 타입 경계 정리도 시작됐다.
   - [fixtures.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/app/fixtures.types.ts)와 [result.types.ts](/Users/gojimin/Desktop/ai/apps/bff/src/utils/result.types.ts)가 현재 BFF의 confirmed type-only 파일이다.
   - `Result<T>`는 route, helper, dev fixture에서 공용 `result.types.ts`를 재사용한다.
@@ -91,30 +91,31 @@
 ### 2. 테스트 구조 재편
 
 - `createApp.test.ts`는 해체하고 아래 구조로 재배치한다.
-  - `src/app/createApp.baseline.test.ts`
+  - `src/app/test/createApp.baseline.test.ts`
     - health
     - exact-origin CORS
     - 404 structured error
     - 500 structured error
     - security headers
-  - `src/routes/book/search/route.test.ts`
+  - `src/routes/book/search/test/route.test.ts`
     - query validation
     - upstream success/empty/error
     - fixture success/error
-  - `src/routes/book/detail/route.test.ts`
+  - `src/routes/book/detail/test/route.test.ts`
     - param validation
     - upstream success/error
     - fixture rich/minimal/empty/error
-  - `src/routes/library/search/route.test.ts`
+  - `src/routes/library/search/test/route.test.ts`
     - query validation
     - upstream success/empty/error
     - fixture success/error
-  - `src/routes/library/availability/route.test.ts`
+  - `src/routes/library/availability/test/route.test.ts`
     - param validation
     - upstream success/error
     - fixture available/unavailable/not-owned/error
-- route integration test는 각 route 폴더에 둔다.
-- app baseline test만 `src/app`에 남긴다.
+- BFF test 파일은 runtime 파일 옆이 아니라, 대상 코드와 같은 depth의 `test/` 폴더에 둔다.
+- route integration test는 각 route 폴더의 `test/` 하위에 둔다.
+- app baseline test도 `src/app/test`에 둔다.
 - 공통 helper 허용 범위는 아래로 제한한다.
   - 기본 env setup
   - `requestLibraryApi` mock wiring
@@ -130,32 +131,36 @@
 apps/bff/src/routes/
   book/
     detail/
-      normalizeResponse.test.ts
       normalizeResponse.ts
-      parseParams.test.ts
       parseParams.ts
       route.ts
-      route.test.ts
+      test/
+        normalizeResponse.test.ts
+        parseParams.test.ts
+        route.test.ts
     search/
-      normalizeResponse.test.ts
       normalizeResponse.ts
-      parseQuery.test.ts
       parseQuery.ts
       route.ts
-      route.test.ts
+      test/
+        normalizeResponse.test.ts
+        parseQuery.test.ts
+        route.test.ts
   health/
     route.ts
   library/
     availability/
       parseParams.ts
-      parseParams.test.ts
       normalizeResponse.ts
-      normalizeResponse.test.ts
       route.ts
-      route.test.ts
+      test/
+        parseParams.test.ts
+        normalizeResponse.test.ts
+        route.test.ts
     search/
       route.ts
-      route.test.ts
+      test/
+        route.test.ts
   index.ts
 ```
 
@@ -209,24 +214,29 @@ apps/bff/dev/
       detail/
         books.ts
         fixture.ts
-        fixture.test.ts
+        test/
+          fixture.test.ts
       search/
         books.ts
         fixture.ts
-        fixture.test.ts
+        test/
+          fixture.test.ts
     library/
       availability/
         fixture.ts
-        fixture.test.ts
+        holdings.ts
+        test/
+          fixture.test.ts
       search/
         libraries.ts
         fixture.ts
-        fixture.test.ts
+        test/
+          fixture.test.ts
     index.ts
   main.ts
 ```
 
-- fixture test도 fixture source와 같은 `dev/fixtures` 경계로 이동한다.
+- fixture test도 fixture source와 같은 depth의 `test/` 폴더로 이동한다.
 - production compile target은 계속 `src`만 포함한다.
 - fixture 파일 이름은 `data`/`resolver` 같은 일반화보다 도메인 용어를 우선한다.
   - 예: `books.ts`, `libraries.ts`, `fixture.ts`
@@ -302,7 +312,7 @@ type CreateAppOptions = {
 
 ### 1. baseline test
 
-- `createApp.baseline.test.ts`는 아래만 검증한다.
+- `src/app/test/createApp.baseline.test.ts`는 아래만 검증한다.
   - health route
   - CORS allow/block
   - preflight 처리
@@ -318,6 +328,7 @@ type CreateAppOptions = {
   - upstream non-ok/throw/invalid path
   - fixture success/error path
 - route integration test는 `requestLibraryApi` mock을 경계로 유지한다.
+- route/helper/fixture test는 모두 대상 코드와 같은 depth의 `test/` 폴더에 둔다.
 
 ### 3. pure helper test
 

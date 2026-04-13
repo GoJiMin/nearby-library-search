@@ -156,6 +156,7 @@
 ## Phase 6-2. BFF 구조 리팩터링
 
 - [ ] `createApp.test.ts`처럼 과도하게 비대해진 BFF integration 테스트를 앱 baseline, route별 목적 기준으로 분리한다.
+- [ ] BFF test 파일을 runtime 파일 옆에 두지 않고, 대상 코드와 같은 depth의 `test/` 폴더로 재배치한다.
 - [ ] `routes` 디렉터리를 도메인별 폴더 구조로 재정리해 route plugin, fixture, pure helper, 테스트의 탐색 경계를 명확히 한다.
 - [ ] `Result<T>` 같은 내부 공용 타입과 type-only 파일 naming을 정리해 runtime 경계와 타입 경계를 분명히 한다.
 - [ ] fixture 관련 파일 분리를 재점검하고, 단일 소비자용 과분리 helper는 흡수하고 유지 가치가 있는 순수 로직만 남긴다.

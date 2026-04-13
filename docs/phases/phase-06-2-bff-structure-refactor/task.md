@@ -2,35 +2,35 @@
 
 ## 1. `createApp` baseline integration test를 분리한다.
 
-- [x] `apps/bff/src/app/createApp.baseline.test.ts`를 추가한다.
+- [x] `apps/bff/src/app/test/createApp.baseline.test.ts`를 추가한다.
 - [x] health, exact-origin CORS, preflight, 404/500 structured error, security headers 검증을 새 파일로 옮긴다.
 - [x] 기존 `createApp.test.ts`에서는 baseline 관련 assertion을 제거한다.
 - [x] baseline test가 `createApp().inject()` 기준을 그대로 유지하는지 확인한다.
 
 ## 2. book search route integration test를 분리한다.
 
-- [x] `apps/bff/src/routes/book/search/route.test.ts`를 추가한다.
+- [x] `apps/bff/src/routes/book/search/test/route.test.ts`를 추가한다.
 - [x] 도서 검색 query validation, upstream success/empty/error 회귀를 새 파일로 옮긴다.
 - [x] fixture success, fixture pagination, fixture resolver failure 회귀를 새 파일로 옮긴다.
 - [x] 기존 `createApp.test.ts`의 book search 관련 assertion을 제거한다.
 
 ## 3. library search route integration test를 분리한다.
 
-- [x] `apps/bff/src/routes/library/search/route.test.ts`를 추가한다.
+- [x] `apps/bff/src/routes/library/search/test/route.test.ts`를 추가한다.
 - [x] 도서관 검색 query validation, upstream success/empty/error 회귀를 새 파일로 옮긴다.
 - [x] fixture success, fixture pagination, fixture resolver failure 회귀를 새 파일로 옮긴다.
 - [x] 기존 `createApp.test.ts`의 library search 관련 assertion을 제거한다.
 
 ## 4. book detail route integration test를 분리한다.
 
-- [x] `apps/bff/src/routes/book/detail/route.test.ts`를 추가한다.
+- [x] `apps/bff/src/routes/book/detail/test/route.test.ts`를 추가한다.
 - [x] 도서 상세 param validation, upstream success/error, 응답 정규화 회귀를 새 파일로 옮긴다.
 - [x] fixture rich/minimal/empty/error/miss 회귀를 새 파일로 옮긴다.
 - [x] 기존 `createApp.test.ts`의 book detail 관련 assertion을 제거한다.
 
 ## 5. library availability route integration test를 분리한다.
 
-- [x] `apps/bff/src/routes/library/availability/route.test.ts`를 추가한다.
+- [x] `apps/bff/src/routes/library/availability/test/route.test.ts`를 추가한다.
 - [x] availability param validation, upstream success/error, 응답 정규화 회귀를 새 파일로 옮긴다.
 - [x] fixture available/unavailable/not-owned/error 회귀를 새 파일로 옮긴다.
 - [x] 기존 `createApp.test.ts`의 availability 관련 assertion을 제거하고 legacy test 파일을 제거한다.
@@ -84,7 +84,14 @@
 - [x] availability는 parse/normalize 분리 유지 원칙을 지키되, 관련 파일이 도메인 폴더 밖에 흩어지지 않게 한다.
 - [x] `library availability` 관련 flat production 파일과 fixture 파일이 `src/routes` 루트에 남지 않도록 제거한다.
 
-## 13. production/dev bootstrap을 마감한다.
+## 13. BFF 테스트 파일을 test 폴더 규칙으로 재배치한다.
+
+- [x] `src` 아래 BFF test 파일을 대상 코드와 같은 depth의 `test/` 폴더로 옮긴다.
+- [x] `dev/fixtures` 아래 fixture test 파일도 같은 규칙으로 `test/` 폴더로 옮긴다.
+- [x] `*.test.ts`가 runtime 파일 옆에 직접 남지 않도록 import 경로까지 함께 정리한다.
+- [x] `spec.md`, `task.md`, `plan.md`, 루트 `AGENTS.md`에 같은 규칙을 반영한다.
+
+## 14. production/dev bootstrap을 마감한다.
 
 - [ ] `apps/bff/dev/fixtures/index.ts`에서 전체 fixture registry를 조합한다.
 - [ ] `apps/bff/src/main.ts`는 production bootstrap만 담당하게 정리한다.
@@ -92,7 +99,7 @@
 - [ ] production bootstrap에서 `USE_DEV_FIXTURES=true`인데 fixture registry가 없으면 fail-fast 하도록 고정한다.
 - [ ] `apps/bff/package.json`의 `dev` 스크립트가 dev bootstrap을 사용하도록 정리한다.
 
-## 14. 최종 검증과 문서 동기화를 마감한다.
+## 15. 최종 검증과 문서 동기화를 마감한다.
 
 - [ ] `pnpm --filter @nearby-library-search/bff exec vitest run`을 통과시킨다.
 - [ ] `pnpm --filter @nearby-library-search/bff exec tsc -p tsconfig.json`을 통과시킨다.
@@ -105,6 +112,7 @@
 - 이번 phase는 공개 `/api` 계약을 바꾸지 않고 BFF 내부 구조만 리팩터링한다.
 - `createApp.test.ts` 단일 파일 구조를 해체하고 app baseline과 route별 integration test로 분리한다.
 - `src/routes`는 단순 뼈대가 아니라, 각 도메인의 production route code와 test가 함께 있는 package 구조로 재정리한다.
+- BFF test 파일은 runtime 파일 옆에 직접 두지 않고, 대상 코드와 같은 depth의 `test/` 폴더에 둔다.
 - fixture는 production `src`에서 분리된 `dev` 경계로 옮기고, production bootstrap에서는 직접 import하지 않는다.
 - route 파일 하나만 옮긴 상태는 완료로 보지 않고, fixture와 helper까지 포함한 도메인 package completion을 기준으로 닫는다.
 - type-only 파일은 `*.types.ts`로만 두고, 공용 `Result<T>` 같은 내부 타입은 한 곳에서 재사용한다.
