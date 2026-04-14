@@ -43,11 +43,11 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
   const openRegionDialog = useFindLibraryStore(state => state.openRegionDialog);
 
   function handlePreloadBookDetailDialog() {
-    void preloadBookDetailDialog();
+    void preloadBookDetailDialog().catch(() => {});
   }
 
   function handlePreloadRegionSelectDialog() {
-    void preloadRegionSelectDialog();
+    void preloadRegionSelectDialog().catch(() => {});
   }
 
   return (

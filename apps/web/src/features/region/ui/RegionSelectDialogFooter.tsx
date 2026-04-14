@@ -39,7 +39,7 @@ function RegionSelectDialogFooter() {
   const selectionSummaryText = getSelectionSummaryText(selection);
 
   function handlePreloadLibrarySearchResultDialog() {
-    void preloadLibrarySearchResultDialog();
+    void preloadLibrarySearchResultDialog().catch(() => {});
   }
 
   function handleConfirm() {
@@ -47,7 +47,7 @@ function RegionSelectDialogFooter() {
       return;
     }
 
-    void preloadLibrarySearchResultDialog();
+    handlePreloadLibrarySearchResultDialog();
 
     confirmRegion(
       createRegionSelectConfirmParams({
