@@ -1,9 +1,22 @@
-import {act, render, screen, waitFor, within} from '@testing-library/react';
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {beforeEach, describe, expect, it} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {useFindLibraryStore} from '@/features/find-library';
 import {RegionSelectDialog} from '@/features/region';
 import {useRegionSelectionStore} from '../../model/useRegionSelectionStore';
+
+const {mockPreloadLibrarySearchResultDialog} = vi.hoisted(() => ({
+  mockPreloadLibrarySearchResultDialog: vi.fn(async () => undefined),
+}));
+
+vi.mock('@/features/library', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/features/library')>();
+
+  return {
+    ...actual,
+    preloadLibrarySearchResultDialog: mockPreloadLibrarySearchResultDialog,
+  };
+});
 
 const MOCK_BOOK = {
   author: '이민진',
@@ -42,6 +55,7 @@ function renderRegionSelectDialog({
 
 describe('RegionSelectDialog', () => {
   beforeEach(() => {
+    mockPreloadLibrarySearchResultDialog.mockClear();
     useFindLibraryStore.getState().resetFindLibraryFlow();
     useRegionSelectionStore.getState().resetSelection();
   });
@@ -283,6 +297,44 @@ describe('RegionSelectDialog', () => {
       page: 1,
       region: '29',
     });
+  });
+
+  it('선택 완료 버튼에 진입하면 도서관 결과 dialog preload를 먼저 시작한다', async () => {
+    const user = userEvent.setup();
+
+    renderRegionSelectDialog();
+
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+
+    const confirmButton = screen.getByRole('button', {name: '선택 완료'});
+
+    await user.hover(confirmButton);
+    confirmButton.focus();
+    fireEvent.touchStart(confirmButton, {
+      changedTouches: [{clientX: 0, clientY: 0}],
+      touches: [{clientX: 0, clientY: 0}],
+    });
+
+    expect(mockPreloadLibrarySearchResultDialog).toHaveBeenCalledTimes(3);
+  });
+
+  it('선택 완료를 누르면 도서관 결과 dialog preload를 다시 시도한 뒤 검색을 시작한다', async () => {
+    const user = userEvent.setup();
+
+    renderRegionSelectDialog();
+
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    mockPreloadLibrarySearchResultDialog.mockClear();
+
+    fireEvent.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    expect(mockPreloadLibrarySearchResultDialog).toHaveBeenCalledTimes(1);
+    expect(useFindLibraryStore.getState().currentLibrarySearchParams).toEqual({
+      isbn: '9788954682155',
+      page: 1,
+      region: '11',
+    });
+    expect(useFindLibraryStore.getState().libraryResultBook).toEqual(MOCK_BOOK);
   });
 
   it('닫기 버튼으로 지역 선택 창을 닫을 수 있다', async () => {
