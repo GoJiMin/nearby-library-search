@@ -311,6 +311,60 @@ describe('BookSearchResult', () => {
     expect(mockPreloadBookDetailDialog).toHaveBeenCalledTimes(3);
   });
 
+  it('상세 dialog preload가 실패해도 상세 보기를 계속 시작할 수 있다', async () => {
+    mockPreloadBookDetailDialog.mockRejectedValueOnce(new Error('detail preload failed'));
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const [firstItem] = screen.getAllByRole('listitem');
+    const detailButton = within(firstItem).getByRole('button', {name: '상세 보기'});
+
+    fireEvent.pointerEnter(detailButton);
+    fireEvent.click(detailButton);
+
+    expect(mockPreloadBookDetailDialog).toHaveBeenCalledTimes(1);
+    expect(useBookDetailDialogStore.getState().selectedBookDetail).toEqual({
+      isbn13: '9788954682155',
+    });
+  });
+
+  it('지역 선택 dialog preload가 실패해도 소장 도서관 찾기를 계속 시작할 수 있다', async () => {
+    mockPreloadRegionSelectDialog.mockRejectedValueOnce(new Error('region preload failed'));
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const [firstItem] = screen.getAllByRole('listitem');
+    const selectButton = within(firstItem).getByRole('button', {name: '소장 도서관 찾기'});
+
+    fireEvent.pointerEnter(selectButton);
+    fireEvent.click(selectButton);
+
+    expect(mockPreloadRegionSelectDialog).toHaveBeenCalledTimes(1);
+    expect(useFindLibraryStore.getState().regionDialogBook).toEqual({
+      author: '이민진',
+      isbn13: '9788954682155',
+      title: '파친코',
+    });
+  });
+
   it('검색 기준을 바꿔도 입력한 내용을 다시 이어서 볼 수 있다', async () => {
     const user = userEvent.setup();
 

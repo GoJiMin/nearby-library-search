@@ -337,6 +337,25 @@ describe('RegionSelectDialog', () => {
     expect(useFindLibraryStore.getState().libraryResultBook).toEqual(MOCK_BOOK);
   });
 
+  it('선택 완료 직전 preload가 실패해도 도서관 검색을 계속 시작할 수 있다', async () => {
+    const user = userEvent.setup();
+
+    mockPreloadLibrarySearchResultDialog.mockRejectedValueOnce(new Error('library preload failed'));
+
+    renderRegionSelectDialog();
+
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    fireEvent.click(screen.getByRole('button', {name: '선택 완료'}));
+
+    expect(mockPreloadLibrarySearchResultDialog).toHaveBeenCalledTimes(1);
+    expect(useFindLibraryStore.getState().currentLibrarySearchParams).toEqual({
+      isbn: '9788954682155',
+      page: 1,
+      region: '11',
+    });
+    expect(useFindLibraryStore.getState().libraryResultBook).toEqual(MOCK_BOOK);
+  });
+
   it('닫기 버튼으로 지역 선택 창을 닫을 수 있다', async () => {
     const user = userEvent.setup();
 
