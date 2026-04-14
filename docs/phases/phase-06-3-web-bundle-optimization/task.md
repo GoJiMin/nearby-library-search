@@ -24,7 +24,7 @@
 ## 4. `BookDetailDialog` lazy boundary와 intent preload를 도입한다.
 
 - [x] `book-detail-dialog` slice가 `BookDetailDialogAsync`와 `preloadBookDetailDialog()`를 노출하게 한다.
-- [x] `BookSearchResultPage`에서 dialog open 상태일 때만 `BookDetailDialogAsync`를 mount한다.
+- [x] `BookDetailDialogAsync`가 `selectedBookDetail != null`일 때만 실제 dialog를 mount하게 한다.
 - [x] `상세 보기` CTA의 `pointerenter`, `focus`, `touchstart`에서 `preloadBookDetailDialog()`를 호출한다.
 - [x] 기존 dialog loading fallback 계약을 유지한다.
 
@@ -50,10 +50,10 @@
 
 ## 8. build acceptance와 문서 동기화를 마감한다.
 
-- [ ] `pnpm --filter @nearby-library-search/web build`에서 Vite chunk size warning이 없음을 확인한다.
-- [ ] emitted app JS가 multiple chunks이며 initial entry `<= 300 kB`, all app chunks `<= 400 kB`를 만족하는지 확인한다.
-- [ ] `manualChunks`, `chunkSizeWarningLimit` 상향, analyzer plugin 없이 목표를 달성했는지 확인한다.
-- [ ] `spec.md`, `task.md`, `plan.md`의 Phase 6-3 상태를 실제 구현 결과와 동기화한다.
+- [x] `pnpm --filter @nearby-library-search/web build`에서 Vite chunk size warning이 없음을 확인한다.
+- [x] emitted app JS가 multiple chunks이며 initial entry `<= 300 kB`, all app chunks `<= 400 kB`를 만족하는지 확인한다.
+- [x] `manualChunks`, `chunkSizeWarningLimit` 상향, analyzer plugin 없이 목표를 달성했는지 확인한다.
+- [x] `spec.md`, `task.md`, `plan.md`의 Phase 6-3 상태를 실제 구현 결과와 동기화한다.
 
 ## Important Changes
 

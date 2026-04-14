@@ -167,10 +167,10 @@
 
 ## Phase 6-3. 웹 번들 최적화
 
-- [ ] `/books` route를 eager entry에서 분리하고 route-level lazy loading으로 별도 chunk를 만든다.
-- [ ] `/books` 결과 문맥의 `BookDetailDialog`, `RegionSelectDialog`, `LibrarySearchResultDialog`를 필요 시점에만 로드되도록 lazy boundary로 분리한다.
-- [ ] `manualChunks` 같은 번들 설정 꼼수보다 route, dialog 단위의 semantic code-splitting을 우선 적용한다.
-- [ ] lazy boundary loading fallback을 기존 loading/placeholder 계약 안에서 정리해 화면 전환 품질을 유지한다.
-- [ ] `pnpm --filter @nearby-library-search/web build`에서 Vite chunk size warning이 없어지도록 초기 JS 비용을 줄인다.
-- [ ] emitted app JS chunk가 여러 개로 나뉘고, 어느 chunk도 minified 기준 400 kB를 넘지 않도록 맞춘다.
+- [x] `/books` route를 eager entry에서 분리하고 route-level lazy loading으로 별도 chunk를 만든다.
+- [x] `/books` 결과 문맥의 `BookDetailDialog`, `RegionSelectDialog`, `LibrarySearchResultDialog`를 필요 시점에만 로드되도록 lazy boundary로 분리한다.
+- [x] `manualChunks` 같은 번들 설정 꼼수보다 route, dialog 단위의 semantic code-splitting을 우선 적용한다.
+- [x] lazy boundary loading fallback을 기존 loading/placeholder 계약 안에서 정리해 화면 전환 품질을 유지한다.
+- [x] `pnpm --filter @nearby-library-search/web build`에서 Vite chunk size warning이 없어지도록 초기 JS 비용을 줄인다.
+- [x] emitted app JS chunk가 여러 개로 나뉘고, 어느 chunk도 minified 기준 400 kB를 넘지 않도록 맞춘다.
 - [x] Phase 6-3 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.

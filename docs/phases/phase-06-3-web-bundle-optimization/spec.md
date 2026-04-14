@@ -54,14 +54,18 @@
 
 ## 현재 구현 상태
 
-- 현재 [router.tsx](/Users/gojimin/Desktop/ai/apps/web/src/app/router/router.tsx)는 `HomePage`, `BookSearchResultPage`, `NotFoundPage`, `RouteErrorPage`를 모두 eager import한다.
-- 현재 web build는 JS chunk 하나만 생성한다.
-  - 최근 기준 `dist/assets/index-*.js` 단일 chunk `588.33 kB` minified warning이 발생한다.
-- 현재 [BookSearchResultPage.tsx](/Users/gojimin/Desktop/ai/apps/web/src/pages/book-search-result/ui/BookSearchResultPage.tsx)는 아래 dialog를 모두 eager import한다.
-  - `BookDetailDialog`
-  - `RegionSelectDialog`
-  - `LibrarySearchResultDialog`
-- 현재 [features/book/index.ts](/Users/gojimin/Desktop/ai/apps/web/src/features/book/index.ts)는 search/result와 detail dialog를 한 slice public API로 같이 노출한다.
+- `/books` route는 React Router `lazy`로 분리되어 있다.
+- `BookSearchResultPage`는 sync dialog를 직접 import하지 않고 아래 async wrapper만 렌더한다.
+  - `BookDetailDialogAsync`
+  - `RegionSelectDialogAsync`
+  - `LibrarySearchResultDialogAsync`
+- `features/book`는 제거됐고, 현재는 `book-search`와 `book-detail-dialog` slice로 분리되어 있다.
+- 최신 build는 warning 없이 multiple JS chunks를 emit한다.
+  - entry `index-*.js`: 약 `221.91 kB`
+  - 최대 app JS chunk `shallow-*.js`: 약 `301.64 kB`
+  - `BookDetailDialog-*.js`: 약 `10.51 kB`
+  - `RegionSelectDialog-*.js`: 약 `20.55 kB`
+  - `LibrarySearchResultDialog-*.js`: 약 `36.53 kB`
 
 ## Async boundary 설계
 
@@ -98,7 +102,7 @@ features/
   - `preloadBookDetailDialog()`
   - `useBookDetailDialogStore`
 - `BookSearchResultPage`는 더 이상 `BookDetailDialog`를 eager import하지 않는다.
-- `BookSearchResultPage`는 store open 상태가 `true`일 때만 `BookDetailDialogAsync`를 mount한다.
+- `BookSearchResultPage`는 `BookDetailDialogAsync`를 렌더하고, wrapper가 `selectedBookDetail != null`일 때만 실제 dialog를 mount한다.
 - `BookSearchResultCard`의 `상세 보기` CTA는 아래 intent에서 `preloadBookDetailDialog()`를 호출한다.
   - `pointerenter`
   - `focus`
@@ -110,7 +114,7 @@ features/
   - `RegionSelectDialogAsync`
   - `preloadRegionSelectDialog()`
 - `BookSearchResultPage`는 더 이상 `RegionSelectDialog`를 eager import하지 않는다.
-- `BookSearchResultPage`는 `regionDialogBook != null`일 때만 `RegionSelectDialogAsync`를 mount한다.
+- `BookSearchResultPage`는 `RegionSelectDialogAsync`를 렌더하고, wrapper가 `regionDialogBook != null`일 때만 실제 dialog를 mount한다.
 - `BookSearchResultCard`의 `소장 도서관 찾기` CTA는 아래 intent에서 `preloadRegionSelectDialog()`를 호출한다.
   - `pointerenter`
   - `focus`
@@ -122,7 +126,7 @@ features/
   - `LibrarySearchResultDialogAsync`
   - `preloadLibrarySearchResultDialog()`
 - `BookSearchResultPage`는 더 이상 `LibrarySearchResultDialog`를 eager import하지 않는다.
-- `BookSearchResultPage`는 아래가 모두 참일 때만 `LibrarySearchResultDialogAsync`를 mount한다.
+- `BookSearchResultPage`는 `LibrarySearchResultDialogAsync`를 렌더하고, wrapper가 아래가 모두 참일 때만 실제 dialog를 mount한다.
   - `currentLibrarySearchParams != null`
   - `libraryResultBook != null`
 - `RegionSelectDialog`의 `선택 완료` CTA는 아래 intent에서 `preloadLibrarySearchResultDialog()`를 호출한다.
