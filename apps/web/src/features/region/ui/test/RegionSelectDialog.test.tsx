@@ -1,8 +1,9 @@
-import {render, screen, waitFor} from '@testing-library/react';
+import {act, render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {beforeEach, describe, expect, it} from 'vitest';
 import {useFindLibraryStore} from '@/features/find-library';
 import {RegionSelectDialog} from '@/features/region';
+import {useRegionSelectionStore} from '../../model/useRegionSelectionStore';
 
 const MOCK_BOOK = {
   author: '이민진',
@@ -42,6 +43,7 @@ function renderRegionSelectDialog({
 describe('RegionSelectDialog', () => {
   beforeEach(() => {
     useFindLibraryStore.getState().resetFindLibraryFlow();
+    useRegionSelectionStore.getState().resetSelection();
   });
 
   it('소장 도서관을 찾을 책이 정해지면 지역 선택 창이 열린다', async () => {
@@ -179,6 +181,58 @@ describe('RegionSelectDialog', () => {
     expect(screen.getByText('지역을 선택해주세요')).toBeInTheDocument();
     expect(screen.getByText('시/도를 먼저 선택하면 세부 지역을 고를 수 있어요.')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '선택 완료'})).toBeDisabled();
+  });
+
+  it('확정하지 않고 닫았다가 다시 열면 임시로 고른 지역은 남지 않는다', async () => {
+    const user = userEvent.setup();
+
+    renderRegionSelectDialog();
+
+    await user.click(await screen.findByRole('button', {name: '서울'}));
+    await user.click(screen.getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(useFindLibraryStore.getState().regionDialogBook).toBeNull();
+    });
+
+    act(() => {
+      useFindLibraryStore.getState().openRegionDialog(MOCK_BOOK);
+    });
+
+    const reopenedDialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
+    expect(screen.getByText('지역을 선택해주세요')).toBeInTheDocument();
+    expect(within(reopenedDialog).getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', {name: '전체'})).not.toBeInTheDocument();
+  });
+
+  it('확정하지 않고 닫았다가 다시 열면 마지막 확정 선택으로 다시 시작한다', async () => {
+    const user = userEvent.setup();
+
+    renderRegionSelectDialog({
+      lastSelection: {
+        detailRegion: '11140',
+        region: '11',
+      },
+    });
+
+    await user.click(await screen.findByRole('button', {name: '부산'}));
+    await user.click(screen.getByRole('button', {name: '닫기'}));
+
+    await waitFor(() => {
+      expect(useFindLibraryStore.getState().regionDialogBook).toBeNull();
+    });
+
+    act(() => {
+      useFindLibraryStore.getState().openRegionDialog(MOCK_BOOK);
+    });
+
+    const reopenedDialog = await screen.findByRole('dialog', {name: '검색 지역 선택'});
+
+    expect(within(reopenedDialog).getByRole('button', {name: '서울'})).toHaveAttribute('aria-pressed', 'true');
+    expect(within(reopenedDialog).getByRole('button', {name: '마포구'})).toHaveAttribute('aria-pressed', 'true');
+    expect(within(reopenedDialog).getByRole('button', {name: '부산'})).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByText('서울 > 마포구')).toBeInTheDocument();
   });
 
   it('전체 지역으로 소장 도서관 찾기를 시작할 수 있다', async () => {
