@@ -2,7 +2,7 @@
 
 ## 목표
 
-- 현재 web production build의 단일 JS bundle을 route, dialog, home hero enhancement 기준으로 분리해 initial JS 비용을 줄인다.
+- 현재 web production build의 단일 JS bundle을 route와 dialog 기준으로 분리해 initial JS 비용을 줄인다.
 - 단순히 Vite의 `500 kB` warning을 숨기지 않고, 실제 사용자 흐름 기준으로 **필요한 코드만 필요한 시점에 로드**되게 만든다.
 - 기존 `/`와 `/books` 사용자 흐름, dialog 동작, Kakao map interaction, availability 조회 경험은 유지한 채 semantic code-splitting 구조를 고정한다.
 
@@ -20,7 +20,7 @@
 
 - 이번 phase는 **semantic code-splitting**을 우선한다.
   - `manualChunks`, `chunkSizeWarningLimit` 상향, warning 무시는 도입하지 않는다.
-- route, dialog, animation enhancement 같은 실제 UX 경계를 async boundary로 만든다.
+- route와 dialog 같은 실제 UX 경계를 async boundary로 만든다.
 - route-level splitting은 React Router route object의 `lazy`를 사용한다.
   - `/books` route는 eager import를 제거하고 route-level lazy module로 전환한다.
   - `/`, `*`, route error는 eager 유지한다.
@@ -40,7 +40,6 @@
 
 - `/books` route route-level lazy 전환
 - `/books` 결과 문맥 dialog 3종 lazy boundary 전환
-- home hero의 `react-type-animation` defer
 - dialog chunk preload 정책 추가
 - bundle 회귀 기준과 async boundary 회귀 테스트 보강
 
@@ -62,7 +61,6 @@
   - `BookDetailDialog`
   - `RegionSelectDialog`
   - `LibrarySearchResultDialog`
-- 현재 [BrandMessage.tsx](/Users/gojimin/Desktop/ai/apps/web/src/pages/home/ui/BrandMessage.tsx)는 `react-type-animation`을 initial home entry에 직접 싣는다.
 - 현재 [features/book/index.ts](/Users/gojimin/Desktop/ai/apps/web/src/features/book/index.ts)는 search/result와 detail dialog를 한 slice public API로 같이 노출한다.
 
 ## Async boundary 설계
@@ -133,16 +131,6 @@ features/
   - `touchstart`
 - `handleConfirm`는 `confirmRegion()` 호출 직전에 `preloadLibrarySearchResultDialog()`를 한 번 더 호출해 first-open 지연을 줄인다.
 
-### 5. Home hero animation boundary
-
-- home hero의 `react-type-animation`은 initial entry에서 제거한다.
-- `BrandMessage`는 정적 heading shell을 eager 유지한다.
-  - 초기 문구는 `근처 도서관에 있나요?`로 고정한다.
-- animation enhancement는 별도 async component로 분리한다.
-- `BrandMessage`는 첫 paint 이후 `requestIdleCallback`을 우선 사용해 enhancement 로딩을 시작한다.
-  - `requestIdleCallback`이 없으면 `setTimeout(0)` fallback을 사용한다.
-- animation chunk가 늦어도 static heading 문맥은 그대로 유지돼야 한다.
-
 ## Shared helper 규칙
 
 - `shared/lib/lazyWithPreload.ts`를 추가한다.
@@ -156,7 +144,7 @@ AsyncComponent.preload();
 
 - 이 helper는 route-level lazy에는 쓰지 않는다.
   - route-level lazy는 React Router `lazy`
-  - dialog/animation lazy는 `lazyWithPreload`
+  - dialog lazy는 `lazyWithPreload`
 - FSD 규칙을 지키기 위해 dynamic import target도 slice public API 또는 slice 내부 전용 async entry module만 사용한다.
 - slice 외부에서는 개별 `ui` 파일을 직접 dynamic import하지 않는다.
 
@@ -184,7 +172,6 @@ AsyncComponent.preload();
   - `BookDetailDialog` runtime
   - `RegionSelectDialog` runtime
   - `LibrarySearchResultDialog` runtime
-  - `react-type-animation`
 
 ## 테스트 기준
 
@@ -205,7 +192,6 @@ AsyncComponent.preload();
   - `/books` direct entry가 기존과 같은 결과 화면을 보여준다.
   - `상세 보기` 첫 open과 재open이 모두 동작한다.
   - `소장 도서관 찾기 -> 지역 선택 -> 결과 dialog` 흐름이 기존과 같이 동작한다.
-  - home hero는 animation enhancement가 늦어도 static 문구가 바로 보인다.
 
 ### 3. prefetch 회귀
 
