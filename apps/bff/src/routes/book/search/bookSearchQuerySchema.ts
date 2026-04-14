@@ -1,3 +1,4 @@
+import type {Isbn13} from '@nearby-library-search/contracts';
 import {z} from 'zod';
 import {createPositiveIntegerQuerySchema, normalizeOptionalInputString} from '../../shared/schema.js';
 
@@ -25,7 +26,13 @@ const bookSearchQuerySchema = z
     path: ['query'],
   });
 
-type BookSearchQuery = z.infer<typeof bookSearchQuerySchema>;
+type BookSearchQuery = {
+  author?: string;
+  isbn13?: Isbn13;
+  page: number;
+  pageSize: number;
+  title?: string;
+};
 
 export {bookSearchQuerySchema, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MAX_SEARCH_TERM_LENGTH};
 export type {BookSearchQuery};

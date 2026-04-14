@@ -55,7 +55,7 @@ function parseLibrarySearchQuery(query: unknown): Result<LibrarySearchQuery> {
   if (result.success) {
     return {
       ok: true,
-      value: result.data,
+      value: result.data as LibrarySearchQuery,
     };
   }
 

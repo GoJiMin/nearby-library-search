@@ -41,7 +41,7 @@ function parseBookSearchQuery(query: unknown): Result<BookSearchQuery> {
   if (result.success) {
     return {
       ok: true,
-      value: result.data,
+      value: result.data as BookSearchQuery,
     };
   }
 

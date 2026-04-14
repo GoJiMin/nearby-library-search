@@ -21,7 +21,7 @@ function parseBookDetailParams(params: unknown): Result<BookDetailParams> {
   if (result.success) {
     return {
       ok: true,
-      value: result.data,
+      value: result.data as BookDetailParams,
     };
   }
 

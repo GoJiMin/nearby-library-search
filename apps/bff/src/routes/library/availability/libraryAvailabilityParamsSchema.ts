@@ -7,7 +7,7 @@ const libraryAvailabilityParamsSchema = z.object({
   libraryCode: z.preprocess(normalizeOptionalInputString, z.string().regex(/^[A-Za-z0-9]{1,20}$/)),
 });
 
-type LibraryAvailabilityParams = z.infer<typeof libraryAvailabilityParamsSchema> & {
+type LibraryAvailabilityParams = {
   isbn13: Isbn13;
   libraryCode: LibraryCode;
 };

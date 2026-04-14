@@ -25,9 +25,11 @@ const librarySearchQuerySchema = z
     path: ['detailRegion'],
   });
 
-type LibrarySearchQuery = z.infer<typeof librarySearchQuerySchema> & {
+type LibrarySearchQuery = {
   detailRegion?: DetailRegionCode;
   isbn: Isbn;
+  page: number;
+  pageSize: number;
   region: RegionCode;
 };
 

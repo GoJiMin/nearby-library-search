@@ -32,7 +32,7 @@ function parseLibraryAvailabilityParams(params: unknown): Result<LibraryAvailabi
   if (result.success) {
     return {
       ok: true,
-      value: result.data,
+      value: result.data as LibraryAvailabilityParams,
     };
   }
 
