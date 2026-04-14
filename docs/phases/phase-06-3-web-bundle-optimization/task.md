@@ -16,10 +16,10 @@
 
 ## 3. `features/book`를 `book-search`와 `book-detail-dialog`로 최소 분리한다.
 
-- [ ] 기존 `features/book` public API를 `apps/web/src/features/book-search`와 `apps/web/src/features/book-detail-dialog`로 재구성한다.
-- [ ] search/start/result/url-state 관련 코드는 `book-search` slice로 옮긴다.
-- [ ] detail dialog UI와 store는 `book-detail-dialog` slice로 옮긴다.
-- [ ] slice 외부 import가 새 public API만 사용하도록 정리한다.
+- [x] 기존 `features/book` public API를 `apps/web/src/features/book-search`와 `apps/web/src/features/book-detail-dialog`로 재구성한다.
+- [x] search/start/result/url-state 관련 코드는 `book-search` slice로 옮긴다.
+- [x] detail dialog UI와 store는 `book-detail-dialog` slice로 옮긴다.
+- [x] slice 외부 import가 새 public API만 사용하도록 정리한다.
 
 ## 4. `BookDetailDialog` lazy boundary와 intent preload를 도입한다.
 
