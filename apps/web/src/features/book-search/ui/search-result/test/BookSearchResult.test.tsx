@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import type {ReactElement} from 'react';
 import {MemoryRouter} from 'react-router-dom';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {useBookDetailDialogStore} from '@/features/book';
+import {useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {BookSearchResult} from '@/features/book-search';
 import {useFindLibraryStore} from '@/features/find-library';
 import {RequestGetError} from '@/shared/request';

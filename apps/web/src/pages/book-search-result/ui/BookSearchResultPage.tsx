@@ -2,7 +2,7 @@ import {useEffect} from 'react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
-import {BookDetailDialog, useBookDetailDialogStore} from '@/features/book';
+import {BookDetailDialog, useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book-search';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';

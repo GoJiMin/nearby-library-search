@@ -1,6 +1,6 @@
 import {BarChart3, BookOpen, Fingerprint} from 'lucide-react';
 import type {BookSearchItem} from '@/entities/book';
-import {useBookDetailDialogStore} from '@/features/book';
+import {useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {useFindLibraryStore} from '@/features/find-library';
 import {Card, Heading, LucideIcon, Text} from '@/shared/ui';
 

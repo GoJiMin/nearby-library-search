@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {createMemoryRouter, RouterProvider} from 'react-router-dom';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
-import {useBookDetailDialogStore} from '@/features/book';
+import {useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {RequestGetError} from '@/shared/request';
 import {routes} from './router';
 

@@ -1,8 +1,8 @@
-export {useBookDetailDialogStore} from './model/useBookDetailDialogStore';
+export {useBookDetailDialogStore} from '../book-detail-dialog';
 export type {
   BookDetailDialogActions,
   BookDetailDialogPayload,
   BookDetailDialogState,
   BookDetailDialogStore,
-} from './model/useBookDetailDialogStore';
-export {BookDetailDialog} from './ui/book-detail/BookDetailDialog';
+} from '../book-detail-dialog';
+export {BookDetailDialog} from '../book-detail-dialog';
