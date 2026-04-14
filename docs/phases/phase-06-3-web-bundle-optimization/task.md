@@ -23,10 +23,10 @@
 
 ## 4. `BookDetailDialog` lazy boundary와 intent preload를 도입한다.
 
-- [ ] `book-detail-dialog` slice가 `BookDetailDialogAsync`와 `preloadBookDetailDialog()`를 노출하게 한다.
-- [ ] `BookSearchResultPage`에서 dialog open 상태일 때만 `BookDetailDialogAsync`를 mount한다.
-- [ ] `상세 보기` CTA의 `pointerenter`, `focus`, `touchstart`에서 `preloadBookDetailDialog()`를 호출한다.
-- [ ] 기존 dialog loading fallback 계약을 유지한다.
+- [x] `book-detail-dialog` slice가 `BookDetailDialogAsync`와 `preloadBookDetailDialog()`를 노출하게 한다.
+- [x] `BookSearchResultPage`에서 dialog open 상태일 때만 `BookDetailDialogAsync`를 mount한다.
+- [x] `상세 보기` CTA의 `pointerenter`, `focus`, `touchstart`에서 `preloadBookDetailDialog()`를 호출한다.
+- [x] 기존 dialog loading fallback 계약을 유지한다.
 
 ## 5. `RegionSelectDialog` lazy boundary와 intent preload를 도입한다.
 

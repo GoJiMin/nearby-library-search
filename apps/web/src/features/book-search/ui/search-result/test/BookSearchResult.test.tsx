@@ -1,4 +1,4 @@
-import {render, screen, within} from '@testing-library/react';
+import {fireEvent, render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {ReactElement} from 'react';
 import {MemoryRouter} from 'react-router-dom';
@@ -8,7 +8,7 @@ import {BookSearchResult} from '@/features/book-search';
 import {useFindLibraryStore} from '@/features/find-library';
 import {RequestGetError} from '@/shared/request';
 
-const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
+const {mockBookSearchResponse, mockPreloadBookDetailDialog, mockUseGetSearchBooks} = vi.hoisted(() => ({
   mockBookSearchResponse: {
     items: [
       {
@@ -44,6 +44,7 @@ const {mockBookSearchResponse, mockUseGetSearchBooks} = vi.hoisted(() => ({
     ],
     totalCount: 12,
   },
+  mockPreloadBookDetailDialog: vi.fn(async () => undefined),
   mockUseGetSearchBooks: vi.fn(),
 }));
 
@@ -56,8 +57,18 @@ vi.mock('@/entities/book', async importOriginal => {
   };
 });
 
+vi.mock('@/features/book-detail-dialog', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/features/book-detail-dialog')>();
+
+  return {
+    ...actual,
+    preloadBookDetailDialog: mockPreloadBookDetailDialog,
+  };
+});
+
 beforeEach(() => {
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
+  mockPreloadBookDetailDialog.mockClear();
   useBookDetailDialogStore.getState().resetBookDetailDialog();
   useFindLibraryStore.getState().resetFindLibraryFlow();
 });
@@ -242,6 +253,28 @@ describe('BookSearchResult', () => {
     expect(useBookDetailDialogStore.getState().selectedBookDetail).toEqual({
       isbn13: '9791196447182',
     });
+  });
+
+  it('상세 보기 intent에서 상세 dialog chunk preload를 시도한다', () => {
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const [firstItem] = screen.getAllByRole('listitem');
+    const detailButton = within(firstItem).getByRole('button', {name: '상세 보기'});
+
+    fireEvent.pointerEnter(detailButton);
+    fireEvent.focus(detailButton);
+    fireEvent.touchStart(detailButton);
+
+    expect(mockPreloadBookDetailDialog).toHaveBeenCalledTimes(3);
   });
 
   it('검색 기준을 바꿔도 입력한 내용을 다시 이어서 볼 수 있다', async () => {
