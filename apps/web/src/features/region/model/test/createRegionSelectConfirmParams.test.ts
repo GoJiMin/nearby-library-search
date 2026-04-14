@@ -5,7 +5,7 @@ describe('createRegionSelectConfirmParams', () => {
   it('전체 선택이면 detailRegion 없이 canonical params를 만든다', () => {
     expect(
       createRegionSelectConfirmParams({
-        draftSelection: {
+        selection: {
           region: '11',
         },
         selectedBook: {
@@ -24,7 +24,7 @@ describe('createRegionSelectConfirmParams', () => {
   it('세부 지역 선택이면 detailRegion을 포함한 canonical params를 만든다', () => {
     expect(
       createRegionSelectConfirmParams({
-        draftSelection: {
+        selection: {
           detailRegion: '11140',
           region: '11',
         },

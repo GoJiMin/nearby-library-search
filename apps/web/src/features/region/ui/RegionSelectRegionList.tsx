@@ -1,14 +1,13 @@
 import {ChevronRight} from 'lucide-react';
 import {REGION_OPTIONS} from '@/entities/region';
 import {Heading, LucideIcon} from '@/shared/ui';
+import {useRegionSelectionStore} from '../model/useRegionSelectionStore';
 import {RegionSelectRowButton} from './RegionSelectRowButton';
 
-type RegionSelectRegionListProps = {
-  onSelectRegion: (regionCode: string) => void;
-  selectedRegion?: string;
-};
+function RegionSelectRegionList() {
+  const selectedRegion = useRegionSelectionStore(state => state.selection?.region);
+  const selectRegion = useRegionSelectionStore(state => state.selectRegion);
 
-function RegionSelectRegionList({onSelectRegion, selectedRegion}: RegionSelectRegionListProps) {
   return (
     <section aria-labelledby="region-dialog-region-heading" className="bg-surface-muted/35 flex min-h-0 flex-col">
       <Heading
@@ -29,7 +28,7 @@ function RegionSelectRegionList({onSelectRegion, selectedRegion}: RegionSelectRe
                 <LucideIcon className="h-4 w-4 shrink-0" icon={ChevronRight} strokeWidth={2.1} />
               )}
               onClick={() => {
-                onSelectRegion(regionOption.code);
+                selectRegion(regionOption.code);
               }}
             >
               {regionOption.label}
@@ -42,4 +41,3 @@ function RegionSelectRegionList({onSelectRegion, selectedRegion}: RegionSelectRe
 }
 
 export {RegionSelectRegionList};
-export type {RegionSelectRegionListProps};

@@ -1,6 +1,9 @@
 import clsx from 'clsx';
 import {CheckCircle2} from 'lucide-react';
+import {DETAIL_REGION_OPTIONS_BY_REGION} from '@/entities/region';
 import {Heading, LucideIcon} from '@/shared/ui';
+import type {RegionSelectionState} from '../model/regionSelection.contract';
+import {useRegionSelectionStore} from '../model/useRegionSelectionStore';
 import {RegionSelectRowButton} from './RegionSelectRowButton';
 
 type VisibleDetailRegionOption = {
@@ -8,28 +11,42 @@ type VisibleDetailRegionOption = {
   label: string;
 };
 
-type RegionSelectDetailRegionPanelProps = {
-  detailRegionHelperMessage: string | null;
-  isDetailRegionEnabled: boolean;
-  isDetailRegionFallback: boolean;
-  onSelectDetailRegion: (detailRegion?: string) => void;
-  selectedDetailRegion?: string;
-  visibleDetailRegionOptions: VisibleDetailRegionOption[];
-};
+function getDetailRegionHelperMessage({
+  hasSingleDetailRegionOption,
+  selectedRegion,
+}: {
+  hasSingleDetailRegionOption: boolean;
+  selectedRegion?: RegionSelectionState['region'];
+}) {
+  if (selectedRegion == null) {
+    return '시/도를 먼저 선택하면 세부 지역을 고를 수 있어요.';
+  }
 
-function RegionSelectDetailRegionPanel({
-  detailRegionHelperMessage,
-  isDetailRegionEnabled,
-  isDetailRegionFallback,
-  onSelectDetailRegion,
-  selectedDetailRegion,
-  visibleDetailRegionOptions,
-}: RegionSelectDetailRegionPanelProps) {
+  if (hasSingleDetailRegionOption) {
+    return '세종시는 세부 지역 구분이 없어 전체 지역으로 검색합니다.';
+  }
+
+  return null;
+}
+
+function RegionSelectDetailRegionPanel() {
+  const selection = useRegionSelectionStore(state => state.selection);
+  const selectDetailRegion = useRegionSelectionStore(state => state.selectDetailRegion);
+  const selectedRegion = selection?.region;
+  const selectedDetailRegion = selection?.detailRegion;
+  const detailRegionOptions = selectedRegion != null ? (DETAIL_REGION_OPTIONS_BY_REGION[selectedRegion] ?? []) : [];
+  const hasSingleDetailRegionOption = selectedRegion != null && detailRegionOptions.length <= 1;
+  const detailRegionHelperMessage = getDetailRegionHelperMessage({
+    hasSingleDetailRegionOption,
+    selectedRegion,
+  });
+  const visibleDetailRegionOptions: VisibleDetailRegionOption[] = hasSingleDetailRegionOption ? [] : detailRegionOptions;
+
   return (
     <section
-      aria-disabled={!isDetailRegionEnabled}
+      aria-disabled={selectedRegion == null}
       aria-labelledby="region-dialog-detail-heading"
-      className={clsx('bg-surface flex min-h-0 flex-col', !isDetailRegionEnabled && 'opacity-60')}
+      className={clsx('bg-surface flex min-h-0 flex-col', selectedRegion == null && 'opacity-60')}
     >
       <Heading
         as="h3"
@@ -39,14 +56,14 @@ function RegionSelectDetailRegionPanel({
       >
         세부 지역
       </Heading>
-      {isDetailRegionEnabled ? (
+      {selectedRegion != null ? (
         <div className="flex min-h-0 flex-1 flex-col">
           <ul className="[&::-webkit-scrollbar-thumb]:bg-line flex-1 space-y-1 overflow-y-auto py-2 pr-2 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
             <li>
               <RegionSelectRowButton
                 isSelected={selectedDetailRegion == null}
                 onClick={() => {
-                  onSelectDetailRegion(undefined);
+                  selectDetailRegion(undefined);
                 }}
                 trailing={!selectedDetailRegion && (
                   <LucideIcon className="text-accent h-4.5 w-4.5 shrink-0" icon={CheckCircle2} strokeWidth={2.1} />
@@ -63,7 +80,7 @@ function RegionSelectDetailRegionPanel({
                     <LucideIcon className="text-accent h-4.5 w-4.5 shrink-0" icon={CheckCircle2} strokeWidth={2.1} />
                   )}
                   onClick={() => {
-                    onSelectDetailRegion(detailRegionOption.code);
+                    selectDetailRegion(detailRegionOption.code);
                   }}
                 >
                   {detailRegionOption.label}
@@ -71,7 +88,7 @@ function RegionSelectDetailRegionPanel({
               </li>
             ))}
           </ul>
-          {isDetailRegionFallback && detailRegionHelperMessage && (
+          {hasSingleDetailRegionOption && detailRegionHelperMessage && (
             <p className="text-text-muted px-4 pt-2 pb-4 text-sm leading-6">{detailRegionHelperMessage}</p>
           )}
         </div>
@@ -87,4 +104,3 @@ function RegionSelectDetailRegionPanel({
 }
 
 export {RegionSelectDetailRegionPanel};
-export type {RegionSelectDetailRegionPanelProps};

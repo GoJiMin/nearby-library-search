@@ -1,57 +1,14 @@
+import {useLayoutEffect} from 'react';
 import {MapPin, X} from 'lucide-react';
 import {useShallow} from 'zustand/react/shallow';
 import {useFindLibraryStore} from '@/features/find-library';
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, LucideIcon} from '@/shared/ui';
-import {createRegionSelectConfirmParams} from '../model/createRegionSelectConfirmParams';
-import {useRegionSelectDialogDraft} from '../model/useRegionSelectDialogDraft';
+import {useRegionSelectionStore} from '../model/useRegionSelectionStore';
 import {RegionSelectDetailRegionPanel} from './RegionSelectDetailRegionPanel';
 import {RegionSelectDialogFooter} from './RegionSelectDialogFooter';
 import {RegionSelectRegionList} from './RegionSelectRegionList';
 
 function RegionSelectDialogContent() {
-  const {confirmRegion, lastRegionSelection, selectedBook} = useFindLibraryStore(
-    useShallow(state => ({
-      confirmRegion: state.confirmRegion,
-      lastRegionSelection: state.lastRegionSelection,
-      selectedBook: state.regionDialogBook,
-    })),
-  );
-  const {
-    draftSelection,
-    detailRegionHelperMessage,
-    handleReset,
-    handleSelectDetailRegion,
-    handleSelectRegion,
-    isDetailRegionEnabled,
-    isDetailRegionFallback,
-    isResetDisabled,
-    isSelectionComplete,
-    selectedDetailRegion,
-    selectedRegion,
-    selectionSummaryText,
-    visibleDetailRegionOptions,
-  } = useRegionSelectDialogDraft({lastSelection: lastRegionSelection});
-
-  if (selectedBook == null) {
-    return null;
-  }
-
-  const selectedBookForConfirm = selectedBook;
-  const isConfirmDisabled = !isSelectionComplete;
-
-  function handleConfirm() {
-    if (draftSelection == null) {
-      return;
-    }
-
-    confirmRegion(
-      createRegionSelectConfirmParams({
-        draftSelection,
-        selectedBook: selectedBookForConfirm,
-      }),
-    );
-  }
-
   return (
     <DialogContent
       aria-describedby={undefined}
@@ -82,34 +39,36 @@ function RegionSelectDialogContent() {
         </div>
       </DialogHeader>
       <section className="mt-3 grid min-h-0 grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] overflow-hidden">
-        <RegionSelectRegionList selectedRegion={selectedRegion} onSelectRegion={handleSelectRegion} />
-        <RegionSelectDetailRegionPanel
-          detailRegionHelperMessage={detailRegionHelperMessage}
-          isDetailRegionEnabled={isDetailRegionEnabled}
-          isDetailRegionFallback={isDetailRegionFallback}
-          selectedDetailRegion={selectedDetailRegion}
-          visibleDetailRegionOptions={visibleDetailRegionOptions}
-          onSelectDetailRegion={handleSelectDetailRegion}
-        />
+        <RegionSelectRegionList />
+        <RegionSelectDetailRegionPanel />
       </section>
-      <RegionSelectDialogFooter
-        isConfirmDisabled={isConfirmDisabled}
-        isResetDisabled={isResetDisabled}
-        selectionSummaryText={selectionSummaryText}
-        onConfirm={handleConfirm}
-        onReset={handleReset}
-      />
+      <RegionSelectDialogFooter />
     </DialogContent>
   );
 }
 
 function RegionSelectDialog() {
-  const {closeRegionDialog, open} = useFindLibraryStore(
+  const {closeRegionDialog, lastRegionSelection, open} = useFindLibraryStore(
     useShallow(state => ({
       closeRegionDialog: state.closeRegionDialog,
+      lastRegionSelection: state.lastRegionSelection,
       open: state.regionDialogBook != null,
     })),
   );
+  const initializeSelection = useRegionSelectionStore(state => state.initializeSelection);
+  const resetSelection = useRegionSelectionStore(state => state.resetSelection);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    initializeSelection(lastRegionSelection);
+
+    return () => {
+      resetSelection();
+    };
+  }, [initializeSelection, lastRegionSelection, open, resetSelection]);
 
   return (
     <Dialog

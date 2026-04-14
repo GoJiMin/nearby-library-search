@@ -1,21 +1,21 @@
 import {parseSearchLibrariesParams, type LibrarySearchParams} from '@/entities/library';
 import type {BookSelectionActionPayload} from '@/features/book-search';
-import type {RegionSelectionState} from './regionSelectDialog.contract';
+import type {RegionSelectionState} from './regionSelection.contract';
 
 type CreateRegionSelectConfirmParamsArgs = {
-  draftSelection: RegionSelectionState;
+  selection: RegionSelectionState;
   selectedBook: BookSelectionActionPayload;
 };
 
 function createRegionSelectConfirmParams({
-  draftSelection,
+  selection,
   selectedBook,
 }: CreateRegionSelectConfirmParamsArgs): LibrarySearchParams {
   return parseSearchLibrariesParams({
-    detailRegion: draftSelection.detailRegion,
+    detailRegion: selection.detailRegion,
     isbn: selectedBook.isbn13,
     page: 1,
-    region: draftSelection.region,
+    region: selection.region,
   });
 }
 
