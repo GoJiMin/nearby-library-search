@@ -4,6 +4,7 @@ import {developmentConfig} from '../../../config/env.js';
 import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
 import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
 import {createRetryableUpstreamRequestError} from '../../../utils/error.js';
+import {isErrorResult} from '../../../utils/result.js';
 import type {Result} from '../../../utils/result.types.js';
 import {parseLibraryAvailabilityParams} from './parseParams.js';
 import {normalizeLibraryAvailabilityResponse} from './normalizeResponse.js';
@@ -47,7 +48,7 @@ function createLibraryAvailabilityRoute(fixtureResolver?: LibraryAvailabilityFix
     app.get('/api/libraries/:libraryCode/books/:isbn13/availability', async (request, reply) => {
       const parsedParams = parseLibraryAvailabilityParams(request.params);
 
-      if (!parsedParams.ok) {
+      if (isErrorResult(parsedParams)) {
         reply.status(parsedParams.error.status);
 
         return parsedParams.error;
@@ -56,7 +57,7 @@ function createLibraryAvailabilityRoute(fixtureResolver?: LibraryAvailabilityFix
       if (developmentConfig.useDevFixtures && fixtureResolver) {
         const fixtureResult = fixtureResolver.resolve(parsedParams.value);
 
-        if (!fixtureResult.ok) {
+        if (isErrorResult(fixtureResult)) {
           reply.status(fixtureResult.error.status);
 
           return fixtureResult.error;
@@ -70,7 +71,7 @@ function createLibraryAvailabilityRoute(fixtureResolver?: LibraryAvailabilityFix
         parsedParams.value.isbn13,
       );
 
-      if (!libraryAvailabilityPayload.ok) {
+      if (isErrorResult(libraryAvailabilityPayload)) {
         app.log.warn({errorTitle: libraryAvailabilityPayload.error.title}, 'Library availability upstream request failed');
 
         reply.status(libraryAvailabilityPayload.error.status);
@@ -83,7 +84,7 @@ function createLibraryAvailabilityRoute(fixtureResolver?: LibraryAvailabilityFix
         parsedParams.value,
       );
 
-      if (!normalizedLibraryAvailabilityResponse.ok) {
+      if (isErrorResult(normalizedLibraryAvailabilityResponse)) {
         app.log.warn(
           {errorTitle: normalizedLibraryAvailabilityResponse.error.title},
           'Library availability upstream response could not be normalized',

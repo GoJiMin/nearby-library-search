@@ -4,6 +4,7 @@ import {developmentConfig} from '../../../config/env.js';
 import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
 import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
 import {createRetryableUpstreamRequestError} from '../../../utils/error.js';
+import {isErrorResult} from '../../../utils/result.js';
 import type {Result} from '../../../utils/result.types.js';
 import type {BookSearchQuery} from './bookSearchQuerySchema.js';
 import {normalizeBookSearchResponse} from './normalizeResponse.js';
@@ -49,7 +50,7 @@ function createBookSearchRoute(fixtureResolver?: BookSearchFixtureResolver): Fas
     app.get('/api/books/search', async (request, reply) => {
       const parsedQuery = parseBookSearchQuery(request.query);
 
-      if (!parsedQuery.ok) {
+      if (isErrorResult(parsedQuery)) {
         reply.status(parsedQuery.error.status);
 
         return parsedQuery.error;
@@ -58,7 +59,7 @@ function createBookSearchRoute(fixtureResolver?: BookSearchFixtureResolver): Fas
       if (developmentConfig.useDevFixtures && fixtureResolver) {
         const fixtureResult = fixtureResolver.resolve(parsedQuery.value);
 
-        if (!fixtureResult.ok) {
+        if (isErrorResult(fixtureResult)) {
           app.log.warn({errorTitle: fixtureResult.error.title}, 'Book search fixture response could not be resolved safely');
 
           reply.status(fixtureResult.error.status);
@@ -71,7 +72,7 @@ function createBookSearchRoute(fixtureResolver?: BookSearchFixtureResolver): Fas
 
       const bookSearchPayload = await fetchBookSearchPayload(parsedQuery.value);
 
-      if (!bookSearchPayload.ok) {
+      if (isErrorResult(bookSearchPayload)) {
         app.log.warn({errorTitle: bookSearchPayload.error.title}, 'Book search upstream request failed');
 
         reply.status(bookSearchPayload.error.status);
@@ -81,7 +82,7 @@ function createBookSearchRoute(fixtureResolver?: BookSearchFixtureResolver): Fas
 
       const normalizedBookSearchResponse = normalizeBookSearchResponse(bookSearchPayload.value);
 
-      if (!normalizedBookSearchResponse.ok) {
+      if (isErrorResult(normalizedBookSearchResponse)) {
         app.log.warn(
           {errorTitle: normalizedBookSearchResponse.error.title},
           'Book search upstream response could not be normalized',

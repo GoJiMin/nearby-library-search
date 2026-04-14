@@ -4,6 +4,7 @@ import {developmentConfig} from '../../../config/env.js';
 import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
 import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
 import {createRetryableUpstreamRequestError} from '../../../utils/error.js';
+import {isErrorResult} from '../../../utils/result.js';
 import type {Result} from '../../../utils/result.types.js';
 import {normalizeBookDetailResponse} from './normalizeResponse.js';
 import {parseBookDetailParams} from './parseParams.js';
@@ -46,7 +47,7 @@ function createBookDetailRoute(fixtureResolver?: BookDetailFixtureResolver): Fas
     app.get('/api/books/:isbn13', async (request, reply) => {
       const parsedParams = parseBookDetailParams(request.params);
 
-      if (!parsedParams.ok) {
+      if (isErrorResult(parsedParams)) {
         reply.status(parsedParams.error.status);
 
         return parsedParams.error;
@@ -55,7 +56,7 @@ function createBookDetailRoute(fixtureResolver?: BookDetailFixtureResolver): Fas
       if (developmentConfig.useDevFixtures && fixtureResolver) {
         const fixtureResult = fixtureResolver.resolve(parsedParams.value);
 
-        if (!fixtureResult.ok) {
+        if (isErrorResult(fixtureResult)) {
           reply.status(fixtureResult.error.status);
 
           return fixtureResult.error;
@@ -66,7 +67,7 @@ function createBookDetailRoute(fixtureResolver?: BookDetailFixtureResolver): Fas
 
       const bookDetailPayload = await fetchBookDetailPayload(parsedParams.value.isbn13);
 
-      if (!bookDetailPayload.ok) {
+      if (isErrorResult(bookDetailPayload)) {
         app.log.warn({errorTitle: bookDetailPayload.error.title}, 'Book detail upstream request failed');
 
         reply.status(bookDetailPayload.error.status);
@@ -76,7 +77,7 @@ function createBookDetailRoute(fixtureResolver?: BookDetailFixtureResolver): Fas
 
       const normalizedBookDetailResponse = normalizeBookDetailResponse(bookDetailPayload.value);
 
-      if (!normalizedBookDetailResponse.ok) {
+      if (isErrorResult(normalizedBookDetailResponse)) {
         app.log.warn(
           {errorTitle: normalizedBookDetailResponse.error.title},
           'Book detail upstream response could not be normalized',

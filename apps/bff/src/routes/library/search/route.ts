@@ -12,6 +12,7 @@ import {
   createRetryableUpstreamResponseError,
 } from '../../../utils/error.js';
 import {normalizeHttpUrl, normalizeNullableNumber, normalizeNullableString} from '../../../utils/normalize.js';
+import {isErrorResult} from '../../../utils/result.js';
 import type {Result} from '../../../utils/result.types.js';
 import {librarySearchQuerySchema} from './librarySearchQuerySchema.js';
 import type {LibrarySearchQuery} from './librarySearchQuerySchema.js';
@@ -202,7 +203,7 @@ function createLibrarySearchRoute(fixtureResolver?: LibrarySearchFixtureResolver
     app.get('/api/libraries/search', async (request, reply) => {
       const parsedQuery = parseLibrarySearchQuery(request.query);
 
-      if (!parsedQuery.ok) {
+      if (isErrorResult(parsedQuery)) {
         reply.status(parsedQuery.error.status);
 
         return parsedQuery.error;
@@ -211,7 +212,7 @@ function createLibrarySearchRoute(fixtureResolver?: LibrarySearchFixtureResolver
       if (developmentConfig.useDevFixtures && fixtureResolver) {
         const fixtureResult = fixtureResolver.resolve(parsedQuery.value);
 
-        if (!fixtureResult.ok) {
+        if (isErrorResult(fixtureResult)) {
           app.log.warn(
             {errorTitle: fixtureResult.error.title},
             'Library search fixture response could not be resolved safely',
@@ -227,7 +228,7 @@ function createLibrarySearchRoute(fixtureResolver?: LibrarySearchFixtureResolver
 
       const librarySearchPayload = await fetchLibrarySearchPayload(parsedQuery.value);
 
-      if (!librarySearchPayload.ok) {
+      if (isErrorResult(librarySearchPayload)) {
         app.log.warn({errorTitle: librarySearchPayload.error.title}, 'Library search upstream request failed');
 
         reply.status(librarySearchPayload.error.status);
@@ -240,7 +241,7 @@ function createLibrarySearchRoute(fixtureResolver?: LibrarySearchFixtureResolver
         parsedQuery.value,
       );
 
-      if (!normalizedLibrarySearchResponse.ok) {
+      if (isErrorResult(normalizedLibrarySearchResponse)) {
         app.log.warn(
           {errorTitle: normalizedLibrarySearchResponse.error.title},
           'Library search upstream response could not be normalized',
