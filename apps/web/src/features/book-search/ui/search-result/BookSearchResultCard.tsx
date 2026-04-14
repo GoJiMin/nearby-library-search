@@ -3,6 +3,7 @@ import {BarChart3, BookOpen, Fingerprint} from 'lucide-react';
 import type {BookSearchItem} from '@/entities/book';
 import {preloadBookDetailDialog, useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {useFindLibraryStore} from '@/features/find-library';
+import {preloadRegionSelectDialog} from '@/features/region';
 import {Card, Heading, LucideIcon, Text} from '@/shared/ui';
 
 type BookSearchResultCardProps = {
@@ -43,6 +44,10 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
 
   function handlePreloadBookDetailDialog() {
     void preloadBookDetailDialog();
+  }
+
+  function handlePreloadRegionSelectDialog() {
+    void preloadRegionSelectDialog();
   }
 
   return (
@@ -123,6 +128,7 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
                 상세 보기
               </BookSearchResultActionButton>
               <BookSearchResultActionButton
+                onFocus={handlePreloadRegionSelectDialog}
                 onClick={() => {
                   openRegionDialog({
                     author: item.author,
@@ -130,6 +136,8 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
                     title: item.title,
                   });
                 }}
+                onPointerEnter={handlePreloadRegionSelectDialog}
+                onTouchStart={handlePreloadRegionSelectDialog}
               >
                 소장 도서관 찾기
               </BookSearchResultActionButton>

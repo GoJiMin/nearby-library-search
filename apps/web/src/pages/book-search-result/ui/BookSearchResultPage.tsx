@@ -6,7 +6,7 @@ import {BookDetailDialogAsync, useBookDetailDialogStore} from '@/features/book-d
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book-search';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
-import {RegionSelectDialog} from '@/features/region';
+import {RegionSelectDialogAsync} from '@/features/region';
 import {Button, Card, Heading, Text} from '@/shared/ui';
 
 type BookSearchResultPageContentProps = {
@@ -32,6 +32,7 @@ function createPageHref(params: BookSearchParams, page: number) {
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
   const resetBookDetailDialog = useBookDetailDialogStore(state => state.resetBookDetailDialog);
+  const hasRegionDialogBook = useFindLibraryStore(state => state.regionDialogBook != null);
   const resetFindLibraryFlow = useFindLibraryStore(state => state.resetFindLibraryFlow);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         params={params}
       />
       <BookDetailDialogAsync />
-      <RegionSelectDialog />
+      {hasRegionDialogBook && <RegionSelectDialogAsync />}
       <LibrarySearchResultDialog />
     </>
   );
