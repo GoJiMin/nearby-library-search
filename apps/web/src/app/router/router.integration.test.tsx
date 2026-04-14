@@ -378,10 +378,10 @@ describe('app router integration', () => {
     expect(new URLSearchParams(router.state.location.search).get('page')).toBe('1');
   });
 
-  it('검색 조건이 맞으면 도서 검색 결과 화면을 바로 볼 수 있다', () => {
+  it('검색 조건이 맞으면 도서 검색 결과 화면을 바로 볼 수 있다', async () => {
     renderRouter(['/books?author=한강&page=2']);
 
-    expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
+    expect(await screen.findByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
     expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'true');
@@ -765,7 +765,7 @@ describe('app router integration', () => {
 
     renderRouter(['/books?title=파친코&page=1']);
 
-    const resultList = screen.getByRole('list', {name: '도서 검색 결과 목록'});
+    const resultList = await screen.findByRole('list', {name: '도서 검색 결과 목록'});
     const libraryButtons = within(resultList).getAllByRole('button', {name: '소장 도서관 찾기'});
 
     await user.click(libraryButtons[0]);
@@ -1168,10 +1168,10 @@ describe('app router integration', () => {
     expect(screen.getByRole('tablist', {name: '검색 기준 선택'})).toBeInTheDocument();
   });
 
-  it('잘못된 검색 결과 주소로 들어오면 다시 검색할 수 있는 안내를 보여준다', () => {
+  it('잘못된 검색 결과 주소로 들어오면 다시 검색할 수 있는 안내를 보여준다', async () => {
     renderRouter(['/books?title=&page=abc']);
 
-    expect(screen.getByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
+    expect(await screen.findByRole('link', {name: '메인으로'})).toHaveAttribute('href', '/');
     expect(screen.getByRole('heading', {level: 1, name: '검색 결과를 불러올 수 없어요'})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: '검색 다시 시작'})).toHaveAttribute('href', '/');
   });

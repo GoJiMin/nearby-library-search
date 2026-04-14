@@ -9,10 +9,10 @@
 
 ## 2. `/books` route를 route-level lazy boundary로 전환한다.
 
-- [ ] `apps/web/src/app/router/router.tsx`에서 `BookSearchResultPage` eager import를 제거한다.
-- [ ] `/books` route를 React Router route object `lazy`로 전환한다.
-- [ ] `/`, `*`, route error는 eager 유지한다.
-- [ ] `/books` direct entry가 기존과 같은 결과 화면을 유지하는지 확인한다.
+- [x] `apps/web/src/app/router/router.tsx`에서 `BookSearchResultPage` eager import를 제거한다.
+- [x] `/books` route를 React Router route object `lazy`로 전환한다.
+- [x] `/`, `*`, route error는 eager 유지한다.
+- [x] `/books` direct entry가 기존과 같은 결과 화면을 유지하는지 확인한다.
 
 ## 3. `features/book`를 `book-search`와 `book-detail-dialog`로 최소 분리한다.
 
