@@ -63,7 +63,7 @@
   - `book`과 `library` fixture는 production `src` 밖에서만 관리한다.
   - route integration test는 real fixture source를 직접 import하지 않고 injected fixture로만 검증한다.
 - bootstrap 경계는 분리됐다.
-  - [src/main.ts](/Users/gojimin/Desktop/ai/apps/bff/src/main.ts)는 production bootstrap만 사용한다.
+  - [src/index.ts](/Users/gojimin/Desktop/ai/apps/bff/src/index.ts)는 production bootstrap만 사용한다.
   - [dev/main.ts](/Users/gojimin/Desktop/ai/apps/bff/dev/main.ts)는 dev fixture registry를 연결한 dev bootstrap만 사용한다.
   - production bootstrap은 `USE_DEV_FIXTURES=true`면 즉시 실패한다.
 - build 경계도 분리됐다.
@@ -235,7 +235,7 @@ apps/bff/dev/
         test/
           fixture.test.ts
     index.ts
-  main.ts
+  index.ts
 ```
 
 - fixture test도 fixture source와 같은 depth의 `test/` 폴더로 이동한다.
@@ -273,7 +273,7 @@ type CreateAppOptions = {
 - `Result<T>`는 `utils/result.types.ts`에 둔다.
 - route, helper, dev fixture는 공용 타입을 재선언하지 않고 `import type`으로 재사용한다.
 
-- `src/main.ts`는 production bootstrap만 담당한다.
+- `src/index.ts`는 production bootstrap만 담당한다.
   - `createApp()`을 fixture 없이 호출한다.
 - `dev/main.ts`는 dev bootstrap만 담당한다.
   - `USE_DEV_FIXTURES=true`면 `dev/fixtures/index.ts`의 registry를 주입한다.
@@ -289,7 +289,7 @@ type CreateAppOptions = {
   - `dev`: dev bootstrap 진입점 사용
   - `typecheck`: `tsconfig.json --noEmit` 기준 전체 `src` 검사
   - `build`: contracts declaration build 후 `tsconfig.build.json` 기준 production `src` runtime만 emit
-  - `start`: production `dist/main.js`
+  - `start`: production `dist/index.js`
 - `apps/bff/tsconfig.build.json`은 아래를 만족해야 한다.
   - `src` runtime 파일만 emit 대상으로 둔다.
   - `src/**/test/**`와 `**/*.test.ts`는 emit 대상에서 제외한다.
