@@ -44,9 +44,9 @@
 
 ## 7. async boundary 회귀 테스트를 보강한다.
 
-- [ ] `apps/web/src/app/router/router.integration.test.tsx`에서 `/books` direct entry와 dialog open/reopen 흐름 회귀를 유지한다.
-- [ ] book, region, library dialog 관련 RTL tests를 lazy boundary 기준으로 갱신한다.
-- [ ] preload가 best-effort이고 preload 실패가 최종 click/open 동작을 깨지 않는다는 점을 회귀로 잠근다.
+- [x] `apps/web/src/app/router/router.integration.test.tsx`에서 `/books` direct entry와 dialog open/reopen 흐름 회귀를 유지한다.
+- [x] book, region, library dialog 관련 RTL tests를 lazy boundary 기준으로 갱신한다.
+- [x] preload가 best-effort이고 preload 실패가 최종 click/open 동작을 깨지 않는다는 점을 회귀로 잠근다.
 
 ## 8. build acceptance와 문서 동기화를 마감한다.
 
