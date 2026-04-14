@@ -8,7 +8,8 @@ import {BookSearchResult} from '@/features/book-search';
 import {useFindLibraryStore} from '@/features/find-library';
 import {RequestGetError} from '@/shared/request';
 
-const {mockBookSearchResponse, mockPreloadBookDetailDialog, mockUseGetSearchBooks} = vi.hoisted(() => ({
+const {mockBookSearchResponse, mockPreloadBookDetailDialog, mockPreloadRegionSelectDialog, mockUseGetSearchBooks} =
+  vi.hoisted(() => ({
   mockBookSearchResponse: {
     items: [
       {
@@ -45,6 +46,7 @@ const {mockBookSearchResponse, mockPreloadBookDetailDialog, mockUseGetSearchBook
     totalCount: 12,
   },
   mockPreloadBookDetailDialog: vi.fn(async () => undefined),
+  mockPreloadRegionSelectDialog: vi.fn(async () => undefined),
   mockUseGetSearchBooks: vi.fn(),
 }));
 
@@ -66,9 +68,19 @@ vi.mock('@/features/book-detail-dialog', async importOriginal => {
   };
 });
 
+vi.mock('@/features/region', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/features/region')>();
+
+  return {
+    ...actual,
+    preloadRegionSelectDialog: mockPreloadRegionSelectDialog,
+  };
+});
+
 beforeEach(() => {
   mockUseGetSearchBooks.mockReturnValue(mockBookSearchResponse);
   mockPreloadBookDetailDialog.mockClear();
+  mockPreloadRegionSelectDialog.mockClear();
   useBookDetailDialogStore.getState().resetBookDetailDialog();
   useFindLibraryStore.getState().resetFindLibraryFlow();
 });
@@ -253,6 +265,28 @@ describe('BookSearchResult', () => {
     expect(useBookDetailDialogStore.getState().selectedBookDetail).toEqual({
       isbn13: '9791196447182',
     });
+  });
+
+  it('소장 도서관 찾기 intent에서 지역 선택 dialog chunk preload를 시도한다', async () => {
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    const [firstItem] = screen.getAllByRole('listitem');
+    const selectButton = within(firstItem).getByRole('button', {name: '소장 도서관 찾기'});
+
+    fireEvent.pointerEnter(selectButton);
+    fireEvent.focus(selectButton);
+    fireEvent.touchStart(selectButton);
+
+    expect(mockPreloadRegionSelectDialog).toHaveBeenCalledTimes(3);
   });
 
   it('상세 보기 intent에서 상세 dialog chunk preload를 시도한다', () => {
