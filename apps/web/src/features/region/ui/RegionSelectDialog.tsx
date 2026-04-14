@@ -79,7 +79,7 @@ function RegionSelectDialog() {
         }
       }}
     >
-      {open && <RegionSelectDialogContent />}
+      <RegionSelectDialogContent />
     </Dialog>
   );
 }
