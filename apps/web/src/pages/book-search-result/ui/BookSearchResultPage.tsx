@@ -32,7 +32,6 @@ function createPageHref(params: BookSearchParams, page: number) {
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
   const resetBookDetailDialog = useBookDetailDialogStore(state => state.resetBookDetailDialog);
-  const hasRegionDialogBook = useFindLibraryStore(state => state.regionDialogBook != null);
   const resetFindLibraryFlow = useFindLibraryStore(state => state.resetFindLibraryFlow);
 
   useEffect(() => {
@@ -75,7 +74,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         params={params}
       />
       <BookDetailDialogAsync />
-      {hasRegionDialogBook && <RegionSelectDialogAsync />}
+      <RegionSelectDialogAsync />
       <LibrarySearchResultDialog />
     </>
   );
