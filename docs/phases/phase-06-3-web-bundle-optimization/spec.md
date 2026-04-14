@@ -2,7 +2,7 @@
 
 ## 목표
 
-- 현재 web production build의 단일 JS bundle을 route, dialog, map, home hero enhancement 기준으로 분리해 initial JS 비용을 줄인다.
+- 현재 web production build의 단일 JS bundle을 route, dialog, home hero enhancement 기준으로 분리해 initial JS 비용을 줄인다.
 - 단순히 Vite의 `500 kB` warning을 숨기지 않고, 실제 사용자 흐름 기준으로 **필요한 코드만 필요한 시점에 로드**되게 만든다.
 - 기존 `/`와 `/books` 사용자 흐름, dialog 동작, Kakao map interaction, availability 조회 경험은 유지한 채 semantic code-splitting 구조를 고정한다.
 
@@ -20,7 +20,7 @@
 
 - 이번 phase는 **semantic code-splitting**을 우선한다.
   - `manualChunks`, `chunkSizeWarningLimit` 상향, warning 무시는 도입하지 않는다.
-  - route, dialog, map, animation enhancement 같은 실제 UX 경계를 async boundary로 만든다.
+- route, dialog, animation enhancement 같은 실제 UX 경계를 async boundary로 만든다.
 - route-level splitting은 React Router route object의 `lazy`를 사용한다.
   - `/books` route는 eager import를 제거하고 route-level lazy module로 전환한다.
   - `/`, `*`, route error는 eager 유지한다.
@@ -40,9 +40,8 @@
 
 - `/books` route route-level lazy 전환
 - `/books` 결과 문맥 dialog 3종 lazy boundary 전환
-- Kakao map runtime을 library result dialog shell과 분리
 - home hero의 `react-type-animation` defer
-- dialog chunk preload와 map chunk preload 정책 추가
+- dialog chunk preload 정책 추가
 - bundle 회귀 기준과 async boundary 회귀 테스트 보강
 
 ## 비범위
@@ -63,7 +62,6 @@
   - `BookDetailDialog`
   - `RegionSelectDialog`
   - `LibrarySearchResultDialog`
-- 현재 [LibrarySearchResultDialog.tsx](/Users/gojimin/Desktop/ai/apps/web/src/features/library/ui/LibrarySearchResultDialog.tsx) 아래에서 desktop/mobile layout과 Kakao map runtime까지 같은 chunk로 묶인다.
 - 현재 [BrandMessage.tsx](/Users/gojimin/Desktop/ai/apps/web/src/pages/home/ui/BrandMessage.tsx)는 `react-type-animation`을 initial home entry에 직접 싣는다.
 - 현재 [features/book/index.ts](/Users/gojimin/Desktop/ai/apps/web/src/features/book/index.ts)는 search/result와 detail dialog를 한 slice public API로 같이 노출한다.
 
@@ -135,22 +133,7 @@ features/
   - `touchstart`
 - `handleConfirm`는 `confirmRegion()` 호출 직전에 `preloadLibrarySearchResultDialog()`를 한 번 더 호출해 first-open 지연을 줄인다.
 
-### 5. Kakao map boundary
-
-- Kakao map 관련 runtime은 library result dialog shell과 별도 chunk로 분리한다.
-- map runtime chunk 범위는 아래로 고정한다.
-  - `features/library/map/**`
-  - `shared/kakao-map/**`
-- `LibrarySearchResultSelectedMap`는 data wrapper로 유지하되, 실제 map canvas/runtime은 `LibrarySearchResultMapAsync`로 lazy import한다.
-- desktop의 [LibrarySearchResultRightPanel.tsx](/Users/gojimin/Desktop/ai/apps/web/src/features/library/ui/desktop/LibrarySearchResultRightPanel.tsx)와 mobile의 [LibrarySearchResultMobileQuickMapDialog.tsx](/Users/gojimin/Desktop/ai/apps/web/src/features/library/ui/mobile/LibrarySearchResultMobileQuickMapDialog.tsx)는 직접 map runtime을 eager import하지 않는다.
-- `LibrarySearchResultDialog` shell이 열린 뒤 map area가 처음 렌더될 때 map chunk 로딩을 시작한다.
-- mobile `지도로 보기` CTA는 open intent에서 `preloadLibrarySearchResultMap()`를 호출한다.
-  - `pointerenter`
-  - `focus`
-  - `touchstart`
-- map chunk loading 동안 fallback은 기존 map placeholder/disabled UI 계약을 유지한다.
-
-### 6. Home hero animation boundary
+### 5. Home hero animation boundary
 
 - home hero의 `react-type-animation`은 initial entry에서 제거한다.
 - `BrandMessage`는 정적 heading shell을 eager 유지한다.
@@ -173,7 +156,7 @@ AsyncComponent.preload();
 
 - 이 helper는 route-level lazy에는 쓰지 않는다.
   - route-level lazy는 React Router `lazy`
-  - dialog/map/animation lazy는 `lazyWithPreload`
+  - dialog/animation lazy는 `lazyWithPreload`
 - FSD 규칙을 지키기 위해 dynamic import target도 slice public API 또는 slice 내부 전용 async entry module만 사용한다.
 - slice 외부에서는 개별 `ui` 파일을 직접 dynamic import하지 않는다.
 
@@ -185,7 +168,6 @@ AsyncComponent.preload();
   - `BookDetailDialogAsync`: 기존 `BookDetailDialogLoadingContent`
   - `RegionSelectDialogAsync`: `null` fallback 허용
   - `LibrarySearchResultDialogAsync`: dialog shell loading은 `null` fallback 허용
-  - map async boundary: 기존 map placeholder/fallback 사용
 - 기존 Suspense data loading boundary는 유지한다.
   - data Suspense와 code-splitting Suspense를 하나로 합치지 않는다.
 
@@ -202,7 +184,6 @@ AsyncComponent.preload();
   - `BookDetailDialog` runtime
   - `RegionSelectDialog` runtime
   - `LibrarySearchResultDialog` runtime
-  - Kakao map runtime
   - `react-type-animation`
 
 ## 테스트 기준
@@ -224,7 +205,6 @@ AsyncComponent.preload();
   - `/books` direct entry가 기존과 같은 결과 화면을 보여준다.
   - `상세 보기` 첫 open과 재open이 모두 동작한다.
   - `소장 도서관 찾기 -> 지역 선택 -> 결과 dialog` 흐름이 기존과 같이 동작한다.
-  - mobile `지도로 보기`와 desktop map panel이 모두 기존 선택 동기화를 유지한다.
   - home hero는 animation enhancement가 늦어도 static 문구가 바로 보인다.
 
 ### 3. prefetch 회귀

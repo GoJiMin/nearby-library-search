@@ -42,28 +42,20 @@
 - [x] region confirm CTA의 `pointerenter`, `focus`, `touchstart`에서 preload를 연결한다.
 - [x] `handleConfirm` 직전에 `preloadLibrarySearchResultDialog()`를 한 번 더 호출해 first-open 지연을 줄인다.
 
-## 7. Kakao map runtime을 second-stage lazy boundary로 분리한다.
-
-- [ ] map runtime을 dialog shell과 별도 chunk로 분리한다.
-- [ ] `LibrarySearchResultSelectedMap`는 wrapper로 유지하고 실제 map canvas/runtime은 `LibrarySearchResultMapAsync`로 lazy import한다.
-- [ ] desktop panel과 mobile quick map이 같은 async map boundary를 재사용하게 정리한다.
-- [ ] `지도로 보기` CTA의 `pointerenter`, `focus`, `touchstart`에서 `preloadLibrarySearchResultMap()`를 호출한다.
-
-## 8. home hero animation enhancement를 defer한다.
+## 7. home hero animation enhancement를 defer한다.
 
 - [ ] `BrandMessage`는 정적 heading shell을 eager 유지한다.
 - [ ] `react-type-animation`은 별도 async component로 분리한다.
 - [ ] `requestIdleCallback` 우선, `setTimeout(0)` fallback으로 first paint 이후 enhancement 로딩을 시작한다.
 - [ ] animation chunk가 늦어도 static 문구가 즉시 보이도록 유지한다.
 
-## 9. async boundary 회귀 테스트를 보강한다.
+## 8. async boundary 회귀 테스트를 보강한다.
 
 - [ ] `apps/web/src/app/router/router.integration.test.tsx`에서 `/books` direct entry와 dialog open/reopen 흐름 회귀를 유지한다.
 - [ ] book, region, library dialog 관련 RTL tests를 lazy boundary 기준으로 갱신한다.
-- [ ] map 분리 이후 desktop/mobile selection sync와 quick map 흐름이 유지되는지 확인한다.
 - [ ] preload가 best-effort이고 preload 실패가 최종 click/open 동작을 깨지 않는다는 점을 회귀로 잠근다.
 
-## 10. build acceptance와 문서 동기화를 마감한다.
+## 9. build acceptance와 문서 동기화를 마감한다.
 
 - [ ] `pnpm --filter @nearby-library-search/web build`에서 Vite chunk size warning이 없음을 확인한다.
 - [ ] emitted app JS가 multiple chunks이며 initial entry `<= 300 kB`, all app chunks `<= 400 kB`를 만족하는지 확인한다.
@@ -74,7 +66,7 @@
 
 - 이번 phase는 공개 route 계약 `/`, `/books`를 바꾸지 않고 web bundle 경계만 재설계한다.
 - `features/book`는 `book-search`와 `book-detail-dialog`로 최소 분리한다.
-- dialog/map/animation lazy는 `lazyWithPreload` 기반으로, route lazy는 React Router `lazy` 기반으로 구현한다.
+- dialog/animation lazy는 `lazyWithPreload` 기반으로, route lazy는 React Router `lazy` 기반으로 구현한다.
 - intent preload는 UX 최적화 수단일 뿐이며, preload가 없어도 click/open 최종 동작은 동일해야 한다.
 - `manualChunks`, `chunkSizeWarningLimit` 상향, analyzer plugin 추가는 이번 phase 비범위다.
 
@@ -87,7 +79,6 @@
   - book detail dialog
   - region select dialog
   - library result dialog
-  - desktop/mobile map selection sync
 - home hero
   - static heading 즉시 표시
   - animation enhancement 지연 로드
@@ -99,8 +90,8 @@
 
 ## Assumptions
 
-- 구현 순서는 helper -> route -> slice split -> dialogs -> map -> hero -> tests -> build 마감으로 고정한다.
+- 구현 순서는 helper -> route -> slice split -> dialogs -> hero -> tests -> build 마감으로 고정한다.
 - dialog 3종은 각각 별도 task로 다룬다.
-- map runtime 분리는 library result dialog shell lazy와 별도 책임으로 본다.
+- home hero defer는 dialog lazy 이후 task로 진행한다.
 - 이번 phase는 JS bundle/code-splitting만 다루고 이미지 최적화는 별도 phase로 미룬다.
 - 최종 task 전까지는 숫자 예산을 향해 구현을 진행하되, build acceptance 체크는 실제 build 확인 후에만 `[x]` 처리한다.
