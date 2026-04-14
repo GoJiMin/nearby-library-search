@@ -1,6 +1,7 @@
 import {DETAIL_REGION_OPTIONS_BY_REGION, REGION_OPTIONS} from '@/entities/region';
 import {useShallow} from 'zustand/react/shallow';
 import {useFindLibraryStore} from '@/features/find-library';
+import {preloadLibrarySearchResultDialog} from '@/features/library';
 import {Button, DialogFooter, Text} from '@/shared/ui';
 import {createRegionSelectConfirmParams} from '../model/createRegionSelectConfirmParams';
 import type {RegionSelectionState} from '../model/regionSelection.contract';
@@ -37,10 +38,16 @@ function RegionSelectDialogFooter() {
   const isResetDisabled = selection == null;
   const selectionSummaryText = getSelectionSummaryText(selection);
 
+  function handlePreloadLibrarySearchResultDialog() {
+    void preloadLibrarySearchResultDialog();
+  }
+
   function handleConfirm() {
     if (selection == null || selectedBook == null) {
       return;
     }
+
+    void preloadLibrarySearchResultDialog();
 
     confirmRegion(
       createRegionSelectConfirmParams({
@@ -66,7 +73,15 @@ function RegionSelectDialogFooter() {
         >
           초기화
         </Button>
-        <Button className="rounded-full px-6" disabled={isConfirmDisabled} size="sm" onClick={handleConfirm}>
+        <Button
+          className="rounded-full px-6"
+          disabled={isConfirmDisabled}
+          size="sm"
+          onClick={handleConfirm}
+          onFocus={handlePreloadLibrarySearchResultDialog}
+          onPointerEnter={handlePreloadLibrarySearchResultDialog}
+          onTouchStart={handlePreloadLibrarySearchResultDialog}
+        >
           선택 완료
         </Button>
       </div>

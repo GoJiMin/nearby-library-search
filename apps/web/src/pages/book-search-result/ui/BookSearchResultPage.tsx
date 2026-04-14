@@ -5,7 +5,7 @@ import type {BookSearchParams} from '@/entities/book';
 import {BookDetailDialogAsync, useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book-search';
 import {useFindLibraryStore} from '@/features/find-library';
-import {LibrarySearchResultDialog} from '@/features/library';
+import {LibrarySearchResultDialogAsync} from '@/features/library';
 import {RegionSelectDialogAsync} from '@/features/region';
 import {Button, Card, Heading, Text} from '@/shared/ui';
 
@@ -75,7 +75,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
       />
       <BookDetailDialogAsync />
       <RegionSelectDialogAsync />
-      <LibrarySearchResultDialog />
+      <LibrarySearchResultDialogAsync />
     </>
   );
 }
