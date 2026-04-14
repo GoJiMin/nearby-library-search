@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import {BookSearchStart} from '@/features/book';
+import {BookSearchStart} from '@/features/book-search';
 import type {BookSearchParams} from '@/entities/book';
 import {Text} from '@/shared/ui';
 import {BrandMessage} from './BrandMessage';

@@ -2,7 +2,7 @@ import {create} from 'zustand';
 import type {DetailRegionCode, LibraryCode, RegionCode} from '@nearby-library-search/contracts';
 import {parseSearchLibrariesParams} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
-import type {BookSelectionActionPayload} from '@/features/book';
+import type {BookSelectionActionPayload} from '@/features/book-search';
 
 type RegionSelectionState = {
   detailRegion?: DetailRegionCode;

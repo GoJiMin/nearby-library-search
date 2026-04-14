@@ -1,5 +1,5 @@
 import {parseSearchLibrariesParams, type LibrarySearchParams} from '@/entities/library';
-import type {BookSelectionActionPayload} from '@/features/book';
+import type {BookSelectionActionPayload} from '@/features/book-search';
 import type {RegionSelectionState} from './regionSelectDialog.contract';
 
 type CreateRegionSelectConfirmParamsArgs = {
