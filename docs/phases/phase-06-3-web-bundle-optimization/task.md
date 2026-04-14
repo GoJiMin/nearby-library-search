@@ -30,10 +30,10 @@
 
 ## 5. `RegionSelectDialog` lazy boundary와 intent preload를 도입한다.
 
-- [ ] `features/region` slice가 `RegionSelectDialogAsync`와 `preloadRegionSelectDialog()`를 노출하게 한다.
-- [ ] `BookSearchResultPage`에서 `regionDialogBook != null`일 때만 `RegionSelectDialogAsync`를 mount한다.
-- [ ] `소장 도서관 찾기` CTA의 `pointerenter`, `focus`, `touchstart`에서 `preloadRegionSelectDialog()`를 호출한다.
-- [ ] closed 상태에서는 dialog lazy fallback을 렌더하지 않도록 정리한다.
+- [x] `features/region` slice가 `RegionSelectDialogAsync`와 `preloadRegionSelectDialog()`를 노출하게 한다.
+- [x] `BookSearchResultPage`에서 `regionDialogBook != null`일 때만 `RegionSelectDialogAsync`를 mount한다.
+- [x] `소장 도서관 찾기` CTA의 `pointerenter`, `focus`, `touchstart`에서 `preloadRegionSelectDialog()`를 호출한다.
+- [x] closed 상태에서는 dialog lazy fallback을 렌더하지 않도록 정리한다.
 
 ## 6. `LibrarySearchResultDialog` lazy boundary와 confirm intent preload를 도입한다.
 
