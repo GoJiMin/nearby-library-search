@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {AppProvider} from '@/app/providers';
 import {useFindLibraryStore} from '@/features/find-library';
-import {LibrarySearchResultDialog} from '@/features/library';
 import {KakaoMapSdkLoadError} from '@/shared/kakao-map';
 import {RequestGetError} from '@/shared/request';
 import {LibrarySearchResultDetails} from '../common/LibrarySearchResultDetails';
+import {LibrarySearchResultDialog} from '../LibrarySearchResultDialog';
 
 async function tabUntilFocused(user: ReturnType<typeof userEvent.setup>, target: HTMLElement, maxSteps = 32) {
   for (let step = 0; step < maxSteps; step += 1) {

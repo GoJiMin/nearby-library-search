@@ -6,4 +6,3 @@ export type {
   BookDetailDialogStore,
 } from './model/useBookDetailDialogStore';
 export {BookDetailDialogAsync, preloadBookDetailDialog} from './ui/book-detail/BookDetailDialogAsync';
-export {BookDetailDialog} from './ui/book-detail/BookDetailDialog';

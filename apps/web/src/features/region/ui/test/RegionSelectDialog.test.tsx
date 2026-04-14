@@ -2,8 +2,8 @@ import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/
 import userEvent from '@testing-library/user-event';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {useFindLibraryStore} from '@/features/find-library';
-import {RegionSelectDialog} from '@/features/region';
 import {useRegionSelectionStore} from '../../model/useRegionSelectionStore';
+import {RegionSelectDialog} from '../RegionSelectDialog';
 
 const {mockPreloadLibrarySearchResultDialog} = vi.hoisted(() => ({
   mockPreloadLibrarySearchResultDialog: vi.fn(async () => undefined),
