@@ -31,7 +31,6 @@ function createPageHref(params: BookSearchParams, page: number) {
 
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
-  const selectedBookDetail = useBookDetailDialogStore(state => state.selectedBookDetail);
   const resetBookDetailDialog = useBookDetailDialogStore(state => state.resetBookDetailDialog);
   const resetFindLibraryFlow = useFindLibraryStore(state => state.resetFindLibraryFlow);
 
@@ -74,7 +73,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         onSubmitSearch={handleSubmitSearch}
         params={params}
       />
-      {selectedBookDetail != null ? <BookDetailDialogAsync /> : null}
+      <BookDetailDialogAsync />
       <RegionSelectDialog />
       <LibrarySearchResultDialog />
     </>
