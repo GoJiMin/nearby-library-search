@@ -2,7 +2,7 @@ import {useEffect} from 'react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
-import {BookDetailDialog, useBookDetailDialogStore} from '@/features/book-detail-dialog';
+import {BookDetailDialogAsync, useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {BookSearchResult, readBookSearchResultUrlState} from '@/features/book-search';
 import {useFindLibraryStore} from '@/features/find-library';
 import {LibrarySearchResultDialog} from '@/features/library';
@@ -31,6 +31,7 @@ function createPageHref(params: BookSearchParams, page: number) {
 
 function BookSearchResultPageContent({params}: BookSearchResultPageContentProps) {
   const navigate = useNavigate();
+  const selectedBookDetail = useBookDetailDialogStore(state => state.selectedBookDetail);
   const resetBookDetailDialog = useBookDetailDialogStore(state => state.resetBookDetailDialog);
   const resetFindLibraryFlow = useFindLibraryStore(state => state.resetFindLibraryFlow);
 
@@ -73,7 +74,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
         onSubmitSearch={handleSubmitSearch}
         params={params}
       />
-      <BookDetailDialog />
+      {selectedBookDetail != null ? <BookDetailDialogAsync /> : null}
       <RegionSelectDialog />
       <LibrarySearchResultDialog />
     </>

@@ -1,6 +1,7 @@
+import type {ComponentProps} from 'react';
 import {BarChart3, BookOpen, Fingerprint} from 'lucide-react';
 import type {BookSearchItem} from '@/entities/book';
-import {useBookDetailDialogStore} from '@/features/book-detail-dialog';
+import {preloadBookDetailDialog, useBookDetailDialogStore} from '@/features/book-detail-dialog';
 import {useFindLibraryStore} from '@/features/find-library';
 import {Card, Heading, LucideIcon, Text} from '@/shared/ui';
 
@@ -16,17 +17,19 @@ function createPublisherPublicationLabel(item: BookSearchItem) {
   return item.publisher ?? item.publicationYear;
 }
 
-type BookSearchResultActionButtonProps = {
+type BookSearchResultActionButtonProps = Pick<
+  ComponentProps<'button'>,
+  'onClick' | 'onFocus' | 'onPointerEnter' | 'onTouchStart'
+> & {
   children: string;
-  onClick: () => void;
 };
 
-function BookSearchResultActionButton({children, onClick}: BookSearchResultActionButtonProps) {
+function BookSearchResultActionButton({children, ...buttonProps}: BookSearchResultActionButtonProps) {
   return (
     <button
       className="text-text-muted focus-visible:ring-accent-soft hover:text-accent focus-visible:text-accent cursor-pointer rounded-full px-1 py-1 text-xs font-semibold transition-colors outline-none focus-visible:ring-4 md:text-sm"
       type="button"
-      onClick={onClick}
+      {...buttonProps}
     >
       {children}
     </button>
@@ -37,6 +40,10 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
   const publisherPublicationLabel = createPublisherPublicationLabel(item);
   const openBookDetailDialog = useBookDetailDialogStore(state => state.openBookDetailDialog);
   const openRegionDialog = useFindLibraryStore(state => state.openRegionDialog);
+
+  function handlePreloadBookDetailDialog() {
+    void preloadBookDetailDialog();
+  }
 
   return (
     <article>
@@ -104,11 +111,14 @@ function BookSearchResultCard({item}: BookSearchResultCardProps) {
 
             <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2">
               <BookSearchResultActionButton
+                onFocus={handlePreloadBookDetailDialog}
                 onClick={() => {
                   openBookDetailDialog({
                     isbn13: item.isbn13,
                   });
                 }}
+                onPointerEnter={handlePreloadBookDetailDialog}
+                onTouchStart={handlePreloadBookDetailDialog}
               >
                 상세 보기
               </BookSearchResultActionButton>
