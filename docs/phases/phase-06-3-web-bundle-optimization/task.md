@@ -2,10 +2,10 @@
 
 ## 1. `lazyWithPreload` 공용 helper와 async export 규칙을 도입한다.
 
-- [ ] `apps/web/src/shared/lib/lazyWithPreload.ts`를 추가한다.
-- [ ] component-level lazy는 `*Async` export와 `preload*()` 함수 규칙으로 통일한다.
-- [ ] route-level lazy에는 이 helper를 쓰지 않고 React Router `lazy`만 쓰는 기준을 고정한다.
-- [ ] 이후 task에서 dynamic import target이 slice public API 또는 slice 내부 async entry만 향하도록 경계를 맞춘다.
+- [x] `apps/web/src/shared/lib/lazyWithPreload.ts`를 추가한다.
+- [x] component-level lazy는 `*Async` export와 `preload*()` 함수 규칙으로 통일한다.
+- [x] route-level lazy에는 이 helper를 쓰지 않고 React Router `lazy`만 쓰는 기준을 고정한다.
+- [x] 이후 task에서 dynamic import target이 slice public API 또는 slice 내부 async entry만 향하도록 경계를 맞춘다.
 
 ## 2. `/books` route를 route-level lazy boundary로 전환한다.
 
