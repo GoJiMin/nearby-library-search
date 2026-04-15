@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 import {SecondaryPageHeader} from '@/app/layouts';
 import type {BookSearchParams} from '@/entities/book';
@@ -33,6 +33,7 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
   const navigate = useNavigate();
   const resetBookDetailDialog = useBookDetailDialogStore(state => state.resetBookDetailDialog);
   const resetFindLibraryFlow = useFindLibraryStore(state => state.resetFindLibraryFlow);
+  const previousPageRef = useRef<number | null>(null);
 
   useEffect(() => {
     resetFindLibraryFlow();
@@ -45,6 +46,19 @@ function BookSearchResultPageContent({params}: BookSearchResultPageContentProps)
       resetBookDetailDialog();
     };
   }, [params.author, params.page, params.title, resetBookDetailDialog]);
+
+  useEffect(() => {
+    if (previousPageRef.current != null && previousPageRef.current !== params.page) {
+      if (typeof window.scrollTo === 'function') {
+        window.scrollTo({
+          behavior: 'auto',
+          top: 0,
+        });
+      }
+    }
+
+    previousPageRef.current = params.page;
+  }, [params.page]);
 
   function handleSubmitSearch(nextParams: BookSearchParams) {
     const nextSearchParams = new URLSearchParams({

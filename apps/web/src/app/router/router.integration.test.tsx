@@ -243,6 +243,7 @@ beforeEach(() => {
   mockKakaoMapConfig.isEnabled = false;
   mockLoadKakaoMapSdk.mockReset();
   useBookDetailDialogStore.getState().resetBookDetailDialog();
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
   vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
     callback(0);
 
