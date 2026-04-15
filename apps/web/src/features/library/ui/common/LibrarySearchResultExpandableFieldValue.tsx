@@ -110,7 +110,7 @@ function LibrarySearchResultExpandableFieldValue({
       {!isExpanded && (
         <span
           aria-hidden="true"
-          className="text-text invisible absolute top-0 left-0 w-max whitespace-nowrap text-sm leading-6 select-none"
+          className="text-text pointer-events-none invisible fixed top-0 left-[-9999px] w-max whitespace-nowrap text-sm leading-6 select-none"
           data-slot="library-search-expandable-field-measure"
           ref={measureRef}
         >

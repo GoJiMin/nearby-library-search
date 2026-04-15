@@ -97,8 +97,8 @@ function LibrarySearchResultDetails({isbn13, layout = 'desktop', library}: Libra
       aria-label="선택된 도서관 정보 패널"
       className={
         layout === 'mobile'
-          ? 'bg-surface border-line/40 border-b px-6 pt-5 pb-4'
-          : 'bg-surface border-line/40 min-h-0 overflow-y-auto border-t px-6 pt-5 pb-2'
+          ? 'bg-surface border-line/40 overflow-x-hidden border-b px-6 pt-5 pb-4'
+          : 'bg-surface border-line/40 min-h-0 overflow-x-hidden overflow-y-auto border-t px-6 pt-5 pb-2'
       }
     >
       <div className="flex flex-col gap-6">
