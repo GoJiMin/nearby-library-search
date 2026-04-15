@@ -18,46 +18,51 @@ function createCollapsedValue(value: string) {
   return value.replace(/\n+/g, ' / ');
 }
 
-function estimateOverflow(value: string) {
-  return value.includes('\n') || value.length > 32;
-}
-
 function LibrarySearchResultExpandableFieldValue({
   label,
   value,
 }: LibrarySearchResultExpandableFieldValueProps) {
   const expandedValue = normalizeExpandedValue(value);
   const collapsedValue = createCollapsedValue(expandedValue);
-  const hasOverflowHint = estimateOverflow(expandedValue);
+  const valueSignature = `${collapsedValue}\u0000${expandedValue}`;
   const contentId = useId();
   const contentRef = useRef<HTMLParagraphElement | null>(null);
+  const measureRef = useRef<HTMLSpanElement | null>(null);
+  const previousValueSignatureRef = useRef(valueSignature);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isOverflowing, setIsOverflowing] = useState(hasOverflowHint);
+  const [isOverflowing, setIsOverflowing] = useState(false);
 
   useEffect(() => {
+    if (previousValueSignatureRef.current === valueSignature) {
+      return;
+    }
+
+    previousValueSignatureRef.current = valueSignature;
     setIsExpanded(false);
-    setIsOverflowing(hasOverflowHint);
-  }, [expandedValue, hasOverflowHint]);
+    setIsOverflowing(false);
+  }, [valueSignature]);
 
   useLayoutEffect(() => {
     if (isExpanded) {
       return;
     }
 
-    const node = contentRef.current;
+    const contentNode = contentRef.current;
+    const measureNode = measureRef.current;
 
-    if (node == null) {
+    if (contentNode == null || measureNode == null) {
       return;
     }
 
     const measureOverflow = () => {
-      if (node.clientHeight === 0 || node.clientWidth === 0) {
+      const availableWidth = contentNode.getBoundingClientRect().width;
+      const measuredWidth = measureNode.getBoundingClientRect().width;
+
+      if (availableWidth === 0 || measuredWidth === 0) {
         return;
       }
 
-      const hasMeasuredOverflow = node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1;
-
-      setIsOverflowing(hasOverflowHint || hasMeasuredOverflow);
+      setIsOverflowing(measuredWidth > availableWidth + 1);
     };
 
     const frameId = window.requestAnimationFrame(measureOverflow);
@@ -68,21 +73,30 @@ function LibrarySearchResultExpandableFieldValue({
             measureOverflow();
           });
 
-    resizeObserver?.observe(node);
-    window.addEventListener('resize', measureOverflow);
+    let cancelled = false;
+    const fontReadyPromise = document.fonts?.ready;
+
+    resizeObserver?.observe(contentNode);
+
+    void fontReadyPromise?.then(() => {
+      if (!cancelled) {
+        measureOverflow();
+      }
+    });
 
     return () => {
+      cancelled = true;
       window.cancelAnimationFrame(frameId);
       resizeObserver?.disconnect();
-      window.removeEventListener('resize', measureOverflow);
     };
-  }, [collapsedValue, hasOverflowHint, isExpanded]);
+  }, [collapsedValue, isExpanded]);
 
   const actionLabel = isExpanded ? `${label} 접기` : `${label} 더보기`;
 
   return (
-    <div className="space-y-1">
+    <div className="relative space-y-1">
       <p
+        data-slot="library-search-expandable-field-content"
         id={contentId}
         ref={contentRef}
         className={
@@ -93,6 +107,16 @@ function LibrarySearchResultExpandableFieldValue({
       >
         {isExpanded ? expandedValue : collapsedValue}
       </p>
+      {!isExpanded && (
+        <span
+          aria-hidden="true"
+          className="text-text invisible absolute top-0 left-0 w-max whitespace-nowrap text-sm leading-6 select-none"
+          data-slot="library-search-expandable-field-measure"
+          ref={measureRef}
+        >
+          {collapsedValue}
+        </span>
+      )}
       {isOverflowing && (
         <button
           aria-controls={contentId}

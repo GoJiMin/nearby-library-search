@@ -8,6 +8,22 @@ import {RequestGetError} from '@/shared/request';
 import {LibrarySearchResultDetails} from '../common/LibrarySearchResultDetails';
 import {LibrarySearchResultDialog} from '../LibrarySearchResultDialog';
 
+const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+
+function createMockDomRect(width: number, height: number): DOMRect {
+  return {
+    bottom: height,
+    height,
+    left: 0,
+    right: width,
+    toJSON: () => ({}),
+    top: 0,
+    width,
+    x: 0,
+    y: 0,
+  } as DOMRect;
+}
+
 async function tabUntilFocused(user: ReturnType<typeof userEvent.setup>, target: HTMLElement, maxSteps = 32) {
   for (let step = 0; step < maxSteps; step += 1) {
     if (target === document.activeElement) {
@@ -395,10 +411,32 @@ describe('LibrarySearchResultDialog', () => {
       return 1;
     });
     vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function mockLibraryDetailFieldRect(
+      this: HTMLElement,
+    ) {
+      if (this.dataset.slot === 'library-search-expandable-field-content') {
+        return createMockDomRect(180, 24);
+      }
+
+      if (this.dataset.slot === 'library-search-expandable-field-measure') {
+        return createMockDomRect((this.textContent?.length ?? 0) * 7.2, 24);
+      }
+
+      return originalGetBoundingClientRect.call(this);
+    });
+    vi.stubGlobal(
+      'ResizeObserver',
+      class MockResizeObserver {
+        disconnect() {}
+        observe() {}
+        unobserve() {}
+      },
+    );
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
@@ -419,8 +457,12 @@ describe('LibrarySearchResultDialog', () => {
     expect(screen.getByRole('button', {name: /마포중앙도서관/})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /합정열람실/})).toBeInTheDocument();
     expect(within(detailPanel).getByRole('heading', {name: '마포중앙도서관'})).toBeInTheDocument();
-    expect(within(detailPanel).getByText('09:00 - 22:00')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('둘째 주 월요일')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('09:00 - 22:00', {selector: 'p[data-slot="library-search-expandable-field-content"]'}),
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('둘째 주 월요일', {selector: 'p[data-slot="library-search-expandable-field-content"]'}),
+    ).toBeInTheDocument();
     expect(within(detailPanel).getByText('서울특별시 마포구 월드컵북로 1')).toBeInTheDocument();
     expect(within(detailPanel).getByText('02-1234-5678')).toBeInTheDocument();
     expect(within(detailPanel).getByText('전날 대출 상태를 기준으로 제공돼 부정확할 수 있어요.')).toBeInTheDocument();
@@ -937,8 +979,12 @@ describe('LibrarySearchResultDialog', () => {
     const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
 
     expect(within(detailPanel).getByRole('heading', {name: '합정열람실'})).toBeInTheDocument();
-    expect(within(detailPanel).getByText('10:00 - 20:00')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('법정 공휴일')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('10:00 - 20:00', {selector: 'p[data-slot="library-search-expandable-field-content"]'}),
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('법정 공휴일', {selector: 'p[data-slot="library-search-expandable-field-content"]'}),
+    ).toBeInTheDocument();
   });
 
   it('키보드로도 목록에서 도서관을 고를 수 있다', async () => {
@@ -1299,7 +1345,11 @@ describe('LibrarySearchResultDialog', () => {
     const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
 
     expect(within(detailPanel).queryByRole('button', {name: '휴관일 더보기'})).not.toBeInTheDocument();
-    expect(within(detailPanel).getByText('매주 토요일, 일요일 / 법정공휴일')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('매주 토요일, 일요일 / 법정공휴일', {
+        selector: 'p[data-slot="library-search-expandable-field-content"]',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('다른 도서관으로 바뀌면 펼침 상태를 초기화한다', async () => {

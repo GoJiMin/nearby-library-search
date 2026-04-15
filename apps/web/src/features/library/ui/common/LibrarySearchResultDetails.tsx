@@ -61,7 +61,7 @@ function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsF
       </div>
       <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
         {detailFieldItems.map(item => (
-          <div className="flex items-start gap-3" key={item.label}>
+          <div className="flex items-start gap-3" key={`${library.code}:${item.key}`}>
             <div className="min-w-0 flex-1 space-y-1.5">
               <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">
                 {item.label}
