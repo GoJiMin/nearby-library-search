@@ -49,6 +49,20 @@ const DEFAULT_SELECTED_BOOK = {
   title: '파친코',
 };
 
+const LONG_LIBRARY_DETAILS = {
+  address: '서울특별시 마포구 월드컵북로 1',
+  closedDays: '매주 월요일 / 법정공휴일 / 관장이 필요하다고 인정하는 날 / &lt;휴관 안내&gt;',
+  code: 'LIB-LONG',
+  fax: null,
+  homepage: null,
+  latitude: 37.5563,
+  longitude: 126.9236,
+  name: '운영 정보가 긴 도서관',
+  operatingTime:
+    '평일 (어린이&middot;디지털자료실)09:00~18:00, (종합자료실&middot;1열람실)09:00~22:00, (2&middot;3열람실)07:00~22:00 / 주말 (어린이&middot;디지털&middot;종합자료실)09:00~18:00, (1열람실)09:00~22:00, (2&middot;3열람실)07:00~22:00',
+  phone: '02-1234-5678',
+} as const;
+
 function createMockLibraryAvailabilityResponse({
   hasBook = 'Y',
   libraryCode = 'LIB0001',
@@ -1232,6 +1246,37 @@ describe('LibrarySearchResultDialog', () => {
     render(<LibrarySearchResultDetails library={null} />);
 
     expect(screen.getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
+  });
+
+  it('긴 운영 시간은 더보기와 접기로 펼쳐서 확인할 수 있다', async () => {
+    const user = userEvent.setup();
+
+    render(<LibrarySearchResultDetails layout="desktop" library={LONG_LIBRARY_DETAILS} />);
+
+    const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
+    const expandButton = within(detailPanel).getByRole('button', {name: '운영 시간 더보기'});
+
+    expect(within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
+
+    await user.click(expandButton);
+
+    expect(within(detailPanel).getByRole('button', {name: '운영 시간 접기'})).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/어린이·디지털자료실/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/주말 \(어린이·디지털·종합자료실\)/)).toBeInTheDocument();
+    expect(within(detailPanel).getByRole('button', {name: '대출 가능 여부 조회'})).toBeDisabled();
+  });
+
+  it('긴 휴관일도 decode된 텍스트로 펼쳐서 확인할 수 있다', async () => {
+    const user = userEvent.setup();
+
+    render(<LibrarySearchResultDetails layout="desktop" library={LONG_LIBRARY_DETAILS} />);
+
+    const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
+
+    await user.click(within(detailPanel).getByRole('button', {name: '휴관일 더보기'}));
+
+    expect(within(detailPanel).getByRole('button', {name: '휴관일 접기'})).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/<휴관 안내>/)).toBeInTheDocument();
   });
 
   it('도서관을 찾는 동안에도 기본 화면 구조를 유지한다', async () => {

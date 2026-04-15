@@ -4,6 +4,7 @@ import {useShallow} from 'zustand/react/shallow';
 import {useGetSearchLibraries} from '@/entities/library';
 import type {LibrarySearchParams} from '@/entities/library';
 import {useFindLibraryStore} from '@/features/find-library';
+import {decodeHtmlEntities} from '@/shared/lib/decodeHtmlEntities';
 import {Heading, Text} from '@/shared/ui';
 
 type LibrarySearchResultListProps = {
@@ -21,7 +22,7 @@ type LibrarySearchResultListBodyProps = {
 };
 
 function getLibraryRowMeta(item: LibrarySearchItem) {
-  return item.operatingTime ?? item.closedDays ?? '운영 정보 없음';
+  return decodeHtmlEntities(item.operatingTime ?? item.closedDays ?? '운영 정보 없음');
 }
 
 function LibrarySearchResultListBody({

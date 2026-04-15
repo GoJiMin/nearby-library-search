@@ -1,7 +1,9 @@
 import type {Isbn13, LibrarySearchItem} from '@nearby-library-search/contracts';
 import {Clock3, MapPin, Phone, ExternalLink, CalendarX2} from 'lucide-react';
+import {decodeHtmlEntities} from '@/shared/lib/decodeHtmlEntities';
 import {Heading, LucideIcon, Text} from '@/shared/ui';
 import {LibrarySearchResultAvailabilityAction, LibrarySearchResultAvailabilityCta} from './LibrarySearchResultAvailabilityCta';
+import {LibrarySearchResultExpandableFieldValue} from './LibrarySearchResultExpandableFieldValue';
 
 type LibrarySearchResultDetailsProps = {
   isbn13?: Isbn13;
@@ -61,9 +63,16 @@ function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsF
               <p className="text-text-muted text-xs leading-none font-semibold tracking-[0.16em] uppercase">
                 {item.label}
               </p>
-              <Text className="text-sm wrap-break-word" tone="default">
-                {getLibraryDetailValue(library, item.key)}
-              </Text>
+              {item.key === 'operatingTime' || item.key === 'closedDays' ? (
+                <LibrarySearchResultExpandableFieldValue
+                  label={item.label}
+                  value={getLibraryDetailValue(library, item.key)}
+                />
+              ) : (
+                <Text className="break-words text-sm" tone="default">
+                  {decodeHtmlEntities(getLibraryDetailValue(library, item.key))}
+                </Text>
+              )}
             </div>
           </div>
         ))}
@@ -77,14 +86,6 @@ function LibrarySearchResultDetails({
   layout = 'desktop',
   library,
 }: LibrarySearchResultDetailsProps) {
-  const sectionClassName =
-    layout === 'mobile'
-      ? 'bg-surface border-line/40 border-b px-6 py-5'
-      : 'bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5';
-  const bodyClassName =
-    layout === 'mobile'
-      ? 'flex flex-col gap-6'
-      : 'flex min-h-0 flex-1 flex-col justify-between gap-6';
   const availabilityCta =
     library != null && isbn13 != null ? (
       <LibrarySearchResultAvailabilityCta isbn13={isbn13} key={library.code} libraryCode={library.code} />
@@ -93,13 +94,27 @@ function LibrarySearchResultDetails({
     );
 
   return (
-    <section aria-label="선택된 도서관 정보 패널" className={sectionClassName}>
-      <div className={bodyClassName}>
-        <div>
+    <section
+      aria-label="선택된 도서관 정보 패널"
+      className={
+        layout === 'mobile'
+          ? 'bg-surface border-line/40 border-b px-6 py-5'
+          : 'bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5'
+      }
+    >
+      {layout === 'mobile' ? (
+        <div className="flex flex-col gap-6">
           <LibrarySearchResultDetailsFields library={library} />
+          {availabilityCta}
         </div>
-        {availabilityCta}
-      </div>
+      ) : (
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+            <LibrarySearchResultDetailsFields library={library} />
+          </div>
+          <div className="border-line/40 mt-5 border-t pt-5">{availabilityCta}</div>
+        </div>
+      )}
     </section>
   );
 }
