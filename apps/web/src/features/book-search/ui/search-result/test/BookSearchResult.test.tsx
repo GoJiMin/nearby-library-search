@@ -507,6 +507,54 @@ describe('BookSearchResult', () => {
     expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
   });
 
+  it('에러 상태에서도 검색 params가 바뀌면 새 검색으로 다시 요청한다', async () => {
+    mockUseGetSearchBooks.mockImplementation(params => {
+      if (params.title === '파친코') {
+        throw new RequestGetError({
+          endpoint: '/api/books/search?title=파친코&page=1',
+          message: '도서 검색 정보를 불러오지 못했습니다.',
+          method: 'GET',
+          name: 'BOOK_SEARCH_UPSTREAM_ERROR',
+          requestBody: null,
+          status: 502,
+        });
+      }
+
+      return mockBookSearchResponse;
+    });
+
+    const {rerender} = renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '파친코',
+        }}
+      />,
+    );
+
+    expect(await screen.findByRole('heading', {level: 1, name: '데이터를 불러오지 못했어요'})).toBeInTheDocument();
+
+    rerender(
+      <MemoryRouter>
+        <BookSearchResult
+          createPageHref={page => `/books?title=${encodeURIComponent('채식주의자')}&page=${page}`}
+          onSubmitSearch={vi.fn()}
+          params={{
+            page: 1,
+            title: '채식주의자',
+          }}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole('heading', {level: 1, name: '채식주의자에 대한 12개의 검색 결과를 찾았어요.'}),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('heading', {level: 1, name: '데이터를 불러오지 못했어요'})).not.toBeInTheDocument();
+  });
+
   it('검색 결과가 많으면 페이지를 이동할 수 있다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       ...mockBookSearchResponse,

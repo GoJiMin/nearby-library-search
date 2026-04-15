@@ -10,9 +10,10 @@ type QueryErrorBoundaryFallbackProps = {
 type QueryErrorBoundaryProps = {
   children: ReactNode;
   fallback: (props: QueryErrorBoundaryFallbackProps) => ReactNode;
+  resetKeys?: Array<unknown>;
 };
 
-function QueryErrorBoundary({children, fallback}: QueryErrorBoundaryProps) {
+function QueryErrorBoundary({children, fallback, resetKeys}: QueryErrorBoundaryProps) {
   return (
     <QueryErrorResetBoundary>
       {({reset}) => (
@@ -24,6 +25,7 @@ function QueryErrorBoundary({children, fallback}: QueryErrorBoundaryProps) {
             })
           }
           onReset={reset}
+          resetKeys={resetKeys}
         >
           {children}
         </ErrorBoundary>
