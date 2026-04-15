@@ -1,6 +1,7 @@
 import type {Isbn13} from '@nearby-library-search/contracts';
 import {BookOpen} from 'lucide-react';
 import {useGetBookDetail} from '@/entities/book';
+import {decodeHtmlEntities} from '@/shared/lib/decodeHtmlEntities';
 import {Badge, Heading, LucideIcon, Text} from '@/shared/ui';
 import {BookDetailDialogEmptyContent} from './states/BookDetailDialogEmptyContent';
 
@@ -102,7 +103,7 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
               <section className="space-y-2">
                 <p className={detailSectionLabelClassName}>책 소개</p>
                 <Text size="sm" tone="default">
-                  {book.description}
+                  {decodeHtmlEntities(book.description)}
                 </Text>
               </section>
             )}

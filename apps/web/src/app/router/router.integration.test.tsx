@@ -13,7 +13,7 @@ const {mockBookDetailResponse, mockBookSearchResponse, mockUseGetBookDetail, moc
       author: '이민진',
       className: '문학',
       classNumber: '813.6',
-      description: '재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.',
+      description: '재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설 &lt;파친코&gt;입니다.',
       imageUrl: 'https://image.example.com/pachinko.jpg',
       isbn: '895468215X',
       isbn13: '9788954682155',
@@ -386,7 +386,7 @@ describe('app router integration', () => {
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByPlaceholderText('찾고 싶은 저자명을 입력해주세요')).toHaveValue('한강');
-    expect(screen.getByRole('heading', {level: 1, name: '한강에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '한강에 대한 12개의 검색 결과를 찾았어요.'})).toBeInTheDocument();
   });
 
   it('다시 검색하면 첫 페이지 결과로 이동한다', async () => {
@@ -506,7 +506,7 @@ describe('app router integration', () => {
     });
 
     expect(screen.getByRole('region', {name: '도서 검색 결과 화면'})).toBeInTheDocument();
-    expect(screen.getByRole('heading', {level: 1, name: '파친코에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '파친코에 대한 12개의 검색 결과를 찾았어요.'})).toBeInTheDocument();
   });
 
   it('상세 보기를 누르면 책의 기본 정보와 소개를 확인할 수 있다', async () => {
@@ -527,7 +527,7 @@ describe('app router integration', () => {
     expect(within(detailDialog).getByText('문학 · 813.6')).toBeInTheDocument();
     expect(within(detailDialog).getByText('책 소개')).toBeInTheDocument();
     expect(
-      within(detailDialog).getByText('재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설입니다.'),
+      within(detailDialog).getByText('재일조선인 가족의 삶을 세대에 걸쳐 따라가는 장편소설 <파친코>입니다.'),
     ).toBeInTheDocument();
 
     const introductionHeading = within(detailDialog).getByText('책 소개');
@@ -709,7 +709,7 @@ describe('app router integration', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog', {name: '도서 상세 정보'})).not.toBeInTheDocument();
     });
-    expect(screen.getByRole('heading', {level: 1, name: '채식주의자에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '채식주의자에 대한 12개의 검색 결과를 찾았어요.'})).toBeInTheDocument();
   });
 
   it('결과 화면을 벗어났다가 다시 돌아오면 이전에 열어둔 도서 상세 창이 남아 있지 않다', async () => {
