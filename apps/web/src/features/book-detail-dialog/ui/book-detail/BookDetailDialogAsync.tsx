@@ -33,7 +33,8 @@ function BookDetailDialogLoadingDialog() {
     >
       <DialogContent
         aria-describedby={undefined}
-        className="h-[min(calc(100vh-32px),720px)] w-[min(calc(100vw-32px),980px)] gap-0 overflow-hidden p-0 sm:p-0"
+        className="gap-0 overflow-hidden sm:h-[min(calc(100vh-32px),720px)] sm:w-[min(calc(100vw-32px),980px)] sm:p-0"
+        mobileFullscreen
         showCloseButton={false}
       >
         <DialogHeader className="sr-only">
@@ -42,7 +43,7 @@ function BookDetailDialogLoadingDialog() {
         <DialogClose asChild>
           <button
             aria-label="닫기"
-            className="shadow-card bg-surface-strong text-text-muted hover:text-text focus-visible:ring-accent-soft absolute top-4 right-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none"
+            className="shadow-card bg-surface-strong text-text-muted hover:text-text focus-visible:ring-accent-soft absolute top-[max(env(safe-area-inset-top),1rem)] right-[max(env(safe-area-inset-right),1rem)] z-10 inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:ring-4 focus-visible:outline-none sm:top-4 sm:right-4"
             type="button"
           >
             <LucideIcon icon={X} strokeWidth={2.2} />

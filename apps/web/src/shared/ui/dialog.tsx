@@ -28,20 +28,24 @@ const DialogOverlay = forwardRef<
 });
 
 type DialogContentProps = ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+  mobileFullscreen?: boolean;
   showCloseButton?: boolean;
 };
 
 const DialogContent = forwardRef<
   ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(function DialogContent({children, className, showCloseButton = true, ...props}, ref) {
+>(function DialogContent({children, className, mobileFullscreen = false, showCloseButton = true, ...props}, ref) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={mergeClassNames(
-          'border-line bg-surface-strong rounded-panel shadow-card fixed top-1/2 left-1/2 z-50 grid w-[min(calc(100vw-32px),560px)] -translate-x-1/2 -translate-y-1/2 gap-5 border p-6 outline-none sm:p-8',
+          'bg-surface-strong shadow-card fixed z-50 grid outline-none',
+          mobileFullscreen
+            ? 'top-0 left-0 h-dvh w-dvw max-w-none translate-x-0 translate-y-0 gap-5 rounded-none border-0 p-0 sm:top-1/2 sm:left-1/2 sm:w-[min(calc(100vw-32px),560px)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-panel sm:border sm:p-8'
+            : 'border-line rounded-panel top-1/2 left-1/2 w-[min(calc(100vw-32px),560px)] -translate-x-1/2 -translate-y-1/2 gap-5 border p-6 sm:p-8',
           className,
         )}
         ref={ref}

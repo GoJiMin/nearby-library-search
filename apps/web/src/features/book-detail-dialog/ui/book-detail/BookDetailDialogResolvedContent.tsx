@@ -170,14 +170,14 @@ function BookDetailDialogResolvedContent({isbn13}: BookDetailDialogResolvedConte
                     {loanInfo.byAge.map(ageStat => {
                       if (ageStat.loanCount == null) {
                         return (
-                          <Badge key={ageStat.name} variant="muted">
+                          <Badge className="px-2.5 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm" key={ageStat.name} variant="muted">
                             {ageStat.name}
                           </Badge>
                         );
                       }
 
                       return (
-                        <Badge key={ageStat.name} variant="muted">
+                        <Badge className="px-2.5 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm" key={ageStat.name} variant="muted">
                           {`${ageStat.name} · ${ageStat.loanCount.toLocaleString('ko-KR')}건`}
                         </Badge>
                       );

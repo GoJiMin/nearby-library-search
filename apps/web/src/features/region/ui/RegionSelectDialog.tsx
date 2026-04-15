@@ -12,10 +12,11 @@ function RegionSelectDialogContent() {
   return (
     <DialogContent
       aria-describedby={undefined}
-      className="grid h-[min(calc(100vh-32px),680px)] w-[min(calc(100vw-32px),580px)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 px-2 sm:px-6 sm:pb-5"
+      className="grid grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden px-2 pb-[max(env(safe-area-inset-bottom),0px)] sm:h-[min(calc(100vh-32px),680px)] sm:w-[min(calc(100vw-32px),580px)] sm:px-6 sm:pb-5"
+      mobileFullscreen
       showCloseButton={false}
     >
-      <DialogHeader className="px-4 pt-6 sm:px-4 sm:pt-2">
+      <DialogHeader className="px-4 pt-[max(env(safe-area-inset-top),1.5rem)] sm:px-4 sm:pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <LucideIcon className="text-accent h-6 w-6 sm:h-7 sm:w-7" icon={MapPin} strokeWidth={2.1} />
