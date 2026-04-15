@@ -476,6 +476,37 @@ describe('BookSearchResult', () => {
     expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
   });
 
+  it('검색어 조합을 나눠야 하는 경우 다시 검색 안내를 보여준다', async () => {
+    mockUseGetSearchBooks.mockImplementation(() => {
+      throw new RequestGetError({
+        endpoint: '/api/books/search?title=%EC%B1%84%EC%8B%9D%EC%A3%BC%EC%9D%98%EC%9E%90%3A%20%ED%95%9C%EA%B0%95&page=1',
+        message: '입력한 검색어 조합으로는 결과를 가져오지 못했습니다. 책 제목이나 저자명을 나눠 다시 검색해보세요.',
+        method: 'GET',
+        name: 'BOOK_SEARCH_QUERY_NEEDS_REFINEMENT',
+        requestBody: null,
+        status: 502,
+      });
+    });
+
+    renderBookSearchResult(
+      <BookSearchResult
+        createPageHref={createPageHref}
+        onSubmitSearch={vi.fn()}
+        params={{
+          page: 1,
+          title: '채식주의자: 한강',
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {level: 1, name: '데이터를 불러오지 못했어요'})).toBeInTheDocument();
+    expect(
+      screen.getByText('입력한 검색어 조합으로는 결과를 가져오지 못했어요. 책 제목이나 저자명을 나눠 다시 검색해보세요.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
+  });
+
   it('검색 결과가 많으면 페이지를 이동할 수 있다', () => {
     mockUseGetSearchBooks.mockReturnValueOnce({
       ...mockBookSearchResponse,

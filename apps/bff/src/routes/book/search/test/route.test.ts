@@ -27,6 +27,16 @@ function createJsonResponse(body: unknown, url: string, status = 200) {
   return response;
 }
 
+function createTextResponse(body: string, url: string, status = 200) {
+  const response = new Response(body, {status});
+
+  Object.defineProperty(response, 'url', {
+    value: url,
+  });
+
+  return response;
+}
+
 async function createAppWithBookSearchFixtures(fixtureResolver?: AppFixtures['bookSearch']) {
   const {createApp} = await import('../../../../app/createApp.js');
 
@@ -231,6 +241,27 @@ describe('book search route integration', () => {
     await app.close();
   });
 
+  it('도서 검색 upstream이 빈 응답 본문을 반환하면 검색어 조합 안내 에러를 반환한다', async () => {
+    fetchLibraryApiMock.mockResolvedValue(createTextResponse('', 'https://example.com/srchBooks?title=%EC%B1%84%EC%8B%9D%EC%A3%BC%EC%9D%98%EC%9E%90%3A%20%ED%95%9C%EA%B0%95'));
+
+    const {createApp} = await import('../../../../app/createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/search?title=%EC%B1%84%EC%8B%9D%EC%A3%BC%EC%9D%98%EC%9E%90%3A%20%ED%95%9C%EA%B0%95',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toMatchObject({
+      detail: '입력한 검색어 조합으로는 결과를 가져오지 못했습니다. 책 제목이나 저자명을 나눠 다시 검색해보세요.',
+      status: 502,
+      title: 'BOOK_SEARCH_QUERY_NEEDS_REFINEMENT',
+    });
+
+    await app.close();
+  });
+
   it('도서 검색 응답을 해석할 수 없으면 표준 에러를 반환한다', async () => {
     fetchLibraryApiMock.mockResolvedValue(
       createJsonResponse(
@@ -243,6 +274,27 @@ describe('book search route integration', () => {
         'https://example.com/srchBooks?title=react',
       ),
     );
+
+    const {createApp} = await import('../../../../app/createApp.js');
+    const app = createApp();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/books/search?title=react',
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json()).toMatchObject({
+      detail: '도서 검색 응답을 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      status: 502,
+      title: 'BOOK_SEARCH_RESPONSE_INVALID',
+    });
+
+    await app.close();
+  });
+
+  it('도서 검색 upstream이 비어 있지 않은 비정상 본문을 반환하면 응답 처리 에러를 반환한다', async () => {
+    fetchLibraryApiMock.mockResolvedValue(createTextResponse('not-json', 'https://example.com/srchBooks?title=react'));
 
     const {createApp} = await import('../../../../app/createApp.js');
     const app = createApp();

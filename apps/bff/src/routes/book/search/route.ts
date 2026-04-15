@@ -3,7 +3,7 @@ import type {AppFixtures} from '../../../app/fixtures.types.js';
 import {developmentConfig} from '../../../config/env.js';
 import {fetchLibraryApi} from '../../../libraryApi/fetchLibraryApi.js';
 import {toLibraryApiErrorResponse} from '../../../libraryApi/toLibraryApiErrorResponse.js';
-import {createRetryableUpstreamRequestError} from '../../../utils/error.js';
+import {createErrorResponse, createRetryableUpstreamRequestError, createRetryableUpstreamResponseError} from '../../../utils/error.js';
 import {isErrorResult} from '../../../utils/result.js';
 import type {Result} from '../../../utils/result.types.js';
 import type {BookSearchQuery} from './bookSearchQuerySchema.js';
@@ -12,6 +12,12 @@ import {parseBookSearchQuery} from './parseQuery.js';
 
 async function fetchBookSearchPayload(query: BookSearchQuery): Promise<Result<unknown>> {
   const upstreamError = createRetryableUpstreamRequestError('BOOK_SEARCH_UPSTREAM_ERROR', '도서 검색');
+  const invalidResponseError = createRetryableUpstreamResponseError('BOOK_SEARCH_RESPONSE_INVALID', '도서 검색');
+  const queryNeedsRefinementError = createErrorResponse(
+    'BOOK_SEARCH_QUERY_NEEDS_REFINEMENT',
+    '입력한 검색어 조합으로는 결과를 가져오지 못했습니다. 책 제목이나 저자명을 나눠 다시 검색해보세요.',
+    502,
+  );
 
   try {
     const response = await fetchLibraryApi({
@@ -32,9 +38,29 @@ async function fetchBookSearchPayload(query: BookSearchQuery): Promise<Result<un
       };
     }
 
+    const responseText = await response.text();
+
+    if (responseText.trim().length === 0) {
+      return {
+        ok: false,
+        error: queryNeedsRefinementError,
+      };
+    }
+
+    let responseJson: unknown;
+
+    try {
+      responseJson = JSON.parse(responseText);
+    } catch {
+      return {
+        ok: false,
+        error: invalidResponseError,
+      };
+    }
+
     return {
       ok: true,
-      value: await response.json(),
+      value: responseJson,
     };
   } catch (error) {
     return {
@@ -73,7 +99,7 @@ function createBookSearchRoute(fixtureResolver?: BookSearchFixtureResolver): Fas
       const bookSearchPayload = await fetchBookSearchPayload(parsedQuery.value);
 
       if (isErrorResult(bookSearchPayload)) {
-        app.log.warn({errorTitle: bookSearchPayload.error.title}, 'Book search upstream request failed');
+        app.log.warn({errorTitle: bookSearchPayload.error.title}, 'Book search upstream payload could not be resolved');
 
         reply.status(bookSearchPayload.error.status);
 
