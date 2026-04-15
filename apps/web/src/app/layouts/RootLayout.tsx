@@ -1,11 +1,12 @@
-import {Outlet, useNavigation} from 'react-router-dom';
-import {LoadingState} from '@/shared/feedback';
+import {Outlet} from 'react-router-dom';
 import {AppLayout} from './AppLayout';
 
 function RootLayout() {
-  const navigation = useNavigation();
-
-  return <AppLayout>{navigation.state === 'idle' ? <Outlet /> : <LoadingState />}</AppLayout>;
+  return (
+    <AppLayout>
+      <Outlet />
+    </AppLayout>
+  );
 }
 
 export {RootLayout};
