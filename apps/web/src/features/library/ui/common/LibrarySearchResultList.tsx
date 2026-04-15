@@ -21,10 +21,6 @@ type LibrarySearchResultListBodyProps = {
 };
 
 function getLibraryRowMeta(item: LibrarySearchItem) {
-  if (item.operatingTime && item.closedDays) {
-    return `${item.operatingTime} · ${item.closedDays}`;
-  }
-
   return item.operatingTime ?? item.closedDays ?? '운영 정보 없음';
 }
 
@@ -64,7 +60,7 @@ function LibrarySearchResultListBody({
                   {item.address ?? '주소 정보 없음'}
                 </Text>
               </div>
-              <Text className="text-sm leading-3" tone="muted">
+              <Text className="line-clamp-1 text-sm leading-5" title={getLibraryRowMeta(item)} tone="muted">
                 {getLibraryRowMeta(item)}
               </Text>
             </button>
