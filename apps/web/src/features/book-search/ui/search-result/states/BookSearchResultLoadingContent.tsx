@@ -37,8 +37,8 @@ function BookSearchResultLoadingCard() {
 function BookSearchResultLoadingContent({queryText}: BookSearchResultLoadingContentProps) {
   return (
     <div className="flex w-full flex-col gap-5">
-      <Heading as="h1" size="lg">
-        <span className="text-accent">{queryText}</span> 검색 결과를 불러오는 중이에요.
+      <Heading as="h1" size="md">
+        <span className="text-accent">{queryText}</span>에 대한 검색 결과를 불러오는 중이에요.
       </Heading>
       <ul aria-label="도서 검색 결과 로딩 목록" className="grid gap-4">
         {Array.from({length: 5}, (_, index) => (

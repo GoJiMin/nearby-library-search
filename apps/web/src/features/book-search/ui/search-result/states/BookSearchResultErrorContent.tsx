@@ -21,9 +21,6 @@ function BookSearchResultErrorContent({error, onRetry}: BookSearchResultErrorCon
             데이터를 불러오지 못했어요
           </Heading>
           <Text className="text-center" size="sm">
-            조용한 서고에서 길을 잃은 것 같습니다.
-          </Text>
-          <Text className="text-center" size="sm">
             {message}
           </Text>
         </div>
