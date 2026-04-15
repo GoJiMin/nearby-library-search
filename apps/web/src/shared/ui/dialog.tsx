@@ -44,8 +44,8 @@ const DialogContent = forwardRef<
         className={mergeClassNames(
           'bg-surface-strong shadow-card fixed z-50 grid outline-none',
           mobileFullscreen
-            ? 'top-0 left-0 h-dvh w-dvw max-w-none translate-x-0 translate-y-0 gap-5 rounded-none border-0 p-0 sm:top-1/2 sm:left-1/2 sm:w-[min(calc(100vw-32px),560px)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-panel sm:border sm:p-8'
-            : 'border-line rounded-panel top-1/2 left-1/2 w-[min(calc(100vw-32px),560px)] -translate-x-1/2 -translate-y-1/2 gap-5 border p-6 sm:p-8',
+            ? 'top-0 left-0 h-dvh w-dvw max-w-none translate-x-0 translate-y-0 gap-5 rounded-none border-0 p-0 sm:top-1/2 sm:left-1/2 sm:w-[min(calc(100vw-32px),560px)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-panel sm:border-0 sm:p-8'
+            : 'rounded-panel top-1/2 left-1/2 w-[min(calc(100vw-32px),560px)] -translate-x-1/2 -translate-y-1/2 gap-5 border-0 p-6 sm:p-8',
           className,
         )}
         ref={ref}
