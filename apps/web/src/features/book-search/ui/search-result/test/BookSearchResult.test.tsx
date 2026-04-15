@@ -113,7 +113,9 @@ describe('BookSearchResult', () => {
     );
 
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
-    expect(await screen.findByRole('heading', {level: 1, name: '파친코 검색 결과를 불러오는 중이에요.'})).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', {level: 1, name: '파친코에 대한 검색 결과를 불러오는 중이에요.'}),
+    ).toBeInTheDocument();
 
     const loadingList = screen.getByRole('list', {name: '도서 검색 결과 로딩 목록'});
 
@@ -138,7 +140,7 @@ describe('BookSearchResult', () => {
     expect(screen.getByRole('tab', {name: '책 제목'})).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', {name: '저자명'})).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByPlaceholderText('찾고 싶은 책 제목을 입력해주세요')).toHaveValue('파친코');
-    expect(screen.getByRole('heading', {level: 1, name: '파친코에 대한 12개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '파친코에 대한 12개의 검색 결과를 찾았어요.'})).toBeInTheDocument();
     expect(screen.queryByRole('heading', {name: '검색 결과'})).not.toBeInTheDocument();
   });
 
@@ -439,7 +441,7 @@ describe('BookSearchResult', () => {
       />,
     );
 
-    expect(screen.getByRole('heading', {level: 1, name: '없는 책에 대한 0개의 검색 결과가 있습니다.'})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {level: 1, name: '없는 책에 대한 0개의 검색 결과를 찾았어요.'})).toBeInTheDocument();
     expect(screen.getByText('검색 결과가 없어요. 검색어를 조금 바꿔 다시 검색해보세요.')).toBeInTheDocument();
     expect(screen.queryByRole('list', {name: '도서 검색 결과 목록'})).not.toBeInTheDocument();
     expect(screen.queryByRole('navigation', {name: '도서 검색 결과 페이지네이션'})).not.toBeInTheDocument();
@@ -470,7 +472,6 @@ describe('BookSearchResult', () => {
 
     expect(screen.getByRole('form', {name: '도서 결과 재검색'})).toBeInTheDocument();
     expect(await screen.findByRole('heading', {level: 1, name: '데이터를 불러오지 못했어요'})).toBeInTheDocument();
-    expect(screen.getByText('조용한 서고에서 길을 잃은 것 같습니다.')).toBeInTheDocument();
     expect(screen.getByText('도서 검색 서버와 연결이 원활하지 않아요. 잠시 후 다시 시도해주세요.')).toBeInTheDocument();
     expect(screen.getByRole('button', {name: '다시 시도'})).toBeInTheDocument();
   });
