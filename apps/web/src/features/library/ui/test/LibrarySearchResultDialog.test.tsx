@@ -63,6 +63,19 @@ const LONG_LIBRARY_DETAILS = {
   phone: '02-1234-5678',
 } as const;
 
+const SHORT_CLOSED_DAYS_LIBRARY_DETAILS = {
+  ...LONG_LIBRARY_DETAILS,
+  closedDays: '매주 토요일, 일요일 / 법정공휴일',
+} as const;
+
+const OTHER_LONG_LIBRARY_DETAILS = {
+  ...LONG_LIBRARY_DETAILS,
+  code: 'LIB-LONG-2',
+  name: '다른 운영 정보 도서관',
+  operatingTime:
+    '평일 자료실 09:00~18:00, 열람실 09:00~22:00 / 주말 자료실 09:00~17:00, 열람실 09:00~20:00 / 공휴일 10:00~16:00',
+} as const;
+
 function createMockLibraryAvailabilityResponse({
   hasBook = 'Y',
   libraryCode = 'LIB0001',
@@ -1272,11 +1285,37 @@ describe('LibrarySearchResultDialog', () => {
     render(<LibrarySearchResultDetails layout="desktop" library={LONG_LIBRARY_DETAILS} />);
 
     const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
+    const expandButton = within(detailPanel).getByRole('button', {name: '휴관일 더보기'});
 
-    await user.click(within(detailPanel).getByRole('button', {name: '휴관일 더보기'}));
+    await user.click(expandButton);
 
     expect(within(detailPanel).getByRole('button', {name: '휴관일 접기'})).toBeInTheDocument();
     expect(within(detailPanel).getByText(/<휴관 안내>/)).toBeInTheDocument();
+  });
+
+  it('짧은 휴관일은 더보기 없이 한 줄로 유지한다', () => {
+    render(<LibrarySearchResultDetails layout="desktop" library={SHORT_CLOSED_DAYS_LIBRARY_DETAILS} />);
+
+    const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
+
+    expect(within(detailPanel).queryByRole('button', {name: '휴관일 더보기'})).not.toBeInTheDocument();
+    expect(within(detailPanel).getByText('매주 토요일, 일요일 / 법정공휴일')).toBeInTheDocument();
+  });
+
+  it('다른 도서관으로 바뀌면 펼침 상태를 초기화한다', async () => {
+    const user = userEvent.setup();
+    const {rerender} = render(<LibrarySearchResultDetails layout="desktop" library={LONG_LIBRARY_DETAILS} />);
+
+    const detailPanel = screen.getByLabelText('선택된 도서관 정보 패널');
+
+    await user.click(within(detailPanel).getByRole('button', {name: '운영 시간 더보기'}));
+
+    expect(within(detailPanel).getByRole('button', {name: '운영 시간 접기'})).toBeInTheDocument();
+
+    rerender(<LibrarySearchResultDetails layout="desktop" library={OTHER_LONG_LIBRARY_DETAILS} />);
+
+    expect(within(screen.getByLabelText('선택된 도서관 정보 패널')).getByRole('button', {name: '운영 시간 더보기'})).toBeInTheDocument();
+    expect(within(screen.getByLabelText('선택된 도서관 정보 패널')).queryByRole('button', {name: '운영 시간 접기'})).not.toBeInTheDocument();
   });
 
   it('도서관을 찾는 동안에도 기본 화면 구조를 유지한다', async () => {

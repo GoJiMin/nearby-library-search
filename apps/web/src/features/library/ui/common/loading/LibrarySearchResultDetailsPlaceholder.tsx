@@ -38,16 +38,12 @@ function LibrarySearchResultDetailsPlaceholder({
 }: LibrarySearchResultDetailsPlaceholderProps) {
   const sectionClassName =
     layout === 'mobile'
-      ? 'bg-surface border-line/40 border-b px-6 py-5'
-      : 'bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5';
-  const bodyClassName =
-    layout === 'mobile'
-      ? 'flex flex-col gap-6'
-      : 'flex min-h-0 flex-1 flex-col justify-between gap-6';
+      ? 'bg-surface border-line/40 border-b px-6 pt-5 pb-4'
+      : 'bg-surface border-line/40 min-h-0 overflow-y-auto border-t px-6 pt-5 pb-2';
 
   return (
     <section aria-label="선택된 도서관 정보 패널" className={sectionClassName}>
-      <div className={bodyClassName}>
+      <div className="flex flex-col gap-6">
         <LibrarySearchResultDetailsFieldsPlaceholder />
         <LibrarySearchResultAvailabilityAction disabled />
       </div>

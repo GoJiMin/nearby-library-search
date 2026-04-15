@@ -2,7 +2,10 @@ import type {Isbn13, LibrarySearchItem} from '@nearby-library-search/contracts';
 import {Clock3, MapPin, Phone, ExternalLink, CalendarX2} from 'lucide-react';
 import {decodeHtmlEntities} from '@/shared/lib/decodeHtmlEntities';
 import {Heading, LucideIcon, Text} from '@/shared/ui';
-import {LibrarySearchResultAvailabilityAction, LibrarySearchResultAvailabilityCta} from './LibrarySearchResultAvailabilityCta';
+import {
+  LibrarySearchResultAvailabilityAction,
+  LibrarySearchResultAvailabilityCta,
+} from './LibrarySearchResultAvailabilityCta';
 import {LibrarySearchResultExpandableFieldValue} from './LibrarySearchResultExpandableFieldValue';
 
 type LibrarySearchResultDetailsProps = {
@@ -69,7 +72,7 @@ function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsF
                   value={getLibraryDetailValue(library, item.key)}
                 />
               ) : (
-                <Text className="break-words text-sm" tone="default">
+                <Text className="text-sm break-words" tone="default">
                   {decodeHtmlEntities(getLibraryDetailValue(library, item.key))}
                 </Text>
               )}
@@ -81,11 +84,7 @@ function LibrarySearchResultDetailsFields({library}: LibrarySearchResultDetailsF
   );
 }
 
-function LibrarySearchResultDetails({
-  isbn13,
-  layout = 'desktop',
-  library,
-}: LibrarySearchResultDetailsProps) {
+function LibrarySearchResultDetails({isbn13, layout = 'desktop', library}: LibrarySearchResultDetailsProps) {
   const availabilityCta =
     library != null && isbn13 != null ? (
       <LibrarySearchResultAvailabilityCta isbn13={isbn13} key={library.code} libraryCode={library.code} />
@@ -98,23 +97,14 @@ function LibrarySearchResultDetails({
       aria-label="선택된 도서관 정보 패널"
       className={
         layout === 'mobile'
-          ? 'bg-surface border-line/40 border-b px-6 py-5'
-          : 'bg-surface border-line/40 flex min-h-0 flex-col border-t px-6 py-5'
+          ? 'bg-surface border-line/40 border-b px-6 pt-5 pb-4'
+          : 'bg-surface border-line/40 min-h-0 overflow-y-auto border-t px-6 pt-5 pb-2'
       }
     >
-      {layout === 'mobile' ? (
-        <div className="flex flex-col gap-6">
-          <LibrarySearchResultDetailsFields library={library} />
-          {availabilityCta}
-        </div>
-      ) : (
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-            <LibrarySearchResultDetailsFields library={library} />
-          </div>
-          <div className="border-line/40 mt-5 border-t pt-5">{availabilityCta}</div>
-        </div>
-      )}
+      <div className="flex flex-col gap-6">
+        <LibrarySearchResultDetailsFields library={library} />
+        {availabilityCta}
+      </div>
     </section>
   );
 }

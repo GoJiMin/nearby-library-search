@@ -1,4 +1,4 @@
-import {useId, useLayoutEffect, useRef, useState} from 'react';
+import {useEffect, useId, useLayoutEffect, useRef, useState} from 'react';
 import {decodeHtmlEntities} from '@/shared/lib/decodeHtmlEntities';
 
 type LibrarySearchResultExpandableFieldValueProps = {
@@ -8,7 +8,6 @@ type LibrarySearchResultExpandableFieldValueProps = {
 
 function normalizeExpandedValue(value: string) {
   return decodeHtmlEntities(value)
-    .replace(/\s*\/\s*/g, '\n')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n[ \t]+/g, '\n')
     .replace(/[ \t]{2,}/g, ' ')
@@ -20,7 +19,7 @@ function createCollapsedValue(value: string) {
 }
 
 function estimateOverflow(value: string) {
-  return value.includes('\n') || value.length > 90;
+  return value.includes('\n') || value.length > 32;
 }
 
 function LibrarySearchResultExpandableFieldValue({
@@ -29,10 +28,16 @@ function LibrarySearchResultExpandableFieldValue({
 }: LibrarySearchResultExpandableFieldValueProps) {
   const expandedValue = normalizeExpandedValue(value);
   const collapsedValue = createCollapsedValue(expandedValue);
+  const hasOverflowHint = estimateOverflow(expandedValue);
   const contentId = useId();
   const contentRef = useRef<HTMLParagraphElement | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isOverflowing, setIsOverflowing] = useState(() => estimateOverflow(expandedValue));
+  const [isOverflowing, setIsOverflowing] = useState(hasOverflowHint);
+
+  useEffect(() => {
+    setIsExpanded(false);
+    setIsOverflowing(hasOverflowHint);
+  }, [expandedValue, hasOverflowHint]);
 
   useLayoutEffect(() => {
     if (isExpanded) {
@@ -46,33 +51,44 @@ function LibrarySearchResultExpandableFieldValue({
     }
 
     const measureOverflow = () => {
-      if (node.clientHeight === 0 || node.scrollHeight === 0) {
+      if (node.clientHeight === 0 || node.clientWidth === 0) {
         return;
       }
 
-      setIsOverflowing(node.scrollHeight > node.clientHeight + 1);
+      const hasMeasuredOverflow = node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1;
+
+      setIsOverflowing(hasOverflowHint || hasMeasuredOverflow);
     };
 
     const frameId = window.requestAnimationFrame(measureOverflow);
+    const resizeObserver =
+      typeof window.ResizeObserver === 'undefined'
+        ? null
+        : new window.ResizeObserver(() => {
+            measureOverflow();
+          });
+
+    resizeObserver?.observe(node);
     window.addEventListener('resize', measureOverflow);
 
     return () => {
       window.cancelAnimationFrame(frameId);
+      resizeObserver?.disconnect();
       window.removeEventListener('resize', measureOverflow);
     };
-  }, [collapsedValue, expandedValue, isExpanded]);
+  }, [collapsedValue, hasOverflowHint, isExpanded]);
 
   const actionLabel = isExpanded ? `${label} 접기` : `${label} 더보기`;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <p
         id={contentId}
         ref={contentRef}
         className={
           isExpanded
-            ? 'text-text text-sm leading-6 break-words whitespace-pre-line sm:text-base'
-            : 'text-text line-clamp-2 text-sm leading-6 break-words sm:text-base'
+            ? 'text-text text-sm leading-6 break-words whitespace-pre-line'
+            : 'text-text line-clamp-1 text-sm leading-6 break-words'
         }
       >
         {isExpanded ? expandedValue : collapsedValue}
@@ -82,7 +98,7 @@ function LibrarySearchResultExpandableFieldValue({
           aria-controls={contentId}
           aria-expanded={isExpanded}
           aria-label={actionLabel}
-          className="text-accent hover:text-accent-strong focus-visible:ring-accent-soft inline-flex rounded-full px-1 py-1 text-sm font-semibold transition-colors focus-visible:ring-4 focus-visible:outline-none"
+          className="text-accent hover:text-accent-strong focus-visible:ring-accent-soft inline-flex self-start rounded-full px-0 py-0.5 text-sm leading-none font-semibold transition-colors focus-visible:ring-4 focus-visible:outline-none"
           onClick={() => {
             setIsExpanded(previous => !previous);
           }}
