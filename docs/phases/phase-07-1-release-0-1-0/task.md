@@ -2,10 +2,10 @@
 
 ## 1. `docs/releases/` 기본 구조와 `index.md`를 만든다.
 
-- [ ] `docs/releases/`와 `docs/releases/0.1.0/` 디렉터리를 만든다.
-- [ ] `docs/releases/0.1.0/artifacts/` 디렉터리를 함께 만든다.
-- [ ] `docs/releases/index.md`에 `0.1.0` 버전 항목과 한 줄 요약, 링크를 추가한다.
-- [ ] `index.md`는 버전 탐색 문서 역할만 하도록 상세 기능 설명을 넣지 않는다.
+- [x] `docs/releases/`와 `docs/releases/0.1.0/` 디렉터리를 만든다.
+- [x] `docs/releases/0.1.0/artifacts/` 디렉터리를 함께 만든다.
+- [x] `docs/releases/index.md`에 `0.1.0` 버전 항목과 한 줄 요약, 링크를 추가한다.
+- [x] `index.md`는 버전 탐색 문서 역할만 하도록 상세 기능 설명을 넣지 않는다.
 
 ## 2. `overview.md`에 0.1.0 서비스 개요와 핵심 사용자 플로우를 정리한다.
 
