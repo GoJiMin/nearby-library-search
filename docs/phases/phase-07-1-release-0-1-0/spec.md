@@ -4,7 +4,6 @@
 
 - 현재 MVP 상태를 `0.1.0`으로 정의하고, 새로 투입되는 개발자가 문서만 읽고도 서비스와 구현 범위를 빠르게 이해할 수 있는 릴리즈 문서 세트를 만든다.
 - `docs/phases/`에 흩어져 있는 작업 문서와 `README.md`의 프로젝트 소개를 그대로 복사하지 않고, **0.1.0 시점의 서비스 목표, 사용자 플로우, 핵심 기능, 기술 선택 이유, 검증 상태**를 버전 기준으로 다시 정리한다.
-- `docs/releases/0.1.0/artifacts/`에는 해당 버전에 실제로 연결되는 phase 문서 복사본을 보관해, 이후 문서가 바뀌더라도 `0.1.0` 시점 기준을 재확인할 수 있게 한다.
 
 ## 1차 source of truth
 
@@ -38,8 +37,8 @@
   - “무엇이 바뀌었는지”만 적지 않고, “이 서비스가 무엇을 하고, 어떤 흐름이 동작하며, 왜 이런 구조를 택했는지”를 함께 적는다.
 - 각 문서는 **혼자 읽혀도 이해 가능**해야 한다.
   - 다른 릴리즈 문서를 꼭 열어봐야만 이해되는 구조로 쓰지 않는다.
-- `docs/releases/0.1.0/artifacts/`는 링크 모음이 아니라 **복사본 스냅샷**으로 관리한다.
-  - 원본이 이후 변경돼도 `0.1.0` 시점 문서를 그대로 다시 확인할 수 있어야 한다.
+- 릴리즈 문서 자체가 `0.1.0` 시점의 스냅샷 역할을 한다.
+  - phase 문서 원본은 `docs/phases/`에 그대로 두고, 과거 시점이 필요하면 해당 릴리즈 commit을 다시 확인한다.
 
 ## 구현 범위
 
@@ -48,7 +47,6 @@
 - `docs/releases/0.1.0/changes.md` 작성
 - `docs/releases/0.1.0/verification.md` 작성
 - `docs/releases/0.1.0/known-issues.md` 작성
-- `docs/releases/0.1.0/artifacts/` 생성 및 `0.1.0` 관련 phase 문서 복사
 - web / bff coverage 측정 스크립트와 reporter 설정 추가
 
 ## 비범위
@@ -171,35 +169,6 @@
   - 의도적으로 미룬 UX/구조 개선
 - 사용자 사용을 막는 문제와, 후속 개선 후보를 같은 급으로 섞어 적지 않는다.
 
-### 6. `docs/releases/0.1.0/artifacts/`
-
-- 이 디렉터리는 `0.1.0` 시점의 phase 문서 복사본을 보관한다.
-- 복사 기준은 “이 릴리즈의 기능과 직접 연결되는 문서”로 고정한다.
-- `0.1.0`에서는 아래 문서를 복사 대상으로 고정한다.
-
-```text
-docs/phases/phase-04-2-ux-ui-design/spec.md
-docs/phases/phase-05-1-home-search-start/spec.md
-docs/phases/phase-05-1-home-search-start/task.md
-docs/phases/phase-05-1a-home-visual-refresh/spec.md
-docs/phases/phase-05-1a-home-visual-refresh/task.md
-docs/phases/phase-05-2-book-search-result-and-selection/spec.md
-docs/phases/phase-05-2-book-search-result-and-selection/task.md
-docs/phases/phase-05-3-region-selection-dialog/spec.md
-docs/phases/phase-05-3-region-selection-dialog/task.md
-docs/phases/phase-05-4-library-search-result-dialog/spec.md
-docs/phases/phase-05-4-library-search-result-dialog/task.md
-docs/phases/phase-05-5-library-availability-check/spec.md
-docs/phases/phase-05-5-library-availability-check/task.md
-docs/phases/phase-05-6-book-detail-dialog/spec.md
-docs/phases/phase-05-6-book-detail-dialog/task.md
-docs/phases/phase-06-3-web-bundle-optimization/spec.md
-docs/phases/phase-06-3-web-bundle-optimization/task.md
-```
-
-- 복사본은 원본과 같은 파일명을 유지한다.
-- `artifacts/` 안에서는 phase 폴더 구조를 유지해, 어떤 phase에서 온 문서인지 바로 알 수 있어야 한다.
-
 ## 문서 작성 원칙
 
 - 기술 용어를 쓸 때는 먼저 서비스 맥락으로 설명한다.
@@ -218,13 +187,11 @@ docs/phases/phase-06-3-web-bundle-optimization/task.md
 - `docs/releases/0.1.0/verification.md` 하나만 읽고 배포 가능 근거를 이해할 수 있어야 한다.
 - `docs/releases/0.1.0/verification.md`에 web / bff coverage 기준선이 함께 기록돼 있어야 한다.
 - `docs/releases/0.1.0/known-issues.md` 하나만 읽고 남은 리스크와 다음 후보를 이해할 수 있어야 한다.
-- `docs/releases/0.1.0/artifacts/`에서 `0.1.0` 시점의 핵심 phase 문서 복사본을 다시 확인할 수 있어야 한다.
 - 이 spec만 읽고도 implementer가 문서 구조, 문체, 복사 대상, 포함 내용에 대한 추가 결정을 하지 않아야 한다.
 
 ## 테스트 기준
 
 - 문서 생성 전후로 `docs/phases/` 원본은 수정하지 않는다.
-- `artifacts/`에 들어가는 문서는 링크가 아니라 실제 복사본이어야 한다.
 - 생성된 각 릴리즈 문서는 아래 질문 중 하나에 혼자 답할 수 있어야 한다.
   - `overview.md`: 이 서비스는 무엇을 하고, 사용자는 어떤 흐름으로 쓰는가?
   - `changes.md`: `0.1.0`에서 무엇이 완성됐는가?
