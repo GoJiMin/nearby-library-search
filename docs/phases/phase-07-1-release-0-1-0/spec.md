@@ -12,6 +12,7 @@
 - 루트 `AGENTS.md`
 - `plan.md`의 `Phase 7`, `Phase 7-1`
 - `README.md`
+- `docs/phases/phase-03-bff/spec.md`
 - `docs/phases/phase-04-2-ux-ui-design/spec.md`
 - `docs/phases/phase-05-1-home-search-start/spec.md`
 - `docs/phases/phase-05-1a-home-visual-refresh/spec.md`
@@ -94,6 +95,10 @@
   - 현재 MVP에서 가능한 핵심 행동
   - 현재 아키텍처 개요
   - 왜 `web + bff + contracts` 구조를 택했는지에 대한 짧은 설명
+  - 특히 BFF를 도입한 이유가 아래 기준으로 분명히 드러나야 한다.
+    - 외부 Open API 인증키를 브라우저에 노출하지 않기 위해
+    - web이 외부 provider를 직접 호출하지 않고 BFF만 호출하도록 경계를 만들기 위해
+    - 외부 Open API 응답을 내부 계약으로 정규화해 안정적인 API를 제공하기 위해
 - 기술 설명은 허용하지만, 사용자 플로우 설명보다 앞에 오면 안 된다.
 
 ### 3. `docs/releases/0.1.0/changes.md`
@@ -105,6 +110,7 @@
   - 이번 버전에 포함되지 않은 것
 - 사용자 관점에서는 화면 이름과 기능 흐름 중심으로 설명한다.
 - 구현 관점에서는 아래 내용을 반드시 포함한다.
+  - BFF 도입 이유와 API 키 보호 경계
   - React web + Fastify BFF 분리 구조
   - URL 기반 `/books` 결과 흐름
   - 지역 선택 / 도서관 결과 / availability / 상세 보기 흐름
@@ -210,4 +216,3 @@ docs/phases/phase-06-3-web-bundle-optimization/task.md
   - `changes.md`: `0.1.0`에서 무엇이 완성됐는가?
   - `verification.md`: 왜 이 버전을 배포 가능 상태로 보는가?
   - `known-issues.md`: 지금 무엇이 남아 있고, 다음엔 무엇을 볼 것인가?
-
