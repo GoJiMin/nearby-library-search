@@ -29,6 +29,7 @@
 - 이번 phase는 **릴리즈 문서 작성 phase**다.
   - 코드 구조 리팩터링, 새 기능 구현, 배포 파이프라인 추가는 범위에 넣지 않는다.
   - `package.json`의 version 값을 `0.1.0`으로 올리는 작업도 이번 phase의 기본 범위에 넣지 않는다.
+  - 다만 `verification.md`에 실제 커버리지 수치를 남기기 위해 필요한 최소한의 테스트 인프라 설정은 범위에 포함한다.
 - 릴리즈 문서의 1차 독자는 **새로 투입되는 개발자**다.
   - 개발 경험은 있다고 가정하지만, 이 프로젝트의 배경과 결정은 모른다고 본다.
   - 문서는 기술적 정확성을 유지하되, 서비스 설명 없이 용어만 나열하지 않는다.
@@ -48,6 +49,7 @@
 - `docs/releases/0.1.0/verification.md` 작성
 - `docs/releases/0.1.0/known-issues.md` 작성
 - `docs/releases/0.1.0/artifacts/` 생성 및 `0.1.0` 관련 phase 문서 복사
+- web / bff coverage 측정 스크립트와 reporter 설정 추가
 
 ## 비범위
 
@@ -97,19 +99,20 @@
   - 왜 `web + bff + contracts` 구조를 택했는지에 대한 짧은 설명
   - 특히 BFF를 도입한 이유가 아래 기준으로 분명히 드러나야 한다.
     - 외부 Open API 인증키를 브라우저에 노출하지 않기 위해
-    - web이 외부 provider를 직접 호출하지 않고 BFF만 호출하도록 경계를 만들기 위해
+    - web이 외부 도서 Open API를 직접 호출하지 않고 BFF만 호출하도록 경계를 만들기 위해
     - 외부 Open API 응답을 내부 계약으로 정규화해 안정적인 API를 제공하기 위해
 - 기술 설명은 허용하지만, 사용자 플로우 설명보다 앞에 오면 안 된다.
 
 ### 3. `docs/releases/0.1.0/changes.md`
 
-- `0.1.0`에서 제공되는 내용을 **사용자 관점**과 **구현 관점**으로 나눠 정리한다.
+- `0.1.0`에 포함된 내용을 **기능**과 **기술적 기반** 기준으로 정리한다.
 - 최소 섹션은 아래로 고정한다.
-  - 사용자 관점 변경
-  - 구현 관점 변경
+  - `0.1.0에 담긴 내용`
+  - `현재 구현된 사용자가 경험 가능한 기능`
+  - `이 기능을 가능하게 한 기술적 기반`
   - 이번 버전에 포함되지 않은 것
-- 사용자 관점에서는 화면 이름과 기능 흐름 중심으로 설명한다.
-- 구현 관점에서는 아래 내용을 반드시 포함한다.
+- 사용자가 경험 가능한 기능 섹션에서는 화면 이름보다 사용 흐름 중심으로 설명한다.
+- 기술적 기반 섹션에서는 아래 내용을 반드시 포함한다.
   - BFF 도입 이유와 API 키 보호 경계
   - React web + Fastify BFF 분리 구조
   - URL 기반 `/books` 결과 흐름
@@ -122,15 +125,24 @@
 
 - 이 문서는 “왜 `0.1.0`을 배포 가능 상태로 보는지”를 설명해야 한다.
 - 최소 섹션은 아래로 고정한다.
+  - `0.1.0 검증 기준`
   - 자동 검증
+  - 테스트 커버리지
   - 수동 확인
   - 배포/운영 확인
+- 이 문서는 **Task 4 시점에 다시 실행한 결과만** 근거로 사용한다.
+  - 이전에 통과했던 이력은 참고만 하고, 릴리즈 문서의 근거로 그대로 옮기지 않는다.
 - 자동 검증에는 아래 범주의 결과가 반드시 들어가야 한다.
   - 타입체크
   - web build
   - bff build
   - 핵심 사용자 흐름 관련 web 테스트
   - 핵심 route 관련 bff 테스트
+- 테스트 커버리지에는 아래 기준을 반드시 포함한다.
+  - web 전체 suite 기준 coverage 수치
+  - bff 전체 suite 기준 coverage 수치
+  - `statements`, `branches`, `functions`, `lines` 네 지표
+  - threshold를 강제하지 않고 `0.1.0` 기준선으로 기록한다는 설명
 - 수동 확인에는 아래 흐름을 반드시 포함한다.
   - 홈에서 검색 시작
   - `/books` 결과 확인
@@ -144,6 +156,7 @@
   - custom domain 기준
   - 현재 env/CORS 운영 방식의 핵심 전제
 - 단순 명령어 목록만 나열하지 않고, **무엇을 확인하기 위한 검증이었는지**를 함께 적는다.
+- coverage 수치를 남기기 위해 web / bff 각각에 `test:coverage` 스크립트와 Vitest coverage reporter가 준비되어 있어야 한다.
 
 ### 5. `docs/releases/0.1.0/known-issues.md`
 
@@ -203,6 +216,7 @@ docs/phases/phase-06-3-web-bundle-optimization/task.md
 - `docs/releases/0.1.0/overview.md` 하나만 읽고 서비스 목표와 핵심 사용자 플로우를 이해할 수 있어야 한다.
 - `docs/releases/0.1.0/changes.md` 하나만 읽고 `0.1.0`에 무엇이 포함됐는지 이해할 수 있어야 한다.
 - `docs/releases/0.1.0/verification.md` 하나만 읽고 배포 가능 근거를 이해할 수 있어야 한다.
+- `docs/releases/0.1.0/verification.md`에 web / bff coverage 기준선이 함께 기록돼 있어야 한다.
 - `docs/releases/0.1.0/known-issues.md` 하나만 읽고 남은 리스크와 다음 후보를 이해할 수 있어야 한다.
 - `docs/releases/0.1.0/artifacts/`에서 `0.1.0` 시점의 핵심 phase 문서 복사본을 다시 확인할 수 있어야 한다.
 - 이 spec만 읽고도 implementer가 문서 구조, 문체, 복사 대상, 포함 내용에 대한 추가 결정을 하지 않아야 한다.
@@ -216,3 +230,4 @@ docs/phases/phase-06-3-web-bundle-optimization/task.md
   - `changes.md`: `0.1.0`에서 무엇이 완성됐는가?
   - `verification.md`: 왜 이 버전을 배포 가능 상태로 보는가?
   - `known-issues.md`: 지금 무엇이 남아 있고, 다음엔 무엇을 볼 것인가?
+- `verification.md`에는 실제 재실행한 검증과 coverage 기준선만 들어가야 한다.

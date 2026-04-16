@@ -12,7 +12,7 @@
 - [x] 서비스의 주 목표와 주 사용자를 설명한다.
 - [x] 홈 검색 시작부터 도서 상세 보기까지 핵심 사용자 플로우를 순서대로 정리한다.
 - [x] 현재 MVP에서 사용자가 실제로 할 수 있는 핵심 행동을 정리한다.
-- [x] `web + bff + contracts` 구조와 BFF 도입 이유를 API 키 보호, provider boundary, 응답 정규화 기준으로 설명한다.
+- [x] `web + bff + contracts` 구조와 BFF 도입 이유를 API 키 보호, 외부 도서 Open API 호출 경계, 응답 정규화 기준으로 설명한다.
 
 ## 3. `changes.md`에 0.1.0에 담긴 기능과 기술적 기반을 정리한다.
 
@@ -21,12 +21,14 @@
 - [x] BFF 도입 이유와 API 키 보호 경계를 기술적 기반 섹션에 포함한다.
 - [x] 이번 버전에 포함되지 않은 기능이나 범위를 별도 섹션으로 정리한다.
 
-## 4. `verification.md`에 배포 가능 근거를 정리한다.
+## 4. `verification.md`에 배포 가능 근거와 테스트 커버리지 기준을 정리한다.
 
-- [ ] 타입체크, web build, bff build, 핵심 테스트 결과를 자동 검증 섹션에 정리한다.
-- [ ] 홈 검색부터 availability, 상세 보기까지 수동 확인한 핵심 사용자 플로우를 정리한다.
-- [ ] web/BFF 분리 배포, custom domain, env/CORS 전제를 배포/운영 확인 섹션에 정리한다.
-- [ ] 단순 명령어 나열이 아니라 무엇을 검증했는지 함께 설명한다.
+- [x] web과 bff에 coverage 측정 스크립트와 reporter 설정을 추가한다.
+- [x] 타입체크, web build, bff build, 핵심 테스트 결과를 자동 검증 섹션에 정리한다.
+- [x] web과 bff 전체 suite의 `statements`, `branches`, `functions`, `lines` 커버리지 수치를 기록한다.
+- [x] 홈 검색부터 availability, 상세 보기까지 수동 확인한 핵심 사용자 플로우를 정리한다.
+- [x] web/BFF 분리 배포, custom domain, env/CORS 전제를 배포/운영 확인 섹션에 정리한다.
+- [x] 단순 명령어 나열이 아니라 무엇을 검증했는지 함께 설명한다.
 
 ## 5. `known-issues.md`에 현재 한계와 다음 버전 후보를 정리한다.
 
@@ -62,6 +64,7 @@
 - 릴리즈 문서의 1차 독자는 새로 투입되는 개발자이며, 서비스 목표와 사용자 플로우 설명을 우선한다.
 - `docs/releases/0.1.0/artifacts/`는 링크 모음이 아니라 phase 문서 복사본 스냅샷으로 관리한다.
 - `package.json` version `0.1.0` 상향은 이번 phase 비범위다.
+- `verification.md`를 위해 필요한 최소한의 coverage 설정 추가는 이번 phase 범위에 포함한다.
 
 ## Test Plan
 
@@ -76,6 +79,7 @@
   - `overview.md`만 읽고 서비스 목표와 핵심 사용자 플로우를 이해할 수 있어야 한다.
   - `changes.md`만 읽고 `0.1.0` 기능 범위를 이해할 수 있어야 한다.
   - `verification.md`만 읽고 배포 가능 근거를 이해할 수 있어야 한다.
+  - `verification.md`에는 web / bff coverage 기준선이 함께 기록돼 있어야 한다.
   - `known-issues.md`만 읽고 남은 한계와 다음 후보를 이해할 수 있어야 한다.
 - 스냅샷 검증
   - `artifacts/`는 링크가 아니라 실제 복사본이어야 한다.
@@ -86,4 +90,4 @@
 - `task.md` 경로는 `docs/phases/phase-07-1-release-0-1-0/task.md`로 고정한다.
 - `0.1.0`은 문서상 릴리즈 정의이며, package version 동기화는 별도 작업으로 남긴다.
 - `artifacts/` 복사 대상은 `spec.md`에 이미 고정된 목록을 그대로 따른다.
-- 최종 task 전까지는 릴리즈 문서 작성과 snapshot 복사만 진행하고, 코드 변경은 하지 않는다.
+- 최종 task 전까지는 릴리즈 문서 작성과 snapshot 복사를 중심으로 진행하고, 코드 변경은 Task 4의 coverage 설정처럼 검증 근거 확보에 필요한 최소 범위로만 제한한다.
