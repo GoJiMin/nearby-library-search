@@ -8,7 +8,6 @@
 - `docs/phases/`는 계속 수정되는 살아있는 작업 문서로 유지한다.
 - `docs/releases/<version>/`은 해당 버전의 릴리즈 스냅샷 문서로 관리한다.
 - 루트 `plan.md`는 버전별로 복사하지 않고 최신 상태를 유지한다.
-- 릴리즈 스냅샷에는 모든 문서를 복사하지 않고, 해당 버전에 실제로 포함된 산출물만 `artifacts/`에 담는다.
 - 전체 개발 목표는 MVP를 빠르게 구현해 기능 검증을 수행하는 것이다.
 - 외부 Open API 인증키 보호를 위해 다음 단계부터 모노레포와 BFF를 전제로 계획을 진행한다.
 - 모노레포 기본 구조는 `apps/web`, `apps/bff`, `packages/contracts`를 기준으로 한다.
@@ -183,14 +182,12 @@
 
 - `docs/releases/<version>/` 표준 구조와 릴리즈 문서 운영 방식을 정의하는 umbrella phase다.
 - 실제 실행 단위는 `Phase 7-1`, 이후 필요한 `Phase 7-2` 이상의 하위 phase에서 진행한다.
-- 릴리즈 문서의 기본 규칙은 `overview.md`, `changes.md`, `verification.md`, `known-issues.md`, `artifacts/`를 최소 세트로 두는 것이다.
-- 버전 스냅샷에는 해당 버전에서 실제로 shipped 된 phase 산출물만 포함한다.
+- 릴리즈 문서의 기본 규칙은 `overview.md`, `changes.md`, `verification.md`, `known-issues.md`를 최소 세트로 두는 것이다.
 - 루트 `plan.md`와 `docs/phases/`는 계속 최신 상태로 운영한다.
 
 ## Phase 7-1. 0.1.0 릴리즈 스냅샷 작성
 
-- [ ] 현재 MVP 상태를 `0.1.0`으로 정의한다.
-- [ ] `docs/releases/0.1.0/` 문서 세트를 작성한다.
-- [ ] `0.1.0`에 포함된 핵심 변경, 검증 결과, 알려진 한계를 정리한다.
-- [ ] `0.1.0`에 실제로 반영된 phase 산출물만 `artifacts/`에 스냅샷으로 복사한다.
+- [x] 현재 MVP 상태를 `0.1.0`으로 정의한다.
+- [x] `docs/releases/0.1.0/` 문서 세트를 작성한다.
+- [x] `0.1.0`에 포함된 핵심 변경, 검증 결과, 알려진 한계를 정리한다.
 - [x] Phase 7-1 내용을 기준으로 필요한 `spec.md`와 `task.md`를 작성한다.

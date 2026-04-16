@@ -45,9 +45,9 @@
 
 ## 7. 최종 검증과 문서 동기화를 마감한다.
 
-- [ ] `docs/releases/index.md`에서 `0.1.0`으로 진입 가능한지 확인한다.
-- [ ] `overview.md`, `changes.md`, `verification.md`, `known-issues.md`가 각각 독립적으로 읽히는지 확인한다.
-- [ ] `plan.md`의 `Phase 7-1 내용을 기준으로 필요한 spec.md와 task.md를 작성한다.` 체크를 `[x]`로 반영한다.
+- [x] `docs/releases/index.md`에서 `0.1.0`으로 진입 가능한지 확인한다.
+- [x] `overview.md`, `changes.md`, `verification.md`, `known-issues.md`가 각각 독립적으로 읽히는지 확인한다.
+- [x] `plan.md`의 `Phase 7-1 내용을 기준으로 필요한 spec.md와 task.md를 작성한다.` 체크를 `[x]`로 반영한다.
 
 ## Important Changes
 
