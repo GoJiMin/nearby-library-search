@@ -181,12 +181,11 @@
 
 ## Phase 7. 릴리즈 문서 체계와 버전 스냅샷 운영
 
-- [ ] `docs/releases/<version>/` 표준 구조를 도입한다.
-- [ ] 릴리즈 문서의 최소 세트를 `overview.md`, `changes.md`, `verification.md`, `known-issues.md`, `artifacts/`로 고정한다.
-- [ ] `docs/releases/index.md`에 버전 목록과 요약 규칙을 정리한다.
-- [ ] 버전 스냅샷에는 해당 버전에서 실제로 shipped 된 phase 산출물만 포함한다.
-- [ ] 루트 `plan.md`와 `docs/phases/`는 계속 최신 상태로 운영한다.
-- [ ] Phase 7 내용을 기준으로 `spec.md`와 `task.md`를 작성한다.
+- `docs/releases/<version>/` 표준 구조와 릴리즈 문서 운영 방식을 정의하는 umbrella phase다.
+- 실제 실행 단위는 `Phase 7-1`, 이후 필요한 `Phase 7-2` 이상의 하위 phase에서 진행한다.
+- 릴리즈 문서의 기본 규칙은 `overview.md`, `changes.md`, `verification.md`, `known-issues.md`, `artifacts/`를 최소 세트로 두는 것이다.
+- 버전 스냅샷에는 해당 버전에서 실제로 shipped 된 phase 산출물만 포함한다.
+- 루트 `plan.md`와 `docs/phases/`는 계속 최신 상태로 운영한다.
 
 ## Phase 7-1. 0.1.0 릴리즈 스냅샷 작성
 
