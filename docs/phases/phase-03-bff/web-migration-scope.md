@@ -12,7 +12,6 @@
 - `package.json`
 - `pnpm-workspace.yaml`
 - `tsconfig.json`
-- `tsconfig.base.json`
 - `eslint.config.js`
 - `README.md`
 - `plan.md`

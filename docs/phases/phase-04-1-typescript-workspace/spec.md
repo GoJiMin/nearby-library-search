@@ -10,7 +10,7 @@
 ## 기술 결정
 
 - 루트 `tsconfig.json`: solution-style workspace 진입점
-- 공통 옵션 계층: `tsconfig.base.json`, `tsconfig.web.json`, `tsconfig.server.json` 유지
+- 공통 옵션 구조: 루트 `tsconfig.json`에 공통 compiler option을 두고, 각 앱/패키지가 플랫폼 전용 옵션을 직접 소유
 - 루트 타입체크 방식: `tsc -b` 기반 project graph 타입체크
 - 참조 대상 타입 패키지: `packages/contracts`
 - `packages/contracts` 산출물 정책: declaration-only 타입 산출물
@@ -40,9 +40,9 @@
 
 - 루트 `tsconfig.json`은 현재 `{"files": []}`만 포함하고 있어 `pnpm exec tsc -p tsconfig.json` 실행 시 `TS18002`를 발생시킨다.
 - 루트 `package.json`의 `typecheck:all`은 `pnpm -r --if-present exec tsc -p tsconfig.json` 형태라 현재 정상 동작하지 않는다.
-- `tsconfig.base.json`, `tsconfig.web.json`, `tsconfig.server.json`은 이미 공통 옵션 계층으로 사용 중이다.
-- `apps/web/tsconfig.json`은 `../../tsconfig.web.json`을 확장하고 `@/*` alias와 `src` include만 가진다.
-- `apps/bff/tsconfig.json`은 `../../tsconfig.server.json`을 확장하고 `rootDir`, `outDir`를 가진다.
+- 공통 TypeScript 규칙이 루트 `tsconfig.json` 밖의 별도 계층으로 분리돼 있어, 소비자가 하나뿐인 web/server preset까지 루트에 남아 있다.
+- `apps/web/tsconfig.json`은 웹 전용 preset config를 확장하고 있어 웹 전용 옵션의 실제 소유권이 앱 바깥에 있다.
+- `apps/bff/tsconfig.json`은 서버 전용 preset config를 확장하고 있어 서버 전용 옵션의 실제 소유권이 앱 바깥에 있다.
 - `packages/contracts/tsconfig.json`은 `noEmit: true`라 project references의 참조 대상이 될 수 없다.
 - 현재 코드베이스에서 `@nearby-library-search/contracts`는 web, bff 모두 `import type`로만 사용하고 있다.
 - `packages/contracts/package.json`의 `types`는 현재 `./src/index.ts`를 가리킨다.
@@ -50,24 +50,24 @@
 ## 현재 구현 기준
 
 - 루트 `tsconfig.json`은 `packages/contracts`, `apps/web`, `apps/bff`를 reference로 가지는 solution-style workspace entrypoint다.
+- 루트 `tsconfig.json`은 workspace 공통 compiler option도 함께 가지며, 하위 프로젝트의 base config 역할을 겸한다.
 - 루트 `package.json`의 `typecheck:all`은 `pnpm exec tsc -b tsconfig.json`으로 정리됐다.
 - `packages/contracts/tsconfig.json`은 `composite + declaration + emitDeclarationOnly + outDir=dist` 기준의 declaration-only upstream project다.
 - `packages/contracts/package.json`의 `types`는 `./dist/src/index.d.ts`를 가리킨다.
-- `apps/web/tsconfig.json`은 `composite + noEmit`을 유지하면서 `packages/contracts` reference와 source path alias를 함께 가진다.
-- `apps/bff/tsconfig.json`은 `composite`을 유지하면서 `packages/contracts` reference와 source path alias를 함께 가진다.
+- `apps/web/tsconfig.json`은 루트를 확장하면서 `composite + noEmit`과 브라우저/번들러 옵션, `packages/contracts` reference, source path alias를 함께 가진다.
+- `apps/bff/tsconfig.json`은 루트를 확장하면서 `composite`과 NodeNext 옵션, `packages/contracts` reference, source path alias를 함께 가진다.
 
 ## 디렉터리 기준
 
 - 루트
-  - `tsconfig.json`: workspace solution entrypoint
-  - `tsconfig.base.json`: 공통 TypeScript 규칙
-  - `tsconfig.web.json`: 웹 앱 공통 설정
-  - `tsconfig.server.json`: 서버 공통 설정
+  - `tsconfig.json`: workspace solution entrypoint이자 공통 TypeScript 규칙의 base config
 - `apps/web`
   - 브라우저 번들러 기반 앱 프로젝트
+  - 웹 전용 compiler option을 직접 소유하는 consumer project
   - `packages/contracts`를 참조하는 consumer project
 - `apps/bff`
   - NodeNext 기반 서버 프로젝트
+  - 서버 전용 compiler option을 직접 소유하는 consumer project
   - `packages/contracts`를 참조하는 consumer project
 - `packages/contracts`
   - workspace 내 공통 타입 패키지
@@ -78,18 +78,31 @@
 ### 1. 루트 solution `tsconfig`
 
 - 루트 `tsconfig.json`은 직접 소스 파일을 컴파일하지 않는다.
-- 루트 `tsconfig.json`은 `include: []`와 `references`만 가진 workspace graph entrypoint로 동작한다.
+- 루트 `tsconfig.json`은 `include: []`, 공통 `compilerOptions`, `references`를 가진 workspace graph entrypoint로 동작한다.
 - 루트 `references` 대상은 아래 3개로 고정한다.
   - `./packages/contracts`
   - `./apps/web`
   - `./apps/bff`
-- 루트 `tsconfig.json`은 설정 공유용 `extends` 파일이 아니라, 전체 타입체크 오케스트레이션 진입점으로 사용한다.
-- 루트 `tsconfig.json` 자체에 app/server 전용 옵션을 직접 넣지 않는다.
+- 루트 `tsconfig.json`은 전체 타입체크 오케스트레이션 진입점이면서, 저장소 공통 TypeScript 규칙의 base config로도 사용한다.
+- 루트 `tsconfig.json`에는 strictness, 공통 언어 옵션, unused 규칙 같은 저장소 공통 정책만 둔다.
+- 루트 `tsconfig.json`에는 app/server 전용 옵션을 직접 넣지 않는다.
 
 예시 형태:
 
 ```json
 {
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
   "include": [],
   "references": [
     { "path": "./packages/contracts" },
@@ -99,13 +112,14 @@
 }
 ```
 
-### 2. 공통 옵션 계층
+### 2. 공통 옵션 배치
 
-- `tsconfig.base.json`은 strictness, 공통 언어 옵션, unused 규칙 같은 저장소 공통 정책만 유지한다.
-- `tsconfig.web.json`은 브라우저/번들러 계열 옵션만 유지한다.
-- `tsconfig.server.json`은 NodeNext/서버 계열 옵션만 유지한다.
-- solution-style 전환 후에도 `base`, `web`, `server` 계층은 유지한다.
-- 새 phase에서는 이 계층을 제거하지 않고 references가 가능하도록 보강만 한다.
+- 별도 base/web/server preset 계층은 유지하지 않는다.
+- 저장소 공통 정책은 루트 `tsconfig.json`에 둔다.
+- 브라우저/번들러 계열 옵션은 `apps/web/tsconfig.json`에 직접 둔다.
+- NodeNext/서버 계열 옵션은 `apps/bff/tsconfig.json`에 직접 둔다.
+- declaration-only upstream project 성격의 옵션은 `packages/contracts/tsconfig.json`에 직접 둔다.
+- 소비자가 하나뿐인 preset은 루트 공통 설정으로 분리하지 않는다.
 
 ### 3. `packages/contracts` project references 기준
 
@@ -125,26 +139,35 @@
 
 - `apps/web`는 Vite가 실제 빌드를 담당하므로 TypeScript는 타입체크 전용으로 사용한다.
 - `apps/web/tsconfig.json`은 아래 기준으로 정리한다.
+  - 루트 `tsconfig.json` 확장
   - `composite: true`
+  - `lib: ["ES2022", "DOM", "DOM.Iterable"]`
+  - `module: "ESNext"`
+  - `moduleResolution: "Bundler"`
+  - `allowImportingTsExtensions: true`
   - `noEmit: true`
+  - `jsx: "react-jsx"`
   - 기존 `@/*` alias 유지
   - `@nearby-library-search/contracts -> ../../packages/contracts/src/index.ts` source path alias 추가
   - `packages/contracts` reference 추가
 - `apps/web`는 참조 대상이 아니라 consumer project이므로 `noEmit: true`를 유지할 수 있다.
 - `apps/web`는 declaration 산출물을 만들지 않는다.
-- `apps/web`는 여전히 `tsconfig.web.json`을 확장한다.
 - source path alias는 개별 `pnpm typecheck:web` 실행 시 prebuilt declaration 산출물에 의존하지 않도록 유지한다.
 
 ### 5. `apps/bff` project references 기준
 
 - `apps/bff`는 Node 서버용 consumer project다.
 - `apps/bff/tsconfig.json`은 아래 기준으로 정리한다.
+  - 루트 `tsconfig.json` 확장
+  - `module: "NodeNext"`
+  - `moduleResolution: "NodeNext"`
+  - `allowSyntheticDefaultImports: true`
+  - `types: ["node"]`
   - `composite: true`
   - 기존 `rootDir`, `outDir` 유지
   - `@nearby-library-search/contracts -> ../../packages/contracts/src/index.ts` source path alias 추가
   - `packages/contracts` reference 추가
 - `apps/bff`는 서버 빌드가 필요하므로 현재 emit 구조를 유지한다.
-- `apps/bff`는 여전히 `tsconfig.server.json`을 확장한다.
 - source path alias는 개별 `pnpm typecheck:bff` 실행 시 prebuilt declaration 산출물에 의존하지 않도록 유지한다.
 
 ### 6. scripts와 타입체크 진입점

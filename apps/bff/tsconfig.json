@@ -1,6 +1,10 @@
 {
-  "extends": "../../tsconfig.server.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
     "composite": true,
     "paths": {
       "@nearby-library-search/contracts": ["../../packages/contracts/src/index.ts"]
