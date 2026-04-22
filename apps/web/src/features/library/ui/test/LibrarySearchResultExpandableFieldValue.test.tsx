@@ -1,4 +1,5 @@
 import {render, screen, waitFor} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {LibrarySearchResultExpandableFieldValue} from '../common/LibrarySearchResultExpandableFieldValue';
 
@@ -124,5 +125,29 @@ describe('LibrarySearchResultExpandableFieldValue', () => {
     );
 
     expect(await screen.findByRole('button', {name: '휴관일 더보기'})).toBeInTheDocument();
+  });
+
+  it('값이 바뀌면 펼침 상태를 초기화한다', async () => {
+    const user = userEvent.setup();
+    const {rerender} = render(
+      <LibrarySearchResultExpandableFieldValue label="운영 시간" value={'평일 - 09:00~22:00\n주말 - 09:00~17:00'} />,
+    );
+
+    await user.click(await screen.findByRole('button', {name: '운영 시간 더보기'}));
+
+    expect(screen.getByRole('button', {name: '운영 시간 접기'})).toBeInTheDocument();
+    expect(document.querySelector('[data-slot="library-search-expandable-field-content"]')).toHaveTextContent(
+      '평일 - 09:00~22:00 주말 - 09:00~17:00',
+    );
+
+    rerender(
+      <LibrarySearchResultExpandableFieldValue label="운영 시간" value={'평일 - 10:00~20:00\n주말 - 10:00~16:00'} />,
+    );
+
+    expect(await screen.findByRole('button', {name: '운영 시간 더보기'})).toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: '운영 시간 접기'})).not.toBeInTheDocument();
+    expect(document.querySelector('[data-slot="library-search-expandable-field-content"]')).toHaveTextContent(
+      '평일 - 10:00~20:00 / 주말 - 10:00~16:00',
+    );
   });
 });

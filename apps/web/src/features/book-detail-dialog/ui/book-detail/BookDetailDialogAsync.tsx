@@ -1,17 +1,9 @@
 import {Suspense} from 'react';
 import {X} from 'lucide-react';
-import {lazyWithPreload} from '@/shared/lib/lazyWithPreload';
 import {Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, LucideIcon} from '@/shared/ui';
 import {BookDetailDialogLoadingContent} from './BookDetailDialogLoadingContent';
+import {LazyBookDetailDialog} from './bookDetailDialog.loader';
 import {useBookDetailDialogStore} from '../../model/useBookDetailDialogStore';
-
-const LazyBookDetailDialog = lazyWithPreload(async () => {
-  const {BookDetailDialog} = await import('./BookDetailDialog');
-
-  return {
-    default: BookDetailDialog,
-  };
-});
 
 function BookDetailDialogLoadingDialog() {
   const closeBookDetailDialog = useBookDetailDialogStore(state => state.closeBookDetailDialog);
@@ -71,8 +63,4 @@ function BookDetailDialogAsync() {
   );
 }
 
-function preloadBookDetailDialog() {
-  return LazyBookDetailDialog.preload();
-}
-
-export {BookDetailDialogAsync, preloadBookDetailDialog};
+export {BookDetailDialogAsync};

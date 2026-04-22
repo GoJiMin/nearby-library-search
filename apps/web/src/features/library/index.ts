@@ -1,1 +1,2 @@
-export {LibrarySearchResultDialogAsync, preloadLibrarySearchResultDialog} from './ui/LibrarySearchResultDialogAsync';
+export {LibrarySearchResultDialogAsync} from './ui/LibrarySearchResultDialogAsync';
+export {preloadLibrarySearchResultDialog} from './ui/librarySearchResultDialog.loader';

@@ -1,4 +1,4 @@
-import {useEffect, useId, useLayoutEffect, useRef, useState} from 'react';
+import {useId, useLayoutEffect, useRef, useState} from 'react';
 import {decodeHtmlEntities} from '@/shared/lib/decodeHtmlEntities';
 
 type LibrarySearchResultExpandableFieldValueProps = {
@@ -18,29 +18,22 @@ function createCollapsedValue(value: string) {
   return value.replace(/\n+/g, ' / ');
 }
 
-function LibrarySearchResultExpandableFieldValue({
+type LibrarySearchResultExpandableFieldValueContentProps = {
+  collapsedValue: string;
+  expandedValue: string;
+  label: string;
+};
+
+function LibrarySearchResultExpandableFieldValueContent({
+  collapsedValue,
+  expandedValue,
   label,
-  value,
-}: LibrarySearchResultExpandableFieldValueProps) {
-  const expandedValue = normalizeExpandedValue(value);
-  const collapsedValue = createCollapsedValue(expandedValue);
-  const valueSignature = `${collapsedValue}\u0000${expandedValue}`;
+}: LibrarySearchResultExpandableFieldValueContentProps) {
   const contentId = useId();
   const contentRef = useRef<HTMLParagraphElement | null>(null);
   const measureRef = useRef<HTMLSpanElement | null>(null);
-  const previousValueSignatureRef = useRef(valueSignature);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
-
-  useEffect(() => {
-    if (previousValueSignatureRef.current === valueSignature) {
-      return;
-    }
-
-    previousValueSignatureRef.current = valueSignature;
-    setIsExpanded(false);
-    setIsOverflowing(false);
-  }, [valueSignature]);
 
   useLayoutEffect(() => {
     if (isExpanded) {
@@ -132,6 +125,24 @@ function LibrarySearchResultExpandableFieldValue({
         </button>
       )}
     </div>
+  );
+}
+
+function LibrarySearchResultExpandableFieldValue({
+  label,
+  value,
+}: LibrarySearchResultExpandableFieldValueProps) {
+  const expandedValue = normalizeExpandedValue(value);
+  const collapsedValue = createCollapsedValue(expandedValue);
+  const valueSignature = `${collapsedValue}\u0000${expandedValue}`;
+
+  return (
+    <LibrarySearchResultExpandableFieldValueContent
+      key={valueSignature}
+      collapsedValue={collapsedValue}
+      expandedValue={expandedValue}
+      label={label}
+    />
   );
 }
 

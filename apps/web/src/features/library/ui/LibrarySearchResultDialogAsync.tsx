@@ -1,14 +1,6 @@
 import {Suspense} from 'react';
 import {useFindLibraryStore} from '@/features/find-library';
-import {lazyWithPreload} from '@/shared/lib/lazyWithPreload';
-
-const LazyLibrarySearchResultDialog = lazyWithPreload(async () => {
-  const {LibrarySearchResultDialog} = await import('./LibrarySearchResultDialog');
-
-  return {
-    default: LibrarySearchResultDialog,
-  };
-});
+import {LazyLibrarySearchResultDialog} from './librarySearchResultDialog.loader';
 
 function LibrarySearchResultDialogAsync() {
   const hasLibrarySearchResultDialog = useFindLibraryStore(
@@ -26,8 +18,4 @@ function LibrarySearchResultDialogAsync() {
   );
 }
 
-function preloadLibrarySearchResultDialog() {
-  return LazyLibrarySearchResultDialog.preload();
-}
-
-export {LibrarySearchResultDialogAsync, preloadLibrarySearchResultDialog};
+export {LibrarySearchResultDialogAsync};

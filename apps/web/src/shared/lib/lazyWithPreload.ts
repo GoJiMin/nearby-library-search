@@ -1,11 +1,11 @@
 import {lazy, type ComponentType, type LazyExoticComponent} from 'react';
 
-type ComponentModule<T extends ComponentType<any>> = {
-  default: T;
+type ComponentModule<TProps> = {
+  default: ComponentType<TProps>;
 };
 
-type PreloadableComponent<T extends ComponentType<any>> = LazyExoticComponent<T> & {
-  preload: () => Promise<ComponentModule<T>>;
+type PreloadableComponent<TProps> = LazyExoticComponent<ComponentType<TProps>> & {
+  preload: () => Promise<ComponentModule<TProps>>;
 };
 
 /**
@@ -15,10 +15,8 @@ type PreloadableComponent<T extends ComponentType<any>> = LazyExoticComponent<T>
  * - Dynamic import target은 slice public API 또는 slice-local async entry에 한정한다.
  * - Consumer naming은 `FooAsync`, `preloadFoo()` 규칙을 따른다.
  */
-function lazyWithPreload<T extends ComponentType<any>>(
-  load: () => Promise<ComponentModule<T>>,
-): PreloadableComponent<T> {
-  let pendingModule: Promise<ComponentModule<T>> | undefined;
+function lazyWithPreload<TProps>(load: () => Promise<ComponentModule<TProps>>): PreloadableComponent<TProps> {
+  let pendingModule: Promise<ComponentModule<TProps>> | undefined;
 
   function loadModule() {
     if (!pendingModule) {
@@ -31,7 +29,7 @@ function lazyWithPreload<T extends ComponentType<any>>(
     return pendingModule;
   }
 
-  const LazyComponent = lazy(loadModule) as PreloadableComponent<T>;
+  const LazyComponent = lazy(loadModule) as PreloadableComponent<TProps>;
 
   LazyComponent.preload = loadModule;
 
